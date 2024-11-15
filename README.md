@@ -1,4 +1,5 @@
-# Flare Patrol Analysis (converted DKIST working code from original DKIST_Analysis_Package)
+# Flare Patrol Analysis 
+# Converted DKIST working code from original DKIST_Analysis_Package
 
 OWNER
     Cole A. Tamburri
