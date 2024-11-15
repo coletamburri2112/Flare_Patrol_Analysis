@@ -2,10 +2,12 @@
 ### Converted DKIST working code from original DKIST_Analysis_Package
 
 OWNER
+    
     Cole A. Tamburri
     cole.tamburri@colorado.edu
     
 INSTITUTION
+    
     University of Colorado Boulder
     National Solar Observatory
     Laboratory for Atmospheric and Space Physics
@@ -14,6 +16,7 @@ MOST RECENT UPDATE
     15 November 2024
     
 QUICK SUMMARY
+    
     Analysis package for DKIST data, particularly ViSP and VBI. 
     
     Includes intensity calibration, line fitting, co-alignment routines.  Original intention was 
@@ -30,6 +33,7 @@ QUICK SUMMARY
     
     
 FILE SUMMARIES
+    
     WORKING_SOURCE folder includes .py files (mainly, dkistpkg_ct.py) handling much of the
     co-alignment and intensity calibration.  Also other, more direct working files to handle specific
     tasks unrelated directly to data processing.
@@ -48,6 +52,7 @@ FILE SUMMARIES
     in the WORKING_SOURCE folder or specific PID_X_YY folder.
         
 ACKNOWLEDGEMENT, COLLABORATION
+    
     As the availability and applicability of DKIST observations grows, we 
     welcome collaboration.  Please contact cole.tamburri@colorado.edu with 
     request to contribute; see https://github.com/coletamburri2112/Flare_Patrol_Analysis
