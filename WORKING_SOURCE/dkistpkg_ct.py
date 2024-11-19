@@ -168,7 +168,7 @@ def spatialinit(path,folder1,dir_list2,lon,lat,wl):
     # Coordinates from DKIST are not correct, but define them anyways as a starting
     # point.  Will co-align later in routine.
     
-    hpc1_arcsec = i_file_raster1[1].header['CRVAL2'] # first axis coords
+    hpc1_arcsec = i_file_raster1[1].header['CRVAL1'] # first axis coords
     hpc2_arcsec = i_file_raster1[1].header['CRVAL3'] # second axis corods
     
     # image center
@@ -202,7 +202,7 @@ def spatialinit(path,folder1,dir_list2,lon,lat,wl):
         doppshnonrel, doppshrel
         
 def limbdarkening(wave, mu=1.0, nm=False, 
-                  directory = '/Users/coletamburri/Desktop/DKIST_Data_Tools/Rahul_ViSP_Cal/'):
+                  directory = '/Users/coletamburri/Desktop/DKIST_Data_Tools_misc/Rahul_ViSP_Cal/'):
     """
     Return limb-darkening factor given wavelength and viewing angle
     mu=cos(theta)
@@ -492,7 +492,7 @@ def pltsubtract(dispersion_range,nonflare_average,scaled_flare_time,muted,indexs
     ax.set_ylabel(r'Intensity [$W/cm^2/sr/\mathring A$]',fontsize=15)
     plt.show()
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+\
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+\
                 '/pltprofile.png')
 
     return None
@@ -553,7 +553,7 @@ def pltptes(ptes_flaretime,image_data_arr_arr_raster1,pid='pid_1_84'):
     ax.axvline(300)
     ax1.axvline(300)
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+\
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+\
                 '/pltpptes.png')
 
     return None
@@ -1116,7 +1116,7 @@ def plt_line_characteristics(ew_line_all_fs,eqw_line_all_fs,width_line_all_fs,
     
     plt.show()
     
-    #fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+\
+    #fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+\
     #            '/linecharacteristics.png')
     
     return None
@@ -1161,7 +1161,7 @@ def gauss2fit(storeamp1,storemu1,storesig1,storeamp2,storemu2,storesig2,
         ax.flatten()[i].grid()
     ax.flatten()[-1].axis('off')
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+\
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+\
                 '/gaussianfits.png')
     
     #save
@@ -1317,7 +1317,7 @@ def pltfitresults(bkgd_subtract_flaretime,dispersion_range,double_gaussian,
     # question; default is for pid_1_84
     
     # define path
-    path = '/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+\
+    path = '/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+\
                 pid+'/'
     if os.path.isdir(path) == False:
         os.mkdir(path)
@@ -1382,7 +1382,7 @@ def pltfitresults(bkgd_subtract_flaretime,dispersion_range,double_gaussian,
             
             #plt.subplots_adjust(wspace=0.4,hspace=1.0)
             plt.tight_layout(pad = 4)
-            fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+\
+            fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+\
                         pid+'/fits'+date+note+'_endatstep_'+str(i-1)+'.png')
             fig, ax = plt.subplots(nrow,ncol,figsize=(30,15))
             fig.suptitle(line+' evolution w/ fitting, '+date+note,fontsize=20)
@@ -1437,7 +1437,7 @@ def pltfitresults(bkgd_subtract_flaretime,dispersion_range,double_gaussian,
     plt.tight_layout(pad = 4)
     plt.show()
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+\
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+\
                 pid+'/fits'+date+note+'_endatstep_'+str(i)+'.png')
     
     return None
@@ -1600,7 +1600,7 @@ def pltraster(caiiavgs,raster_range,spatial_range2,pid='pid_1_84'):
     ax.set_aspect('equal')
     
     plt.show()
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
                 '/initslit.png')
     
     return None
@@ -1685,7 +1685,7 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     matplotlib.use('macosx')
     aa = plt.ginput(6,timeout = 120)
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
                 'pre_coalign.png')
     
     return aa
@@ -1764,7 +1764,7 @@ def vbi_visp_transformation(aa, visp_X,visp_Y,nslit,nwave,vbi_X,vbi_Y,dat0_vbi,
     
     plt.show()
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
                 'postcalib.png')
     
     # plot overlay
@@ -1786,7 +1786,7 @@ def vbi_visp_transformation(aa, visp_X,visp_Y,nslit,nwave,vbi_X,vbi_Y,dat0_vbi,
     
     plt.show()
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
                 'postcalib_overlay.png')
     
     
@@ -1964,7 +1964,7 @@ def plt_final_coalign(vbi_X_new, vbi_Y_new, dat0_vbi2,
 
     plt.show()
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+'finalcoalign.png')
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+'finalcoalign.png')
     
     return None
 
@@ -1972,7 +1972,7 @@ def load_fts(dispersion_range):
     # Load disk-center, quiet sun profile from Neckel and Hamburg
     # atlast
     
-    path = '/Users/coletamburri/Desktop/DKIST_Data_Tools/speclab-python/cal_data/'
+    path = '/Users/coletamburri/Desktop/DKIST_Data_Tools_misc/speclab-python/cal_data/'
     filename = 'neckel.hamburg.atlas.disk_center_intensity.cgs.ecsv'
     
     ecsv_content = path+filename
@@ -2347,7 +2347,7 @@ def plot_calibration(new_dispersion_range, visp_qs_obs, wlsel, ilamsel,
     ax0.set_ylim([min(ilamsel)-.15e6,max(ilamsel)+.15e6])
     ax.set_ylim([min(ilamsel)-.15e6,max(ilamsel)+.15e6])
     
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/DKIST_analysis_package/'+pid+\
+    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+\
                 '/pltprofile.png')
     
     return None
