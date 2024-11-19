@@ -33,7 +33,7 @@ muted = DKISTanalysis.color_muted2()
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
 folder1 = 'AQWDJ'
-folder2 = 'AORVR'  #need to add data for QS
+folder2 = 'AORVR'  #need to add data for QS for 11 august...
 
 # list of files in directory for DKIST/ViSP
 dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
@@ -118,8 +118,7 @@ wlsel=wlsel/10
 # Average the QS data for space and time, for selected ranges
 space_and_time_averaged_qs = \
     DKISTanalysis.comp_fts_to_qs(wlsel,ilamsel,dispersion_range, 
-                                 image_data_arr_arr_qs, lowint = -500,highint=-1,
-                                 timelow=20,timehigh=46)
+                                 image_data_arr_arr_qs)
 
 # telluric lines for comparison (or other absorption lines if telluric not 
 # available, as is the case for the Ca II H window).  Most of the next steps
