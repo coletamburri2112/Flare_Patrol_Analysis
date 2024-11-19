@@ -33,7 +33,7 @@ muted = DKISTanalysis.color_muted2()
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
 folder1 = 'BRYZE'
-folder2 = 'AORVR'  #need to add data for QS
+folder2 = 'AORVR'  #AORVR is the QS at disk center for 8 August X-class flare
 
 # list of files in directory for DKIST/ViSP
 dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
