@@ -489,7 +489,7 @@ def pltsubtract(dispersion_range,nonflare_average,scaled_flare_time,muted,indexs
     ax.legend(loc=0)
     ax.set_title('Non-Flare Estimate vs. Flare-time ',fontsize=25)
     ax.set_xlabel(r'Wavelength [$\mathring A$]',fontsize=15)
-    ax.set_ylabel(r'Intensity [$W/cm^2/sr/\mathring A$]',fontsize=15)
+    ax.set_ylabel(r'Intensity [$erg/s/cm^2/sr/\mathring A$]',fontsize=15)
     plt.show()
     
     fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+\
@@ -2017,7 +2017,7 @@ def comp_fts_to_qs(wlsel, ilamsel, dispersion_range, qs_obs,lowint=0, highint=-1
     ax.grid()
     ax.set_xlabel('Wavelength [nm]',fontsize=13)
     ax.set_ylabel('Non-Flare Estimate [cts]',fontsize=13)
-    ax0.set_ylabel(r'Disk Center Intensity [$W/cm^2/sr/\mathring A$]',fontsize=13)
+    ax0.set_ylabel(r'Disk Center Intensity [$erg/s/cm^2/sr/\mathring A$]',fontsize=13)
     ax.set_title('Observations and Flare Atlas',fontsize=20)
     lns = lns1+lns2
     
@@ -2334,8 +2334,8 @@ def plot_calibration(new_dispersion_range, visp_qs_obs, wlsel, ilamsel,
     ax.legend()
     ax.grid()
     ax.set_xlabel('Wavelength [nm]',fontsize=13)
-    ax.set_ylabel('Calibrated Intensity [$W/cm^2/sr/\mathring A$]',fontsize=13)
-    ax0.set_ylabel(r'Disk Center Intensity [$W/cm^2/sr/\mathring A$]',fontsize=13)
+    ax.set_ylabel('Calibrated Intensity [$erg/s/cm^2/sr/\mathring A$]',fontsize=13)
+    ax0.set_ylabel(r'Disk Center Intensity [$erg/s/cm^2/sr/\mathring A$]',fontsize=13)
     ax.set_title('Calibrated Quiet Sun Intensity',fontsize=20)
     lns = lns1+lns2
     ax.axvline(wl)
