@@ -16,7 +16,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=0
+end=3
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -33,7 +33,7 @@ muted = DKISTanalysis.color_muted2()
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
 folder1 = 'BRYZE'
-folder2 = 'AORVR'  #need to add data for QS
+folder2 = 'AORVR'  #AORVR is the QS at disk center for 8 August X-class flare
 
 # list of files in directory for DKIST/ViSP
 dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
@@ -118,8 +118,7 @@ wlsel=wlsel/10
 # Average the QS data for space and time, for selected ranges
 space_and_time_averaged_qs = \
     DKISTanalysis.comp_fts_to_qs(wlsel,ilamsel,dispersion_range, 
-                                 image_data_arr_arr_qs, lowint = -500,highint=-1,
-                                 timelow=20,timehigh=46)
+                                 image_data_arr_arr_qs)
 
 # telluric lines for comparison (or other absorption lines if telluric not 
 # available, as is the case for the Ca II H window).  Most of the next steps
@@ -153,6 +152,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
+# on 19 August 2024, checked the fwhm between 0.05 to 0.12 and confirmed that (for the absorption lines)
 fwhm = 0.05
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
