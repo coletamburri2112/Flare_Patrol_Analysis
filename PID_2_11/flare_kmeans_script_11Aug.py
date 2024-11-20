@@ -38,14 +38,14 @@ hbeta_low =480
 hbeta_high = 670
 
 caII_low = 570
-caII_high = 730
+caII_high = 750
 
-hepsilon_low = 730
+hepsilon_low = 750
 hepsilon_high = 900
 
-cutoff0 = 2.5 # factor of minimum- 1 means all pixels, >1 is search for flare
+cutoff0 = 2.3 # factor of minimum- 1 means all pixels, >1 is search for flare
 
-n_clusters0 = 10
+n_clusters0 = 20
 
 nframes = 10
 startspace = 500
@@ -55,8 +55,8 @@ start = 149
 
 # change based on line
 
-linelow = caII_low
-linehigh = caII_high
+linelow = hepsilon_low
+linehigh = hepsilon_high
 
 obs_avg_line = np.mean(flare_arr[:,linelow:linehigh,:],1)
 
@@ -127,7 +127,7 @@ fig,ax=plt.subplots(figsize=(5,10))
 ax.pcolormesh(np.transpose(frame_line),cmap = 'hot',alpha=0.5)
 ax.scatter(x_mask0,y_mask0,2,color=colors[groups0],alpha=1)
 
-fig,ax=plt.subplots(3,4,figsize=(10,10))
+fig,ax=plt.subplots(5,4,figsize=(10,10))
 arr_normprofs0 = normprofiles_line
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
 
