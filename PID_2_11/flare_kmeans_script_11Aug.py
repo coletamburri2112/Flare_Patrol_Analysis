@@ -38,14 +38,14 @@ hbeta_low =480
 hbeta_high = 670
 
 caII_low = 570
-caII_high = 750
+caII_high = 730
 
 hepsilon_low = 750
 hepsilon_high = 900
 
-cutoff0 = 2.3 # factor of minimum- 1 means all pixels, >1 is search for flare
+cutoff0 = 3 # factor of minimum- 1 means all pixels, >1 is search for flare
 
-n_clusters0 = 20
+n_clusters0 = 10
 
 nframes = 10
 startspace = 500
@@ -55,8 +55,8 @@ start = 149
 
 # change based on line
 
-linelow = hepsilon_low
-linehigh = hepsilon_high
+linelow = caII_low
+linehigh = caII_high
 
 obs_avg_line = np.mean(flare_arr[:,linelow:linehigh,:],1)
 
