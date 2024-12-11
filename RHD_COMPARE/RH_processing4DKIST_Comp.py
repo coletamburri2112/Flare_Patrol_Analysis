@@ -36,16 +36,16 @@ def tosi(wav, s):
     s /= cm_to_m**2 * aa_to_m # from from Watt /(s cm2 ster AA) to Watt/(s m2 ster m) 
     s *= (wav*aa_to_m)**2 / clight # to Watt/(s m2 Hz ster)
     return s
-time = '21' # next run 30,40,50,70
+time = '10' #
 
 base1 = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/'
 base2 = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
 
 #define model to read in
-rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_'+time+'s_mod30_1broadc_2vt_H20/run')
+rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_'+time+'s_mod30_20broadc_5vt_H20/run')
 #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/longduration_'+time+'_50broadc_5vt/run')
 # define output fil13
-filename = base2+'fchroma30_1b_2vt_'+time+'s_H20'
+filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
 #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                   
 # generalize - choice of rhd file                                                
@@ -57,8 +57,8 @@ fts = satlas()
 
 # Get parameters of your favorite line and atom
 
-ATOMNO = 0  ## ['0=Ca', 1='H', '2=Na']
-LINENO = 0 ### ['0=Ca IIH';'22-H-epsilon']
+ATOMNO = 1  ## ['0=Ca', 1='H', '2=Na']
+LINENO = 22 ### ['0=Ca IIH';'22-H-epsilon']
 DWING  = 2
 DLAMB  = 2.0
 
