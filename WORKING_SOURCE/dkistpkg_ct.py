@@ -157,7 +157,7 @@ def pathdef(path,folder1):
     
     return dir_list2
 
-def spatialinit(path,folder1,dir_list2,lon,lat,wl):
+def spatialinit(path,folder1,dir_list2,lon,lat,wl, flag=0):
     
     # initialize spatial parameters, mu angle for use in determining limb darkening
 
@@ -168,7 +168,11 @@ def spatialinit(path,folder1,dir_list2,lon,lat,wl):
     # Coordinates from DKIST are not correct, but define them anyways as a starting
     # point.  Will co-align later in routine.
     
-    hpc1_arcsec = i_file_raster1[1].header['CRVAL1'] # first axis coords
+    if flag == 1: #if pid_1_84
+        hpc1_arcsec = i_file_raster1[1].header['CRVAL2'] # first axis coords # for pid_1_84
+    else:
+        hpc1_arcsec = i_file_raster1[1].header['CRVAL1'] # first axis coords # for pid_1_84
+        
     hpc2_arcsec = i_file_raster1[1].header['CRVAL3'] # second axis corods
     
     # image center
@@ -1682,7 +1686,7 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     # for each coordinate system; points should not be
     # colinear
     
-    matplotlib.use('macosx')
+    #matplotlib.use('macosx')
     aa = plt.ginput(6,timeout = 120)
     
     fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
@@ -1840,7 +1844,7 @@ def query_sdo(start_time, email, cutout, matplotlib,
 
     plt.show()
     
-    matplotlib.use('macosx')
+    #matplotlib.use('macosx')
 
     bb = plt.ginput(3,timeout = 60)
     
@@ -1857,7 +1861,7 @@ def points_vbi(vbi_X,vbi_Y,dat0_vbi,matplotlib):
     ax1.set_aspect('equal')
     ax1.invert_xaxis()
 
-    matplotlib.use('macosx')
+    #matplotlib.use('macosx')
 
     cc = plt.ginput(3,timeout=60)
     

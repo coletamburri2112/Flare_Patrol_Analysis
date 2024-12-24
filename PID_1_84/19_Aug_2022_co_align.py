@@ -86,8 +86,10 @@ vbi_X, vbi_Y, hdul1_vbi, dat0_vbi = DKISTanalysis.vbi_process(path_vbi,
 X,Y = np.meshgrid(raster_range,spatial_range2)
 
 #ID corresponding points in ViSP and VBI
-aa = DKISTanalysis.plt_precoalign(vbi_X,vbi_Y,hdul1_vbi,X,Y,caiiavgs,
-                                  matplotlib,dat0_vbi)
+#aa = DKISTanalysis.plt_precoalign(vbi_X,vbi_Y,hdul1_vbi,X,Y,caiiavgs,
+#                                  matplotlib,dat0_vbi)
+
+aa=[(683.92793,-480.435951),(6.478354,-480.435951),(680.162735,-480.435951),(3.068366,-480.435951),(683.927930,-490.239666),(6.478354,-490.736956)]
 
 #ViSP to VBI
 visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa,X,Y,nspace,4,

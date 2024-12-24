@@ -55,12 +55,12 @@ wl = 396.847 # central wavelength, Ca II H
 # spatial coordinates
 hpc1_arcsec, hpc2_arcsec, x_center, y_center, z, rho, mu, doppshrel,\
     doppshnonrel = \
-    DKISTanalysis.spatialinit(path,folder1,dir_list2,lon,lat,wl)
+    DKISTanalysis.spatialinit(path,folder1,dir_list2,lon,lat,wl,flag=1)
     
 # spatial coordinates, qs    
 hpc1_arcsecqs, hpc2_arcsecqs, x_centerqs, y_centerqs, zqs, rhoqs, muqs, doppshrelqs,\
     doppshnonrelqs = \
-    DKISTanalysis.spatialinit(path,folder2,dir_list3,lon,lat,wl)
+    DKISTanalysis.spatialinit(path,folder2,dir_list3,lon,lat,wl,flag=1)
 
 # get limb darkening coefficient 
 clv_corr = DKISTanalysis.limbdarkening(wl, mu=mu, nm=True)
