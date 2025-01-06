@@ -44,7 +44,7 @@ mu2 = 0.4266927415494022
 fwhm = .005 # in nm
 ntw = 45
 flagh20 = 1
-flagh20sum = 0 # this is the only change as of 10 Dec
+flagh20sum = 0 
 
 #only one of the following should be 1
 flagb = 0
@@ -226,7 +226,10 @@ if flag =='f-chroma':
     elif flagh20 == 1:
         for i in h20mods:
             
-            modelname1 = 'fchroma'+str(int(i))+'_20b_5vt_43s_H20.npz'
+            if i == 25 or i == 31:
+                modelname1 = 'fchroma'+str(int(i))+'_20b_5vt_43s_H20_2ndadjust.npz'
+            else:
+                modelname1 = 'fchroma'+str(int(i))+'_20b_5vt_43s_H20.npz'
         
             #chosen model to compare (can/will be many)
             model_choice1 = np.load(base+modelname1)
@@ -291,7 +294,7 @@ if flag =='f-chroma':
         
         models_tocomp.append(model_subtract)
         
-        modelname1 = 'fchroma30_20b_5vt_43s_H20.npz'
+        modelname1 = 'fchroma30_20b_5vt_43s_H20_2ndadjust.npz'
     
         #chosen model to compare (can/will be many)
         model_choice1 = np.load(base+modelname1)
@@ -324,7 +327,7 @@ if flag =='f-chroma':
         
         models_tocomp.append(model_subtract)
         
-        modelname1 = 'fchroma30_50b_5vt_21s_H20.npz'
+        modelname1 = 'fchroma30_50b_5vt_21s_H20_2ndadjust.npz'
     
         #chosen model to compare (can/will be many)
         model_choice1 = np.load(base+modelname1)
@@ -357,7 +360,7 @@ if flag =='f-chroma':
         
         models_tocomp.append(model_subtract)
         
-        modelname1 = 'fchroma30_1b_2vt_21s_H20.npz'
+        modelname1 = 'fchroma30_1b_2vt_21s_H20_2ndadjust.npz'
     
         #chosen model to compare (can/will be many)
         model_choice1 = np.load(base+modelname1)
@@ -393,7 +396,7 @@ if flag =='f-chroma':
     else:
         if flagb == 1:
             for i in broads:
-                modelname1 = 'fchroma30_'+str(int(i))+'b_5vt_43s_H6.npz'
+                modelname1 = 'fchroma30_'+str(int(i))+'b_5vt_43s_H6_2ndadjust.npz'
                 #chosen model to compare (can/will be many)
                 model_choice1 = np.load(base+modelname1)
                 
@@ -675,6 +678,7 @@ else:
         # lns7 = ax.plot(dkist_wl,normalize_range(models_tocomp[6]/1e6,heplowh20,hephighh20),'-',alpha=.9,label=r't3F10-15-8/50w-5v, 21s',c='#999933',linewidth=2,zorder=7)
         # lns8 = ax.plot(dkist_wl,normalize_range(models_tocomp[7]/1e6,heplowh20,hephighh20),'-.',alpha=.9,label=r't3F10-15-8/1w-2v, 21s',c='#AA3377',linewidth=2,zorder=8)
 
+        # this is the h20 comparison to use! 3 January
         lns3 = ax.plot(dkist_wl,normalize_range(models_tocomp[2]/1e6,heplowh20,hephighh20),linestyle=(0, (5, 1)),alpha=.9,label=r'Model 3, 43s',c=cmap_choice2[12],linewidth=2)
         lns4 = ax.plot(dkist_wl,normalize_range(models_tocomp[3]/1e6,heplowh20,hephighh20),'-.',alpha=.9,label=r'Model 4, 43s ',c=cmap_choice2[6],linewidth=2)
         # #lns5 = ax.plot(dkist_wl,models_tocomp[4],'-',alpha=.9,label=r't3F10-15-8/50w-5v, 43s',c=cmap_choice[0],linewidth=2)
@@ -695,41 +699,41 @@ else:
     
      
         #ax.set_xlim([-.1,.1])
-        #ax.set_xlim([396.7,397.15])
+        ax.set_xlim([396.7,397.15])
     elif flag == 'longdur':
         #for i in range(len(models_tocomp)):
         #lns2 = ax.plot(dkist_wl,models_tocomp[i],'--',alpha=1,label=r'long_duration, '+str(times[i])+'s',c=cmap_choice[i],linewidth=1)
         lns2 = ax.plot(dkist_wl,models_tocomp[0],'--',alpha=1,label=r'long_duration, 70s, broadc = 50',c=cmap_choice[0],linewidth=1)
         lns2 = ax.plot(dkist_wl,models_tocomp[1],'--',alpha=1,label=r'long_duration, 70s, broadc = 1',c=cmap_choice[1],linewidth=1)
     
-    ax.set_xlim([396.75,396.95])
+    #ax.set_xlim([396.75,396.95])
     
     fig.show()
     # if flagh20 ==1:
     #     lns2 = ax.plot(dkist_wl,models_tocomp[4]),'--',alpha=1,label=r'F-CHROMA25/50w-5v, 43s',c=cmap_choice[4],linewidth=1)
-    ax.set_xticks([396.7,396.8,396.9,397,397.1,397.2])
+    #ax.set_xticks([396.7,396.8,396.9,397,397.1,397.2])
     #ax.set_xticks([-.08,-0.04,0,0.04,0.08])
     
     #     ax1.plot(dkist_wl[heplowh20:hephighh20],normalize(dkist_int[heplowh20:hephighh20]),label='ViSP, ribbon center',linewidth=1,c='red',zorder=2)
     #ax.set_xticks([396.76,396.8,396.84,396.88,396.92])
-    ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
+    #ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
     ax.set_ylim([-0.5,7])
-    ax.set_xlim([396.7,397.1])
-    #ax.plot(dkist_wl,dkist_int/1e6,label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
+    # ax.set_xlim([396.7,397.1])
+    ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
     
     ax.legend(fontsize=8)
     #ax.set_xticks([-0.08,-.04,0,.04,.08])
     
-    ax.set_ylabel(r'Intensity $[10^6\;erg\;s^{-1}\;cm^{-2}\;\AA^{-1}\;sr^{-1}]$')
+    #ax.set_ylabel(r'Intensity $[10^6\;erg\;s^{-1}\;cm^{-2}\;\AA^{-1}\;sr^{-1}]$')
     ax.set_ylabel('Intensity (Normalized to H$\epsilon$)')
     # if flagh20 == 1:
     #     ax.set_ylabel('Normalized Intensity')
     #ax1.set_ylabel('DKIST Intensity',color='red')
     #ax1.set_ylim([-.25e6,4.5e6])
-    # ax.set_ylim([-.5,5.5])
+    #ax.set_ylim([-.5,5.5])
     #ax.axvline(396.846,linestyle='--',c='grey')#
     #ax.axvline(397.01,linestyle='--',c='grey')
-    #ax.set_xlim([396.7,397.1])
+    ax.set_xlim([396.7,397.1])
     ax.set_xticks([396.75,396.85,396.95,397.05])
     ax.set_xlabel('Wavelength [nm]')
     #ax.axvline(397.01)
@@ -739,7 +743,7 @@ else:
     # secaxx.set_xticks([-120,-80,-40,0,40,80,120])
     # secaxx.grid('on')
     ax.grid()
-    hepflag=0
+    hepflag=1
     hepwl = 397.01
     if hepflag ==1:      
         fig,ax=plt.subplots(dpi=200,figsize=[20,10])
@@ -752,27 +756,32 @@ else:
         # lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.9,label=r't3F10-15-8/50w-5v, 21s',c='#999933',linewidth=3)
         # lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.9,label=r't3F10-15-8/1w-2v, 21s',c='#AA3377',linewidth=3,zorder=7)
 
-        # #lns1 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[0][heplowh20:hephighh20]),'--',alpha=.9,label=r't3F9-15-3/20w-5v, 43s',c=cmap_choice2[0],linewidth=3)
-        # #lns2 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[1][heplowh20:hephighh20]),'--',alpha=.9,label=r't1F10-15-3/20w-5v, 43s',c=cmap_choice2[4],linewidth=3)
-        # lns3 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[2][heplowh20:hephighh20]),linestyle=(0, (5, 1)),alpha=.9,label='Model 3, 43s',c=cmap_choice2[12],linewidth=3)
-        # lns4 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[3][heplowh20:hephighh20]),'-.',alpha=.9,label=r'Model 4, 43s',c=cmap_choice2[6],linewidth=3)
-        # #lns5 = ax.plot(dkist_wl[heplowh20:hephighh20],normalize(models_tocomp[4][heplowh20:hephighh20]),'-',alpha=.9,label=r't3F10-15-8/50w-5v, 43s',c=cmap_choice[0],linewidth=2)
-        # lns6 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[5][heplowh20:hephighh20]),'-',alpha=.9,label=r'Model 5, 43s',c='red',linewidth=3)
-        # lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.9,label=r'Model 6, 21s',c='#999933',linewidth=3)
-        # lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.9,label=r'Model 7, 21s',c='#AA3377',linewidth=3,zorder=7)
-    
-        # ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(dkist_int[heplowh20:hephighh20]),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
-
         #lns1 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[0][heplowh20:hephighh20]),'--',alpha=.9,label=r't3F9-15-3/20w-5v, 43s',c=cmap_choice2[0],linewidth=3)
         #lns2 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[1][heplowh20:hephighh20]),'--',alpha=.9,label=r't1F10-15-3/20w-5v, 43s',c=cmap_choice2[4],linewidth=3)
-        lns3 = ax.plot(dkist_wl,normalize(models_tocomp[2]),linestyle=(0, (5, 1)),alpha=.9,label='Model 3, 43s',c=cmap_choice2[12],linewidth=3)
-        lns4 = ax.plot(dkist_wl,normalize(models_tocomp[3]),'-.',alpha=.9,label=r'Model 4, 43s',c=cmap_choice2[6],linewidth=3)
+        lns3 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[2][heplowh20:hephighh20]),linestyle=(0, (5, 1)),alpha=.9,label='Model 3, 43s',c=cmap_choice2[12],linewidth=3)
+        lns4 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[3][heplowh20:hephighh20]),'-.',alpha=.9,label=r'Model 4, 43s',c=cmap_choice2[6],linewidth=3)
         #lns5 = ax.plot(dkist_wl[heplowh20:hephighh20],normalize(models_tocomp[4][heplowh20:hephighh20]),'-',alpha=.9,label=r't3F10-15-8/50w-5v, 43s',c=cmap_choice[0],linewidth=2)
-        lns6 = ax.plot(dkist_wl,normalize(models_tocomp[5]),'-',alpha=.9,label=r'Model 5, 43s',c='red',linewidth=3)
-        lns7 = ax.plot(dkist_wl,normalize(models_tocomp[6]),'-',alpha=.9,label=r'Model 6, 21s',c='#999933',linewidth=3)
-        lns8 = ax.plot(dkist_wl,normalize(models_tocomp[7]),'-.',alpha=.9,label=r'Model 7, 21s',c='#AA3377',linewidth=3,zorder=7)
+        lns6 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[5][heplowh20:hephighh20]),'-',alpha=.9,label=r'Model 5, 43s',c='red',linewidth=3)
+        lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.9,label=r'Model 6, 21s',c='#999933',linewidth=3)
+        lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.9,label=r'Model 7, 21s',c='#AA3377',linewidth=3,zorder=7)
+        ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(dkist_int[heplowh20:hephighh20]),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
+        
+        ax.axvline(.0175,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+        ax.axvline(.03,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+        ax.axvline(.04,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+        ax.axvline(-.04,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+        ax.axvline(-.047,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+
+        # #lns1 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[0][heplowh20:hephighh20]),'--',alpha=.9,label=r't3F9-15-3/20w-5v, 43s',c=cmap_choice2[0],linewidth=3)
+        # #lns2 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[1][heplowh20:hephighh20]),'--',alpha=.9,label=r't1F10-15-3/20w-5v, 43s',c=cmap_choice2[4],linewidth=3)
+        # lns3 = ax.plot(dkist_wl,normalize(models_tocomp[2]),linestyle=(0, (5, 1)),alpha=.9,label='Model 3, 43s',c=cmap_choice2[12],linewidth=3)
+        # lns4 = ax.plot(dkist_wl,normalize(models_tocomp[3]),'-.',alpha=.9,label=r'Model 4, 43s',c=cmap_choice2[6],linewidth=3)
+        # #lns5 = ax.plot(dkist_wl[heplowh20:hephighh20],normalize(models_tocomp[4][heplowh20:hephighh20]),'-',alpha=.9,label=r't3F10-15-8/50w-5v, 43s',c=cmap_choice[0],linewidth=2)
+        # lns6 = ax.plot(dkist_wl,normalize(models_tocomp[5]),'-',alpha=.9,label=r'Model 5, 43s',c='red',linewidth=3)
+        # lns7 = ax.plot(dkist_wl,normalize(models_tocomp[6]),'-',alpha=.9,label=r'Model 6, 21s',c='#999933',linewidth=3)
+        # lns8 = ax.plot(dkist_wl,normalize(models_tocomp[7]),'-.',alpha=.9,label=r'Model 7, 21s',c='#AA3377',linewidth=3,zorder=7)
     
-        ax.plot(dkist_wl,normalize(dkist_int),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
+        # ax.plot(dkist_wl,normalize(dkist_int),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
                 
         
         # ax.axvline(.0175,color=cmap_choice2[7],alpha=.7,linestyle='-.')
@@ -784,11 +793,11 @@ else:
         ax.legend(fontsize=8)
         ax.set_ylabel('Normalized Intensity')
         ax.grid()
-        #ax.set_xlabel(r'Wavelength ($\lambda-\lambda_c$ [nm])')
-        ax.set_xlabel(r'Wavelength')
-        #secaxx = ax.secondary_xaxis('top', functions=(veltrans,wltrans))
-        #secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$')
-        ax.set_xlim([396.72,397.1])
+        ax.set_xlabel(r'Wavelength ($\lambda-\lambda_c$ [nm])')
+        #ax.set_xlabel(r'Wavelength')
+        secaxx = ax.secondary_xaxis('top', functions=(veltrans,wltrans))
+        secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$')
+        #ax.set_xlim([396.72,397.1])
         
         
     

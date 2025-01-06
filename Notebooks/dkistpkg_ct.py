@@ -2087,58 +2087,6 @@ def calib_qs_shift(wlsel, ilamsel, dispersion_range, space_and_time_averaged_qs,
     
     return new_dispersion_range, rat
 
-def find_specsamp(line1,line2,wlsel,wave_obs,spec_obs,indmins,indmaxs):
-
-    line1fts = find_nearest(wlsel,line1)
-    line2fts = find_nearest(wlsel,line2)
-
-    dispersion_range = np.array(wave_obs)
-
-    # define locations of reference lines
-    shiftsel_obs1 = np.where((dispersion_range>dispersion_range[indmins[0]]) & 
-                             (dispersion_range<dispersion_range[indmaxs[0]]))
-    shiftsel_obs2 = np.where((dispersion_range>dispersion_range[indmins[1]]) & 
-                             (dispersion_range<dispersion_range[indmaxs[1]]))
-
-    wavesel_obs1 = np.take(dispersion_range,shiftsel_obs1)[0]
-    fluxsel_obs1 = np.take(spec_obs,shiftsel_obs1)[0]
-
-    wavesel_obs2 = np.take(dispersion_range,shiftsel_obs2)[0]
-    fluxsel_obs2 = np.take(spec_obs,shiftsel_obs2)[0]
-
-    pixsel_obs1 = np.arange(0, wavesel_obs1.shape[0])
-    pixsel_obs2 = np.arange(0, wavesel_obs2.shape[0])
-
-    xfit1, yfit1, w0_1 = fitline(pixsel_obs1,fluxsel_obs1)
-    xfit2, yfit2, w0_2 = fitline(pixsel_obs2,fluxsel_obs2)
-
-    # shift in lines
-    dw1 = w0_1-line1
-    dw2 = w0_2-line2
-
-    dt = line2 - line1 #dt is difference in wavelength between two lines
-    
-    # correction in wavelengths of reference lines
-    corr1 = w0_1 + indmins[0]
-    corr2 = w0_2 + indmins[1]
-    
-    obsdiff = corr2 - corr1
-    
-    #change per nm
-    rat = dt/obsdiff
-    
-    # definition of new dispersion range
-    new_dispersion_range = (np.arange(0,len(dispersion_range))-corr1)*rat + \
-        line1
-        
-    line1obs = find_nearest(new_dispersion_range,line1)
-    line2obs = find_nearest(new_dispersion_range,line2)
-    
-    specsamp_fts = (line2fts[0]-line1fts[0])/(line2fts[1]-line1fts[1])
-    specsamp_obs = (line2obs[0]-line1obs[0])/(line2obs[1]-line1obs[1])
-    
-    return specsamp_fts,specsamp_obs
-
 def get_calibration_singleval(wave_obs, spec_obs, wave_atlas, spec_atlas, 
                               limbdark_fact = 1.0, wave_idx=None, extra_weight=20., bounds=None,
                               noqs_flag = 0,noqs_ind = 20):
