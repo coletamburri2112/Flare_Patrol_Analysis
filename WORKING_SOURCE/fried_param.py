@@ -14,6 +14,7 @@ import dkistpkg_ct as DKISTanalysis
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+from astropy.io import fits
 
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 
@@ -22,7 +23,7 @@ muted = DKISTanalysis.color_muted2()
 
 # path and file ID for ViSP data
 path = '/Volumes/ViSP_External/pid_1_84/'
-folder1 = 'AZVXV'
+folder1 = 'AZNMO'
 folder2 = 'ANYDJ' # for QS calibration - data from 22UT on 19 August
 
 # list of files in directory for DKIST/ViSP
@@ -50,3 +51,4 @@ for i in range(len(dir_list2)):
     fried.append(i_file_raster1[1].header['ATMOS_R0'])
     aolock.append(i_file_raster1[1].header['AO_LOCK'])
     
+fig,ax=plt.subplots();ax.scatter(range(len(fried)),fried,label='preflare',c='black');ax.set_xlabel('Timestep');ax.set_ylabel('$r_0$ [m]');ax.set_ylim([0,.15]);ax.legend();fig.show()

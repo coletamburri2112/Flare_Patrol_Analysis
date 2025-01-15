@@ -32,9 +32,9 @@ muted = DKISTanalysis.color_muted2()
 
 # path and file ID for ViSP data
 path = '/Volumes/ViSP_External/pid_1_84/'
-folder1 = 'AZVXV'
-#folder2 = 'ANYDJ' # for QS calibration - data from 22UT on 19 August
-folder2 = 'AJDZR' # alternative for QS calibration 
+folder1 = 'AZNMO'
+folder2 = 'ANYDJ' # for QS calibration - data from 22UT on 19 August
+#folder2 = 'AJDZR' # alternative for QS calibration 
 
 # list of files in directory for DKIST/ViSP
 dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
@@ -74,8 +74,7 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
     # correct wl units)
     
 # time step start for chosen QS observations
-#startstepqs = 250 # for longer file
-startstepqs = 0 # for shorter file
+startstepqs = 250
 
 
 # process multi-step raster - for qs time
@@ -84,13 +83,14 @@ image_data_arr_arr_qs, rasterpos_qs, times_qs = \
                                    startstep=startstepqs)
     
 # for pid_1_84 - process four-step raster
-image_data_arr_arr,i_file_raster1, for_scale, times_raster1,times = \
-    DKISTanalysis.fourstepprocess(path,folder1,dir_list2)
+image_data_arr_arr, rasterpos, times = \
+    DKISTanalysis.multistepprocess(path,folder1,dir_list2[0:500])
     
+print('here')
     
 # spatial and dispersion axes for single observation (single slit step)
 spatial_range, dispersion_range = DKISTanalysis.spatialaxis(path,folder1,
-                                                            dir_list2,line='Ca II H')
+                                                            dir_list2[0:500],line='Ca II H')
 
 # # old code, when basing QS on 15 August 2022 disk-center observations
 # #only for 19 August observations, really - the QS will be different for others
@@ -181,7 +181,7 @@ nonflare_multfact = fit_vals
 
 # intensity calibration, background subtraction for flare-time                            
 scaled_flare_time, bkgd_subtract_flaretime = \
-    DKISTanalysis.scaling(for_scale, nonflare_multfact,clv_corr,
+    DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
                           nonflare_average_avg,end=end)
 
 # definition of index bounds for Ca II H lines
@@ -239,131 +239,131 @@ caII_high = 650
 hep_low = 700
 hep_high = 850
 
-#first profile, to use in testing
-sample_flaretime = bkgd_subtract_flaretime[0,:,maxindices[0]]
+# #first profile, to use in testing
+# sample_flaretime = bkgd_subtract_flaretime[0,:,maxindices[0]]
 
-########
-# perform following block only if need to calculate continuum window 
-# independently of width determiation; 
-# exists within width determination script as well
+# ########
+# # perform following block only if need to calculate continuum window 
+# # independently of width determiation; 
+# # exists within width determination script as well
 
-#nolines, cont_int_array, cont_int_wave_array = \
-    # DKISTanalysis.contwind(sample_flaretime,dispersion_range,maxinds,avgs,
-                           # low,high)
+# #nolines, cont_int_array, cont_int_wave_array = \
+#     # DKISTanalysis.contwind(sample_flaretime,dispersion_range,maxinds,avgs,
+#                            # low,high)
                            
-########
+# ########
 
-# line widths, strengths - initialize arrays
-ew_CaII_all_fs = np.zeros((len(scaled_flare_time)-5,
-                           np.shape(bkgd_subtract_flaretime)[2]))
-ew_hep_all_fs = np.zeros((len(scaled_flare_time)-5,
-                          np.shape(bkgd_subtract_flaretime)[2]))
-eqw_CaII_all_fs = np.zeros((len(scaled_flare_time)-5,
-                            np.shape(bkgd_subtract_flaretime)[2]))
-eqw_hep_all_fs = np.zeros((len(scaled_flare_time)-5,
-                           np.shape(bkgd_subtract_flaretime)[2]))
-width_CaII_all_fs = np.zeros((len(scaled_flare_time)-5,
-                              np.shape(bkgd_subtract_flaretime)[2]))
-width_hep_all_fs = np.zeros((len(scaled_flare_time)-5,
-                             np.shape(bkgd_subtract_flaretime)[2]))
+# # line widths, strengths - initialize arrays
+# ew_CaII_all_fs = np.zeros((len(scaled_flare_time)-5,
+#                            np.shape(bkgd_subtract_flaretime)[2]))
+# ew_hep_all_fs = np.zeros((len(scaled_flare_time)-5,
+#                           np.shape(bkgd_subtract_flaretime)[2]))
+# eqw_CaII_all_fs = np.zeros((len(scaled_flare_time)-5,
+#                             np.shape(bkgd_subtract_flaretime)[2]))
+# eqw_hep_all_fs = np.zeros((len(scaled_flare_time)-5,
+#                            np.shape(bkgd_subtract_flaretime)[2]))
+# width_CaII_all_fs = np.zeros((len(scaled_flare_time)-5,
+#                               np.shape(bkgd_subtract_flaretime)[2]))
+# width_hep_all_fs = np.zeros((len(scaled_flare_time)-5,
+#                              np.shape(bkgd_subtract_flaretime)[2]))
 
 
-# line widths, strength determination
-ew_CaII_all_fs, ew_hep_all_fs, eqw_CaII_all_fs,\
-    eqw_hep_all_fs, width_CaII_all_fs, width_hep_all_fs = \
-        DKISTanalysis.widths_strengths(ew_CaII_all_fs,eqw_CaII_all_fs,
-                                       width_CaII_all_fs,ew_hep_all_fs,
-                                       eqw_hep_all_fs,width_hep_all_fs,caII_low,
-                                       caII_high,hep_low,hep_high,
-                                       scaled_flare_time,
-                                       bkgd_subtract_flaretime, 
-                                       dispersion_range_fin)
+# # line widths, strength determination
+# ew_CaII_all_fs, ew_hep_all_fs, eqw_CaII_all_fs,\
+#     eqw_hep_all_fs, width_CaII_all_fs, width_hep_all_fs = \
+#         DKISTanalysis.widths_strengths(ew_CaII_all_fs,eqw_CaII_all_fs,
+#                                        width_CaII_all_fs,ew_hep_all_fs,
+#                                        eqw_hep_all_fs,width_hep_all_fs,caII_low,
+#                                        caII_high,hep_low,hep_high,
+#                                        scaled_flare_time,
+#                                        bkgd_subtract_flaretime, 
+#                                        dispersion_range_fin)
         
-# Gaussian fitting
-# automate for all timesteps
-storeamp1 = []
-storemu1 = []
-storesig1 = []
-storeamp2 = []
-storemu2 = []
-storesig2 = []
+# # Gaussian fitting
+# # automate for all timesteps
+# storeamp1 = []
+# storemu1 = []
+# storesig1 = []
+# storeamp2 = []
+# storemu2 = []
+# storesig2 = []
 
-# spatial index corresponding to part of observation of interest
-sliceind = maxindices[0]
-sel = bkgd_subtract_flaretime[0,caII_low:caII_high,sliceind]-\
-    min(bkgd_subtract_flaretime[0,caII_low:caII_high,sliceind])
-selwl = new_dispersion_range[caII_low:caII_high]
+# # spatial index corresponding to part of observation of interest
+# sliceind = maxindices[0]
+# sel = bkgd_subtract_flaretime[0,caII_low:caII_high,sliceind]-\
+#     min(bkgd_subtract_flaretime[0,caII_low:caII_high,sliceind])
+# selwl = new_dispersion_range[caII_low:caII_high]
         
-# parameter guesses
-parameters=[2e6,396.82,0.015,3e6,396.86,0.015]
+# # parameter guesses
+# parameters=[2e6,396.82,0.015,6e6,396.86,0.015]
 
-# fitting of spectral lines, e.g. double-Gaussian (for Ca II H)
-storeamp1,storeamp2,storesig1,storesig2,storemu1,storemu2 = \
-    DKISTanalysis.gauss2fit(storeamp1,storemu1,storesig1,storeamp2,storemu2,
-                            storesig2,bkgd_subtract_flaretime,dispersion_range_fin,
-                            DKISTanalysis.double_gaussian_fit,maxindices,times_raster1,
-                            caII_low,caII_high,DKISTanalysis.double_gaussian,
-                            DKISTanalysis.gaussian,selwl,sel,
-                            parameters = parameters)
+# # fitting of spectral lines, e.g. double-Gaussian (for Ca II H)
+# storeamp1,storeamp2,storesig1,storesig2,storemu1,storemu2 = \
+#     DKISTanalysis.gauss2fit(storeamp1,storemu1,storesig1,storeamp2,storemu2,
+#                             storesig2,bkgd_subtract_flaretime,dispersion_range_fin,
+#                             DKISTanalysis.double_gaussian_fit,maxindices,times,
+#                             caII_low,caII_high,DKISTanalysis.double_gaussian,
+#                             DKISTanalysis.gaussian,selwl,sel,
+#                             parameters = parameters)
 
-# width determination
-store_ten_width = []
-store_quarter_width = []
-store_half_width = []
+# # width determination
+# store_ten_width = []
+# store_quarter_width = []
+# store_half_width = []
 
-store_ten_width, store_quarter_width, store_half_width = \
-    DKISTanalysis.perclevels(bkgd_subtract_flaretime,dispersion_range_fin,caII_low,
-                             caII_high,store_ten_width,store_quarter_width,
-                             store_half_width)
+# store_ten_width, store_quarter_width, store_half_width = \
+#     DKISTanalysis.perclevels(bkgd_subtract_flaretime,dispersion_range_fin,caII_low,
+#                              caII_high,store_ten_width,store_quarter_width,
+#                              store_half_width)
 
-storeamp1_2 = []
-storemu1_2 = []
-storesig1_2 = []
-storeamp2_2 = []
-storemu2_2 = []
-storesig2_2 = []
+# storeamp1_2 = []
+# storemu1_2 = []
+# storesig1_2 = []
+# storeamp2_2 = []
+# storemu2_2 = []
+# storesig2_2 = []
 
-# output fit parameters
-fits_1g,fits_2g,fits_2gneg,params2gaussnew,stopind,storeamp1_2,\
-    storemu1_2,storesig1_2,storeamp2_2,storemu2_2,storesig2_2,selwl,sel = \
-    DKISTanalysis.fittingroutines(bkgd_subtract_flaretime,dispersion_range_fin,
-                                  times_raster1, caII_low, caII_high,
-                                  DKISTanalysis.double_gaussian, 
-                                  DKISTanalysis.gaussian, 
-                                  selwl,sel,[4e6,396.85,0.02],
-                                  parameters,
-                                  [.5e6,396.85,0.015,-1e6,396.85,0.015],
-                                  maxindices,storeamp1_2,storemu1_2,
-                                  storesig1_2,storeamp2_2,storemu2_2,
-                                  storesig2_2,pid='pid_1_84', date = '08/09/2022',
-                                  line = 'Ca II H',nimg = 8,
-                                  inds=[380,390,400,410,450,480,647,700,820,850,900],deg=7)
+# # output fit parameters
+# fits_1g,fits_2g,fits_2gneg,params2gaussnew,stopind,storeamp1_2,\
+#     storemu1_2,storesig1_2,storeamp2_2,storemu2_2,storesig2_2,selwl,sel = \
+#     DKISTanalysis.fittingroutines(bkgd_subtract_flaretime,dispersion_range_fin,
+#                                   times, caII_low, caII_high,
+#                                   DKISTanalysis.double_gaussian, 
+#                                   DKISTanalysis.gaussian, 
+#                                   selwl,sel,[4e6,396.85,0.02],
+#                                   parameters,
+#                                   [.5e6,396.85,0.015,-1e6,396.85,0.015],
+#                                   maxindices,storeamp1_2,storemu1_2,
+#                                   storesig1_2,storeamp2_2,storemu2_2,
+#                                   storesig2_2,pid='pid_1_84', date = '08/09/2022',
+#                                   line = 'Ca II H',nimg = 8,
+#                                   inds=[380,390,400,410,450,480,647,700,820,850,900],deg=7)
 
-vel1,vel2 = DKISTanalysis.conv_to_vel(storemu1_2,storemu2_2,mu)
-# plot results of Gaussian fitting
+# vel1,vel2 = DKISTanalysis.conv_to_vel(storemu1_2,storemu2_2,mu)
+# # plot results of Gaussian fitting
 
-# note for this particular go-around
-note = ', 13jan2025'
+# # note for this particular go-around
+# note = ', 23sep2024_earlier'
 
-#plot results of fitting
-DKISTanalysis.pltfitresults(bkgd_subtract_flaretime,dispersion_range_fin,
-                            DKISTanalysis.double_gaussian,
-                            DKISTanalysis.gaussian,times_raster1,muted,
-                            caII_low,caII_high,fits_1g,fits_2g,fits_2gneg,maxindices,
-                            mu, pid='pid_1_84', date = '08092022',line = 'Ca II H',
-                            nimg = 7, nrow=2,ncol=4,lamb0=wl,note=note,yhigh=7.5e6,
-                            inds=[380,390,400,410,450,480,647,700,820,850,900],deg=7)
+# #plot results of fitting
+# DKISTanalysis.pltfitresults(bkgd_subtract_flaretime,dispersion_range_fin,
+#                             DKISTanalysis.double_gaussian,
+#                             DKISTanalysis.gaussian,times,muted,
+#                             caII_low,caII_high,fits_1g,fits_2g,fits_2gneg,maxindices,
+#                             mu, pid='pid_1_84', date = '08092022',line = 'Ca II H',
+#                             nimg = 7, nrow=2,ncol=4,lamb0=wl,note=note,yhigh=7.5e6,
+#                             inds=[380,390,400,410,450,480,647,700,820,850,900],deg=7)
 
 
-#processing of all raster slices
-scaled_flare_time_allrasters, bkgd_subtract_flaretime_allrasters = \
-    DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
-                          nonflare_average_avg,end=end)
+# #processing of all raster slices
+# scaled_flare_time_allrasters, bkgd_subtract_flaretime_allrasters = \
+#     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
+#                           nonflare_average_avg,end=end)
     
-maxindices_allrasters = DKISTanalysis.maxintind(dispersion_range,
-                                                bkgd_subtract_flaretime_allrasters,
-                                                caII_low_foravg,caII_high_foravg,
-                                                spacelow,spacehigh)
+# maxindices_allrasters = DKISTanalysis.maxintind(dispersion_range,
+#                                                 bkgd_subtract_flaretime_allrasters,
+#                                                 caII_low_foravg,caII_high_foravg,
+#                                                 spacelow,spacehigh)
    
 
 

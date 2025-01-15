@@ -43,13 +43,13 @@ mu2 = 0.4266927415494022
 #ViSP instrument
 fwhm = .005 # in nm
 ntw = 45
-flagh20 = 1
-flagh20sum = 0 
+flagh20 = 0
+flagh20sum = 1 
 
 #only one of the following should be 1
 flagb = 0
 flagvt = 0
-flagt = 0
+flagt = 1
 
 heplowh20 = 690
 hephighh20 = 850
@@ -118,11 +118,11 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,ntw,gaussian_psf):
 
 flag = 'f-chroma' # longdur/f-chrom
 if flag == 'f-chroma':
-    #times = [1,5,7,17,19,21,25,30,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50]
+    times = [2,5,6,8,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50]
     #times = [1,5,7,17,19,21,25,30]
     #times = [25,30,35,37,40,43,44,47,50]
     #times= [37,40,43,44,47]
-    times=[5,11,17,19,21,25,30,35,43]
+    #times=[5,11,17,19,21,25,30,35,43]
 elif flag == 'longdur':
     #times = [0,3,5,10,13,17,20,25,30,40,50,60,70,100]
     #times = [0,3,5,10,13,17,20]'
@@ -625,7 +625,7 @@ if flagh20sum == 1:
     for i in range(len(models_tocomp)):
         #ax.plot(dkist_wl,models_tocomp[i]/1e6,alpha=1,label=r't3F10-15-8/20w-5v, '+str(int(times[i]))+'s',c=cmap_choice[-i],linewidth=3)
         ax.plot(dkist_wl,models_tocomp[i]/1e6,alpha=1,label=str(int(times[i]))+'s',c=cmap_choice[-i],linewidth=3)
-        ax.legend()
+        ax.legend(fontsize=4)
         ax.set_xlim([396.75,397.1])
         ax.grid()
         ax.axvline(396.844)
@@ -633,6 +633,7 @@ if flagh20sum == 1:
     ax.set_ylabel(r'Intensity $[10^6\;erg\;s^{-1}\;cm^{-2}\;\AA^{-1}\;sr^{-1}]$')
     ax.set_xlabel('Wavelength [nm]')
     ax.set_xticks([396.8,396.9,397.0,397.1])
+    plt.show()
         
     
 else:

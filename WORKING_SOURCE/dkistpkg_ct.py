@@ -175,10 +175,16 @@ def spatialinit(path,folder1,dir_list2,lon,lat,wl, flag=0):
         
     hpc2_arcsec = i_file_raster1[1].header['CRVAL3'] # second axis corods
     
+
+    if flag == 2: # if QS for 22:34 on 19 August; coordinates are wrong
+        print('here')
+        hpc1_arcsec = -445
+        hpc2_arcsec= 711
+
     # image center
     x_center = d*np.cos(hpc1_arcsec/206265)*np.sin(hpc2_arcsec/206265) # m
     y_center = d*np.sin(hpc1_arcsec/206265) # m
-    z = solrad - d*np.cos(hpc1_arcsec/206265)*np.cos(hpc1_arcsec/206265) # m
+    z = solrad - d*np.cos(hpc1_arcsec/206265)*np.cos(hpc2_arcsec/206265) # m
     
     # to mu value
     rho = np.sqrt(x_center**2+y_center**2)

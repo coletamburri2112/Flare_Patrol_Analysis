@@ -81,7 +81,7 @@ DKISTanalysis.pltraster(caiiavgs,raster_range,spatial_range2)
 
 #processing of VBI data
 vbi_X, vbi_Y, hdul1_vbi, dat0_vbi = DKISTanalysis.vbi_process(path_vbi,
-                                                              folder2_vbi)
+                                                              folder1_vbi)
 
 X,Y = np.meshgrid(raster_range,spatial_range2)
 
