@@ -36,13 +36,13 @@ def color_muted2():
 
 muted = color_muted2()
 
-path = '/Volumes/VBI_External/pid_1_84/'
+path = '/Volumes/VBI_External/pid_2_11/'
 folders = os.listdir(path)
 
 
 #for i in range(len(folders)):
-#folder1 = 'AKDKX' #pid_2_11
-folder1 = 'BPYLQ' #pid_1_84
+folder1 = 'BDJKM' #pid_2_11
+#folder1 = 'BPYLQ' #pid_1_84
 print(folder1)
 dir_list = os.listdir(path+folder1)
 
@@ -73,10 +73,11 @@ if len(dir_list2)<100:
     length = len(dir_list2)
 elif len(dir_list2)>99:
     length = 100
-length=50
+
 
 # for pid_1_84
-length=100
+length=200
+#for pid_2_11
 
 fullarr = np.zeros([length,len(hdul1[1].data[0,0,:]),len(hdul1[1].data[0,0,:])])
 xarrs = np.zeros([length,len(hdul1[1].data[0,0,:])])
@@ -89,17 +90,13 @@ def normalize_3d_array(arr):
 
     return (arr - min_val) / (max_val - min_val)
 
-
-
-
-
+times=[]
 
 for i in range(length):
-    #hdul = fits.open(path+folder1+'/'+dir_list2[i+300]) #pid_2_11, 11Aug flare
-    hdul = fits.open(path+folder1+'/'+dir_list2[i+200]) #pid_1_84, 11Aug flare
+    hdul = fits.open(path+folder1+'/'+dir_list2[i]) #pid_2_11, 11Aug flare
+    #hdul = fits.open(path+folder1+'/'+dir_list2[i+200]) #pid_1_84, 11Aug flare
 
     fullarr[i,:,:] = hdul[1].data[0,:,:]
-
     #latitude (labeled as lon, but header is wrong)
     xcent = hdul[1].header['CRVAL2']
     xnum = hdul[1].header['NAXIS2']
@@ -119,6 +116,19 @@ for i in range(length):
     yarrs[i,:] = yarr
     
 normalized_arr = normalize_3d_array(fullarr)
+
+
+for i in range(length):
+    fig,ax = plt.subplots(dpi=200)
+    ax.imshow(normalized_arr[i,:,:],cmap='magma')
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+    ax.set_aspect('equal')
+    
+    #ax.tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
+    plt.savefig('/Users/coletamburri/Desktop/VBI11AugMclass/'+str(i)+'.png')
+
+    
     
 # fig,ax = plt.subplots(4,4,figsize=(10,70))
 
