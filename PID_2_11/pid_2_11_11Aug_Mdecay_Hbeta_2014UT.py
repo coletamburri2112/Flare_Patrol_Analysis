@@ -16,7 +16,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=3
+end=2
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
