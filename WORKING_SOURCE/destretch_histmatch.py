@@ -29,19 +29,20 @@ pid='2_11'
 vbifold = '/Volumes/VBI_External/pid_'+pid+'/'
 vbiexp ='BXWNO' # 19 August 2022
 vbiexp = 'BDJKM' # 11 August 2024 M-class
+vbiexp = 'AKDKX' # 11 August 2024 M-class
 
 # file = '/VBI_2022_08_19T20_42_07_333_00656282_I_BXWNO_L1.fits' # 19 August 2022
-file = '/VBI_2024_08_11T20_12_34_333333_00656282_I_BDJKM_L1.fits' # 11 August 2024 M-class
+file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_AKDKX_L1.fits' # 11 August 2024 M-class
 
 savfold='/Users/coletamburri/Desktop/'+vbiexp+'/'
 filt='Halpha'
-xtraflag = 'bestseeing_SmallerTileSize'
+xtraflag = 'FlareImpulsivePhase'
 
 hdu_list = fits.open(vbifold+vbiexp+file)
 image=hdu_list[1].data[0,:,:]
 
-#tileSizeInput = [128, 64, 48, 24]  # original from FW
-tileSizeInput = [12] # test from CAT
+tileSizeInput = [128, 64, 48, 24]  # original from FW
+#tileSizeInput = [12] # test from CAT
 
 if os.path.isdir(savfold)=='False':
     os.mkdir(savfold)
@@ -57,7 +58,7 @@ ds[0,:,:].plot(cmap="gray",vmax=50000,vmin=5000)
 plt.show()
 
 dataCube=[]
-loc_files=ds.files.filenames[500:550] #600 is index past the best index of seeing for M-class flare
+loc_files=ds.files.filenames[200:450] 
 lowx=0
 highx=-1
 lowy=0
