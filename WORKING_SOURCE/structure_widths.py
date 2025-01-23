@@ -35,7 +35,7 @@ dir_list = os.listdir(path+folder_vbi)
 
 fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-first_frame = fullhalpha[0].data[2,:,:]
+first_frame = fullhalpha[0].data[0,:,:]
 
 fig,ax=plt.subplots(dpi=300,figsize=(10,10))
 ax.pcolormesh(first_frame,cmap='grey')
@@ -106,24 +106,96 @@ bb = plt.ginput(2,timeout = 20)
 st=int(bb[0][0])
 end=int(bb[1][0])+1
 
+def Gauss_func(x,A,mu,sigma,m,b):
+    return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
 
+def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
+    res =   (c1 * np.exp( - (x - mu1)**2.0 / (2.0 * sigma1**2.0) )) \
+          + (c2 * np.exp( - (x - mu2)**2.0 / (2.0 * sigma2**2.0) )) \
+          + (m * x + b)
+    return res
 
-ynorm = [float(i)/max(profile[st:end])-1 for i in profile[st:end]] #if negative
-g_init = models.Gaussian1D(amplitude=-1., mean=0.55, stddev=.1) #if negative
+#ynorm = [float(i)/max(profile[st:end])-1 for i in profile[st:end]] #if negative
+#g_init = models.Gaussian1D(amplitude=-1., mean=0.5, stddev=.1) #if negative
 
 #ynorm = [float(i)/max(profile[st:end]) for i in profile[st:end]] # if positive
 #g_init = models.Gaussian1D(amplitude=1, mean=0.50, stddev=.1) #if positive
 
-fit_g = fitting.LevMarLSQFitter()
+#fit_g = fitting.LevMarLSQFitter()
+gauss2=1
 
-gsmaller = fit_g(g_init, xdirection[st:end], ynorm)
+if gauss2==0:
+    p0=[-6000, 0.3, 0.1, 0, 35000]
+    
+    popt,pcov = scipy.optimize.curve_fit(Gauss_func,xdirection[st:end+1],profile[st:end+1],p0=p0)
+    
+    perr = np.sqrt(np.diag(pcov))
+    
+    amp, cent, std, slope, intercept = popt
+    amp_err,cent_err,std_err,slope_err,intercept_err = np.sqrt(np.diag(pcov))
+    
+    fwhm=2*np.sqrt(2*np.log(2))*std
+    
+    #propagation of error
+    fwhm_err = np.abs(fwhm*np.sqrt((std_err/std)**2))
+    
+    width = np.abs(fwhm*arcsec_to_km)
+    
+    width_err = width*np.sqrt((fwhm_err/fwhm)**2)
+    
+    
+    #gsmaller = fit_g(g_init, xdirection[st:end], ynorm)
+    xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
+    plt.figure(figsize=(8,5))
+    plt.plot(xdirection_finer, Gauss_func(xdirection_finer,*popt), 'ko')
+    plt.plot(xdirection[st:end], profile[st:end], label=str(round(width,2))+ '$\;\pm\;$'+str(round(width_err,2))+'$\;km$')
+    plt.xlabel('Position')
+    plt.ylabel('Flux')
+    plt.legend(loc=2)
+    plt.show()
+    
+    print(round(width,2))
+    
+elif gauss2 == 1:
+    p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
+    
+    popt,pcov = scipy.optimize.curve_fit(double_gaussian,xdirection[st:end+1],profile[st:end+1],p0=p0)
+    
+    perr = np.sqrt(np.diag(pcov))
+    
+    amp1, cent1, std1, amp2, cent2, std2, slope, intercept = popt
+    amp_err1,cent_err1,std_err1,amp_err2,cent_err2,\
+        std_err2,slope_err,intercept_err = np.sqrt(np.diag(pcov))
+    
+    fwhm1=2*np.sqrt(2*np.log(2))*std1
+    fwhm2=2*np.sqrt(2*np.log(2))*std2
+    
+    #propagation of error
+    fwhm_err1 = np.abs(fwhm1*np.sqrt((std_err1/std1)**2))
+    
+    width1 = np.abs(fwhm1*arcsec_to_km)
+    
+    width_err1 = width1*np.sqrt((fwhm_err1/fwhm1)**2)
+    
+    fwhm_err2 = np.abs(fwhm2*np.sqrt((std_err2/std2)**2))
+    
+    width2 = np.abs(fwhm2*arcsec_to_km)
+    
+    width_err2 = width2*np.sqrt((fwhm_err2/fwhm2)**2)
+    
+    
+    #gsmaller = fit_g(g_init, xdirection[st:end], ynorm)
+    xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
+    plt.figure(figsize=(8,5))
+    plt.plot(xdirection_finer, double_gaussian(xdirection_finer,*popt), 'ko')
+    plt.plot(xdirection[st:end], profile[st:end], label=str(round(width1,2))+ '$\;\pm\;$'+str(round(width_err1,2))+'$\;km, \;$'+str(round(width2,2))+ '$\;\pm\;$'+str(round(width_err2,2))+'$\;km$')
+    plt.plot(xdirection_finer, Gauss_func(xdirection_finer,*[amp1,cent1,std1,slope,intercept]), 'ko')
+    plt.plot(xdirection_finer, Gauss_func(xdirection_finer,*[amp2,cent2,std2,slope,intercept]), 'ko',c='')
+    plt.xlabel('Position along cut [arcsec]')
+    plt.ylabel('Flux')
+    plt.legend(loc=2)
+    plt.show()
+    
+    print(round(width1,2))
+    print(round(width2))
 
-plt.figure(figsize=(8,5))
-plt.plot(xdirection[st:end], ynorm, 'ko')
-plt.plot(xdirection[st:end], gsmaller(xdirection[st:end]), label=str(gsmaller.fwhm*arcsec_to_km))
-plt.xlabel('Position')
-plt.ylabel('Flux')
-plt.legend(loc=2)
-plt.show()
-
-print(gsmaller.fwhm*arcsec_to_km)
