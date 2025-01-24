@@ -159,57 +159,73 @@ for i in range(0,2*numareas,2):
         endx.append(x1)
         endy.append(y1)
         
-        if gauss2==0:
+        # Perform the fitting
+        if gauss2==0: # If 2-Gauss model
+            
+            # Initial guesses - can be pretty bad
             p0=[-6000, 0.3, 0.1, 0, 35000]
             
-            popt,pcov = scipy.optimize.curve_fit(Gauss_func,xdirection[st:end+1],profile[st:end+1],p0=p0)
+            # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
+            popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
+                                                 xdirection[st:end+1],\
+                                                     profile[st:end+1],p0=p0)
             
-            perr = np.sqrt(np.diag(pcov))
-            
+            # Extract fit values and errors
             amp, cent, std, slope, intercept = popt
-            amp_err,cent_err,std_err,slope_err,intercept_err = np.sqrt(np.diag(pcov))
+            amp_err,cent_err,std_err,slope_err,\
+                intercept_err = np.sqrt(np.diag(pcov))
             
+            # Define the FWHM using the standard deviation
             fwhm=2*np.sqrt(2*np.log(2))*std
             
-            #propagation of error
+            # Propagation of error --> to FWHM
             fwhm_err = np.abs(fwhm*np.sqrt((std_err/std)**2))
             
+            # Define the line width in KM
             width = np.abs(fwhm*arcsec_to_km)
             
+            # Error in KM
             width_err = width*np.sqrt((fwhm_err/fwhm)**2)
             
+            # Finer grid of x values
             xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
             
+            # Plot the result, with both the original data and fitted model
             fig,ax=plt.subplots(figsize=(8,5),dpi=200)
             ax.plot(xdirection_finer, Gauss_func(xdirection_finer,*popt), '-',\
                      label=str(round(width,2))+ '$\;\pm\;$'+\
                          str(round(width_err,2))+'$\;km$',c='#882255')
-            ax.scatter(xdirection[st:end], profile[st:end], label='Flux across cut',\
-                       c='#009988')
+            ax.scatter(xdirection[st:end], profile[st:end], \
+                       label='Flux across cut',c='#009988')
             ax.set_xlabel('Position along cut')
             ax.set_ylabel('Flux')
             ax.legend(loc=2)
             
+            # Append width and error values to arrays for output
             widths.append(width) 
             widtherrs.append(width_err)
             
-            
-            
+        # In the case of single gaussian fitting
         elif gauss2 == 1:
+            
+            # Initial parameter guesses
             p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
             
-            popt,pcov = scipy.optimize.curve_fit(double_gaussian,xdirection[st:end+1],profile[st:end+1],p0=p0)
+            # Fitting - popt is output params, pcov is covariance matrix
+            popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
+                                                 xdirection[st:end+1],\
+                                                     profile[st:end+1],p0=p0)
             
-            perr = np.sqrt(np.diag(pcov))
-            
+            # Extract fit and error values
             amp1, cent1, std1, amp2, cent2, std2, slope, intercept = popt
             amp_err1,cent_err1,std_err1,amp_err2,cent_err2,\
                 std_err2,slope_err,intercept_err = np.sqrt(np.diag(pcov))
             
+            # FWHM of each Gaussian in the model
             fwhm1=2*np.sqrt(2*np.log(2))*std1
             fwhm2=2*np.sqrt(2*np.log(2))*std2
             
-            #propagation of error
+            # Propagation of error to FWHM and width (in km) for both 2-Gs
             fwhm_err1 = np.abs(fwhm1*np.sqrt((std_err1/std1)**2))
             width1 = np.abs(fwhm1*arcsec_to_km)
             width_err1 = width1*np.sqrt((fwhm_err1/fwhm1)**2)
@@ -218,26 +234,32 @@ for i in range(0,2*numareas,2):
             width2 = np.abs(fwhm2*arcsec_to_km)
             width_err2 = width2*np.sqrt((fwhm_err2/fwhm2)**2)
             
+            # Finer grid resolution
             xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
-            fig,ax=plt.subplots(figsize=(8,5),dpi=200)
             
-            ax.scatter(xdirection[st:end], profile[st:end], label='Flux across cut',\
-                       c='#009988')
-            ax.plot(xdirection_finer, double_gaussian(xdirection_finer,*popt), '-',\
-                    c='#882255')
-        
+            # Plot result with data, fitted model, component Gaussians
+            fig,ax=plt.subplots(figsize=(8,5),dpi=200)
+            ax.scatter(xdirection[st:end], profile[st:end], \
+                       label='Flux across cut',c='#009988')
+            ax.plot(xdirection_finer, double_gaussian(xdirection_finer,*popt),\
+                    '-',\c='#882255')
             ax.plot(xdirection_finer, Gauss_func(xdirection_finer,\
-                                                  *[amp1,cent1,std1,slope,intercept]),\
-                     '--',c='#222255',markersize=5,label=str(round(width1,2))+\
+                                                  *[amp1,cent1,std1,slope,\
+                                                    intercept]),'--',\
+                    c='#222255',markersize=5,label=str(round(width1,2))+\
                               '$\;\pm\;$'+str(round(width_err1,2))+'$\;km$')
             ax.plot(xdirection_finer, Gauss_func(xdirection_finer,\
-                                                  *[amp2,cent2,std2,slope,intercept]),\
-                     '--',c='#663333',markersize=5,label=str(round(width2,2))+ '$\;\pm\;$'+str(round(width_err2,2))+\
+                                                  *[amp2,cent2,std2,slope,\
+                                                    intercept]),'--',\
+                    c='#663333',markersize=5,label=str(round(width2,2))+\
+                        '$\;\pm\;$'+str(round(width_err2,2))+\
                          '$\;km$')
             ax.set_xlabel('Position along cut [arcsec]')
             ax.set_ylabel('Flux')
             ax.legend()
             
+            # Properly order component Gaussians and append to arrays
+            # Same for errors
             if width1 < width2:
                 smallerw = width1
                 biggerw = width2
@@ -251,10 +273,10 @@ for i in range(0,2*numareas,2):
                 
             width1s.append(smallerw) 
             width2s.append(biggerw) 
-            
             widtherr1s.append(smallerwerr)
             widtherr2s.append(biggerwerr)
             
+# Save results depending on "save" switch
 if save == 1:
     if gauss2 == 1:
         np.savez(filename,'widths1','widths2','widtherr1s','widtherr2s',\
