@@ -12,12 +12,26 @@ from astropy.io import fits
 import skimage
 import scipy
 
+# Function definitions for Gaussian fitting
+def Gauss_func(x,A,mu,sigma,m,b):
+    return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
+
+def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
+    res =   (c1 * np.exp( - (x - mu1)**2.0 / (2.0 * sigma1**2.0) )) \
+          + (c2 * np.exp( - (x - mu2)**2.0 / (2.0 * sigma2**2.0) )) \
+          + (m * x + b)
+    return res
+        
 # Switches
 gauss2 = 1 # double-gaussian models?
 save = 0 # save output arrays?
 filename = '/Users/coletamburri/Desktop/large_loops.npz' # filename for output
 numareas = 1 # number of areas to look at
-numcuts = 5 # number of strands of interest per area
+numcuts = 1 # number of strands of interest per area
+
+# Constants
+spatial_samp = 0.017 # for vbi red at 656nm
+arcsec_to_km = 725 # approximate arcsec to km conversion
 
 # Arrays for coordinates of start and end
 startx = []
@@ -51,57 +65,66 @@ fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
 first_frame = fullhalpha[0].data[0,:,:]
 
+# X and Y coordinates of frame
+xarr = np.arange(np.shape(first_frame)[0])
+yarr = np.arange(np.shape(first_frame)[1])
+
+# X and Y coordinates, in KM
+xarr_km = xarr*spatial_samp
+yarr_km = yarr*spatial_samp
+
+# Meshgrid for plotting
+XKM,YKM =np.meshgrid(xarr_km,yarr_km)
+
 # Plot first frame
 fig,ax=plt.subplots(dpi=300,figsize=(10,10))
 ax.pcolormesh(first_frame,cmap='grey')
 ax.set_aspect('equal')
 ax.invert_yaxis()
 
-for i in range(numareas):
-    cc = plt.ginput(numareas*2,timeout = 40)
-    ylo = int(cc[0][0])
-    yhi = int(cc[1][0])
-    xlo = int(cc[0][1])
-    xhi = int(cc[1][1])
+# User input, click two points at the upper left and lower right corners
+# of a rectangle to zoom in on, respectively.  Do this for the number of 
+# features defined by numareas.
+cc = plt.ginput(numareas*2,timeout = 40)
     
-    xarr = np.arange(np.shape(first_frame)[0])
-    yarr = np.arange(np.shape(first_frame)[1])
+# Begin loops - first, define the number of areas to search through
+for i in range(0,2*numareas,2):
     
-    #[1000:1500,500:1000]
-    spatial_samp = 0.017 # for vbi red at 656nm
-    arcsec_to_km = 725
-    xarr_km = xarr*spatial_samp
-    yarr_km = yarr*spatial_samp
+    # Extract coordinates
+    ylo, yhi, xlo, xhi = int(cc[i][0]), int(cc[i+1][0]), int(cc[i][1]),\
+        int(cc[i+1][1])
+
+    # Extract zoomed-in frame from coordinates
+    framezoom = first_frame[xlo:xhi,ylo:yhi]
     
-    XKM,YKM =np.meshgrid(xarr_km,yarr_km)
-    
+    # Plot zoomed-in
     fig,ax=plt.subplots()
-    ax.pcolormesh(first_frame[xlo:xhi,ylo:yhi],cmap='grey')
-    
+    ax.pcolormesh(framezoom,cmap='grey')
     ax.invert_yaxis()
     ax.set_aspect('equal')
     plt.show()
     
-    # extract
-    framezoom = first_frame[xlo:xhi,ylo:yhi]
-    
+    # Point-and-click to define a line perpendicular to the desired feature;
+    # Do this for the number of features defined by numcuts
     aa = plt.ginput(numcuts*2,timeout =40)
     
-    for i in range(0,2*numcuts,2):
+    for j in range(0,2*numcuts,2):
+                
+        # Extract line coordinates
+        x0, y0, x1, y1 = aa[j][0], aa[j][1], aa[j+1][0], aa[j+1][1]
         
-        # now use point and click to find the line you want...
-        
-        # in pixel coordinates
-        
-        x0,y0 = aa[i][0],aa[i][1]
-        x1,y1 = aa[i+1][0],aa[i+1][1]
-        
+        # Define the length of the line, in pixels
         length = int(np.hypot(x1-x0,y1-y0))
         
+        # Define the x and y in # pixels along the cut
         x, y = np.linspace(y0, y1, length), np.linspace(x0, x1, length)
         
+        # Find the intensities nearest to the (x,y) coordinates above
+        # This essentially finds the intensity profile along the cut.
         zi = framezoom[x.astype(int), y.astype(int)]
         
+        # Plot the frame in one panel with the selected line, and the intensity
+        # profile in the second panel along the selected line/
         fig, axes = plt.subplots(nrows=2)
         axes[0].imshow(framezoom)
         axes[0].plot([x0, x1], [y0, y1], 'ro-')
@@ -109,32 +132,30 @@ for i in range(numareas):
         axes[1].plot(zi)
         plt.show()
         
+        # Use skimage to find the intensity profile along the line.
+        # skimage.measure.profile_line returns a 1D array of intensity values 
+        # in a directly line from (x0,y0) to (x1,y1), of length equal to the 
+        # ceil of the computed length of the line (in units of pixels)
         profile = skimage.measure.profile_line(framezoom,[y0,x0],[y1,x1])
+        
+        # Convert the length of the skimage output to arcsec
         xdirection = np.arange(len(profile))*spatial_samp
         
-        #define limits of gaussian fitting
-        
+        # Plot intensity profile in separate window
         fig,ax=plt.subplots()
         ax.plot(profile,'-x')
         plt.show()
         
+        # Define the limits of the Gaussian (or 2-Gaussian) fitting.
         bb = plt.ginput(2,timeout = 20)
         
+        # Extract the start and end of the fitting window
         st=int(bb[0][0])
         end=int(bb[1][0])+1
         
-        def Gauss_func(x,A,mu,sigma,m,b):
-            return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
-        
-        def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
-            res =   (c1 * np.exp( - (x - mu1)**2.0 / (2.0 * sigma1**2.0) )) \
-                  + (c2 * np.exp( - (x - mu2)**2.0 / (2.0 * sigma2**2.0) )) \
-                  + (m * x + b)
-            return res
-        
+        # Append the start and end coordinates for future use.
         startx.append(x0)
         starty.append(y0)
-        
         endx.append(x1)
         endy.append(y1)
         
