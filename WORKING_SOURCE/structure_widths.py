@@ -242,7 +242,7 @@ for i in range(0,2*numareas,2):
             ax.scatter(xdirection[st:end], profile[st:end], \
                        label='Flux across cut',c='#009988')
             ax.plot(xdirection_finer, double_gaussian(xdirection_finer,*popt),\
-                    '-',\c='#882255')
+                    '-',c='#882255')
             ax.plot(xdirection_finer, Gauss_func(xdirection_finer,\
                                                   *[amp1,cent1,std1,slope,\
                                                     intercept]),'--',\
