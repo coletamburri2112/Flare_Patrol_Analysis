@@ -7,54 +7,55 @@ Created on Tue Jan 21 12:25:21 2025
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-
-import astropy.units as u
-from astropy.coordinates import SkyCoord
-from astropy.time import Time
-from astropy.visualization import ImageNormalize, SqrtStretch
-from matplotlib import animation
-import matplotlib.patches as patches
-from scipy.ndimage import gaussian_filter
-import cv2
-from shapely import Polygon
-
 import os
-from astropy.modeling import models, fitting
 from astropy.io import fits
 import skimage
 import scipy
 
+# Switches
+gauss2 = 1 # double-gaussian models?
+save = 0 # save output arrays?
+filename = '/Users/coletamburri/Desktop/large_loops.npz' # filename for output
+numareas = 1 # number of areas to look at
+numcuts = 5 # number of strands of interest per area
+
+# Arrays for coordinates of start and end
+startx = []
+starty = []
+
+endx = []
+endy = []
+
+# Arrays for widths, errors associated with Gaussian models
+if gauss2 == 1:
+    width1s = []
+    width2s = []
+    widtherr1s = []
+    widtherr2s = []
+else:
+    widths = []
+    widtherrs = []
+
+# Clear plot memory
 plt.close('all')
 
+# Define path for input flare file, directory of files
 path = '/Users/coletamburri/Desktop/VBI_Destretching/'
 folder_vbi = 'AXXJL' # 8 August X-class flare decay phase
 #folder_vbi = 'BDJKM' # 11 August M-class flare decay phase
 filename='postdestretch_histomatch_dataCube.fits'
 dir_list = os.listdir(path+folder_vbi)
 
+# Define H-alpha file (all data) and frame to work with
 fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
 first_frame = fullhalpha[0].data[0,:,:]
 
+# Plot first frame
 fig,ax=plt.subplots(dpi=300,figsize=(10,10))
 ax.pcolormesh(first_frame,cmap='grey')
 ax.set_aspect('equal')
 ax.invert_yaxis()
-
-plt.show()
-
-
-gauss2=1
-numareas = 1
-numcuts = 10
-
-
-width1s = []
-width2s = []
-
-widtherr1s = []
-widtherr2s = []
 
 for i in range(numareas):
     cc = plt.ginput(numareas*2,timeout = 40)
@@ -89,8 +90,6 @@ for i in range(numareas):
     for i in range(0,2*numcuts,2):
         
         # now use point and click to find the line you want...
-        
-        
         
         # in pixel coordinates
         
@@ -133,14 +132,11 @@ for i in range(numareas):
                   + (m * x + b)
             return res
         
-        #ynorm = [float(i)/max(profile[st:end])-1 for i in profile[st:end]] #if negative
-        #g_init = models.Gaussian1D(amplitude=-1., mean=0.5, stddev=.1) #if negative
+        startx.append(x0)
+        starty.append(y0)
         
-        #ynorm = [float(i)/max(profile[st:end]) for i in profile[st:end]] # if positive
-        #g_init = models.Gaussian1D(amplitude=1, mean=0.50, stddev=.1) #if positive
-        
-        #fit_g = fitting.LevMarLSQFitter()
-        
+        endx.append(x1)
+        endy.append(y1)
         
         if gauss2==0:
             p0=[-6000, 0.3, 0.1, 0, 35000]
@@ -161,18 +157,22 @@ for i in range(numareas):
             
             width_err = width*np.sqrt((fwhm_err/fwhm)**2)
             
-            
-            #gsmaller = fit_g(g_init, xdirection[st:end], ynorm)
             xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
-            plt.figure(figsize=(8,5))
-            plt.plot(xdirection_finer, Gauss_func(xdirection_finer,*popt), 'ko')
-            plt.plot(xdirection[st:end], profile[st:end], label=str(round(width,2))+ '$\;\pm\;$'+str(round(width_err,2))+'$\;km$')
-            plt.xlabel('Position')
-            plt.ylabel('Flux')
-            plt.legend(loc=2)
-            plt.show()
             
-            print(round(width,2))
+            fig,ax=plt.subplots(figsize=(8,5),dpi=200)
+            ax.plot(xdirection_finer, Gauss_func(xdirection_finer,*popt), '-',\
+                     label=str(round(width,2))+ '$\;\pm\;$'+\
+                         str(round(width_err,2))+'$\;km$',c='#882255')
+            ax.scatter(xdirection[st:end], profile[st:end], label='Flux across cut',\
+                       c='#009988')
+            ax.set_xlabel('Position along cut')
+            ax.set_ylabel('Flux')
+            ax.legend(loc=2)
+            
+            widths.append(width) 
+            widtherrs.append(width_err)
+            
+            
             
         elif gauss2 == 1:
             p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
@@ -190,19 +190,13 @@ for i in range(numareas):
             
             #propagation of error
             fwhm_err1 = np.abs(fwhm1*np.sqrt((std_err1/std1)**2))
-            
             width1 = np.abs(fwhm1*arcsec_to_km)
-            
             width_err1 = width1*np.sqrt((fwhm_err1/fwhm1)**2)
             
             fwhm_err2 = np.abs(fwhm2*np.sqrt((std_err2/std2)**2))
-            
             width2 = np.abs(fwhm2*arcsec_to_km)
-            
             width_err2 = width2*np.sqrt((fwhm_err2/fwhm2)**2)
             
-            
-            #gsmaller = fit_g(g_init, xdirection[st:end], ynorm)
             xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
             fig,ax=plt.subplots(figsize=(8,5),dpi=200)
             
@@ -217,15 +211,33 @@ for i in range(numareas):
                               '$\;\pm\;$'+str(round(width_err1,2))+'$\;km$')
             ax.plot(xdirection_finer, Gauss_func(xdirection_finer,\
                                                   *[amp2,cent2,std2,slope,intercept]),\
-                     '--',c='#663333',markersize=10,label=str(round(width2,2))+ '$\;\pm\;$'+str(round(width_err2,2))+\
+                     '--',c='#663333',markersize=5,label=str(round(width2,2))+ '$\;\pm\;$'+str(round(width_err2,2))+\
                          '$\;km$')
             ax.set_xlabel('Position along cut [arcsec]')
             ax.set_ylabel('Flux')
             ax.legend()
             
-            width1s.append(width1) 
-            width2s.append(width2) 
+            if width1 < width2:
+                smallerw = width1
+                biggerw = width2
+                smallerwerr = width_err1
+                biggerwerr = width_err2
+            elif width2 < width1:
+                smallerw = width2
+                biggerw = width1
+                smallerwerr = width_err2
+                biggerwerr = width_err1
+                
+            width1s.append(smallerw) 
+            width2s.append(biggerw) 
             
-            widtherr1s.append(width_err1)
-            widtherr2s.append(width_err2)
+            widtherr1s.append(smallerwerr)
+            widtherr2s.append(biggerwerr)
+            
+if save == 1:
+    if gauss2 == 1:
+        np.savez(filename,'widths1','widths2','widtherr1s','widtherr2s',\
+                 'startx','starty','endx','endy')
+    elif gauss2 == 0:
+        np.savez(filename,'widths','widtherrs','startx','starty','endx','endy')        
     
