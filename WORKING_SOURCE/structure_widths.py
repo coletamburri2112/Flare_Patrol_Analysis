@@ -23,11 +23,11 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
     return res
         
 # Switches
-gauss2 = 1 # double-gaussian models?
-save = 0 # save output arrays?
-filename = '/Users/coletamburri/Desktop/large_loops.npz' # filename for output
+gauss2 = 0 # double-gaussian models?
+save = 1 # save output arrays?
+filenamesave = '/Users/coletamburri/Desktop/fingers_frame15.npz' # filename for output
 numareas = 1 # number of areas to look at
-numcuts = 1 # number of strands of interest per area
+numcuts = 3 # number of strands of interest per area
 
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
@@ -46,9 +46,12 @@ if gauss2 == 1:
     width2s = []
     widtherr1s = []
     widtherr2s = []
+    r2s = []
 else:
     widths = []
     widtherrs = []
+    r2s = []
+    
 
 # Clear plot memory
 plt.close('all')
@@ -63,7 +66,7 @@ dir_list = os.listdir(path+folder_vbi)
 # Define H-alpha file (all data) and frame to work with
 fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-first_frame = fullhalpha[0].data[0,:,:]
+first_frame = fullhalpha[0].data[4,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(first_frame)[0])
@@ -77,7 +80,7 @@ yarr_km = yarr*spatial_samp
 XKM,YKM =np.meshgrid(xarr_km,yarr_km)
 
 # Plot first frame
-fig,ax=plt.subplots(dpi=300,figsize=(10,10))
+fig,ax=plt.subplots(dpi=400,figsize=(10,10))
 ax.pcolormesh(first_frame,cmap='grey')
 ax.set_aspect('equal')
 ax.invert_yaxis()
@@ -125,7 +128,7 @@ for i in range(0,2*numareas,2):
         
         # Plot the frame in one panel with the selected line, and the intensity
         # profile in the second panel along the selected line/
-        fig, axes = plt.subplots(nrows=2)
+        fig, axes = plt.subplots(nrows=2,dpi=200)
         axes[0].imshow(framezoom)
         axes[0].plot([x0, x1], [y0, y1], 'ro-')
         axes[0].axis('image')
@@ -142,12 +145,12 @@ for i in range(0,2*numareas,2):
         xdirection = np.arange(len(profile))*spatial_samp
         
         # Plot intensity profile in separate window
-        fig,ax=plt.subplots()
+        fig,ax=plt.subplots(dpi=300)
         ax.plot(profile,'-x')
         plt.show()
         
         # Define the limits of the Gaussian (or 2-Gaussian) fitting.
-        bb = plt.ginput(2,timeout = 20)
+        bb = plt.ginput(2,timeout = 80)
         
         # Extract the start and end of the fitting window
         st=int(bb[0][0])
@@ -163,12 +166,21 @@ for i in range(0,2*numareas,2):
         if gauss2==0: # If 2-Gauss model
             
             # Initial guesses - can be pretty bad
-            p0=[-6000, 0.3, 0.1, 0, 35000]
+            p0=[6000, 0.3, 0.1, 0, 35000]
             
             # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
             popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
                                                  xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0)
+                                                     profile[st:end+1],p0=p0,\
+                                                         maxfev=20000)
+                
+            residuals = profile[st:end+1] - Gauss_func(xdirection[st:end+1],\
+                                                           *popt)
+            ss_res = np.sum(residuals**2) # sum of squares
+            ss_tot = np.sum((profile[st:end+1]-\
+                                np.mean(profile[st:end+1]))**2)#total sum of sqs
+                
+            r_squared = 1 - (ss_res / ss_tot)
             
             # Extract fit values and errors
             amp, cent, std, slope, intercept = popt
@@ -191,7 +203,7 @@ for i in range(0,2*numareas,2):
             xdirection_finer = np.arange(xdirection[st],xdirection[end],.001)
             
             # Plot the result, with both the original data and fitted model
-            fig,ax=plt.subplots(figsize=(8,5),dpi=200)
+            fig,ax=plt.subplots(figsize=(8,5),dpi=300)
             ax.plot(xdirection_finer, Gauss_func(xdirection_finer,*popt), '-',\
                      label=str(round(width,2))+ '$\;\pm\;$'+\
                          str(round(width_err,2))+'$\;km$',c='#882255')
@@ -204,17 +216,26 @@ for i in range(0,2*numareas,2):
             # Append width and error values to arrays for output
             widths.append(width) 
             widtherrs.append(width_err)
+            r2s.append(r_squared)
             
         # In the case of single gaussian fitting
         elif gauss2 == 1:
             
             # Initial parameter guesses
-            p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
+            p0=[6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
             
             # Fitting - popt is output params, pcov is covariance matrix
             popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
                                                  xdirection[st:end+1],\
                                                      profile[st:end+1],p0=p0)
+                
+            residuals = profile[st:end+1] - double_gaussian(xdirection[st:end+1],\
+                                                           *popt)
+            ss_res = np.sum(residuals**2)
+            ss_tot = np.sum((profile[st:end+1]-\
+                                np.mean(profile[st:end+1]))**2)#total sum of sqs
+                
+            r_squared = 1 - (ss_res / ss_tot)
             
             # Extract fit and error values
             amp1, cent1, std1, amp2, cent2, std2, slope, intercept = popt
@@ -275,12 +296,13 @@ for i in range(0,2*numareas,2):
             width2s.append(biggerw) 
             widtherr1s.append(smallerwerr)
             widtherr2s.append(biggerwerr)
+            r2s.append(r_squared)
             
 # Save results depending on "save" switch
 if save == 1:
     if gauss2 == 1:
-        np.savez(filename,'widths1','widths2','widtherr1s','widtherr2s',\
-                 'startx','starty','endx','endy')
+        np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
+                 startx,starty,endx,endy,r2s)
     elif gauss2 == 0:
-        np.savez(filename,'widths','widtherrs','startx','starty','endx','endy')        
+        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s)        
     
