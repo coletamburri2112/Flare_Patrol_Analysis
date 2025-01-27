@@ -25,8 +25,11 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-filenamesave = '/Users/coletamburri/Desktop/fingers_frame15.npz' # filename for output
-numareas = 1 # number of areas to look at
+directory = '/Users/coletamburri/Desktop/smallloop_frame0_largersamp/'
+if os.path.isdir(directory) == 0:
+    os.mkdir(directory)
+filenamesave = directory+'widths_errors.npz' # filename for output
+numareas = 5 # number of areas to look at
 numcuts = 3 # number of strands of interest per area
 
 # Constants
@@ -40,6 +43,8 @@ starty = []
 endx = []
 endy = []
 
+l = 0 # initialization of cut number
+
 # Arrays for widths, errors associated with Gaussian models
 if gauss2 == 1:
     width1s = []
@@ -47,10 +52,13 @@ if gauss2 == 1:
     widtherr1s = []
     widtherr2s = []
     r2s = []
+    amp1s = []
+    amp2s = []
 else:
     widths = []
     widtherrs = []
     r2s = []
+    amps = []
     
 
 # Clear plot memory
@@ -66,7 +74,7 @@ dir_list = os.listdir(path+folder_vbi)
 # Define H-alpha file (all data) and frame to work with
 fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-first_frame = fullhalpha[0].data[4,:,:]
+first_frame = fullhalpha[0].data[0,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(first_frame)[0])
@@ -88,7 +96,7 @@ ax.invert_yaxis()
 # User input, click two points at the upper left and lower right corners
 # of a rectangle to zoom in on, respectively.  Do this for the number of 
 # features defined by numareas.
-cc = plt.ginput(numareas*2,timeout = 40)
+cc = plt.ginput(numareas*2,timeout = 120)
     
 # Begin loops - first, define the number of areas to search through
 for i in range(0,2*numareas,2):
@@ -109,7 +117,7 @@ for i in range(0,2*numareas,2):
     
     # Point-and-click to define a line perpendicular to the desired feature;
     # Do this for the number of features defined by numcuts
-    aa = plt.ginput(numcuts*2,timeout =40)
+    aa = plt.ginput(numcuts*2,timeout =120)
     
     for j in range(0,2*numcuts,2):
                 
@@ -126,15 +134,6 @@ for i in range(0,2*numareas,2):
         # This essentially finds the intensity profile along the cut.
         zi = framezoom[x.astype(int), y.astype(int)]
         
-        # Plot the frame in one panel with the selected line, and the intensity
-        # profile in the second panel along the selected line/
-        fig, axes = plt.subplots(nrows=2,dpi=200)
-        axes[0].imshow(framezoom)
-        axes[0].plot([x0, x1], [y0, y1], 'ro-')
-        axes[0].axis('image')
-        axes[1].plot(zi)
-        plt.show()
-        
         # Use skimage to find the intensity profile along the line.
         # skimage.measure.profile_line returns a 1D array of intensity values 
         # in a directly line from (x0,y0) to (x1,y1), of length equal to the 
@@ -150,7 +149,7 @@ for i in range(0,2*numareas,2):
         plt.show()
         
         # Define the limits of the Gaussian (or 2-Gaussian) fitting.
-        bb = plt.ginput(2,timeout = 80)
+        bb = plt.ginput(2,timeout = 120)
         
         # Extract the start and end of the fitting window
         st=int(bb[0][0])
@@ -161,18 +160,22 @@ for i in range(0,2*numareas,2):
         starty.append(y0)
         endx.append(x1)
         endy.append(y1)
+        l+=1
         
         # Perform the fitting
         if gauss2==0: # If 2-Gauss model
             
             # Initial guesses - can be pretty bad
-            p0=[6000, 0.3, 0.1, 0, 35000]
+            p0=[-6000, 0.3, 0.1, 0, 35000]
             
             # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
-            popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
-                                                 xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0,\
-                                                         maxfev=20000)
+            try:
+                popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
+                                                     xdirection[st:end+1],\
+                                                         profile[st:end+1],p0=p0,\
+                                                             maxfev=20000)
+            except RuntimeError:
+                continue
                 
             residuals = profile[st:end+1] - Gauss_func(xdirection[st:end+1],\
                                                            *popt)
@@ -213,7 +216,19 @@ for i in range(0,2*numareas,2):
             ax.set_ylabel('Flux')
             ax.legend(loc=2)
             
+            # Plot the frame in one panel with the selected line, and the intensity
+            # profile in the second panel along the selected line/
+            fig, axes = plt.subplots(nrows=2,dpi=200)
+            axes[0].imshow(framezoom)
+            axes[0].plot([x0, x1], [y0, y1], 'ro-')
+            axes[0].axis('image')
+            axes[1].scatter(xdirection[st:end], profile[st:end],10,c='red')
+            axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt))
+            axes[0].set_title(str(l)+', w = '+str(int(round(width,2)))+'km')
+            fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
+            
             # Append width and error values to arrays for output
+            amps.append(amp)
             widths.append(width) 
             widtherrs.append(width_err)
             r2s.append(r_squared)
@@ -222,7 +237,7 @@ for i in range(0,2*numareas,2):
         elif gauss2 == 1:
             
             # Initial parameter guesses
-            p0=[6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
+            p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
             
             # Fitting - popt is output params, pcov is covariance matrix
             popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
@@ -297,12 +312,14 @@ for i in range(0,2*numareas,2):
             widtherr1s.append(smallerwerr)
             widtherr2s.append(biggerwerr)
             r2s.append(r_squared)
+            amp1s.append(amp1)
+            amp2s.append(amp2)
             
 # Save results depending on "save" switch
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s)
     elif gauss2 == 0:
-        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s)        
+        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps)        
     
