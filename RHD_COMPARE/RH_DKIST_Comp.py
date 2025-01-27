@@ -43,13 +43,13 @@ mu2 = 0.4266927415494022
 #ViSP instrument
 fwhm = .005 # in nm
 ntw = 45
-flagh20 = 0
-flagh20sum = 1 
+flagh20 = 1
+flagh20sum = 0
 
 #only one of the following should be 1
 flagb = 0
 flagvt = 0
-flagt = 1
+flagt = 0
 
 heplowh20 = 690
 hephighh20 = 850
@@ -688,7 +688,7 @@ else:
         lns8 = ax.plot(dkist_wl,normalize_range(models_tocomp[7]/1e6,heplowh20,hephighh20),'-.',alpha=.9,label=r'Model 7, 21s',c='#AA3377',linewidth=2,zorder=8)
         
         # # for no normalization with H20 comparison
-        #lns1 = ax.plot(dkist_wl,normalize_range(models_tocomp[0]/1e6,heplowh20,hephighh20),'--',alpha=.9,label=r't3F9-15-3/20w-5v, 43s',c=cmap_choice2[0],linewidth=2)
+        # #lns1 = ax.plot(dkist_wl,normalize_range(models_tocomp[0]/1e6,heplowh20,hephighh20),'--',alpha=.9,label=r't3F9-15-3/20w-5v, 43s',c=cmap_choice2[0],linewidth=2)
         # #lns2 = ax.plot(dkist_wl,normalize_range(models_tocomp[1]/1e6,heplowh20,hephighh20),'--',alpha=.9,label=r'tF10-15-3/20w-5v, 43s',c=cmap_choice2[4],linewidth=2)
         # lns3 = ax.plot(dkist_wl,models_tocomp[2]/1e6,linestyle=(0, (5, 1)),alpha=.9,label=r't3F10-15-3/20w-5v, 43s',c=cmap_choice2[12],linewidth=2)
         # lns4 = ax.plot(dkist_wl,models_tocomp[3]/1e6,'-.',alpha=.9,label=r'tF11-15-3/20w-5v, 43s',c=cmap_choice2[6],linewidth=2)
@@ -721,6 +721,7 @@ else:
     ax.set_ylim([-0.5,7])
     # ax.set_xlim([396.7,397.1])
     ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
+   # ax.plot(dkist_wl,dkist_int/1e6,label='ViSP, ribbon center',linewidth=3,c='black',zorder=6,alpha=1)
     
     ax.legend(fontsize=8)
     #ax.set_xticks([-0.08,-.04,0,.04,.08])
