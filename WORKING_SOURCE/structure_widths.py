@@ -32,6 +32,7 @@ filenamesave = directory+'widths_errors.npz' # filename for output
 numareas = 1 # number of areas to look at
 numcuts = 3 # number of strands of interest per area
 ampdir = 'neg'
+note = []
 
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
@@ -329,20 +330,22 @@ for i in range(0,2*numareas,2):
 # remove those that have failed - either for error or incorrect amplitude
 if gauss2 == 0:
     for i in range(len(amps)):
-        if ampdir == 'neg' and (amps[i] > 0 or widtherrs[i] > 100):
+        if (ampdir == 'neg' and amps[i] > 0) or (ampdir == 'pos' and amps[i] < 0):
             amps[i] = 'NaN'
             widths[i] = 'NaN'
             widtherrs[i] = 'NaN'
             r2s[i] = 'NaN'
-        if ampdir == 'pos' and (amps[i] < 0 or widtherrs[i] > 100):
+            note.append(str(i)+' -- wrong amp')
+        elif widtherrs[i] > 100:
             amps[i] = 'NaN'
             widths[i] = 'NaN'
-            widtherrs[i] ='NaN'
-            r2s[i] = 'NaN'        
+            widtherrs[i] = 'NaN'
+            r2s[i] = 'NaN'
+            note.append(str(i)+' -- large error')
 elif gauss2 == 1:
     for i in range(len(amp1s)):
-        if ampdir == 'neg' and (amp1s[i] > 0 or widtherr1s[i] > 100\
-                                or amp2s[i] > 0 or widtherr2s[i] > 100):
+        if (ampdir == 'neg' and (amp1s[i] > 0 or amp2s[i] > 0)) or \
+            (ampdir == 'pos' and (amp1s[i] < 0 or amp2s[i] < 0)):
             amp1s[i] = 'NaN'
             width1s[i] = 'NaN'
             widtherr1s[i] = 'NaN'
@@ -350,8 +353,8 @@ elif gauss2 == 1:
             width2s[i] = 'NaN'
             widtherr2s[i] = 'NaN'
             r2s[i] = 'NaN'
-        if ampdir == 'neg' and (amp1s[i] < 0 or widtherr1s[i] > 100\
-                                or amp2s[i] < 0 or widtherr2s[i] > 100):
+            note.append(str(i)+' -- wrong amp')
+        if widtherr1s[i] > 100 or widtherr2s[i] > 100:
             amp1s[i] = 'NaN'
             width1s[i] = 'NaN'
             widtherr1s[i] = 'NaN'
@@ -359,12 +362,15 @@ elif gauss2 == 1:
             width2s[i] = 'NaN'
             widtherr2s[i] = 'NaN'
             r2s[i] = 'NaN'
+            note.append(str(i)+' -- large error')
+
             
 # Save results depending on "save" switch
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s,amp1s,amp2s)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s,note)
     elif gauss2 == 0:
-        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps)        
+        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
+                 note)        
     
