@@ -174,7 +174,7 @@ for i in range(0,2*numareas,2):
             elif ampdir == 'pos':
                 p0=[6000, np.median(xdirection[st:end]), 0.1, 0, 35000]
             
-            # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
+            # Perform the fit, extract parameters (popt) and cov. matrix (pcov)
             try:
                 popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
                                                      xdirection[st:end+1],\
@@ -325,6 +325,40 @@ for i in range(0,2*numareas,2):
             r2s.append(r_squared)
             amp1s.append(amp1)
             amp2s.append(amp2)
+            
+# remove those that have failed - either for error or incorrect amplitude
+if gauss2 == 0:
+    for i in range(len(amps)):
+        if ampdir == 'neg' and (amps[i] > 0 or widtherrs[i] > 100):
+            amps[i] = 'NaN'
+            widths[i] = 'NaN'
+            widtherrs[i] = 'NaN'
+            r2s[i] = 'NaN'
+        if ampdir == 'pos' and (amps[i] < 0 or widtherrs[i] > 100):
+            amps[i] = 'NaN'
+            widths[i] = 'NaN'
+            widtherrs[i] ='NaN'
+            r2s[i] = 'NaN'        
+elif gauss2 == 1:
+    for i in range(len(amp1s)):
+        if ampdir == 'neg' and (amp1s[i] > 0 or widtherr1s[i] > 100\
+                                or amp2s[i] > 0 or widtherr2s[i] > 100):
+            amp1s[i] = 'NaN'
+            width1s[i] = 'NaN'
+            widtherr1s[i] = 'NaN'
+            amp2s[i] = 'NaN'
+            width2s[i] = 'NaN'
+            widtherr2s[i] = 'NaN'
+            r2s[i] = 'NaN'
+        if ampdir == 'neg' and (amp1s[i] < 0 or widtherr1s[i] > 100\
+                                or amp2s[i] < 0 or widtherr2s[i] > 100):
+            amp1s[i] = 'NaN'
+            width1s[i] = 'NaN'
+            widtherr1s[i] = 'NaN'
+            amp2s[i] = 'NaN'
+            width2s[i] = 'NaN'
+            widtherr2s[i] = 'NaN'
+            r2s[i] = 'NaN'
             
 # Save results depending on "save" switch
 if save == 1:
