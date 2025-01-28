@@ -304,7 +304,12 @@ for i in range(0,2*numareas,2):
                          '$\;km$')
             ax.set_xlabel('Position along cut [arcsec]')
             ax.set_ylabel('Flux')
+            axes[0].set_title(str(l)+', w2 = '+str(int(round(width1,2)))+\
+                              ', w2 = '+str(int(round(width2,2)))+'km')
             ax.legend()
+            
+            if save == 1:
+                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
             
             # Properly order component Gaussians and append to arrays
             # Same for errors
