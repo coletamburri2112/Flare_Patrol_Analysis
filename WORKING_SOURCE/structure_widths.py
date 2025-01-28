@@ -24,14 +24,14 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
         
 # Switches
 gauss2 = 0 # double-gaussian models?
-save = 1 # save output arrays?
+save = 0 # save output arrays?
 directory = '/Users/coletamburri/Desktop/smallloop_frame0_largersamp/'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
 numareas = 1 # number of areas to look at
 numcuts = 3 # number of strands of interest per area
-amp = 'neg'
+ampdir = 'neg'
 
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
@@ -169,22 +169,16 @@ for i in range(0,2*numareas,2):
             inf=np.inf
             # Initial guesses - can be pretty bad
 
-            if amp == 'neg':
-                p0=[-6000, 0.3, 0.1, 0, 35000]
-                bounds = ((-inf,0), (-inf,inf),(-inf,inf),(-inf,inf),\
-                                   (-inf,inf)) # for negative amp
-            elif amp == 'pos':
-                p0=[6000, 0.3, 0.1, 0, 35000]
-                bounds = ((0,inf), (-inf,inf),(-inf,inf),(-inf,inf),\
-                                   (-inf,inf)) # for [positive] amp
+            if ampdir == 'neg':
+                p0=[-6000, np.median(xdirection[st:end]), 0.1, 0, 35000]
+            elif ampdir == 'pos':
+                p0=[6000, np.median(xdirection[st:end]), 0.1, 0, 35000]
             
             # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
             try:
                 popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
                                                      xdirection[st:end+1],\
-                                                         profile[st:end+1],p0=p0,\
-                                                             maxfev=20000,
-                                                             bounds=bounds)
+                                                         profile[st:end+1],p0=p0)
             except RuntimeError:
                 continue
                 
@@ -227,6 +221,7 @@ for i in range(0,2*numareas,2):
             ax.set_ylabel('Flux')
             ax.legend(loc=2)
             
+            
             # Plot the frame in one panel with the selected line, and the intensity
             # profile in the second panel along the selected line/
             fig, axes = plt.subplots(nrows=2,dpi=200)
@@ -236,7 +231,8 @@ for i in range(0,2*numareas,2):
             axes[1].scatter(xdirection[st:end], profile[st:end],10,c='red')
             axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt))
             axes[0].set_title(str(l)+', w = '+str(int(round(width,2)))+'km')
-            fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
+            if save == 1:
+                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
             
             # Append width and error values to arrays for output
             amps.append(amp)
@@ -250,19 +246,14 @@ for i in range(0,2*numareas,2):
             
             if amp == 'neg':
                 # Initial parameter guesses
-                p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
-                bounds = ((-inf,0), (-inf,inf),(-inf,inf),(-inf,0),(-inf,inf),\
-                          (-inf,inf),(-inf,inf))
+                p0=[-6000, np.median(xdirection[st:end]), 0.1,-6000,.35,0.1, 0, 35000]
             elif amp == 'pos':
-                p0=[6000, 0.25, 0.1,6000,.35,0.1, 0, 35000]
-                bounds = ((0,inf), (-inf,inf),(-inf,inf),(0,inf),(-inf,inf),\
-                          (-inf,inf),(-inf,inf))
+                p0=[6000, np.median(xdirection[st:end]), 0.1,6000,.35,0.1, 0, 35000]
             
             # Fitting - popt is output params, pcov is covariance matrix
             popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
                                                  xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0,\
-                                                         bounds=bounds)
+                                                     profile[st:end+1],p0=p0)
                 
             residuals = profile[st:end+1] - double_gaussian(xdirection[st:end+1],\
                                                            *popt)
