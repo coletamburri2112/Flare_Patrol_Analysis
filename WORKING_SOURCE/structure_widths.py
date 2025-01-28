@@ -29,8 +29,9 @@ directory = '/Users/coletamburri/Desktop/smallloop_frame0_largersamp/'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 5 # number of areas to look at
+numareas = 1 # number of areas to look at
 numcuts = 3 # number of strands of interest per area
+amp = 'neg'
 
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
@@ -165,15 +166,25 @@ for i in range(0,2*numareas,2):
         # Perform the fitting
         if gauss2==0: # If 2-Gauss model
             
+            inf=np.inf
             # Initial guesses - can be pretty bad
-            p0=[-6000, 0.3, 0.1, 0, 35000]
+
+            if amp == 'neg':
+                p0=[-6000, 0.3, 0.1, 0, 35000]
+                bounds = ((-inf,0), (-inf,inf),(-inf,inf),(-inf,inf),\
+                                   (-inf,inf)) # for negative amp
+            elif amp == 'pos':
+                p0=[6000, 0.3, 0.1, 0, 35000]
+                bounds = ((0,inf), (-inf,inf),(-inf,inf),(-inf,inf),\
+                                   (-inf,inf)) # for [positive] amp
             
             # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
             try:
                 popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
                                                      xdirection[st:end+1],\
                                                          profile[st:end+1],p0=p0,\
-                                                             maxfev=20000)
+                                                             maxfev=20000,
+                                                             bounds=bounds)
             except RuntimeError:
                 continue
                 
@@ -235,14 +246,23 @@ for i in range(0,2*numareas,2):
             
         # In the case of single gaussian fitting
         elif gauss2 == 1:
+            inf=np.inf
             
-            # Initial parameter guesses
-            p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
+            if amp == 'neg':
+                # Initial parameter guesses
+                p0=[-6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
+                bounds = ((-inf,0), (-inf,inf),(-inf,inf),(-inf,0),(-inf,inf),\
+                          (-inf,inf),(-inf,inf))
+            elif amp == 'pos':
+                p0=[6000, 0.25, 0.1,6000,.35,0.1, 0, 35000]
+                bounds = ((0,inf), (-inf,inf),(-inf,inf),(0,inf),(-inf,inf),\
+                          (-inf,inf),(-inf,inf))
             
             # Fitting - popt is output params, pcov is covariance matrix
             popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
                                                  xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0)
+                                                     profile[st:end+1],p0=p0,\
+                                                         bounds=bounds)
                 
             residuals = profile[st:end+1] - double_gaussian(xdirection[st:end+1],\
                                                            *popt)
