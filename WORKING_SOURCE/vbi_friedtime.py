@@ -12,11 +12,12 @@ import matplotlib.pyplot as plt
 
 path = '/Volumes/VBI_External/pid_2_11/'
 
-VBIcode = 'BDJKM'
+VBIcode = 'AXXJL'
 dir_list = os.listdir(path+VBIcode)
 dir_list2 = []
 
-for i in range(len(dir_list)):
+#for i in range(len(dir_list)):
+for i in range(100):
     filename = dir_list[i]
     if filename[-5:] == '.fits' and '_I_' in filename:
         dir_list2.append(filename)

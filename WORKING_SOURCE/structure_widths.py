@@ -24,13 +24,14 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
         
 # Switches
 gauss2 = 0 # double-gaussian models?
-save = 0 # save output arrays?
-directory = '/Users/coletamburri/Desktop/smallloop_frame0_largersamp/'
+save = 1 # save output arrays?
+directory = '/Users/coletamburri/Desktop/small_loops_frame5/'
+time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 1 # number of areas to look at
-numcuts = 3 # number of strands of interest per area
+numareas = 3 # number of areas to look at
+numcuts = 10 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
@@ -336,37 +337,37 @@ for i in range(0,2*numareas,2):
 if gauss2 == 0:
     for i in range(len(amps)):
         if (ampdir == 'neg' and amps[i] > 0) or (ampdir == 'pos' and amps[i] < 0):
-            amps[i] = 'NaN'
-            widths[i] = 'NaN'
-            widtherrs[i] = 'NaN'
-            r2s[i] = 'NaN'
+            amps[i] = np.nan
+            widths[i] = np.nan
+            widtherrs[i] = np.nan
+            r2s[i] = np.nan
             note.append(str(i)+' -- wrong amp')
         elif widtherrs[i] > 100:
-            amps[i] = 'NaN'
-            widths[i] = 'NaN'
-            widtherrs[i] = 'NaN'
-            r2s[i] = 'NaN'
+            amps[i] = np.nan
+            widths[i] = np.nan
+            widtherrs[i] = np.nan
+            r2s[i] = np.nan
             note.append(str(i)+' -- large error')
 elif gauss2 == 1:
     for i in range(len(amp1s)):
         if (ampdir == 'neg' and (amp1s[i] > 0 or amp2s[i] > 0)) or \
             (ampdir == 'pos' and (amp1s[i] < 0 or amp2s[i] < 0)):
-            amp1s[i] = 'NaN'
-            width1s[i] = 'NaN'
-            widtherr1s[i] = 'NaN'
-            amp2s[i] = 'NaN'
-            width2s[i] = 'NaN'
-            widtherr2s[i] = 'NaN'
-            r2s[i] = 'NaN'
+            amp1s[i] = np.nan
+            width1s[i] = np.nan
+            widtherr1s[i] = np.nan
+            amp2s[i] = np.nan
+            width2s[i] = np.nan
+            widtherr2s[i] = np.nan
+            r2s[i] = np.nan
             note.append(str(i)+' -- wrong amp')
         if widtherr1s[i] > 100 or widtherr2s[i] > 100:
-            amp1s[i] = 'NaN'
-            width1s[i] = 'NaN'
-            widtherr1s[i] = 'NaN'
-            amp2s[i] = 'NaN'
-            width2s[i] = 'NaN'
-            widtherr2s[i] = 'NaN'
-            r2s[i] = 'NaN'
+            amp1s[i] = np.nan
+            width1s[i] = np.nan
+            widtherr1s[i] = np.nan
+            amp2s[i] = np.nan
+            width2s[i] = np.nan
+            widtherr2s[i] = np.nan
+            r2s[i] = np.nan
             note.append(str(i)+' -- large error')
 
             
@@ -374,8 +375,8 @@ elif gauss2 == 1:
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s,amp1s,amp2s,note)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,time)
     elif gauss2 == 0:
         np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
-                 note)        
+                 note,time)        
     
