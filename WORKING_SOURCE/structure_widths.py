@@ -11,7 +11,6 @@ import os
 from astropy.io import fits
 import skimage
 import scipy
-import sunpy
 
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
@@ -26,19 +25,19 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 0 # save output arrays?
-directory = '/Users/coletamburri/Desktop/wave_dark/'
+directory = '/Users/coletamburri/Desktop/small_loop_frame5_darkback_more/'
 time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 1 # number of areas to look at
-numcuts =1 # number of strands of interest per area
+numareas = 3 # number of areas to look at
+numcuts =5 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
 #Determine mu
 d = 151.68e9 # distance to the sun on 8 August source: https://theskylive.com/planetarium?objects=sun-moon-mercury-venus-mars-jupiter-saturn-uranus-neptune-pluto&localdata=40.01499%7C-105.27055%7CBoulder%20CO%20(US)%7CAmerica%2FDenver%7C0&obj=sun&h=14&m=01&date=2024-08-08#ra|9.242130505796545|dec|15.985314118209057|fov|50
-solrad = sunpy.sun.constants.radius.value
+solrad = 695700000
 
 # Coordinates from DKIST are not correct, but define them anyways as a starting
 # point.  Will co-align later in routine.
@@ -82,7 +81,6 @@ else:
     widtherrs = []
     r2s = []
     amps = []
-    
 
     
 
@@ -204,7 +202,7 @@ for i in range(0,2*numareas,2):
                                                      xdirection[st:end+1],\
                                                          profile[st:end+1],p0=p0)
             except RuntimeError:
-                continue
+                print('RunTime Error!')
                 
             residuals = profile[st:end+1] - Gauss_func(xdirection[st:end+1],\
                                                            *popt)
