@@ -11,6 +11,7 @@ import os
 from astropy.io import fits
 import skimage
 import scipy
+import sunpy
 
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
@@ -24,20 +25,39 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
         
 # Switches
 gauss2 = 0 # double-gaussian models?
-save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loops_frame5/'
+save = 0 # save output arrays?
+directory = '/Users/coletamburri/Desktop/wave_dark/'
 time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 3 # number of areas to look at
-numcuts = 10 # number of strands of interest per area
+numareas = 1 # number of areas to look at
+numcuts =1 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
+#Determine mu
+d = 151.68e9 # distance to the sun on 8 August source: https://theskylive.com/planetarium?objects=sun-moon-mercury-venus-mars-jupiter-saturn-uranus-neptune-pluto&localdata=40.01499%7C-105.27055%7CBoulder%20CO%20(US)%7CAmerica%2FDenver%7C0&obj=sun&h=14&m=01&date=2024-08-08#ra|9.242130505796545|dec|15.985314118209057|fov|50
+solrad = sunpy.sun.constants.radius.value
+
+# Coordinates from DKIST are not correct, but define them anyways as a starting
+# point.  Will co-align later in routine.
+
+hpc1_arcsec = -175
+hpc2_arcsec= 375
+
+# image center
+x_center = d*np.cos(hpc1_arcsec/206265)*np.sin(hpc2_arcsec/206265) # m
+y_center = d*np.sin(hpc1_arcsec/206265) # m
+z = solrad - d*np.cos(hpc1_arcsec/206265)*np.cos(hpc2_arcsec/206265) # m
+
+# to mu value
+rho = np.sqrt(x_center**2+y_center**2)
+mu = np.sqrt(1-(rho/solrad)**2)
+
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
-arcsec_to_km = 725 # approximate arcsec to km conversion
+arcsec_to_km = 727/mu # approximate arcsec to km conversion
 
 # Arrays for coordinates of start and end
 startx = []
@@ -62,6 +82,8 @@ else:
     widtherrs = []
     r2s = []
     amps = []
+    
+
     
 
 # Clear plot memory
