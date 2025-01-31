@@ -11,6 +11,7 @@ import os
 from astropy.io import fits
 import skimage
 import scipy
+import tol_colors as tc
 
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
@@ -25,14 +26,14 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame5_darkback_more/'
+directory = '/Users/coletamburri/Desktop/fingers/'
 time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 10 # number of areas to look at
-numcuts = 5 # number of strands of interest per area
-ampdir = 'neg'
+numareas = 3 # number of areas to look at
+numcuts = 10 # number of strands of interest per area
+ampdir = 'pos'
 note = []
 
 #Determine mu
@@ -403,5 +404,13 @@ if save == 1:
                  startx,starty,endx,endy,r2s,amp1s,amp2s,note,time)
     elif gauss2 == 0:
         np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
-                 note,time)        
+                 note,time)    
+        
+muted = tc.tol_cset('muted')
+
+fig,ax=plt.subplots()
+ax.errorbar(range(len(widths)),widths,yerr=widtherrs,linestyle='',fmt='o',\
+            markersize=4,color=muted.indigo,ecolor=muted.rose,elinewidth=2,\
+                capsize=3)
+fig.show()
     
