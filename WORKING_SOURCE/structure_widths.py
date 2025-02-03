@@ -11,6 +11,7 @@ import os
 from astropy.io import fits
 import skimage
 import scipy
+import tol_colors as tc
 
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
@@ -25,13 +26,38 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-filenamesave = '/Users/coletamburri/Desktop/fingers_frame15.npz' # filename for output
-numareas = 1 # number of areas to look at
-numcuts = 3 # number of strands of interest per area
+directory = '/Users/coletamburri/Desktop/fingers/'
+time = '2024-08-08T20:15:41.666666'
+if os.path.isdir(directory) == 0:
+    os.mkdir(directory)
+filenamesave = directory+'widths_errors.npz' # filename for output
+numareas = 3 # number of areas to look at
+numcuts = 10 # number of strands of interest per area
+ampdir = 'pos'
+note = []
+
+#Determine mu
+d = 151.68e9 # distance to the sun on 8 August source: https://theskylive.com/planetarium?objects=sun-moon-mercury-venus-mars-jupiter-saturn-uranus-neptune-pluto&localdata=40.01499%7C-105.27055%7CBoulder%20CO%20(US)%7CAmerica%2FDenver%7C0&obj=sun&h=14&m=01&date=2024-08-08#ra|9.242130505796545|dec|15.985314118209057|fov|50
+solrad = 695700000
+
+# Coordinates from DKIST are not correct, but define them anyways as a starting
+# point.  Will co-align later in routine.
+
+hpc1_arcsec = -175
+hpc2_arcsec= 375
+
+# image center
+x_center = d*np.cos(hpc1_arcsec/206265)*np.sin(hpc2_arcsec/206265) # m
+y_center = d*np.sin(hpc1_arcsec/206265) # m
+z = solrad - d*np.cos(hpc1_arcsec/206265)*np.cos(hpc2_arcsec/206265) # m
+
+# to mu value
+rho = np.sqrt(x_center**2+y_center**2)
+mu = np.sqrt(1-(rho/solrad)**2)
 
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
-arcsec_to_km = 725 # approximate arcsec to km conversion
+arcsec_to_km = 727/mu # approximate arcsec to km conversion
 
 # Arrays for coordinates of start and end
 startx = []
@@ -40,6 +66,8 @@ starty = []
 endx = []
 endy = []
 
+l = 0 # initialization of cut number
+
 # Arrays for widths, errors associated with Gaussian models
 if gauss2 == 1:
     width1s = []
@@ -47,10 +75,14 @@ if gauss2 == 1:
     widtherr1s = []
     widtherr2s = []
     r2s = []
+    amp1s = []
+    amp2s = []
 else:
     widths = []
     widtherrs = []
     r2s = []
+    amps = []
+
     
 
 # Clear plot memory
@@ -66,7 +98,7 @@ dir_list = os.listdir(path+folder_vbi)
 # Define H-alpha file (all data) and frame to work with
 fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-first_frame = fullhalpha[0].data[4,:,:]
+first_frame = fullhalpha[0].data[0,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(first_frame)[0])
@@ -88,7 +120,7 @@ ax.invert_yaxis()
 # User input, click two points at the upper left and lower right corners
 # of a rectangle to zoom in on, respectively.  Do this for the number of 
 # features defined by numareas.
-cc = plt.ginput(numareas*2,timeout = 40)
+cc = plt.ginput(numareas*2,timeout = 120)
     
 # Begin loops - first, define the number of areas to search through
 for i in range(0,2*numareas,2):
@@ -109,7 +141,7 @@ for i in range(0,2*numareas,2):
     
     # Point-and-click to define a line perpendicular to the desired feature;
     # Do this for the number of features defined by numcuts
-    aa = plt.ginput(numcuts*2,timeout =40)
+    aa = plt.ginput(numcuts*2,timeout =120)
     
     for j in range(0,2*numcuts,2):
                 
@@ -126,15 +158,6 @@ for i in range(0,2*numareas,2):
         # This essentially finds the intensity profile along the cut.
         zi = framezoom[x.astype(int), y.astype(int)]
         
-        # Plot the frame in one panel with the selected line, and the intensity
-        # profile in the second panel along the selected line/
-        fig, axes = plt.subplots(nrows=2,dpi=200)
-        axes[0].imshow(framezoom)
-        axes[0].plot([x0, x1], [y0, y1], 'ro-')
-        axes[0].axis('image')
-        axes[1].plot(zi)
-        plt.show()
-        
         # Use skimage to find the intensity profile along the line.
         # skimage.measure.profile_line returns a 1D array of intensity values 
         # in a directly line from (x0,y0) to (x1,y1), of length equal to the 
@@ -150,7 +173,7 @@ for i in range(0,2*numareas,2):
         plt.show()
         
         # Define the limits of the Gaussian (or 2-Gaussian) fitting.
-        bb = plt.ginput(2,timeout = 80)
+        bb = plt.ginput(2,timeout = 120)
         
         # Extract the start and end of the fitting window
         st=int(bb[0][0])
@@ -161,18 +184,31 @@ for i in range(0,2*numareas,2):
         starty.append(y0)
         endx.append(x1)
         endy.append(y1)
+        l+=1
         
         # Perform the fitting
         if gauss2==0: # If 2-Gauss model
             
+            inf=np.inf
             # Initial guesses - can be pretty bad
-            p0=[6000, 0.3, 0.1, 0, 35000]
+
+            if ampdir == 'neg':
+                p0=[-6000, np.median(xdirection[st:end]), 0.1, 0, 35000]
+            elif ampdir == 'pos':
+                p0=[6000, np.median(xdirection[st:end]), 0.1, 0, 35000]
             
-            # Perofrm the fit, extract parameters (popt) and cov. matrix (pcov)
-            popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
-                                                 xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0,\
-                                                         maxfev=20000)
+            # Perform the fit, extract parameters (popt) and cov. matrix (pcov)
+            try:
+                popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
+                                                     xdirection[st:end+1],\
+                                                         profile[st:end+1],p0=p0,
+                                                         maxfev=200000)
+            except RuntimeError:
+                amps.append(np.nan)
+                widths.append(np.nan) 
+                widtherrs.append(np.nan)
+                r2s.append(np.nan)
+                print('RunTime Error!')
                 
             residuals = profile[st:end+1] - Gauss_func(xdirection[st:end+1],\
                                                            *popt)
@@ -213,16 +249,34 @@ for i in range(0,2*numareas,2):
             ax.set_ylabel('Flux')
             ax.legend(loc=2)
             
+            
+            # Plot the frame in one panel with the selected line, and the intensity
+            # profile in the second panel along the selected line/
+            fig, axes = plt.subplots(nrows=2,dpi=200)
+            axes[0].imshow(framezoom)
+            axes[0].plot([x0, x1], [y0, y1], 'ro-')
+            axes[0].axis('image')
+            axes[1].scatter(xdirection[st:end], profile[st:end],10,c='red')
+            axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt))
+            axes[0].set_title(str(l)+', w = '+str(int(round(width,2)))+'km')
+            if save == 1:
+                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
+            
             # Append width and error values to arrays for output
+            amps.append(amp)
             widths.append(width) 
             widtherrs.append(width_err)
             r2s.append(r_squared)
             
         # In the case of single gaussian fitting
         elif gauss2 == 1:
+            inf=np.inf
             
-            # Initial parameter guesses
-            p0=[6000, 0.25, 0.1,-6000,.35,0.1, 0, 35000]
+            if amp == 'neg':
+                # Initial parameter guesses
+                p0=[-6000, np.median(xdirection[st:end]), 0.1,-6000,.35,0.1, 0, 35000]
+            elif amp == 'pos':
+                p0=[6000, np.median(xdirection[st:end]), 0.1,6000,.35,0.1, 0, 35000]
             
             # Fitting - popt is output params, pcov is covariance matrix
             popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
@@ -277,7 +331,12 @@ for i in range(0,2*numareas,2):
                          '$\;km$')
             ax.set_xlabel('Position along cut [arcsec]')
             ax.set_ylabel('Flux')
+            axes[0].set_title(str(l)+', w2 = '+str(int(round(width1,2)))+\
+                              ', w2 = '+str(int(round(width2,2)))+'km')
             ax.legend()
+            
+            if save == 1:
+                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
             
             # Properly order component Gaussians and append to arrays
             # Same for errors
@@ -297,12 +356,61 @@ for i in range(0,2*numareas,2):
             widtherr1s.append(smallerwerr)
             widtherr2s.append(biggerwerr)
             r2s.append(r_squared)
+            amp1s.append(amp1)
+            amp2s.append(amp2)
+            
+# remove those that have failed - either for error or incorrect amplitude
+if gauss2 == 0:
+    for i in range(len(amps)):
+        if (ampdir == 'neg' and amps[i] > 0) or (ampdir == 'pos' and amps[i] < 0):
+            amps[i] = np.nan
+            widths[i] = np.nan
+            widtherrs[i] = np.nan
+            r2s[i] = np.nan
+            note.append(str(i)+' -- wrong amp')
+        elif widtherrs[i] > 100:
+            amps[i] = np.nan
+            widths[i] = np.nan
+            widtherrs[i] = np.nan
+            r2s[i] = np.nan
+            note.append(str(i)+' -- large error')
+elif gauss2 == 1:
+    for i in range(len(amp1s)):
+        if (ampdir == 'neg' and (amp1s[i] > 0 or amp2s[i] > 0)) or \
+            (ampdir == 'pos' and (amp1s[i] < 0 or amp2s[i] < 0)):
+            amp1s[i] = np.nan
+            width1s[i] = np.nan
+            widtherr1s[i] = np.nan
+            amp2s[i] = np.nan
+            width2s[i] = np.nan
+            widtherr2s[i] = np.nan
+            r2s[i] = np.nan
+            note.append(str(i)+' -- wrong amp')
+        if widtherr1s[i] > 100 or widtherr2s[i] > 100:
+            amp1s[i] = np.nan
+            width1s[i] = np.nan
+            widtherr1s[i] = np.nan
+            amp2s[i] = np.nan
+            width2s[i] = np.nan
+            widtherr2s[i] = np.nan
+            r2s[i] = np.nan
+            note.append(str(i)+' -- large error')
+
             
 # Save results depending on "save" switch
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,time)
     elif gauss2 == 0:
-        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s)        
+        np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
+                 note,time)    
+        
+muted = tc.tol_cset('muted')
+
+fig,ax=plt.subplots()
+ax.errorbar(range(len(widths)),widths,yerr=widtherrs,linestyle='',fmt='o',\
+            markersize=4,color=muted.indigo,ecolor=muted.rose,elinewidth=2,\
+                capsize=3)
+fig.show()
     
