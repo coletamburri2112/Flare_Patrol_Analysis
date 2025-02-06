@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 
 def storeSequence(data, movieName, dpi=300, write=True):
   fig =plt.figure()
-  im = plt.imshow(data[0,:,:], cmap='gray', interpolation='nearest')
+  im = plt.imshow(data[0,:,:], cmap='magma', interpolation='none')
   fig.tight_layout()
 
   def animate(n):
