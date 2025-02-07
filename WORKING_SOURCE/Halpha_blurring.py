@@ -102,33 +102,41 @@ pixels_psf_sig = round(resolution_trace/halpha_samp)
 
 l=0
 fig,ax=plt.subplots(3,3,dpi=300);
+ys=np.arange(1400,2300,1)
+xs=np.arange(2000,3200,1)
+
+X,Y = np.meshgrid(xs,ys)
+
+ys2=np.arange(1200,2500,1)
+xs2=np.arange(1800,3400,1)
+
+X2,Y2 = np.meshgrid(xs2,ys2)
+props = dict(edgecolor='black',facecolor='white', alpha=0.8,boxstyle='square,pad=0.4')
+
 for i in np.arange(0,90,10):
     convolved= gaussian_filter(np.asarray(data[i]),pixels_psf_sig)
     
-    
-    ys=np.arange(1400,2300,1)
-    xs=np.arange(2000,3200,1)
-    
-    X,Y = np.meshgrid(xs,ys)
-    
-    ys2=np.arange(1200,2500,1)
-    xs2=np.arange(1800,3400,1)
-    
-    X2,Y2 = np.meshgrid(xs2,ys2)
     ax.flatten()[l].pcolormesh(X2,Y2,data[i,1200:2500,1800:3400],cmap='grey')
     ax.flatten()[l].contour(X,Y,convolved[1400:2300,2000:3200],\
-               levels=np.linspace(Z.min(), Z.max(), 7), cmap='hot',width=7)
-    rect = patches.Rectangle((2000,1400), 1200, 900, linewidth=3, edgecolor='k', facecolor='none')
+               levels=np.linspace(Z.min(), Z.max(), 7), cmap='hot',linewidths=1)
+    rect = patches.Rectangle((2000,1400), 1200, 900, linewidth=1, edgecolor='k', facecolor='none')
     
     # Add the patch to the Axes
     ax.flatten()[l].add_patch(rect)
     ax.flatten()[l].set_ylim([2500,1200])
     ax.flatten()[l].set_xlim([1800,3400])
-    ax.flatten()[l].set_axis_off()
+    ax.flatten()[l].tick_params(left = False, right = False , labelleft = False , 
+                labelbottom = False, bottom = False) 
     ax.flatten()[l].set_aspect('equal')
+    ax.flatten()[l].text(0.57, 0.92, stack[i][-15:-7]+' UT', transform=ax.flatten()[l].transAxes, fontsize=6,
+            verticalalignment='top', bbox=props)
     l+=1
-    
+fig.subplots_adjust(wspace=.04, hspace=.04)
 fig.show()
+
+fig.savefig('/Users/coletamburri/Desktop/brightevole.png')
+
+
 
 def running_difference(data):
     """
