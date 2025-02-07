@@ -17,6 +17,10 @@ from scipy.signal import convolve2d
 from scipy.signal import convolve
 from scipy.ndimage import gaussian_filter
 import utilvbi
+import matplotlib.patches as patches
+
+from skimage.exposure import match_histograms
+
 
 def perdelta(start, end, delta):
     curr = start
@@ -75,9 +79,20 @@ def gaussian_psf(x, fwhm):
 # load fits file
 
 #this file is indices 150 to 250
-data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/brighteningframes.npz')
+data1 = np.load('/Users/coletamburri/Desktop/August_2024_DKIST_Flares/VBI_X_class/brighteningframes.npz')
 
-data = normalize_3d_array(data1['brightening'])
+data = data1['brightening']
+# gbref = data[0]
+# timegb,yy,xx=data.shape
+
+# dataCubeTrackedhist=[]
+# for idata in range(timegb):
+#     image=data[idata,:,:]
+#     matched = match_histograms(image, gbref)
+#     dataCubeTrackedhist.append(matched)
+
+
+# datahist = dataCubeTrackedhist
 
 halpha_samp = 0.017 #arcsec/pixel
 resolution_aia = .6 #arcsec spatial sampling of sdo/aia
@@ -85,30 +100,58 @@ resolution_trace = .5 #spatial sampling of rhessi/trace
 
 pixels_psf_sig = round(resolution_trace/halpha_samp)
 
+l=0
+fig,ax=plt.subplots(3,3,dpi=300);
+for i in np.arange(0,90,10):
+    convolved= gaussian_filter(np.asarray(data[i]),pixels_psf_sig)
+    
+    
+    ys=np.arange(1400,2300,1)
+    xs=np.arange(2000,3200,1)
+    
+    X,Y = np.meshgrid(xs,ys)
+    
+    ys2=np.arange(1200,2500,1)
+    xs2=np.arange(1800,3400,1)
+    
+    X2,Y2 = np.meshgrid(xs2,ys2)
+    ax.flatten()[l].pcolormesh(X2,Y2,data[i,1200:2500,1800:3400],cmap='grey')
+    ax.flatten()[l].contour(X,Y,convolved[1400:2300,2000:3200],\
+               levels=np.linspace(Z.min(), Z.max(), 7), cmap='hot',width=7)
+    rect = patches.Rectangle((2000,1400), 1200, 900, linewidth=3, edgecolor='k', facecolor='none')
+    
+    # Add the patch to the Axes
+    ax.flatten()[l].add_patch(rect)
+    ax.flatten()[l].set_ylim([2500,1200])
+    ax.flatten()[l].set_xlim([1800,3400])
+    ax.flatten()[l].set_axis_off()
+    ax.flatten()[l].set_aspect('equal')
+    l+=1
+    
+fig.show()
 
-convolved= gaussian_filter(data[40,:,:],pixels_psf_sig)
+def running_difference(data):
+    """
+    Calculates the running difference of a list.
 
-fig,ax=plt.subplots();ax.imshow(convolved,cmap='grey');fig.show()
+    Args:
+        data: A list of numbers.
 
+    Returns:
+        A list containing the running difference.
+    """
+    result = np.zeros(np.shape(data))
+    for i in range(len(data)):
 
-# def running_difference(data):
-#     """
-#     Calculates the running difference of a list.
+        if i == 0:
+            result[i,:,:]= np.zeros(np.shape(data)[1:]) # The first element has no previous element
+        else:
+            result[i,:,:] = data[i] - data[i - 1]
+    return result
 
-#     Args:
-#         data: A list of numbers.
+running_diff = running_difference(data)
 
-#     Returns:
-#         A list containing the running difference.
-#     """
-#     result = np.zeros(np.shape(data))
-#     for i in range(len(data)):
+hdu = fits.PrimaryHDU(running_diff)
+hdu.writeto('runningdifference_Xclassbrightening.fits', overwrite=True) # overwrite=True will overwrite the file if it exists
 
-#         if i == 0:
-#             result[i,:,:]= np.zeros(np.shape(data)[1:]) # The first element has no previous element
-#         else:
-#             result[i,:,:] = data[i,:,:] - data[i - 1,:,:]
-#     return result
-
-# running_diff = running_difference(data)
 
