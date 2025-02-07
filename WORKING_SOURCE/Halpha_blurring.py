@@ -80,9 +80,10 @@ data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/brighteningf
 data = normalize_3d_array(data1['brightening'])
 
 halpha_samp = 0.017 #arcsec/pixel
-resolution_aia = .6 #arcsec spectral sampling of aia
+resolution_aia = .6 #arcsec spatial sampling of sdo/aia
+resolution_trace = .5 #spatial sampling of rhessi/trace
 
-pixels_psf_sig = round(resolution_aia/halpha_samp)
+pixels_psf_sig = round(resolution_trace/halpha_samp)
 
 
 convolved= gaussian_filter(data[40,:,:],pixels_psf_sig)
@@ -90,37 +91,24 @@ convolved= gaussian_filter(data[40,:,:],pixels_psf_sig)
 fig,ax=plt.subplots();ax.imshow(convolved,cmap='grey');fig.show()
 
 
-def running_difference(data):
-    """
-    Calculates the running difference of a list.
+# def running_difference(data):
+#     """
+#     Calculates the running difference of a list.
 
-    Args:
-        data: A list of numbers.
+#     Args:
+#         data: A list of numbers.
 
-    Returns:
-        A list containing the running difference.
-    """
-    result = np.zeros(np.shape(data))
-    for i in range(len(data)):
+#     Returns:
+#         A list containing the running difference.
+#     """
+#     result = np.zeros(np.shape(data))
+#     for i in range(len(data)):
 
-        if i == 0:
-            result[i,:,:]= np.zeros(np.shape(data)[1:]) # The first element has no previous element
-        else:
-            result[i,:,:] = data[i,:,:] - data[i - 1,:,:]
-    return result
+#         if i == 0:
+#             result[i,:,:]= np.zeros(np.shape(data)[1:]) # The first element has no previous element
+#         else:
+#             result[i,:,:] = data[i,:,:] - data[i - 1,:,:]
+#     return result
 
-running_diff = running_difference(data)
-
-dataCube=np.asarray(running_diff)
-
-#save pre-destretch data cube of the first 100 (sub-)frames
-fits.writeto('/Users/coletamburri/Desktop/runningdifference.fits',dataCube,overwrite=True)
-
-#restore datacube
-dataCube=fits.open('/Users/coletamburri/Desktop/runningdifference.fits')[0].data
-
-#make a movie 
-utilvbi.storeSequence(dataCube,'/Users/coletamburri/Desktop/runningdifference.mp4', dpi=300, write=True)
-
-Video('/Users/coletamburri/Desktop/runningdifference.mp4', embed=True, width=600, height=600)
+# running_diff = running_difference(data)
 
