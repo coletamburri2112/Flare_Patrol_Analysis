@@ -26,14 +26,14 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/fingers/'
+directory = '/Users/coletamburri/Desktop/small_loop_frame39/'
 time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 3 # number of areas to look at
+numareas = 5 # number of areas to look at
 numcuts = 10 # number of strands of interest per area
-ampdir = 'pos'
+ampdir = 'neg'
 note = []
 
 #Determine mu
@@ -85,24 +85,33 @@ else:
 
     
 
-# Clear plot memory
-plt.close('all')
+# # Clear plot memory
+# plt.close('all')
+# # for fits loading
+# # Define path for input flare file, directory of files
+# path = '/Users/coletamburri/Desktop/VBI_Destretching/'
+# folder_vbi = 'AXXJL' # 8 August X-class flare decay phase
+# #folder_vbi = 'BDJKM' # 11 August M-class flare decay phase
+# filename='postdestretch_histomatch_dataCube.fits'
+# dir_list = os.listdir(path+folder_vbi)
 
-# Define path for input flare file, directory of files
+# # Define H-alpha file (all data) and frame to work with
+# fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
+# #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
+# first_frame = fullhalpha[0].data[0,:,:]
+
+# for npz loading
 path = '/Users/coletamburri/Desktop/VBI_Destretching/'
-folder_vbi = 'AXXJL' # 8 August X-class flare decay phase
-#folder_vbi = 'BDJKM' # 11 August M-class flare decay phase
-filename='postdestretch_histomatch_dataCube.fits'
-dir_list = os.listdir(path+folder_vbi)
+folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase
+filename = 'AXXJLselections.npz'
+array = np.load(path+folder_vbi+filename)['first50']
 
-# Define H-alpha file (all data) and frame to work with
-fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
-#fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-first_frame = fullhalpha[0].data[0,:,:]
+#frame to work with
+frame = array[39,:,:]
 
 # X and Y coordinates of frame
-xarr = np.arange(np.shape(first_frame)[0])
-yarr = np.arange(np.shape(first_frame)[1])
+xarr = np.arange(np.shape(frame)[0])
+yarr = np.arange(np.shape(frame)[1])
 
 # X and Y coordinates, in KM
 xarr_km = xarr*spatial_samp
@@ -113,7 +122,7 @@ XKM,YKM =np.meshgrid(xarr_km,yarr_km)
 
 # Plot first frame
 fig,ax=plt.subplots(dpi=400,figsize=(10,10))
-ax.pcolormesh(first_frame,cmap='grey')
+ax.pcolormesh(frame,cmap='grey')
 ax.set_aspect('equal')
 ax.invert_yaxis()
 
@@ -130,10 +139,10 @@ for i in range(0,2*numareas,2):
         int(cc[i+1][1])
 
     # Extract zoomed-in frame from coordinates
-    framezoom = first_frame[xlo:xhi,ylo:yhi]
+    framezoom = frame[xlo:xhi,ylo:yhi]
     
     # Plot zoomed-in
-    fig,ax=plt.subplots()
+    fig,ax=plt.subplots(dpi=300)
     ax.pcolormesh(framezoom,cmap='grey')
     ax.invert_yaxis()
     ax.set_aspect('equal')
