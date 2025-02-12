@@ -15,6 +15,7 @@ from astropy.io import fits
 import skimage
 import scipy
 import tol_colors as tc
+import matplotlib.patches as patches
 
 root = '/Users/coletamburri/Desktop/'
 folder1 = 'small_loop_frame4/'
@@ -35,6 +36,10 @@ sample2 = np.load(root+folder2+filename)
 #arr8 = amps
 #arr9 = note
 #arr10 = time
+#arr11 = ylos
+#arr12 = yhis
+#arr13 = xlos
+#arr14 = xhis
 
 def min_max_normalize(data):
   """
@@ -62,12 +67,22 @@ widths2 = sample2['arr_0']
 amps1 = sample1['arr_2']
 amps2 = sample2['arr_2']
 
+# ylo1 = sample1['arr_10']
+# yhi1 = sample1['arr_11']
+# xlo1 = sample1['arr_12']
+# xhi1 = sample1['arr_13']
+
+# ylo2 = sample2['arr_10']
+# yhi2 = sample2['arr_11']
+# xlo2 = sample2['arr_12']
+# xhi2 = sample2['arr_13']
+
 widtherrs1 = sample1['arr_1']
 widtherrs2 = sample2['arr_1']
 
 muted = tc.tol_cset('muted')
 
-#os.mkdir('/Users/coletamburri/Desktop/fine_stats/')
+os.mkdir('/Users/coletamburri/Desktop/fine_stats/')
 
 fig,ax=plt.subplots(dpi=200)
 ax.errorbar(range(len(widths1)),widths1,widtherrs1,linestyle='',fmt='.',
@@ -106,6 +121,67 @@ ax.legend()
 fig.show()
 
 fig.savefig('/Users/coletamburri/Desktop/fine_stats/histo.png')
+
+# #show cuts
+# # for npz loading
+# path = '/Users/coletamburri/Desktop/VBI_Destretching/'
+# folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase
+# filename = 'AXXJLselections.npz'
+# array = np.load(path+folder_vbi+filename)['first50']
+
+# #frame to work with
+# frame = array[4,:,:]
+
+# # Constants
+# spatial_samp = 0.017 # for vbi red at 656nm
+# arcsec_to_km = 727 # approximate arcsec to km conversion
+
+# # X and Y coordinates of frame
+# xarr = np.arange(np.shape(frame)[0])
+# yarr = np.arange(np.shape(frame)[1])
+
+# # X and Y coordinates, in KM
+# xarr_km = xarr*spatial_samp
+# yarr_km = yarr*spatial_samp
+
+# # Meshgrid for plotting
+# XKM,YKM =np.meshgrid(xarr_km,yarr_km)
+
+# # Plot first frame
+# fig,ax=plt.subplots(dpi=200,figsize=(10,10))
+# ax.imshow(frame,cmap='grey')
+# ax.set_aspect('equal')
+# for i in range(len(ylo1)):
+#     rect = patches.Rectangle((ylo1[i], xlo1[i]), yhi1[i]-ylo1[i], xhi1[i]-xlo1[i], linewidth=1, edgecolor='r', \
+#                              facecolor='none')
+#     ax.add_patch(rect)
+# ax.set_xticks([])
+# ax.set_yticks([])
+# plt.show()
+
+# fig.savefig('/Users/coletamburri/Desktop/fine_stats/frame4_context')
+
+# #frame to work with
+# frame = array[5,:,:]
+
+# # Plot first frame
+# fig,ax=plt.subplots(dpi=200,figsize=(10,10))
+# ax.imshow(frame,cmap='grey')
+# ax.set_aspect('equal')
+# for i in range(len(ylo1)):
+#     rect = patches.Rectangle((ylo2[i], xlo2[i]), yhi2[i]-ylo2[i], xhi2[i]-xlo2[i], linewidth=1, edgecolor='r', \
+#                              facecolor='none')
+#     ax.add_patch(rect)
+# ax.set_xticks([])
+# ax.set_yticks([])
+# plt.show()
+
+# fig.savefig('/Users/coletamburri/Desktop/fine_stats/frame5_context')
+
+
+
+
+
 
 
 
