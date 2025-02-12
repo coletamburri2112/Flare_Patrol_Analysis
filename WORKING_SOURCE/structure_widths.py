@@ -57,7 +57,7 @@ mu = np.sqrt(1-(rho/solrad)**2)
 
 # Constants
 spatial_samp = 0.017 # for vbi red at 656nm
-arcsec_to_km = 727/mu # approximate arcsec to km conversion
+arcsec_to_km = 727 # approximate arcsec to km conversion
 
 # Arrays for coordinates of start and end
 startx = []

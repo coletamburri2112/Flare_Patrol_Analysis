@@ -23,7 +23,7 @@ import os
 import netCDF4 as nc
 import matplotlib.pyplot as plt
 from matplotlib import dates
-
+import fl_funcs as ff
 def perdelta(start, end, delta):
     curr = start
     while curr <= end:
