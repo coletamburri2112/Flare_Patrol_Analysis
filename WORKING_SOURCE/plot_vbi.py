@@ -57,7 +57,7 @@ for i in range(len(stack)):
 # load fits file
 
 #this file is indices 150 to 250
-data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/brighteningframes.npz')
+data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/AXXJLselections.npz')
 data = normalize_3d_array(data1['brightening'])
 
 props = dict(edgecolor='black',facecolor='white', alpha=0.8,boxstyle='square,pad=0.4')
