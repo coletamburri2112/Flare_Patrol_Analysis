@@ -26,7 +26,7 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame39/'
+directory = '/Users/coletamburri/Desktop/small_loop_frame47/'
 time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
@@ -107,7 +107,7 @@ filename = 'AXXJLselections.npz'
 array = np.load(path+folder_vbi+filename)['first50']
 
 #frame to work with
-frame = array[39,:,:]
+frame = array[47,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
