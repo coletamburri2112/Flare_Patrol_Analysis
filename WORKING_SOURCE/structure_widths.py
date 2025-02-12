@@ -26,7 +26,7 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame39/'
+directory = '/Users/coletamburri/Desktop/small_loop_frame47_pd/'
 time = '2024-08-08T20:15:41.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
@@ -103,11 +103,11 @@ else:
 # for npz loading
 path = '/Users/coletamburri/Desktop/VBI_Destretching/'
 folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase
-filename = 'AXXJLselections.npz'
+filename = 'AXXJLselection_predestretch.npz'
 array = np.load(path+folder_vbi+filename)['first50']
 
 #frame to work with
-frame = array[39,:,:]
+frame = array[47,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
@@ -130,6 +130,12 @@ ax.invert_yaxis()
 # of a rectangle to zoom in on, respectively.  Do this for the number of 
 # features defined by numareas.
 cc = plt.ginput(numareas*2,timeout = 120)
+
+#arrays for storgage of zoom-in boxes
+ylos=[]
+yhis=[]
+xlos=[]
+xhis=[]
     
 # Begin loops - first, define the number of areas to search through
 for i in range(0,2*numareas,2):
@@ -137,6 +143,11 @@ for i in range(0,2*numareas,2):
     # Extract coordinates
     ylo, yhi, xlo, xhi = int(cc[i][0]), int(cc[i+1][0]), int(cc[i][1]),\
         int(cc[i+1][1])
+        
+    ylos.append(ylo)
+    yhis.append(yhi)
+    xlos.append(xlo)
+    xhis.append(xhi)
 
     # Extract zoomed-in frame from coordinates
     framezoom = frame[xlo:xhi,ylo:yhi]
@@ -410,10 +421,10 @@ elif gauss2 == 1:
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,time)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,time,ylos,yhis,xlos,xhis)
     elif gauss2 == 0:
         np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
-                 note,time)    
+                 note,time,ylos,yhis,xlos,xhis)    
         
 muted = tc.tol_cset('muted')
 

@@ -54,8 +54,8 @@ timeshhmmss = []
 #                                  "%H:%M:%S"))
 
 # times in correct format for plotting
-for i in range(len(stack)):
-    timeshhmmss.append(stack[i][-15:-7])
+# for i in range(len(stack)):
+#     timeshhmmss.append(stack[i][-15:-7])
     
 # new_x = "/Users/coletamburri/Desktop/8_August_2024.nc"
 # x = 'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2022/12/sci_xrsf-l2-flx1s_g16_d20221228_v2-2-0.nc'

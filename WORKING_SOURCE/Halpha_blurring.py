@@ -35,8 +35,8 @@ def normalize_3d_array(arr):
     return (arr - min_val) / (max_val - min_val)
 
 #make times
-sttime = datetime(2024,8,8,20,12,32,333333)
-endtime = datetime(2024,8,8,21,5,7,0)
+sttime = datetime(2024,8,8,20,19,12,1)
+endtime = datetime(2024,8,8,20,23,38,0)
 
 # plt.rcParams['text.usetex']=True
 # plt.rcParams['font.family']='sans-serif'
@@ -79,8 +79,8 @@ def gaussian_psf(x, fwhm):
 # load fits file
 
 #this file is indices 150 to 250
-data1 = np.load('/Users/coletamburri/Desktop/August_2024_DKIST_Flares/VBI_X_class/brighteningframes.npz')
-
+#data1 = np.load('/Users/coletamburri/Desktop/August_2024_DKIST_Flares/VBI_X_class/brighteningframes.npz')
+data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/AXXJLselections.npz')
 data = data1['brightening']
 # gbref = data[0]
 # timegb,yy,xx=data.shape
@@ -118,7 +118,7 @@ for i in np.arange(0,90,10):
     
     ax.flatten()[l].pcolormesh(X2,Y2,data[i,1200:2500,1800:3400],cmap='grey')
     ax.flatten()[l].contour(X,Y,convolved[1400:2300,2000:3200],\
-               levels=np.linspace(Z.min(), Z.max(), 7), cmap='hot',linewidths=1)
+               levels=np.linspace(convolved[1400:2300,2000:3200].min(), convolved[1400:2300,2000:3200].max(), 7), cmap='hot',linewidths=1)
     rect = patches.Rectangle((2000,1400), 1200, 900, linewidth=1, edgecolor='k', facecolor='none')
     
     # Add the patch to the Axes
