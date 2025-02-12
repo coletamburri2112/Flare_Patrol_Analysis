@@ -41,7 +41,7 @@ for i in np.arange(0,len(dir_list2),1):
     
 fig,ax=plt.subplots();
 
-ax.scatter(range(len(fried)),fried,label='11 August 2024 M-class',c='black');
+ax.scatter(range(len(fried)),fried,label='8 August 2024 X-class',c='black');
 ax.set_xlabel('Timestep');
 ax.set_ylabel('$r_0$ [cm]');
 ax.set_ylim([0,15]);
