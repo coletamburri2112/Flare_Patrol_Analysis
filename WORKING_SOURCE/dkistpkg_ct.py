@@ -29,7 +29,7 @@ from scipy.optimize import leastsq
 import scipy.integrate as integrate
 import sunpy
 import sunpy.coordinates
-import sunpy.map
+#import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 import astropy.units as u
@@ -2369,7 +2369,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
     cont_mult_facts = cont_flux_fts/cont_flux_obs
 
     
-    mult_fit = np.polyfit(new_dispersion_range[obs_cont_loc],cont_mult_facts,2)
+    mult_fit = np.polyfit(new_dispersion_range[obs_cont_loc],cont_mult_facts,10)
     fit_cont_mult = np.poly1d(mult_fit)
     fit_vals = fit_cont_mult(new_dispersion_range)
     
