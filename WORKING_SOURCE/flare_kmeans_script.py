@@ -37,8 +37,8 @@ flare_arr = res['arr_0']
 hbeta_low =480
 hbeta_high = 670
 
-caII_low = 570
-caII_high = 730
+caII_low = 500
+caII_high = 650
 
 hepsilon_low = 730
 hepsilon_high = 900

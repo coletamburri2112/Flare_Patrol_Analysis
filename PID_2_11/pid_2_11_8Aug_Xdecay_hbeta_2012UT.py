@@ -17,7 +17,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=0
+end=1
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -139,7 +139,7 @@ lowinds = [390,666]
 # # indices of telluric lines in spectrum - upper
 highinds = [455,700]
 
-cont_vals = [485.584,485.666,485.762,485.796,485.866,485.942,486.014,486.061,486.213,486.286,486.341,485.453,486.454,486.494]
+cont_vals = [485.636,485.666,485.762,485.796,485.866,485.942,486.014,486.061,486.213,486.286,486.341,486.453,486.454,486.494]
 
 # # define the multiplication factor (polynomial), new dispersion range, fit values
 # # to scale the quiet sun to FTS atlas
@@ -148,7 +148,7 @@ cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
                                         space_and_time_averaged_qs,wlsel,ilamsel,
                                         DKISTanalysis.find_nearest,line1,line2,
                                         lowinds,highinds,limbdark_fact=clv_corrqs,
-                                        cont_vals=cont_vals)
+                                        cont_vals=cont_vals,order=1)
 
 # # calibrate the quiet sun 
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
@@ -166,13 +166,7 @@ yconv=DKISTanalysis.psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,
                                 calibrated_qs,clv_corrqs,ntw,
                                 DKISTanalysis.gaussian_psf)
 
-#show comparison of atlas to qs
-fig,ax=plt.subplots()
-ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
-ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
-ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
-ax.set_xlim([485.5,487]);
-ax.legend();plt.show()
+
 
 #do another iteration of the calibration step after peforming the PSF conv.
 cont_mult_facts,fit_vals,\
@@ -185,10 +179,21 @@ cont_mult_facts,fit_vals,\
                                             limbdark_fact=clv_corrqs,noqs_flag=2,
                                             cont_vals=cont_vals)
         
+        
+
+        
 # calibrated quiet sun, again, using updated fit values
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
 nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
+
+#show comparison of atlas to qs
+fig,ax=plt.subplots()
+ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
+ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
+ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
+ax.set_xlim([485.5,487]);
+ax.legend();plt.show()
 
 # intensity calibration, background subtraction for flare-time                            
 scaled_flare_time, bkgd_subtract_flaretime = \

@@ -2248,7 +2248,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
                          absline1, absline2, indmins, indmaxs,cont_vals = [396.49,396.5,396.628,396.71,396.77,
                                   396.9,397.075,397.15],limbdark_fact = 1.0, 
                          wave_idx=None, extra_weight=20., bounds=None,
-                         noqs_flag = 0,noqs_ind = 20,ratioshift=0.0000016):
+                         noqs_flag = 0,noqs_ind = 20,ratioshift=0.0000016,order=2):
     
     dispersion_range = np.array(wave_obs)
     
@@ -2369,7 +2369,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
     cont_mult_facts = cont_flux_fts/cont_flux_obs
 
     
-    mult_fit = np.polyfit(new_dispersion_range[obs_cont_loc],cont_mult_facts,10)
+    mult_fit = np.polyfit(new_dispersion_range[obs_cont_loc],cont_mult_facts,order)
     fit_cont_mult = np.poly1d(mult_fit)
     fit_vals = fit_cont_mult(new_dispersion_range)
     
