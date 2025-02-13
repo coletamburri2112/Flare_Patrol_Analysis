@@ -28,6 +28,7 @@ from pyclustering.cluster.encoder import cluster_encoder
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
 
+#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
 filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
 res = np.load(filename)
 
@@ -134,25 +135,51 @@ for i in range(n_clusters0):
     
 fig.show()
     
-fig,ax=plt.subplots(figsize=(5,10))
+fig,ax=plt.subplots(figsize=(1,10),dpi=200)
 ax.pcolormesh(np.transpose(frame_line),cmap = 'hot',alpha=0.5)
-ax.scatter(x_mask0,y_mask0,2,color=colors[groups0],alpha=1)
+ax.scatter(x_mask0,y_mask0,2,color=colors[groups0],alpha=1,marker='s')
+ax.invert_xaxis()
+ax.invert_yaxis()
 
 fig.show()
 
-fig,ax=plt.subplots(3,4,figsize=(10,10))
+fig,ax=plt.subplots(5,2,figsize=(2,5),dpi=200)
 arr_normprofs0 = normprofiles_line
 
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
 
+# for i in range(len(arr_normprofs0)):
+#     curve = arr_normprofs0[i]
+#     group = groups0[i]
+    
+#     ax.flatten()[group].plot(curve,alpha=0.01,color='black')
+
+# for i in range(n_clusters0):
+#     ax.flatten()[i].plot(km0.means()[i],marker='*',color=colors[i])
+    
 for i in range(len(arr_normprofs0)):
     curve = arr_normprofs0[i]
     group = groups0[i]
-    
+    #ind = np.where(sortarr==group)
     ax.flatten()[group].plot(curve,alpha=0.01,color='black')
-
+    
 for i in range(n_clusters0):
-    ax.flatten()[i].plot(km0.means()[i],marker='*',color=colors[i])
+    ax.flatten()[i].plot(km0.means()[i],marker='*',color=colors[i],markersize=.1)
+    #ax.flatten()[i].set_title(int(i),fontsize=10,y=-0.4)
+    #ax.flatten()[i].text(9, .85, str(fwhms[sortarr[i]]), ha='center', size=13)
+
+    ax.flatten()[i].tick_params(
+    axis='x',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom=False,      # ticks along the bottom edge are off
+    top=False,         # ticks along the top edge are off
+    labelbottom=False)
+    ax.flatten()[i].tick_params(
+    axis='y',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    left=False,      # ticks along the bottom edge are off
+    right=False,         # ticks along the top edge are off
+    labelleft=False)# labels along the bottom edge are off
 
 
 fig.show()
