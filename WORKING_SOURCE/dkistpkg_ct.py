@@ -2245,8 +2245,7 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,calibrated_qs,limbdarkqs,
     
 # write calibration function for polynomial-fitting intensity calibration
 def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest,
-                         absline1, absline2, indmins, indmaxs,cont_vals = [396.49,396.5,396.628,396.71,396.77,
-                                  396.9,397.075,397.15],limbdark_fact = 1.0, 
+                         absline1, absline2, indmins, indmaxs,cont_vals = [396.628,396.71,396.77,396.9,396.9531,396.9675,397.0346,397.0829],limbdark_fact = 1.0, 
                          wave_idx=None, extra_weight=20., bounds=None,
                          noqs_flag = 0,noqs_ind = 20,ratioshift=0.0000016,order=2):
     

@@ -77,7 +77,7 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
 startstepqs = 0
 endstepqs=200
 startstep=0#where does interesting bit begin?
-endstep=1000#where does interesting bit end?
+endstep=300#where does interesting bit end?
 print('here2')
 # process multi-step raster - for qs time
 image_data_arr_arr, rasterpos, times = \
@@ -135,8 +135,7 @@ lowinds = [510,720]
 # indices of telluric lines in spectrum - upper
 highinds = [550,755]
 
-cont_vals = [396.628,396.71,396.77,
-         396.9,397.0346,397.075,397.081]
+cont_vals = [396.628,396.71,396.77,396.9,396.9531,396.9675,397.0346,397.0829]
 # define the multiplication factor (polynomial), new dispersion range, fit values
 # to scale the quiet sun to FTS atlas
 cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
@@ -144,7 +143,7 @@ cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
                                        space_and_time_averaged_qs,wlsel,ilamsel,
                                        DKISTanalysis.find_nearest,line1,line2,
                                        lowinds,highinds,limbdark_fact=clv_corrqs,
-                                       noqs_flag=2,cont_vals=cont_vals,order=1)
+                                       noqs_flag=2,cont_vals=cont_vals,order=2)
 
 # calibrate the quiet sun 
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
@@ -164,12 +163,6 @@ yconv=DKISTanalysis.psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,
                                DKISTanalysis.gaussian_psf)
 
 #show comparison of atlas to qs
-fig,ax=plt.subplots()
-ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
-ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
-ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
-ax.set_xlim([396.6,397.2]);ax.set_ylim([0,0.8e6])
-ax.legend();plt.show()
 
 #do another iteration of the calibration step after peforming the PSF conv.
 cont_mult_facts,fit_vals,\

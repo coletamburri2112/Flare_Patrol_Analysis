@@ -29,7 +29,7 @@ from pyclustering.cluster.encoder import cluster_encoder
 nsteps = 91
 
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
-filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
+filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_caII_hep.npz'
 res = np.load(filename)
 
 flare_arr = res['arr_0']
@@ -44,9 +44,9 @@ caII_high = 739
 hepsilon_low = 730
 hepsilon_high = 900
 
-cutoff0 = 1.2 # factor of minimum- 1 means all pixels, >1 is search for flare
+cutoff0 = 1.3 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta
 
-n_clusters0 = 10
+n_clusters0 = 20 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 
 nframes = 1
 startspace = 1500
@@ -56,8 +56,8 @@ start = 0
 
 # change based on line
 
-linelow = hbeta_low
-linehigh = hbeta_high
+linelow = caII_low
+linehigh = caII_high
 
 obs_avg_line = np.mean(flare_arr[start:nsteps,linelow:linehigh,:],1)
 
@@ -118,22 +118,10 @@ def kmeans_nltk(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
 
 frame_line, mask0, km0, normprofiles_line, groups0, x_mask0, y_mask0 = \
     kmeans_nltk(start,0,nsteps,startspace,
-                endspace,obs_avg_line,flare_arr,normalize,n_clusters0,cutoff0)
+                endspace,obs_avg_line,flare_arr,normalize,n_clusters0,cutoff0,normflag=1)
     
-fig,ax=plt.subplots(n_clusters0,1,figsize=(10,10))
 arr_normprofs0 = normprofiles_line
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
-
-for i in range(len(arr_normprofs0)):
-    curve = arr_normprofs0[i]
-    group = groups0[i]
-    
-    ax.flatten()[group].plot(curve,alpha=0.01,color='black')
-
-for i in range(n_clusters0):
-    ax.flatten()[i].plot(km0.means()[i],marker='*',color=colors[i])
-    
-fig.show()
     
 fig,ax=plt.subplots(figsize=(1,10),dpi=200)
 ax.pcolormesh(np.transpose(frame_line),cmap = 'hot',alpha=0.5)
@@ -143,7 +131,7 @@ ax.invert_yaxis()
 
 fig.show()
 
-fig,ax=plt.subplots(5,2,figsize=(2,5),dpi=200)
+fig,ax=plt.subplots(4,5,figsize=(5,4),dpi=200)
 arr_normprofs0 = normprofiles_line
 
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
