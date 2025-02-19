@@ -101,7 +101,7 @@ t = np.arange(datetime(2024,8,8,0,0,0),
               datetime(2024,8,9,0,0,0), 
               timedelta(seconds=1)).astype(datetime)
 ax1 = ax.twinx()
-lns3=ax1.plot(t,np.array(ds['xrsb1_flux']),linewidth=3,color='k',label='GOES Flux')
+lns3=ax1.plot(t,np.array(ds['xrsb1_flux']),linewidth=3,color='k',label='GOES Flux',zorder=0)
 ax.set_xlim(datetime(2024,8,8,18,30),datetime(2024,8,8,22))
 ax1.set_xlim(datetime(2024,8,8,18,30),datetime(2024,8,8,22))
 ax1.set_ylabel('GOES Flux [$W\;m^{-2}$]')
@@ -111,26 +111,58 @@ plt.yscale("log")
 lns1=ax.plot(stack,data['arr_0']/1e4,c=muted[1],label='Full VBI FoV');
 #ax1=ax.twinx();
 #lns2 = ax1.plot(data['arr_1'],c=muted[0],label='Loop-top source');
-lns2=ax.plot(stack,data['arr_1']/1e4,c=muted[0],label='Loop-top source');
+lns2=ax.plot(stack,data['arr_1']/1e4,c=muted[0],label='Loop-top source',zorder=5);
 ax.set_ylabel('Avg. Intensity over FoV [$10^4\;DN\;pix^{-2}$]')
 #ax.autofmt_xdate()
 #ax.set_xticks(timeshhmmss[0:-1:190],timeshhmmss[0:-1:190],rotation=45)
 ax.set_xlabel('Time [UT]')
-ax.set_ylim([1.3,2.5])
+ax.set_ylim([1.7,2.5])
 ax1.set_ylim([3e-6,1e-3])
 
+st284 = datetime(2024, 8, 8, 20, 10, 56)
+st171 = datetime(2024, 8, 8, 20, 18, 16)
 
+end284 = datetime(2024, 8, 8, 20, 38, 46)
+end171 = datetime(2024, 8, 8, 20, 42, 26)
+
+y284 = 2.2
+y171 = 2.1
+
+#lns4 = ax.hlines(y=y284, xmin=st284, xmax=end284, color=muted[5], linewidth=2,label='284 span')
+#lns5 = ax.hlines(y=y171, xmin=st171, xmax=end171, color=muted[3], linewidth=2,label='171 span')
+
+data171 = np.load('/Users/coletamburri/Desktop/171curve.npz');
+
+t171 = np.arange(datetime(2024,8,8,20,14,26),
+              datetime(2024,8,8,20,46,16), 
+              timedelta(seconds=4*60)).astype(datetime)
+
+data284=np.load('/Users/coletamburri/Desktop/284curve.npz')
+
+
+t284 = np.arange(datetime(2024,8,8,20,6,56),
+              datetime(2024,8,8,20,38,46), 
+              timedelta(seconds=4*60)).astype(datetime)
+
+ax3 = ax.twinx()
+lns4 = ax3.plot(t171,data171['vals']*12,'-x', color=muted[5],linewidth=2,label=r'SUVI 171$\AA$')
+lns5 = ax3.plot(t284,data284['vals']*1.1,'-x',color=muted[7], linewidth=2,label=r'SUVI 284$\AA$')
+ax3.set_axis_off()
+ax3.set_ylim([-10000,7000])
 fmtr = dates.DateFormatter("%H:%M")
 # need a handle to the current axes to manipulate it
 ax = plt.gca()
 # set this formatter to the axis
 ax.xaxis.set_major_formatter(fmtr)
 
-lns = lns1+lns2+lns3
+lns = lns1+lns2+lns3+lns4+lns5
 labs = [l.get_label() for l in lns]
 ax.legend(lns, labs, loc=0,fontsize=10)
 
-   
+# ax.axvline(t171[np.where(data171['vals']==np.max(data171['vals'][:]))],linestyle='--', color=muted[5])
+# ax.axvline(t284[np.where(data284['vals']==np.max(data284['vals'][1:]))],linestyle='--', color=muted[7])
+# ax.axvline(stack[160],linestyle='--', color=muted[0])
+
 
 #now plot SolO/PSP
 
