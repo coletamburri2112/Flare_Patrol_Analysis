@@ -25,14 +25,14 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
         
 # Switches
 gauss2 = 0 # double-gaussian models?
-save = 0 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame47_pd/'
-time = '2024-08-08T20:15:41.666666'
+save = 1 # save output arrays?
+directory = '/Users/coletamburri/Desktop/small_loop_frame3_pre_destretch_separate_all/'
+time = '2024-08-08T20:12:45.666666'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 1 # number of areas to look at
-numcuts = 1 # number of strands of interest per area
+numareas = 5 # number of areas to look at
+numcuts = 10 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
@@ -104,10 +104,10 @@ else:
 path = '/Users/coletamburri/Desktop/VBI_Destretching/'
 folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase
 filename = 'AXXJLselection_predestretch.npz'
-array = np.load(path+folder_vbi+filename)['brightening']
+array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening
 
 #frame to work with
-frame = array[20,:,:]
+frame = array[3,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
@@ -139,6 +139,7 @@ xhis=[]
     
 # Begin loops - first, define the number of areas to search through
 for i in range(0,2*numareas,2):
+    plt.close('all')
     
     # Extract coordinates
     ylo, yhi, xlo, xhi = int(cc[i][0]), int(cc[i+1][0]), int(cc[i][1]),\

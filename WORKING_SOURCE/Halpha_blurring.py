@@ -95,10 +95,18 @@ data = data1['brightening']
 # datahist = dataCubeTrackedhist
 
 halpha_samp = 0.017 #arcsec/pixel
-resolution_aia = .6 #arcsec spatial sampling of sdo/aia
-resolution_trace = .5 #spatial sampling of rhessi/trace
+resolution_aia_var = .6**2 #arcsec spatial sampling of sdo/aia
+resolution_trace_var = .5**2 #spatial sampling of rhessi/trace
+resolution_vbi_var = 0.017**2 #spatial sampling of DKIST/VBI in H-alpha filter
 
-pixels_psf_sig = round(resolution_trace/halpha_samp)
+# subtract the vbi resolution from that of the instrument in question to get 
+# the width of the PSF we want to convolve.  Covolution of two gaussians is a 
+# Gaussian of variance equal to the sum of the *variances* of the two Gaussians
+# , so assume observations are "already" convolved with th DKIST PSF
+
+# var = std**2
+# var_total**2 = var_dkist**2 + var_aia**2
+pixels_psf_sig = round((np.sqrt(resolution_aia_var-resolution_vbi_var))/halpha_samp)
 
 l=0
 fig,ax=plt.subplots(3,3,dpi=300);
@@ -112,6 +120,10 @@ xs2=np.arange(1800,3400,1)
 
 X2,Y2 = np.meshgrid(xs2,ys2)
 props = dict(edgecolor='black',facecolor='white', alpha=0.8,boxstyle='square,pad=0.4')
+
+convolved_bright= gaussian_filter(np.asarray(data[20]),pixels_psf_sig)
+
+fig,ax=plt.subplots(dpi=200);ax.imshow(convolved_bright,cmap='grey');fig.show()
 
 for i in np.arange(0,90,10):
     convolved= gaussian_filter(np.asarray(data[i]),pixels_psf_sig)
@@ -134,7 +146,7 @@ for i in np.arange(0,90,10):
 fig.subplots_adjust(wspace=.04, hspace=.04)
 fig.show()
 
-fig.savefig('/Users/coletamburri/Desktop/brightevole.png')
+fig.savefig('/Users/coletamburri/Desktop/brightevolve.png')
 
 
 
