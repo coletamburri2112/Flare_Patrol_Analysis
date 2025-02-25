@@ -24,15 +24,15 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
     return res
         
 # Switches
-gauss2 = 0 # double-gaussian models?
+gauss2 = 1 # double-gaussian models?
 save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame4_pre_destretch_separate_all/'
+directory = '/Users/coletamburri/Desktop/double_loop_frame0_pre_destretch/'
 time = '2024-08-08T20:12:32.333333'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 10 # number of areas to look at
-numcuts = 5 # number of strands of interest per area
+numareas = 1 # number of areas to look at
+numcuts = 20 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
@@ -107,7 +107,7 @@ filename = 'AXXJLselection_predestretch.npz'
 array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening
 
 #frame to work with
-frame = array[4,:,:]
+frame = array[0,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
@@ -293,16 +293,18 @@ for i in range(0,2*numareas,2):
         elif gauss2 == 1:
             inf=np.inf
             
-            if amp == 'neg':
+            if ampdir == 'neg':
                 # Initial parameter guesses
-                p0=[-6000, np.median(xdirection[st:end]), 0.1,-6000,.35,0.1, 0, 35000]
-            elif amp == 'pos':
-                p0=[6000, np.median(xdirection[st:end]), 0.1,6000,.35,0.1, 0, 35000]
+                p0=[-20000, np.median(xdirection[st:end])*2/3, 0.1,-20000,
+                    np.median(xdirection[st:end])*4/3,0.1, 0, 35000]
+            elif ampdir == 'pos':
+                p0=[6000, .25, 0.1,6000,.35,0.1, 0, 35000]
             
             # Fitting - popt is output params, pcov is covariance matrix
             popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
                                                  xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0)
+                                                     profile[st:end+1],p0=p0,
+                                                     maxfev=200000)
                 
             residuals = profile[st:end+1] - double_gaussian(xdirection[st:end+1],\
                                                            *popt)
@@ -352,12 +354,12 @@ for i in range(0,2*numareas,2):
                          '$\;km$')
             ax.set_xlabel('Position along cut [arcsec]')
             ax.set_ylabel('Flux')
-            axes[0].set_title(str(l)+', w2 = '+str(int(round(width1,2)))+\
-                              ', w2 = '+str(int(round(width2,2)))+'km')
+            #ax[0].set_title(str(l)+', w2 = '+str(int(round(width1,2)))+\
+            #                  ', w2 = '+str(int(round(width2,2)))+'km')
             ax.legend()
             
             if save == 1:
-                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
+                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width1,2)))+'_km,_'+str(int(round(width1,2)))+'_km.png')
             
             # Properly order component Gaussians and append to arrays
             # Same for errors
