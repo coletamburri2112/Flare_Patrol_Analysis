@@ -14,6 +14,7 @@ path = '/Volumes/VBI_External/pid_2_11/'
 
 VBIcode = 'AXXJL'
 dir_list = os.listdir(path+VBIcode)
+dir_list.sort()
 dir_list2 = []
 
 #for i in range(len(dir_list)):

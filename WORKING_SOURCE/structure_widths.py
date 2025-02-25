@@ -26,13 +26,13 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame3_pre_destretch_separate_all/'
-time = '2024-08-08T20:12:45.666666'
+directory = '/Users/coletamburri/Desktop/small_loop_frame4_pre_destretch_separate_all/'
+time = '2024-08-08T20:12:32.333333'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 5 # number of areas to look at
-numcuts = 10 # number of strands of interest per area
+numareas = 10 # number of areas to look at
+numcuts = 5 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
@@ -107,7 +107,7 @@ filename = 'AXXJLselection_predestretch.npz'
 array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening
 
 #frame to work with
-frame = array[3,:,:]
+frame = array[4,:,:]
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
@@ -274,11 +274,11 @@ for i in range(0,2*numareas,2):
             # Plot the frame in one panel with the selected line, and the intensity
             # profile in the second panel along the selected line/
             fig, axes = plt.subplots(nrows=2,dpi=200)
-            axes[0].imshow(framezoom)
+            axes[0].imshow(framezoom,cmap='magma')
             axes[0].plot([x0, x1], [y0, y1], 'ro-')
             axes[0].axis('image')
             axes[1].scatter(xdirection[st:end], profile[st:end],10,c='red')
-            axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt))
+            axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt),c='#882255')
             axes[0].set_title(str(l)+', w = '+str(int(round(width,2)))+'km')
             if save == 1:
                 fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
