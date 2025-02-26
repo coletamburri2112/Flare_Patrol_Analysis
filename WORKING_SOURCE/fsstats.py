@@ -107,12 +107,42 @@ xlo4 = sample4['arr_12']
 xhi4 = sample4['arr_13']
 
 
-
 widtherrs0 = sample0['arr_1']
 widtherrs1 = sample1['arr_1']
 widtherrs2 = sample2['arr_1']
 widtherrs3 = sample3['arr_1']
 widtherrs4 = sample4['arr_1']
+
+dkistresolution = 0.034 *727
+idx0 = np.where(widths0<dkistresolution)
+idx1 = np.where(widths1<dkistresolution)
+idx2 = np.where(widths2<dkistresolution)
+idx3 = np.where(widths3<dkistresolution)
+idx4 = np.where(widths4<dkistresolution)
+
+widths0[idx0] = np.nan
+amps0[idx0] = np.nan
+widtherrs0[idx0] = np.nan
+
+widths1[idx1] = np.nan
+amps1[idx1] = np.nan
+widtherrs1[idx1] = np.nan
+
+
+widths2[idx2] = np.nan
+amps2[idx2] = np.nan
+widtherrs2[idx2] = np.nan
+
+
+widths3[idx3] = np.nan
+amps3[idx3] = np.nan
+widtherrs3[idx3] = np.nan
+
+
+widths4[idx4] = np.nan
+amps4[idx4] = np.nan
+widtherrs4[idx4] = np.nan
+
 
 muted = tc.tol_cset('muted')
 
@@ -210,7 +240,7 @@ ax.hist(widths3,edgecolor='k',alpha=0.3,bins=bins,zorder=1)
 ax.hist(widths4,edgecolor='k',alpha=0.3,bins=bins,zorder=0)
 
 # ax.axvline(np.nanmedian(widths0),linestyle='--',c=muted.indigo,linewidth=3,label='Frame 0 median')
-# ax.axvline(np.nanmedian(widths1),linestyle='--',c=muted.rose,linewidth=3,label='Frame 1 median')
+# ax.axvliwwwne(np.nanmedian(widths1),linestyle='--',c=muted.rose,linewidth=3,label='Frame 1 median')
 # ax.axvline(np.nanmedian(widths2),linestyle='--',c=muted.sand,linewidth=3,label = 'Frame 2 median') 
 # ax.axvline(np.nanmedian(widths3),linestyle='--',c=muted.green,linewidth=3,label='Frame 3 median')
 # ax.axvline(np.nanmedian(widths4),linestyle='--',c=muted.teal,linewidth=3,label = 'Frame 4 median') 
