@@ -32,7 +32,7 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
     return res
         
 #### USER-DEFINED FUNCTIONS
-directory = '/Users/coletamburri/Desktop/small_loop_frame0_validate2/' #folder to save output images, array to
+directory = '/Users/coletamburri/Desktop/small_loop_frame4_validate2/' #folder to save output images, array to
 #time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
@@ -63,7 +63,7 @@ array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening - c
 
 
 #frame to work with
-frame = array[0,:,:]
+frame = array[4,:,:]
 
 # Switches
 gauss2 = 0 # double-gaussian models?
@@ -475,9 +475,10 @@ if save == 1:
                  note,ylos,yhis,xlos,xhis)    
         
 muted = tc.tol_cset('muted')
+plt.close('all')
 
-fig,ax=plt.subplots()
-ax.errorbar(range(len(widths)),widths,yerr=widtherrs,linestyle='',fmt='o',\
-            markersize=4,color=muted.indigo,ecolor=muted.rose,elinewidth=2,\
-                capsize=3)
+# fig,ax=plt.subplots()
+# ax.errorbar(range(len(widths)),widths,yerr=widtherrs,linestyle='',fmt='o',\
+#             markersize=4,color=muted.indigo,ecolor=muted.rose,elinewidth=2,\
+#                 capsize=3)
 
