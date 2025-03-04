@@ -18,7 +18,9 @@ from scipy.signal import convolve2d
 from scipy.signal import convolve
 from scipy.ndimage import gaussian_filter
 
+# allow for pop-up... need pyqt5 installed
 matplotlib.use('Qt5Agg')
+
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
     return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
@@ -29,12 +31,11 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
           + (m * x + b)
     return res
         
-# Switches
-gauss2 = 0 # double-gaussian models?
-save = 1 # save output arrays?
-blur = 0 # test at lower res?
-directory = '/Users/coletamburri/Desktop/small_loop_frame0_validate2/'
-time = '2024-08-08T20:12:32.333333'
+
+
+#### USER-DEFINED FUNCTIONS
+directory = '/Users/coletamburri/Desktop/small_loop_frame0_validate2/' #folder to save output images, array to
+#time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
@@ -43,11 +44,41 @@ numcuts = 5 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
-#Determine mu
+##### OPTION FOR NPZ LOADING#### 
+path = '/Users/coletamburri/Desktop/VBI_Destretching/' # path for VBI file
+folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase is AXXJL
+filename = 'AXXJLselection_predestretch.npz'
+array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening - choose frame selection
+
+##### OPTION FOR FITS LOADING#### 
+# # Define path for input flare file, directory of files
+# path = '/Users/coletamburri/Desktop/VBI_Destretching/'
+# folder_vbi = 'AXXJL' # 8 August X-class flare decay phase
+# #folder_vbi = 'BDJKM' # 11 August M-class flare decay phase
+# filename='postdestretch_histomatch_dataCube.fits'
+# dir_list = os.listdir(path+folder_vbi)
+
+# # Define H-alpha file (all data) and frame to work with
+# fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
+# #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
+# first_frame = fullhalpha[0].data[0,:,:]
+
+
+#frame to work with
+frame = array[0,:,:]
+
+# Switches
+gauss2 = 0 # double-gaussian models?
+save = 1 # save output arrays?
+blur = 0 # test at "worse" resolution? e.g. for comparison to BBSO
+
+# Scaling definitions
+
+# Determine mu
 d = 151.68e9 # distance to the sun on 8 August source: https://theskylive.com/planetarium?objects=sun-moon-mercury-venus-mars-jupiter-saturn-uranus-neptune-pluto&localdata=40.01499%7C-105.27055%7CBoulder%20CO%20(US)%7CAmerica%2FDenver%7C0&obj=sun&h=14&m=01&date=2024-08-08#ra|9.242130505796545|dec|15.985314118209057|fov|50
 solrad = 695700000
 
-# Coordinates from DKIST are not correct, but define them anyways as a starting
+# Coordinates from DKIST are not exactly correct, but use them anyways as a starting
 # point.  Will co-align later in routine.
 
 hpc1_arcsec = -175
@@ -90,40 +121,19 @@ else:
     r2s = []
     amps = []
 
-    
 
-# # Clear plot memory
-# plt.close('all')
-# # for fits loading
-# # Define path for input flare file, directory of files
-# path = '/Users/coletamburri/Desktop/VBI_Destretching/'
-# folder_vbi = 'AXXJL' # 8 August X-class flare decay phase
-# #folder_vbi = 'BDJKM' # 11 August M-class flare decay phase
-# filename='postdestretch_histomatch_dataCube.fits'
-# dir_list = os.listdir(path+folder_vbi)
+# Clear plot memory
+plt.close('all')
 
-# # Define H-alpha file (all data) and frame to work with
-# fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
-# #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-# first_frame = fullhalpha[0].data[0,:,:]
-
-# for npz loading
-path = '/Users/coletamburri/Desktop/VBI_Destretching/'
-folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase
-filename = 'AXXJLselection_predestretch.npz'
-array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening
-
-#frame to work with
-frame = array[0,:,:]
 
 halpha_samp = 0.017 #arcsec/pixel
 resolution_aia_var = .6**2 #arcsec spatial sampling of sdo/aia
 resolution_trace_var = .5**2 #spatial sampling of rhessi/trace
 resolution_vbi_var = 0.017**2 #spatial sampling of DKIST/VBI in H-alpha filter
 bbsogst_var = 0.034**2 #spatial sampling of BBSO/GST at H-alpha
+
 if blur == 1:
    
-
     # subtract the vbi resolution from that of the instrument in question to get 
     # the width of the PSF we want to convolve.  Covolution of two gaussians is a 
     # Gaussian of variance equal to the sum of the *variances* of the two Gaussians
@@ -134,7 +144,6 @@ if blur == 1:
     pixels_psf_sig = round((np.sqrt(bbsogst_var-resolution_vbi_var))/halpha_samp)
     convolved = gaussian_filter(np.asarray(frame),pixels_psf_sig)
     frame = convolved
-
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
@@ -462,10 +471,10 @@ elif gauss2 == 1:
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,time,ylos,yhis,xlos,xhis)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,ylos,yhis,xlos,xhis)
     elif gauss2 == 0:
         np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
-                 note,time,ylos,yhis,xlos,xhis)    
+                 note,ylos,yhis,xlos,xhis)    
         
 muted = tc.tol_cset('muted')
 
