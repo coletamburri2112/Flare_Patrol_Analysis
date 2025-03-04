@@ -12,11 +12,13 @@ from astropy.io import fits
 import skimage
 import scipy
 import tol_colors as tc
+import matplotlib
 
 from scipy.signal import convolve2d
 from scipy.signal import convolve
 from scipy.ndimage import gaussian_filter
 
+matplotlib.use('Qt5Agg')
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
     return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
@@ -30,14 +32,14 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
 # Switches
 gauss2 = 0 # double-gaussian models?
 save = 1 # save output arrays?
-blur = 1 # test at lower res?
-directory = '/Users/coletamburri/Desktop/double_loop_frame0_pre_destretch_blur/'
+blur = 0 # test at lower res?
+directory = '/Users/coletamburri/Desktop/small_loop_frame0_validate2/'
 time = '2024-08-08T20:12:32.333333'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 1 # number of areas to look at
-numcuts = 1 # number of strands of interest per area
+numareas = 10 # number of areas to look at
+numcuts = 5 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
@@ -471,5 +473,4 @@ fig,ax=plt.subplots()
 ax.errorbar(range(len(widths)),widths,yerr=widtherrs,linestyle='',fmt='o',\
             markersize=4,color=muted.indigo,ecolor=muted.rose,elinewidth=2,\
                 capsize=3)
-fig.show()
-    
+
