@@ -12,7 +12,13 @@ from astropy.io import fits
 import skimage
 import scipy
 import tol_colors as tc
+import matplotlib
 
+from scipy.signal import convolve2d
+from scipy.signal import convolve
+from scipy.ndimage import gaussian_filter
+
+matplotlib.use('Qt5Agg')
 # Function definitions for Gaussian fitting
 def Gauss_func(x,A,mu,sigma,m,b):
     return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
@@ -25,14 +31,15 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
         
 # Switches
 gauss2 = 0 # double-gaussian models?
-save = 0 # save output arrays?
-directory = '/Users/coletamburri/Desktop/small_loop_frame47_pd/'
-time = '2024-08-08T20:15:41.666666'
+save = 1 # save output arrays?
+blur = 0 # test at lower res?
+directory = '/Users/coletamburri/Desktop/small_loop_frame0_validate2/'
+time = '2024-08-08T20:12:32.333333'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
-numareas = 1 # number of areas to look at
-numcuts = 1 # number of strands of interest per area
+numareas = 10 # number of areas to look at
+numcuts = 5 # number of strands of interest per area
 ampdir = 'neg'
 note = []
 
@@ -104,10 +111,30 @@ else:
 path = '/Users/coletamburri/Desktop/VBI_Destretching/'
 folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase
 filename = 'AXXJLselection_predestretch.npz'
-array = np.load(path+folder_vbi+filename)['brightening']
+array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening
 
 #frame to work with
-frame = array[20,:,:]
+frame = array[0,:,:]
+
+halpha_samp = 0.017 #arcsec/pixel
+resolution_aia_var = .6**2 #arcsec spatial sampling of sdo/aia
+resolution_trace_var = .5**2 #spatial sampling of rhessi/trace
+resolution_vbi_var = 0.017**2 #spatial sampling of DKIST/VBI in H-alpha filter
+bbsogst_var = 0.034**2 #spatial sampling of BBSO/GST at H-alpha
+if blur == 1:
+   
+
+    # subtract the vbi resolution from that of the instrument in question to get 
+    # the width of the PSF we want to convolve.  Covolution of two gaussians is a 
+    # Gaussian of variance equal to the sum of the *variances* of the two Gaussians
+    # , so assume observations are "already" convolved with th DKIST PSF
+
+    # var = std**2
+    # var_total**2 = var_dkist**2 + var_aia**2
+    pixels_psf_sig = round((np.sqrt(bbsogst_var-resolution_vbi_var))/halpha_samp)
+    convolved = gaussian_filter(np.asarray(frame),pixels_psf_sig)
+    frame = convolved
+
 
 # X and Y coordinates of frame
 xarr = np.arange(np.shape(frame)[0])
@@ -139,6 +166,7 @@ xhis=[]
     
 # Begin loops - first, define the number of areas to search through
 for i in range(0,2*numareas,2):
+    plt.close('all')
     
     # Extract coordinates
     ylo, yhi, xlo, xhi = int(cc[i][0]), int(cc[i+1][0]), int(cc[i][1]),\
@@ -267,17 +295,17 @@ for i in range(0,2*numareas,2):
                        label='Flux across cut',c='#009988')
             ax.set_xlabel('Position along cut')
             ax.set_ylabel('Flux')
-            ax.legend(loc=2)
+            #ax.legend(loc=2)
             
             
             # Plot the frame in one panel with the selected line, and the intensity
             # profile in the second panel along the selected line/
             fig, axes = plt.subplots(nrows=2,dpi=200)
-            axes[0].imshow(framezoom)
+            axes[0].imshow(framezoom,cmap='magma')
             axes[0].plot([x0, x1], [y0, y1], 'ro-')
             axes[0].axis('image')
             axes[1].scatter(xdirection[st:end], profile[st:end],10,c='red')
-            axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt))
+            axes[1].plot(xdirection_finer, Gauss_func(xdirection_finer,*popt),c='#882255')
             axes[0].set_title(str(l)+', w = '+str(int(round(width,2)))+'km')
             if save == 1:
                 fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
@@ -292,16 +320,29 @@ for i in range(0,2*numareas,2):
         elif gauss2 == 1:
             inf=np.inf
             
-            if amp == 'neg':
+            if ampdir == 'neg':
                 # Initial parameter guesses
-                p0=[-6000, np.median(xdirection[st:end]), 0.1,-6000,.35,0.1, 0, 35000]
-            elif amp == 'pos':
-                p0=[6000, np.median(xdirection[st:end]), 0.1,6000,.35,0.1, 0, 35000]
+                p0=[-20000, np.median(xdirection[st:end])*2/3, 0.1,-20000,
+                    np.median(xdirection[st:end])*4/3,0.1, 0, 35000]
+            elif ampdir == 'pos':
+                p0=[6000, .25, 0.1,6000,.35,0.1, 0, 35000]
             
             # Fitting - popt is output params, pcov is covariance matrix
-            popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
-                                                 xdirection[st:end+1],\
-                                                     profile[st:end+1],p0=p0)
+            try:
+                popt,pcov = scipy.optimize.curve_fit(double_gaussian,\
+                                                     xdirection[st:end+1],\
+                                                         profile[st:end+1],p0=p0,
+                                                         maxfev=200000)
+                
+            except RuntimeError:
+                width1s.append(np.nan) 
+                width2s.append(np.nan) 
+                widtherr1s.append(np.nan)
+                widtherr2s.append(np.nan)
+                r2s.append(np.nan)
+                amp1s.append(np.nan)
+                amp2s.append(np.nan)
+                print('RunTime Error!')
                 
             residuals = profile[st:end+1] - double_gaussian(xdirection[st:end+1],\
                                                            *popt)
@@ -351,12 +392,12 @@ for i in range(0,2*numareas,2):
                          '$\;km$')
             ax.set_xlabel('Position along cut [arcsec]')
             ax.set_ylabel('Flux')
-            axes[0].set_title(str(l)+', w2 = '+str(int(round(width1,2)))+\
-                              ', w2 = '+str(int(round(width2,2)))+'km')
-            ax.legend()
+            #ax[0].set_title(str(l)+', w2 = '+str(int(round(width1,2)))+\
+            #                  ', w2 = '+str(int(round(width2,2)))+'km')
+            #ax.legend()
             
             if save == 1:
-                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width,2)))+'km.png')
+                fig.savefig(directory+'cutdescrip'+str(l)+'_'+str(int(round(width1,2)))+'_km,_'+str(int(round(width1,2)))+'_km.png')
             
             # Properly order component Gaussians and append to arrays
             # Same for errors
@@ -432,5 +473,4 @@ fig,ax=plt.subplots()
 ax.errorbar(range(len(widths)),widths,yerr=widtherrs,linestyle='',fmt='o',\
             markersize=4,color=muted.indigo,ecolor=muted.rose,elinewidth=2,\
                 capsize=3)
-fig.show()
-    
+

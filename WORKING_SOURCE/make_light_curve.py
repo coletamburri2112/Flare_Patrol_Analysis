@@ -131,31 +131,45 @@ y171 = 2.1
 #lns4 = ax.hlines(y=y284, xmin=st284, xmax=end284, color=muted[5], linewidth=2,label='284 span')
 #lns5 = ax.hlines(y=y171, xmin=st171, xmax=end171, color=muted[3], linewidth=2,label='171 span')
 
-data171 = np.load('/Users/coletamburri/Desktop/171curve.npz');
+data171 = np.load('/Users/coletamburri/Desktop/August_2024_DKIST_Flares/171curve_SUVI_8Aug2024_Flare.npz');
 
-t171 = np.arange(datetime(2024,8,8,20,14,26),
+t171 = np.arange(datetime(2024,8,8,20,6,26),
               datetime(2024,8,8,20,46,16), 
               timedelta(seconds=4*60)).astype(datetime)
 
-data284=np.load('/Users/coletamburri/Desktop/284curve.npz')
+data284=np.load('/Users/coletamburri/Desktop/August_2024_DKIST_Flares/284curve_SUVI_8Aug2024_Flare.npz')
 
 
 t284 = np.arange(datetime(2024,8,8,20,6,56),
               datetime(2024,8,8,20,38,46), 
               timedelta(seconds=4*60)).astype(datetime)
 
+datagong=np.load('/Users/coletamburri/Desktop/gong_curve.npz')
+
+
+tgong = np.arange(datetime(2024,8,8,20,10,42),
+              datetime(2024,8,8,20,34,42), 
+              timedelta(seconds=60)).astype(datetime)
+
 ax3 = ax.twinx()
 lns4 = ax3.plot(t171,data171['vals']*12,'-x', color=muted[5],linewidth=2,label=r'SUVI 171$\AA$')
-lns5 = ax3.plot(t284,data284['vals']*1.1,'-x',color=muted[7], linewidth=2,label=r'SUVI 284$\AA$')
+lns5 = ax3.plot(t284,data284['vals']*1.1,'--',color=muted[7], linewidth=2,label=r'SUVI 284$\AA$')
+ax4 = ax.twinx()
+lns6 = ax4.plot(tgong,datagong['vals'],'-o',markersize=2,color=muted[8], linewidth=2,label=r'GONG H$\alpha$')
+
 ax3.set_axis_off()
-ax3.set_ylim([-10000,7000])
+ax4.set_axis_off()
+ax4.set_ylim([2000000,3200000])
+#ax.set_xlim([datetime(2024,8,8,20,5,32,333333),datetime(2024,8,8,21,15,7,0)])
+
+#ax3.set_ylim([-10000,7000])
 fmtr = dates.DateFormatter("%H:%M")
 # need a handle to the current axes to manipulate it
 ax = plt.gca()
 # set this formatter to the axis
 ax.xaxis.set_major_formatter(fmtr)
 
-lns = lns1+lns2+lns3+lns4+lns5
+lns = lns1+lns2+lns3+lns4+lns5+lns6
 labs = [l.get_label() for l in lns]
 ax.legend(lns, labs, loc=0,fontsize=10)
 
