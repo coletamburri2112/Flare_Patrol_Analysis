@@ -19,10 +19,10 @@ import matplotlib.patches as patches
 
 root = '/Users/coletamburri/Desktop/'
 folder0 = 'small_loop_frame0_validate2/'
-folder1 = 'small_loop_frame1_validate/'
-folder2 = 'small_loop_frame2_validate/'
-folder3 = 'small_loop_frame3_validate/'
-folder4 = 'small_loop_frame4_validate/'
+folder1 = 'small_loop_frame1_validate2/'
+folder2 = 'small_loop_frame2_validate2/'
+folder3 = 'small_loop_frame3_validate2/'
+folder4 = 'small_loop_frame4_validate2/'
 
 #folder0 = 'small_loop_frame1_pre_destretch_separate_all/'
 #folder1 = 'small_loop_frame1_pre_destretch_separate_all/'
@@ -87,30 +87,30 @@ amps2 = sample2['arr_2']
 amps3 = sample3['arr_2']
 amps4 = sample4['arr_2']
 
-ylo0 = sample0['arr_10']
-yhi0 = sample0['arr_11']
-xlo0 = sample0['arr_12']
-xhi0 = sample0['arr_13']
+ylo0 = sample0['arr_9']
+yhi0 = sample0['arr_10']
+xlo0 = sample0['arr_11']
+xhi0 = sample0['arr_12']
 
-ylo1 = sample1['arr_10']
-yhi1 = sample1['arr_11']
-xlo1 = sample1['arr_12']
-xhi1 = sample1['arr_13']
+ylo1 = sample1['arr_9']
+yhi1 = sample1['arr_10']
+xlo1 = sample1['arr_11']
+xhi1 = sample1['arr_12']
 
-ylo2 = sample2['arr_10']
-yhi2 = sample2['arr_11']
-xlo2 = sample2['arr_12']
-xhi2 = sample2['arr_13']
+ylo2 = sample2['arr_9']
+yhi2 = sample2['arr_10']
+xlo2 = sample2['arr_11']
+xhi2 = sample2['arr_12']
 
-ylo3 = sample3['arr_10']
-yhi3 = sample3['arr_11']
-xlo3 = sample3['arr_12']
-xhi3 = sample3['arr_13']
+ylo3 = sample3['arr_9']
+yhi3 = sample3['arr_10']
+xlo3 = sample3['arr_11']
+xhi3 = sample3['arr_12']
 
-ylo4 = sample4['arr_10']
-yhi4 = sample4['arr_11']
-xlo4 = sample4['arr_12']
-xhi4 = sample4['arr_13']
+ylo4 = sample4['arr_9']
+yhi4 = sample4['arr_10']
+xlo4 = sample4['arr_11']
+xhi4 = sample4['arr_12']
 
 
 widtherrs0 = sample0['arr_1']

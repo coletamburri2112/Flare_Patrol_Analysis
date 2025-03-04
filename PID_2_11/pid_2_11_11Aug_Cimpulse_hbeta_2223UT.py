@@ -33,7 +33,7 @@ muted = DKISTanalysis.color_muted2()
 # path and file ID for ViSP data
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
-folder2 = 'AORVR'  #QS - but change to hbeta specific
+folder2 = 'APQVP'  #QS - but change to hbeta specific
 folder3hbeta = 'ARYEE'
 
 # list of files in directory for DKIST/ViSP
@@ -75,9 +75,9 @@ clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True)
     # correct wl units)
 # time step start for chosen QS observations
 startstepqs = 0
-endstepqs=1000
+endstepqs=100
 startstep=2000 #where does interesting bit begin?
-endstep=4000#where does interesting bit end?
+endstep=2500#where does interesting bit end?
 
     
 # process multi-step raster - for hbeta
@@ -94,12 +94,10 @@ image_data_arr_arr_qs, rasterpos_qs, times_qs = \
     
 
 # # spatial and dispersion axes for single observation (single slit step)
-# spatial_range, dispersion_range = DKISTanalysis.spatialaxis(path,folder1,
-#                                                             dir_list2,line='Ca II H',
-#                                                             pid='2_11')
-# spatial_rangehbeta, dispersion_rangehbeta = DKISTanalysis.spatialaxis(path,folder3hbeta,
-#                                                             dir_list2hbeta,line='H-beta',
-#                                                             pid='2_11')
+
+spatial_range , dispersion_range = DKISTanalysis.spatialaxis(path,folder3hbeta,
+                                                            dir_list2hbeta,line='H-beta',
+                                                            pid='2_11')
 
 # # # old code, when basing QS on 15 August 2022 disk-center observations
 # # #only for 19 August observations, really - the QS will be different for others
@@ -112,89 +110,102 @@ image_data_arr_arr_qs, rasterpos_qs, times_qs = \
 # # nonflare_multfact = np.load('/Users/coletamburri/Desktop/'+\
 # #                             'DKIST_Data/bolow_nonflare_mult_fact.npy')
     
-# # Begin calibration based on QS
+# Begin calibration based on QS
+
+# Load Kurucz FTS Atlas
+#wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range-.01)
+#wlsel=wlsel/10
 
 # # Load Kurucz FTS Atlas
-# wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range-.12)
-# wlsel=wlsel/10
+wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range-.101)
+wlsel=wlsel/10
 
-# wlselhbeta, ilamselhbeta = DKISTanalysis.load_fts(dispersion_rangehbeta)
-# wlselhbeta=wlselhbeta/10
 
 # # Average the QS data for space and time, for selected ranges
-# space_and_time_averaged_qs = \
-#     DKISTanalysis.comp_fts_to_qs(wlsel,ilamsel,dispersion_range, 
-#                                  image_data_arr_arr_qs, lowint = -500,highint=-1,
-#                                  timelow=20,timehigh=46)
+space_and_time_averaged_qs = \
+    DKISTanalysis.comp_fts_to_qs(wlsel,ilamsel,dispersion_range, 
+                                  image_data_arr_arr_qs)
 
 # # telluric lines for comparison (or other absorption lines if telluric not 
 # # available, as is the case for the Ca II H window).  Most of the next steps
 # # are not used for pid_1_38, but include in any case to model the use of lines
-# line1 = 396.7432
-# line2 = 396.926
+line1 = 485.97411 #fe I
+line2 = 486.2610 #v1
 
 # # Definition of "telluric" or other absorption lines for calibration.
 # # The QS spectrum is already averaged in space and time, so any absorption lines
 # # (as is necessary for the 19 August 2022 observations) are ok
 
 # # indices of telluric lines in spectrum - lower
-# lowinds = [400,625]
+lowinds = [390,666]
 
 # # indices of telluric lines in spectrum - upper
-# highinds = [450,690]
+highinds = [455,700]
+
+cont_vals = [485.636,485.666,485.762,485.796,485.866,485.942,486.014,486.061,486.213,486.286,486.341,486.453,486.454,486.494]
 
 # # define the multiplication factor (polynomial), new dispersion range, fit values
 # # to scale the quiet sun to FTS atlas
-# cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
-#     DKISTanalysis.get_calibration_poly(dispersion_range,
-#                                        space_and_time_averaged_qs,wlsel,ilamsel,
-#                                        DKISTanalysis.find_nearest,line1,line2,
-#                                        lowinds,highinds,limbdark_fact=clv_corrqs,
-#                                        noqs_flag=2)
+cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
+    DKISTanalysis.get_calibration_poly(dispersion_range,
+                                        space_and_time_averaged_qs,wlsel,ilamsel,
+                                        DKISTanalysis.find_nearest,line1,line2,
+                                        lowinds,highinds,limbdark_fact=clv_corrqs,
+                                        cont_vals=cont_vals,order=1)
 
 # # calibrate the quiet sun 
-# calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
-# nonflare_average_avg = calibrated_qs
-# nonflare_multfact = fit_vals
+calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
+nonflare_average_avg = calibrated_qs
+nonflare_multfact = fit_vals
 
 # # full width of half max of PSF to convolve with atlas to match instrument
-# fwhm = 0.05
+fwhm = 0.05
 
 # # number of points to interpolate Atlas to in PSF convolve to match instrument
-# ntw = 45
+ntw = 45
 
 # # perform PSF convolution.  Result 'yconv' is Atlas*PSF
-# yconv=DKISTanalysis.psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,
-#                                calibrated_qs,clv_corrqs,ntw,
-#                                DKISTanalysis.gaussian_psf)
+yconv=DKISTanalysis.psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,
+                                calibrated_qs,clv_corrqs,ntw,
+                                DKISTanalysis.gaussian_psf)
 
-# #show comparison of atlas to qs
-# fig,ax=plt.subplots()
-# ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
-# ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
-# ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
-# ax.set_xlim([396.6,397.2]);ax.set_ylim([0,0.6e6])
-# ax.legend();plt.show()
 
-# #do another iteration of the calibration step after peforming the PSF conv.
-# cont_mult_facts,fit_vals,\
-#     new_dispersion_range,dispersion_range_fin,rat=\
-#         DKISTanalysis.get_calibration_poly(dispersion_range,
-#                                            space_and_time_averaged_qs,
-#                                            new_dispersion_range,yconv,
-#                                            DKISTanalysis.find_nearest,
-#                                            line1,line2,lowinds,highinds,
-#                                            limbdark_fact=clv_corrqs,noqs_flag=2)
+
+#do another iteration of the calibration step after peforming the PSF conv.
+cont_mult_facts,fit_vals,\
+    new_dispersion_range,dispersion_range_fin,rat=\
+        DKISTanalysis.get_calibration_poly(dispersion_range,
+                                            space_and_time_averaged_qs,
+                                            new_dispersion_range,yconv,
+                                            DKISTanalysis.find_nearest,
+                                            line1,line2,lowinds,highinds,
+                                            limbdark_fact=clv_corrqs,noqs_flag=2,
+                                            cont_vals=cont_vals)
         
-# # calibrated quiet sun, again, using updated fit values
-# calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
-# nonflare_average_avg = calibrated_qs
-# nonflare_multfact = fit_vals
+        
 
-# # intensity calibration, background subtraction for flare-time                            
-# scaled_flare_time, bkgd_subtract_flaretime = \
-#     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
-#                           nonflare_average_avg,end=end)
+        
+# calibrated quiet sun, again, using updated fit values
+calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
+nonflare_average_avg = calibrated_qs
+nonflare_multfact = fit_vals
+
+#show comparison of atlas to qs
+fig,ax=plt.subplots()
+ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
+ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
+ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
+ax.set_xlim([485.5,487]);
+ax.legend();plt.show()
+
+# intensity calibration, background subtraction for flare-time                            
+scaled_flare_time, bkgd_subtract_flaretime = \
+    DKISTanalysis.scaling(image_data_arr_arrhbeta, nonflare_multfact,clv_corrhbeta,
+                          nonflare_average_avg,end=end)
+
+
+low_foravg = 500
+high_foravg = 650
 
 # # definition of index bounds for Ca II H lines
 # caII_low_foravg = 525
