@@ -31,8 +31,6 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
           + (m * x + b)
     return res
         
-
-
 #### USER-DEFINED FUNCTIONS
 directory = '/Users/coletamburri/Desktop/small_loop_frame0_validate2/' #folder to save output images, array to
 #time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
