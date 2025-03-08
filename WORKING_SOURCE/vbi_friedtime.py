@@ -18,8 +18,8 @@ dir_list.sort()
 dir_list2 = []
 
 #for i in range(len(dir_list)):
-for i in range(100):
-    filename = dir_list[i]
+for i in range(300):
+    filename = dir_list[i+500]
     if filename[-5:] == '.fits' and '_I_' in filename:
         dir_list2.append(filename)
 
