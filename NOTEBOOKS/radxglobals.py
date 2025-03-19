@@ -1,0 +1,30 @@
+# globals.py
+
+PI = 3.14159265359
+CCANG = 2.99792E18
+RSUN = 6.9599E10
+KB = 1.380658E-16
+CC = 2.99792E10
+HPL = 6.6260755E-27
+HPLBAR = HPL/(2.0 * PI)
+EL = 4.8032068E-10
+MEL = 9.1093897E-28
+MP = 1.6726231E-24
+EV_ERG = 1.6022E-12
+EV2ERG = 1.6022E-12
+KEV2ERG = 1.6022E-9
+SIG = 5.67051E-5
+AMU_GRAM = 1.6605402E-24
+# grams per hydrogen from RADYN 5F11 solar
+GRPH = 2.2690747E-24
+# ionization potential of hydrogen in erg
+IONPOT = 2.1787102E-11 
+A0 = 5.29E-9 #  (1.05457266e-27)**2 / (cnst.MEL * cnst.EL**2)
+KV_STATV = 3.34
+KV2STATV = 3.34
+E0 = EL/A0**2
+MEGAM2CM = 1e8
+SFU = 1E-19 # ergs cm−2 s−1 Hz−1 in
+JY_CGS = 1e-23 # erg/s/cm2/Hz
+JY_SI = 1E-26 # W/m2/Hz
+RYDBERG = 2.1787102e-11 
