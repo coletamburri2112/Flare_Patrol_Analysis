@@ -32,7 +32,7 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
     return res
         
 #### USER-DEFINED FUNCTIONS
-directory = '/Users/coletamburri/Desktop/small_loop_frame4_validate2/' #folder to save output images, array to
+directory = '/Users/coletamburri/Desktop/small_loop_frame1_validate4/' #folder to save output images, array to
 #time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
@@ -63,7 +63,7 @@ array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening - c
 
 
 #frame to work with
-frame = array[4,:,:]
+frame = array[1,:,:]
 
 # Switches
 gauss2 = 0 # double-gaussian models?
@@ -156,7 +156,7 @@ XKM,YKM =np.meshgrid(xarr_km,yarr_km)
 
 # Plot first frame
 fig,ax=plt.subplots(dpi=400,figsize=(10,10))
-ax.pcolormesh(frame,cmap='grey')
+ax.pcolormesh(frame,cmap='magma')
 ax.set_aspect('equal')
 ax.invert_yaxis()
 
@@ -189,7 +189,7 @@ for i in range(0,2*numareas,2):
     
     # Plot zoomed-in
     fig,ax=plt.subplots(dpi=300)
-    ax.pcolormesh(framezoom,cmap='grey')
+    ax.pcolormesh(framezoom,cmap='magma')
     ax.invert_yaxis()
     ax.set_aspect('equal')
     plt.show()

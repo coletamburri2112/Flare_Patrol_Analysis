@@ -16,19 +16,24 @@ import skimage
 import scipy
 import tol_colors as tc
 import matplotlib.patches as patches
+from scipy.stats import skewtest
+from scipy.stats import wilcoxon
+
+valnum = '8'
 
 root = '/Users/coletamburri/Desktop/'
-folder0 = 'small_loop_frame0_validate2/'
-folder1 = 'small_loop_frame1_validate2/'
-folder2 = 'small_loop_frame2_validate2/'
-folder3 = 'small_loop_frame3_validate2/'
-folder4 = 'small_loop_frame4_validate2/'
+#folder0 = 'small_loop_frame0_validate_SSD/'
+folder0 = 'small_loop_frame0_validate'+str(valnum)+'/'
+folder1 = 'small_loop_frame1_validate'+str(valnum)+'/'
+folder2 = 'small_loop_frame2_validate'+str(valnum)+'/'
+folder3 = 'small_loop_frame3_validate'+str(valnum)+'/'
+folder4 = 'small_loop_frame4_validate'+str(valnum)+'/'
 
-#folder0 = 'small_loop_frame1_pre_destretch_separate_all/'
-#folder1 = 'small_loop_frame1_pre_destretch_separate_all/'
-#folder2 = 'small_loop_frame2_pre_destretch_separate_all/'
-#folder3 = 'small_loop_frame3_pre_destretch_separate_all/'
-#folder4 = 'small_loop_frame4_pre_destretch_separate_all/'
+# folder0 = 'small_loop_frame0_pre_destretch_separate_all/'
+# folder1 = 'small_loop_frame1_pre_destretch_separate_all/'
+# folder2 = 'small_loop_frame2_pre_destretch_separate_all/'
+# folder3 = 'small_loop_frame3_pre_destretch_separate_all/'
+# folder4 = 'small_loop_frame4_pre_destretch_separate_all/'
 
 filename = 'widths_errors.npz'
 
@@ -81,6 +86,14 @@ widths2 = sample2['arr_0']
 widths3 = sample3['arr_0']
 widths4 = sample4['arr_0']
 
+skewtest0 = skewtest(widths0,nan_policy='omit')
+skewtest1 = skewtest(widths1,nan_policy='omit')
+skewtest2 = skewtest(widths2,nan_policy='omit')
+skewtest3 = skewtest(widths3,nan_policy='omit')
+skewtest4 = skewtest(widths4,nan_policy='omit')
+
+
+
 amps0 = sample0['arr_2']
 amps1 = sample1['arr_2']
 amps2 = sample2['arr_2']
@@ -119,7 +132,7 @@ widtherrs2 = sample2['arr_1']
 widtherrs3 = sample3['arr_1']
 widtherrs4 = sample4['arr_1']
 
-dkistresolution = 0.034 *727
+dkistresolution = 0.016 *727
 idx0 = np.where(widths0<dkistresolution)
 idx1 = np.where(widths1<dkistresolution)
 idx2 = np.where(widths2<dkistresolution)
@@ -234,9 +247,9 @@ ax.axvspan(40, 45, alpha=0.5, color='black',zorder=0)
 ax.legend()
 fig.show()
 
-#fig.savefig('/Users/coletamburri/Desktop/fine_stats/scatter_25Feb.png')
+fig.savefig('/Users/coletamburri/Desktop/fine_stats/scatter_verify'+str(valnum)+'alt.png')
 
-bins=np.arange(20,140,10)
+bins=np.arange(20,110,5)
 
 fig,ax=plt.subplots(dpi=200)
 ax.hist(widths0,edgecolor='k',alpha=0.3,bins=bins,zorder=1)
@@ -246,7 +259,7 @@ ax.hist(widths3,edgecolor='k',alpha=0.3,bins=bins,zorder=1)
 ax.hist(widths4,edgecolor='k',alpha=0.3,bins=bins,zorder=0)
 
 ax.axvline(np.nanmedian(widths0),linestyle='--',c=muted.indigo,linewidth=3,label='Frame 0 median')
-ax.axvliwwwne(np.nanmedian(widths1),linestyle='--',c=muted.rose,linewidth=3,label='Frame 1 median')
+ax.axvline(np.nanmedian(widths1),linestyle='--',c=muted.rose,linewidth=3,label='Frame 1 median')
 ax.axvline(np.nanmedian(widths2),linestyle='--',c=muted.sand,linewidth=3,label = 'Frame 2 median') 
 ax.axvline(np.nanmedian(widths3),linestyle='--',c=muted.green,linewidth=3,label='Frame 3 median')
 ax.axvline(np.nanmedian(widths4),linestyle='--',c=muted.teal,linewidth=3,label = 'Frame 4 median') 
@@ -299,7 +312,82 @@ ax.set_xlabel('Width [km]',fontsize=12,font='Tahoma')
 ax.legend(fontsize=7,bbox_to_anchor=(.85,.45))
 fig.show()
 
-#fig.savefig('/Users/coletamburri/Desktop/fine_stats/histo_25Feb.png')
+fig.savefig('/Users/coletamburri/Desktop/fine_stats/histo_verify'+str(valnum)+'alt.png')
+
+widthsall = np.concatenate((widths0,widths1,widths2,widths3,widths4))
+
+fig,ax=plt.subplots(dpi=200)
+ax.hist(widthsall,edgecolor='k',alpha=0.3,bins=bins,zorder=1,color='black')
+ax.axvline(np.nanmedian(widthsall),linestyle='--',c=muted.indigo,linewidth=3,label='All widths median')
+
+# jing avg/med - bbso
+ax.axvline(124,linestyle='--',c='black',linewidth=1,label='Jing+2016 (Mean)')
+
+# scullion avg/med - crisp
+ax.axvline(130,linestyle='-.',c='black',linewidth=1,label='Scullion+2014 (Mode)')
+
+# brooks average/md? - iris? Other structures
+ax.axvline(133,linestyle=':',c='black',linewidth=1,label='Brooks+2018 (UFS, Mean)')
+
+# other crisp avg/med post-2014?
+# other bbso avg/med post-2016?
+
+# crisp pixel resolution
+crispres = 0.059*727
+ax.axvline(crispres,linestyle='--',c=muted.olive,linewidth=1,label='SST/CRISP Res.')
+
+# iris pixel resolution
+irisres = 0.166*727
+
+ax.axvline(irisres,linestyle='--',c=muted.wine,linewidth=1,label='IRIS Res.')
+
+# # aia pixel resolution
+# aiares = 1.5*727
+# ax.axvline(aiares,linestyle='--',c=muted.purple,linewidth=1,label='SDO/AIA')
+# dkist halpha pixel resolution
+dkisthalphares = 0.017*727
+ax.axvline(dkisthalphares,linestyle='--',c='black',linewidth=1,label=r'DKIST/VBI H$\alpha$ Res.')
+
+# bbso/nst pixel resolution
+nst_visres = 0.03*727 # according to jing+2016
+ax.axvline(nst_visres,linestyle='--',c=muted.purple,linewidth=1,label=r'BBSO/VIS H$\alpha$ Res.')
+ax.set_ylabel('Num. Occurrences',font='Tahoma',fontsize=12)
+
+
+
+
+ax.set_xlabel('Width [km]',fontsize=12,font='Tahoma')
+
+ax.set_xlabel('Width [km]',fontsize=12,font='Tahoma')
+ax.legend(fontsize=7,bbox_to_anchor=(.85,.45))
+fig.show()
+
+fig.savefig('/Users/coletamburri/Desktop/fine_stats/allwidths_verify'+str(valnum)+'alt.png')
+
+print(np.nanmean(widthsall))
+
+
+# methods for symmetry
+#wilcox test
+statistic, pvalue = wilcoxon(widthsall - np.nanmedian(widthsall),nan_policy='omit')
+print(f"Wilcoxon statistic: {statistic}, p-value: {pvalue}")
+
+alpha = 0.05
+if pvalue > alpha:
+    print("The distribution is likely symmetric")
+else:
+    print("The distribution is likely not symmetric")
+    
+#2sample ks test
+
+#pearson's 1st:
+p1 = 3*(np.nanmean(widthsall)-np.nanmedian(widthsall))/np.nanstd(widthsall)
+print(p1)
+
+#pearsons's 2nd:
+p2 = (np.nanmean(widthsall)-scipy.stats.mode(widthsall,nan_policy='omit')[0])/np.nanstd(widthsall)
+print(p2)
+
 
 # #show cuts
 # # for npz loading
@@ -338,7 +426,7 @@ fig.show()
 # ax.set_yticks([])
 # plt.show()
 
-# #fig.savefig('/Users/coletamburri/Desktop/fine_stats/frame0_context')
+#fig.savefig('/Users/coletamburri/Desktop/fine_stats/frame0_context')
 
 # #frame to work with
 # frame = array[1,:,:]
