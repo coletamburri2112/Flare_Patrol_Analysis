@@ -30,21 +30,22 @@ vbifold = '/Volumes/VBI_External/pid_'+pid+'/'
 # vbiexp ='BXWNO' # 19 August 2022
 # vbiexp = 'BDJKM' # 11 August 2024 M-class
 # vbiexp = 'AKDKX' # 11 August 2024 C-class
-vbiexp = 'AZLRR' # 8 August 2024 X-class blue continuum
-#vbiexp = 'AXXJL' # 8 August 2024 X-class
+#vbiexp = 'AZLRR' # 8 August 2024 X-class blue continuum
+vbiexp = 'AWYMX' # 8 August 2024 X-class
 
 # file = '/VBI_2022_08_19T20_42_07_333_00656282_I_BXWNO_L1.fits' # 19 August 2022
 #file = '/VBI_2024_08_08T20_12_32_333333_00656282_I_AXXJL_L1.fits' # 11 August 2024 M-class
-file = '/VBI_2024_08_11T20_12_34_333333_00450400_I_AZLRR_L1.fits'
+#file = '/VBI_2024_08_11T20_12_34_333333_00450400_I_AZLRR_L1.fits'
+file = '/VBI_2024_08_08T20_12_32_333333_00450400_I_AWYMX_L1.fits'
 savfold='/Users/coletamburri/Desktop/VBI_Destretching/'+vbiexp+'/'
 filt='Halpha'
-xtraflag = 'X_class_decay'
+xtraflag = 'X_class_decay_blue_continuum'
 
 hdu_list = fits.open(vbifold+vbiexp+file)
 image=hdu_list[1].data[0,:,:]
 
 tileSizeInput = [128, 64, 48, 24]  # original from FW
-#tileSizeInput = [12] # test from CAT
+#tileSizeInput = [64,48,24] # test from CAT
 
 if os.path.isdir(savfold)=='False':
     os.mkdir(savfold)
@@ -64,7 +65,7 @@ dir_list.sort()
 
 dataCube=[]
 #loc_files=ds.files.filenames[200:450] 
-loc_files = dir_list[2:52]
+loc_files = dir_list[2:250]
 lowx=0
 highx=-1
 lowy=0

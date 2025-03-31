@@ -32,7 +32,50 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
     return res
         
 #### USER-DEFINED FUNCTIONS
-directory = '/Users/coletamburri/Desktop/small_loop_frame1_validate8/' #folder to save output images, array to
+largestind = [269,
+ 261,
+ 3,
+ 262,
+ 263,
+ 272,
+ 275,
+ 274,
+ 0,
+ 273,
+ 2,
+ 4,
+ 178,
+ 1,
+ 71,
+ 174,
+ 271,
+ 70,
+ 175,
+ 268] #defined by largest fried parameters
+
+largestfried = [13.01338884612327,
+ 12.32584740571319,
+ 12.186340768244683,
+ 12.151014480611355,
+ 11.958786651892,
+ 11.932966239867623,
+ 11.831252200753232,
+ 11.70372880498985,
+ 11.613607159712098,
+ 11.55334283180776,
+ 11.508651467029033,
+ 11.426981198485024,
+ 11.41579557969453,
+ 11.389601873499458,
+ 11.313371521160983,
+ 11.159399530029892,
+ 11.029652443975227,
+ 10.985195954875286,
+ 10.922861871485543,
+ 10.7695324996077]
+
+ind = largestind[2]
+directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'alongstrand/' #folder to save output images, array to
 #time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
@@ -41,13 +84,15 @@ numareas = 3 # number of areas to look at
 numcuts = 15 # number of strands of interest per area
 ampdir = 'neg'
 note = []
-readframe = 1
+readframe = 0
 
 ##### OPTION FOR NPZ LOADING#### 
-path = '/Users/coletamburri/Desktop/VBI_Destretching/' # path for VBI file
-folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase is AXXJL
-filename = 'AXXJLselection_predestretch.npz'
-array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening - choose frame selection
+# path = '/Users/coletamburri/Desktop/VBI_Destretching/' # path for VBI file
+# folder_vbi = 'AXXJL/' # 8 August X-class flare decay phase is AXXJL
+# filename = 'AXXJLselection_predestretch.npz'
+# array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening - choose frame selection
+# #frame to work with
+# frame = array[7,:,:]
 
 ##### OPTION FOR FITS LOADING#### 
 # # Define path for input flare file, directory of files
@@ -57,14 +102,29 @@ array = np.load(path+folder_vbi+filename)['first50'] #first50 or brightening - c
 # filename='postdestretch_histomatch_dataCube.fits'
 # dir_list = os.listdir(path+folder_vbi)
 
-# # Define H-alpha file (all data) and frame to work with
-# fullhalpha = fits.open(path+folder_vbi+'/'+dir_list[1])
-# #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-# array = fullhalpha[0].data[3,:,:]
+# # Define H-alpha file (all data) and frame to work with using EHD
+
+path = '/Volumes/VBI_External/pid_2_11/'
+
+folder_vbi = 'AXXJL'
+dir_list = os.listdir(path+folder_vbi)
+dir_list.sort()
+dir_list2 = []
+
+#for i in range(len(dir_list)):
+for i in range(300):
+    filename = dir_list[i]
+    if filename[-5:] == '.fits' and '_I_' in filename:
+        dir_list2.append(filename)
+
+dir_list2.sort()
+
+fullhalpha = fits.open(path+folder_vbi+'/'+dir_list2[ind])
+#fullhalpha = fits.open(path+folder_vbi+'/'+filename)
+frame = fullhalpha[1].data[0]
 
 
-#frame to work with
-frame = array[1,:,:]
+
 
 # Switches
 gauss2 = 0 # double-gaussian models?
@@ -119,6 +179,12 @@ else:
     widtherrs = []
     r2s = []
     amps = []
+    cents = []
+    stds = []
+    intercepts = []
+    slopes = []
+    sts = []
+    ends = []
 
 
 # Clear plot memory
@@ -270,6 +336,12 @@ for i in range(0,2*numareas,2):
                 widths.append(np.nan) 
                 widtherrs.append(np.nan)
                 r2s.append(np.nan)
+                cents.append(np.nan)
+                stds.append(np.nan)
+                slopes.append(np.nan)
+                intercepts.append(np.nan)
+                sts.append(np.nan)
+                ends.append(np.nan)
                 print('RunTime Error!')
                 
             residuals = profile[st:end+1] - Gauss_func(xdirection[st:end+1],\
@@ -329,6 +401,12 @@ for i in range(0,2*numareas,2):
             widths.append(width) 
             widtherrs.append(width_err)
             r2s.append(r_squared)
+            cents.append(cent)
+            stds.append(std)
+            slopes.append(slope)
+            intercepts.append(intercept)
+            sts.append(st)
+            ends.append(end)
             
         # In the case of single gaussian fitting
         elif gauss2 == 1:
@@ -442,12 +520,25 @@ if gauss2 == 0:
             widths[i] = np.nan
             widtherrs[i] = np.nan
             r2s[i] = np.nan
+            cents[i] = np.nan
+            stds[i] = np.nan
+            slopes[i] = np.nan
+            intercepts[i] = np.nan
+            sts[i] = np.nan
+            ends[i] = np.nan
+            
             note.append(str(i)+' -- wrong amp')
         elif widtherrs[i] > 100:
             amps[i] = np.nan
             widths[i] = np.nan
             widtherrs[i] = np.nan
             r2s[i] = np.nan
+            cents[i] = np.nan
+            stds[i] = np.nan
+            slopes[i] = np.nan
+            intercepts[i] = np.nan
+            sts[i] = np.nan
+            ends[i] = np.nan
             note.append(str(i)+' -- large error')
 elif gauss2 == 1:
     for i in range(len(amp1s)):
@@ -476,10 +567,10 @@ elif gauss2 == 1:
 if save == 1:
     if gauss2 == 1:
         np.savez(filenamesave,width1s,width2s,widtherr1s,widtherr2s,\
-                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,ylos,yhis,xlos,xhis)
+                 startx,starty,endx,endy,r2s,amp1s,amp2s,note,ylos,yhis,xlos,xhis,cents,slopes,intercepts,stds,sts,ends)
     elif gauss2 == 0:
         np.savez(filenamesave,widths,widtherrs,startx,starty,endx,endy,r2s,amps,
-                 note,ylos,yhis,xlos,xhis)    
+                 note,ylos,yhis,xlos,xhis,cents,stds,slopes,intercepts,sts,ends)    
         
 muted = tc.tol_cset('muted')
 plt.close('all')

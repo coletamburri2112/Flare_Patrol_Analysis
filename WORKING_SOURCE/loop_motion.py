@@ -40,26 +40,26 @@ def double_gaussian( x, c1, mu1, sigma1, c2, mu2, sigma2 ,m,b):
     return res
         
 #### USER-DEFINED FUNCTIONS
-filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/postdestretch_dataCubeX_class_decay_full.fits' #folder to save output images, array to
-
+#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/postdestretch_dataCubeX_class_decay_full.fits' #folder to save output images, array to
+filename = '/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/postdestretch_histomatch_dataCubeX_class_decay_coronal_rain.fits'
 
 # Define H-alpha file (all data) and frame to work with
 fullhalpha = fits.open(filename)
 #fullhalpha = fits.open(path+folder_vbi+'/'+filename)
-array = fullhalpha[0].data[0:50,:,:]
-gbref=array[0,:,:]
-timegb,yy,xx=array.shape
+array = fullhalpha[0].data[:,:,:]
+# gbref=array[0,:,:]
+# timegb,yy,xx=array.shape
    
-dataCubeTrackedhist=[]
-for idata in range(timegb):
-    image=array[idata,:,:]
-    matched = match_histograms(image, gbref)
-    dataCubeTrackedhist.append(matched)
+# dataCubeTrackedhist=[]
+# for idata in range(timegb):
+#     image=array[idata,:,:]
+#     matched = match_histograms(image, gbref)
+#     dataCubeTrackedhist.append(matched)
 
-dcarr = np.asarray(dataCubeTrackedhist)
+# dcarr = np.asarray(dataCubeTrackedhist)
 
 # high pass filter (remove low-freq components; seems good for ribbon front, actually)
-img1=dcarr[2,:,:]
+img1=array[2,:,:]
 # F1=fp.fft2((img1).astype(float))
 # F2 = fp.fftshift(F1)
 
@@ -86,14 +86,22 @@ img1=dcarr[2,:,:]
 
 diff=[]
 
-for i in range(1,50,1):
+normmin = np.min(img1[2000:3000,2000:3000])
+normmax = np.max(img1[2000:3000,2000:3000])
+
+for i in range(np.shape(array)[0]):
     #frame to work with
-    frame = dcarr[i,:,:]
-    framelast = dcarr[i-1,:,:]
+    frame = array[i,2000:3000,2000:3000]
+    framelast = array[i-1,2000:3000,2000:3000]
     
-    slicefr = frame[:]
-    slicefr_last = framelast[:]
+    framenorm = (frame-normmin)/(normmax-normmin)
+    framelastnorm = (framelast-normmin)/(normmax-normmin)
+    
+    
+    slicefr = framenorm[:]
+    slicefr_last = framelastnorm[:]
     diff.append(np.subtract(slicefr,slicefr_last))
     
 utilvbi.storeSequence(np.asarray(diff[1:]),'/Users/coletamburri/Desktop/diff.mp4', dpi=300, write=True)
-    
+utilvbi.storeSequence(array[:,2000:3000,2000:3000],'/Users/coletamburri/Desktop/no_diff.mp4', dpi=300, write=True)
+

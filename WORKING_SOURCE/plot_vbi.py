@@ -10,11 +10,14 @@ from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import os
 
 from sunpy.net import Fido, attrs as a
 import dkist.net
 from datetime import date, datetime, timedelta, time
 import matplotlib.dates as mdates
+import sunpy.visualization.colormaps as cm
+import matplotlib
 
 def perdelta(start, end, delta):
     curr = start
@@ -29,8 +32,8 @@ def normalize_3d_array(arr):
     return (arr - min_val) / (max_val - min_val)
 
 #make times
-#sttime = datetime(2024,8,8,20,12,32,333333)
-3endtime = datetime(2024,8,8,21,5,7,0)
+sttime = datetime(2024,8,8,20,12,32,333333)
+endtime = datetime(2024,8,8,21,5,7,0)
 
 
 stack=[]
@@ -54,66 +57,127 @@ timeshhmmss = []
 for i in range(len(stack)):
     timeshhmmss.append(stack[i][-15:-7])
     
-# load fits file
+path = '/Volumes/VBI_External/pid_2_11/'
 
+folder_vbi = 'AWYMX'
+dir_list = os.listdir(path+folder_vbi)
+dir_list.sort()
+dir_list2 = []
+
+#for i in range(len(dir_list)):
+for i in range(1182):
+    filename = dir_list[i]
+    if filename[-5:] == '.fits' and '_I_' in filename:
+        dir_list2.append(filename)
+    
+# load fits file
+times = []
+xarrs = []
+yarrs = []
+
+for i in range(50):
+    hdul = fits.open(path+folder_vbi+'/'+dir_list2[i])
+    times.append(hdul[1].header['DATE-BEG'])
+    xloc = hdul[1].header['CRVAL1']
+    yloc = hdul[1].header['CRVAL2']
+    xpix = hdul[1].header['CRPIX1']
+    ypix = hdul[1].header['CRPIX2']
+    xdelt = hdul[1].header['CDELT1']
+    ydelt = hdul[1].header['CDELT2']
+    
+    xarr = np.zeros(4095)
+    yarr = np.zeros(4095)
+    
+    xarr[int(xpix)]=xloc
+    yarr[int(ypix)]=yloc
+    
+    for j in range(int(xpix)+1,4095,1):
+        xarr[j] = xarr[j-1] + xdelt
+    for j in range(int(ypix)+1,4095,1):
+        yarr[j] = yarr[j-1] + ydelt
+        
+    for j in range(int(xpix),-1,-1):
+        xarr[j] = xarr[j+1] - xdelt
+    for j in range(int(ypix),-1,-1):
+        yarr[j] = yarr[j+1] - ydelt
+        
+    xarrs.append(xarr)
+    yarrs.append(yarr)
+    
+    
+    
+    
 #this file is indices 150 to 250
-data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/AXXJLselections.npz')
-data = normalize_3d_array(data1['brightening'])
+#data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/AXXJLselections.npz')
+#data = normalize_3d_array(data1['first50'])
+
+#data = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')
+data = fits.open('/Users/coletamburri/Desktop/VBI_Destretching/AWYMX/postdestretch_histomatch_dataCubeX_class_decay_blue_continuum.fits')
 
 props = dict(edgecolor='black',facecolor='white', alpha=0.8,boxstyle='square,pad=0.4')
 
-fig,[(ax1,ax2),(ax3,ax4)]=plt.subplots(2,2,dpi=300,figsize=(3,3))
-ax1.imshow(data[0,:,:],cmap='grey',)
-ax1.set_xticklabels([])
-ax1.set_yticklabels([])
+# fig,ax=plt.subplots(1,1,dpi=300,figsize=(10,5))
+# for i in range(1):
+#     #X,Y=np.meshgrid(xarrs[i],np.transpose(yarrs[i]))
+#     ax.flatten()[i].pcolormesh(data[0].data[i*6,:,:],cmap='grey')
+#     ax.flatten()[i].set_xticklabels([])
+#     ax.flatten()[i].set_yticklabels([])
+#     ax.flatten()[i].invert_yaxis()
+#     # place a text box in upper left in axes coords
+#     #ax.flatten()[i].text(375, -150, str(timeshhmmss[i*6])+' UT',fontsize=5,
+#     #        verticalalignment='top', bbox=props)
+#     ax.flatten()[i].set_aspect('equal')
+#     ax.flatten()[i].tick_params(axis='both', which='minor', labelsize=5)
+    
 
-# place a text box in upper left in axes coords
-ax1.text(0.65, 0.9, str(timeshhmmss[150+0])+' UT', transform=ax1.transAxes, fontsize=4,
-        verticalalignment='top', bbox=props)
-ax1.set_aspect('equal')
+# fig.subplots_adjust(wspace=0, hspace=0)
+# fig.show()
 
-ax2.imshow(data[24,:,:],cmap='grey')
-ax2.text(0.65, 0.9, str(timeshhmmss[150+24])+' UT', transform=ax2.transAxes, fontsize=4,
-        verticalalignment='top', bbox=props)
-ax2.set_xticklabels([])
-ax2.set_yticklabels([])
-ax2.set_aspect('equal')
+times=[]
+xarrs=[]
+yarrs=[]
 
-ax3.imshow(data[49,:,:],cmap='grey')
-ax3.text(0.65, 0.9, str(timeshhmmss[150+49])+' UT', transform=ax3.transAxes, fontsize=4,
-        verticalalignment='top', bbox=props)
-ax3.set_xticklabels([])
-ax3.set_yticklabels([])
-ax3.set_aspect('equal')
+i = 5
 
-ax4.imshow(data[74,:,:],cmap='grey')
-ax4.text(0.65, 0.9, str(timeshhmmss[150+74])+' UT', transform=ax4.transAxes, fontsize=4,
-        verticalalignment='top', bbox=props)
-ax4.set_xticklabels([])
-ax4.set_yticklabels([])
-ax4.set_aspect('equal')
+hdul = fits.open(path+folder_vbi+'/'+dir_list2[i])
+#hdul = fits.open()
+#times.append(hdul[1].header['DATE-BEG'])
+xloc = hdul[1].header['CRVAL1']
+yloc = hdul[1].header['CRVAL2']
+xpix = hdul[1].header['CRPIX1']
+ypix = hdul[1].header['CRPIX2']
+xdelt = hdul[1].header['CDELT1']
+ydelt = hdul[1].header['CDELT2']
 
-ax1.axis('off')
-ax2.axis('off')
-ax3.axis('off')
-ax4.axis('off')
+xarr = np.zeros(4095)
+yarr = np.zeros(4095)
 
-# Create a Rectangle patch
-rect = patches.Rectangle((2000,1400), 1200, 1200, linewidth=1, edgecolor='r', facecolor='none')
+xarr[int(xpix)]=xloc
+yarr[int(ypix)]=yloc
 
-# Add the patch to the Axes
-ax1.add_patch(rect)
-rect = patches.Rectangle((2000,1400), 1200, 1200, linewidth=1, edgecolor='r', facecolor='none')
+for j in range(int(xpix)+1,4095,1):
+    xarr[j] = xarr[j-1] + xdelt
+for j in range(int(ypix)+1,4095,1):
+    yarr[j] = yarr[j-1] + ydelt
+    
+for j in range(int(xpix),-1,-1):
+    xarr[j] = xarr[j+1] - xdelt
+for j in range(int(ypix),-1,-1):
+    yarr[j] = yarr[j+1] - ydelt
+    
+xarrs.append(xarr)
+yarrs.append(yarr)
 
-ax2.add_patch(rect)
-rect = patches.Rectangle((2000,1400), 1200, 1200, linewidth=1, edgecolor='r', facecolor='none')
+X,Y = np.meshgrid(xarrs,yarrs[0][::-1])
+    
+    
+print(stack[i])
 
-ax3.add_patch(rect)
-rect = patches.Rectangle((2000,1400), 1200, 1200, linewidth=1, edgecolor='r', facecolor='none')
+fig,ax=plt.subplots(dpi=200,figsize=(20,20))
+#ax.pcolormesh(X,Y,data[0].data[i],cmap=matplotlib.colormaps['sdoaia304'])
+ax.pcolormesh(X,Y,data[0].data[i],cmap=matplotlib.colormaps['sdoaia1700'])
+ax.set_aspect('equal')
+#ax.invert_yaxis()
+ax.invert_xaxis()
+ax.tick_params(axis='both', which='minor', labelsize=2)
 
-ax4.add_patch(rect)
-fig.tight_layout()
-
-
-
-fig.show()
