@@ -256,7 +256,7 @@ def WWBW(scale=1.0, column = 2):
   
 
 def ntbremss(Ecut=37.0,Emax=50000.,delta=3.0,nEE=500.,Eflux=1e13, n_amb = 1e15, pasig=-99., Bg = 600.0, calc_cttm = 0, radio_L = 3.4e8, m_particle= 511.0, pasig_method='theta', read_ftab = '?', wwbw=0.0, delta_2 = 5.0):
-    #c: jsut like in RADYN
+    #c: just like in RADYN
     #c: delta is delta input in radyn so delta in number electrons / s /cm2/ keV
     #c: isotropic in forward hemisphere.
     ''' your_dict = ntspec.ntbremss(Ecut=37.0,delta=3.0,Eflux=1e13, n_amb = 1e15, pasig=-99.,Emax=5e4, nEE=500) '''

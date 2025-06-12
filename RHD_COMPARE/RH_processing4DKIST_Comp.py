@@ -37,21 +37,25 @@ def tosi(wav, s):
     s /= cm_to_m**2 * aa_to_m # from from Watt /(s cm2 ster AA) to Watt/(s m2 ster m) 
     s *= (wav*aa_to_m)**2 / clight # to Watt/(s m2 Hz ster)
     return s
-times = ['10'] #
+times = np.arange(60) #
 
 for i in range(len(times)):
-    time=times[i]
+    time=times[i]+1
+    
+    if time==3 or time==30 or time == 52 or time == 53:
+        continue
+    
     base1 = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/'
     base2 = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
     
     #define model to read in
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_'+time+'s_mod30_20broadc_5vt_H20/run')
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_48s_CRD/run')
-    
+    #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/longduration_'+time+'_50broadc_5vt/run')
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
-    filename = base2+'cat_15_8_5e10_wRC_updated_48s_H6_CRD'
+    filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                

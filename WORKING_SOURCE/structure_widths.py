@@ -74,17 +74,18 @@ largestfried = [13.01338884612327,
  10.922861871485543,
  10.7695324996077]
 
-ind = largestind[2]
-directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'alongstrand/' #folder to save output images, array to
+ind = largestind[0]
+#directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'final2/' #folder to save output images, array to
 #time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
+directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'_testagain/'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
 numareas = 3 # number of areas to look at
-numcuts = 15 # number of strands of interest per area
+numcuts = 1 # number of strands of interest per area
 ampdir = 'neg'
 note = []
-readframe = 0
+readframe = 1
 
 ##### OPTION FOR NPZ LOADING#### 
 # path = '/Users/coletamburri/Desktop/VBI_Destretching/' # path for VBI file
@@ -95,19 +96,19 @@ readframe = 0
 # frame = array[7,:,:]
 
 ##### OPTION FOR FITS LOADING#### 
-# # Define path for input flare file, directory of files
-# path = '/Users/coletamburri/Desktop/VBI_Destretching/'
-# folder_vbi = 'AXXJL' # 8 August X-class flare decay phase
+# Define path for input flare file, directory of files
+# path = '/Volumes/VBI_External/'
+# folder_vbi = '' # 8 August X-class flare decay phase
 # #folder_vbi = 'BDJKM' # 11 August M-class flare decay phase
-# filename='postdestretch_histomatch_dataCube.fits'
-# dir_list = os.listdir(path+folder_vbi)
+# filename='postdestretch_dataCubeX_class_decay_full.fits'
+#dir_list = os.listdir(path+folder_vbi)
 
 # # Define H-alpha file (all data) and frame to work with using EHD
 
 path = '/Volumes/VBI_External/pid_2_11/'
-
 folder_vbi = 'AXXJL'
 dir_list = os.listdir(path+folder_vbi)
+
 dir_list.sort()
 dir_list2 = []
 
@@ -220,10 +221,12 @@ yarr_km = yarr*spatial_samp
 
 # Meshgrid for plotting
 XKM,YKM =np.meshgrid(xarr_km,yarr_km)
+normalized = (frame-frame.min()) /(frame.max() - frame.min())
 
 # Plot first frame
 fig,ax=plt.subplots(dpi=400,figsize=(10,10))
-ax.pcolormesh(frame,cmap='magma')
+ax.pcolormesh(XKM,YKM,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.15),vmax=np.log10(0.92)) # for bbso
+#ax.pcolormesh(XKM,YKM,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.3),vmax=np.log10(0.92)) # .2 for lots of others
 ax.set_aspect('equal')
 ax.invert_yaxis()
 
@@ -258,11 +261,12 @@ for i in range(0,2*numareas,2):
     xhis.append(xhi)
 
     # Extract zoomed-in frame from coordinates
-    framezoom = frame[xlo:xhi,ylo:yhi]
+    framezoom = normalized[xlo:xhi,ylo:yhi]
+
     
     # Plot zoomed-in
     fig,ax=plt.subplots(dpi=300)
-    ax.pcolormesh(framezoom,cmap='magma')
+    ax.pcolormesh(np.log10(framezoom),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.15),vmax=np.log10(0.92))
     ax.invert_yaxis()
     ax.set_aspect('equal')
     plt.show()
@@ -282,9 +286,11 @@ for i in range(0,2*numareas,2):
         # Define the x and y in # pixels along the cut
         x, y = np.linspace(y0, y1, length), np.linspace(x0, x1, length)
         
+        x = [int(np.round(k)) for k in x]
+        x = [int(np.round(m)) for m in x]
         # Find the intensities nearest to the (x,y) coordinates above
         # This essentially finds the intensity profile along the cut.
-        zi = framezoom[x.astype(int), y.astype(int)]
+        #zi = framezoom[.astype(int), np.asarray(y)]
         
         # Use skimage to find the intensity profile along the line.
         # skimage.measure.profile_line returns a 1D array of intensity values 

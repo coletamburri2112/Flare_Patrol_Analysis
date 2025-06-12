@@ -89,7 +89,7 @@ def min_max_normalize(data):
 
 muted = tc.tol_cset('muted')
 
-root = '/Users/coletamburri/Desktop/'
+root = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/FS_Runs/'
 
 folders = []
 samples = []
@@ -120,9 +120,15 @@ clrs = ['#E8ECFB', '#D9CCE3', '#D1BBD7', '#CAACCB', '#BA8DB4',
         '#DC050C', '#A5170E', '#72190E', '#42150A','#125A56', 
         '#00767B', '#238F9D', '#42A7C6', '#60BCE9','#9DCCEF', 
         '#C6DBED', '#DEE6E7', '#ECEADA', '#F0E6B2','#F9D576']
-
-for i in range(len(largestind)):
-    folders.append(root+'small_loop_frame'+str(largestind[i])+'final/')
+selind=[0,1,2,3,4]
+#for i in range(len(largestind)):
+for i in range(len(selind)):
+    #if i == 2 or i == 16 or i == 1:
+    #    folders.append('/Users/coletamburri/Desktop/single_loop_frame'+str(largestind[i])+'final2/')
+    #else:
+    #folders.append(root+'small_loop_frame'+str(largestind[i])+'final/')
+    #folders.append('/Users/coletamburri/Desktop/'+'single_loop_frame'+str(selind[i])+'_testlater_blurred/')
+    folders.append(root+'small_loop_frame'+str(selind[i])+'_validate2/')
     filename='widths_errors.npz'
     samples.append(np.load(folders[i]+filename))
     widths.append(samples[i]['arr_0'])
@@ -137,13 +143,13 @@ for i in range(len(largestind)):
     linehixs.append(samples[i]['arr_4'])
     linehiys.append(samples[i]['arr_5'])    
     widtherrs.append(samples[i]['arr_1'])
-    if i == 2:
-        cents.append(samples[i]['arr_13'])
-        stds.append(samples[i]['arr_14'])
-        slopes.append(samples[i]['arr_15'])
-        intercepts.append(samples[i]['arr_16'])
-        sts.append(samples[i]['arr_17'])   
-        ends.append(samples[i]['arr_18']) 
+    # if i == 2:
+    #     cents.append(samples[i]['arr_13'])
+    #     stds.append(samples[i]['arr_14'])
+    #     slopes.append(samples[i]['arr_15'])
+    #     intercepts.append(samples[i]['arr_16'])
+    #     sts.append(samples[i]['arr_17'])   
+    #     ends.append(samples[i]['arr_18']) 
 for i in range(len(largestind)):
     idx = np.where(np.logical_or(widths[i]<dkistresolution,widtherrs[i]>13))
     widths[i][idx] = np.nan
@@ -174,46 +180,47 @@ fig.savefig('/Users/coletamburri/Desktop/scatter_final20.png')
 bins=np.arange(0,400,7.333333333333333333333333333333333)
 
 fig,ax=plt.subplots(dpi=200)
+ax.set_ylim([0,15*5])
 
 for i in range(len(largestind)):
     if i<5:
         ax.hist(widths[i],edgecolor='k',alpha=1,bins=bins,bottom = 15*i,zorder=1,color=clrs[2*i],
                 label='Frame '+str(largestind[i]))
         ax.text(.25-.09,((i+1)/5)-0.03, 'Frame '+str(largestind[i]), transform=ax.transAxes, fontsize=5)
-        ax.text(.25-.1,((i+1)/5)-0.06, r'$\mu =$ '+str(round(np.nanmedian(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
-        ax.text(.25-.095,((i+1)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmedian(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
+        ax.text(.25-.1,((i+1)/5)-0.06, r'$\mu =$ '+str(round(np.nanmean(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
+        ax.text(.25-.095,((i+1)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmean(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
 
-        ax.axvline(np.nanmedian(widths[i]),ymin=0+(i/5),ymax=((i+1)/5),linestyle='--',c='black',linewidth=1)
+        ax.axvline(np.nanmean(widths[i]),ymin=0+(i/5),ymax=((i+1)/5),linestyle='--',c='black',linewidth=1)
     if i<10 and i>4:
         offset = 110
         modified_array = [original_value + offset for original_value in widths[i]]
         ax.hist(modified_array,edgecolor='k',alpha=1,bins=bins,bottom = 15*(i-5),zorder=1,color=clrs[2*i],
                 label='Frame '+str(largestind[i]))
-        ax.axvline(np.nanmedian(modified_array),ymin=((i-5)/5),ymax=(((i+1)-5)/5),linestyle='--',c='black',linewidth=1)
+        ax.axvline(np.nanmean(modified_array),ymin=0+((i-5)/5),ymax=(((i+1)-5)/5),linestyle='--',c='black',linewidth=1)
         ax.text(.5-.09,((i+1-5)/5)-0.03, 'Frame '+str(largestind[i]), transform=ax.transAxes, fontsize=5)
-        ax.text(.5-.1,((i+1-5)/5)-0.06, r'$\mu =$ '+str(round(np.nanmedian(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
-        ax.text(.5-.095,((i+1-5)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmedian(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
+        ax.text(.5-.1,((i+1-5)/5)-0.06, r'$\mu =$ '+str(round(np.nanmean(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
+        ax.text(.5-.095,((i+1-5)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmean(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
 
     if i<15 and i>9:
         offset = 220
         modified_array = [original_value + offset for original_value in widths[i]]
         ax.hist(modified_array,edgecolor='k',alpha=1,bins=bins,bottom = 15*(i-10),zorder=1,color=clrs[2*i],
                 label='Frame '+str(largestind[i]))
-        ax.axvline(np.nanmedian(modified_array),ymin=0+((i-10)/5),ymax=(((i+1)-10)/5),linestyle='--',c='black',linewidth=1)
+        ax.axvline(np.nanmean(modified_array),ymin=0+((i-10)/5),ymax=(((i+1)-10)/5),linestyle='--',c='black',linewidth=1)
         ax.text(.75-.09,((i+1-10)/5)-0.03, 'Frame '+str(largestind[i]), transform=ax.transAxes, fontsize=5)
-        ax.text(.75-.1,((i+1-10)/5)-0.06, r'$\mu =$ '+str(round(np.nanmedian(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
-        ax.text(.75-.095,((i+1-10)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmedian(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
+        ax.text(.75-.1,((i+1-10)/5)-0.06, r'$\mu =$ '+str(round(np.nanmean(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
+        ax.text(.75-.095,((i+1-10)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmean(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
 
-    if i<29 and i>14:
+    if i<20 and i>14:
         offset = 330
         modified_array = [original_value + offset for original_value in widths[i]]
         ax.hist(modified_array,edgecolor='k',alpha=1,bins=bins,bottom = 15*(i-15),zorder=1,color=clrs[2*i],
                 label='Frame '+str(largestind[i]))
-        ax.axvline(np.nanmedian(modified_array),ymin=0+((i-15)/5),ymax=(((i+1)-15)/5),linestyle='--',c='black',linewidth=1)
-        print(np.nanmedian(widths[i]))
+        ax.axvline(np.nanmean(modified_array),ymin=0+((i-15)/5),ymax=(((i+1)-15)/5),linestyle='--',c='black',linewidth=1)
+        print(np.nanmean(widths[i]))
         ax.text(1-.09,((i+1-15)/5)-0.03,'Frame '+ str(largestind[i]), transform=ax.transAxes, fontsize=5)
-        ax.text(1-.1,((i+1-15)/5)-0.06, r'$\mu =$ '+str(round(np.nanmedian(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
-        ax.text(1-.095,((i+1-15)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmedian(largestfried[i]),1))+ 'km', transform=ax.transAxes, fontsize=5)
+        ax.text(1-.1,((i+1-15)/5)-0.06, r'$\mu =$ '+str(round(np.nanmean(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
+        ax.text(1-.095,((i+1-15)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmean(largestfried[i]),1))+ 'km', transform=ax.transAxes, fontsize=5)
 
     #ax.axvline(np.nanmean(widths[i]),linestyle='--',c=muted.indigo,linewidth=2)
 
@@ -312,7 +319,8 @@ fig,ax=plt.subplots(5,9,dpi=300)
 
 ncol = 45
 colormap = tc.tol_cmap(colormap='rainbow_discrete',lut=ncol+4)
-cmap_choice = colormap(np.linspace(0,1,ncol))
+cmap_choice = colormap(np.linspace(0,.7,ncol))
+
 
 #symmetry test
 import pandas as pd
@@ -392,31 +400,30 @@ for i in range(3):
             ax.flatten()[(15*i)+j].axes.get_xaxis().set_ticks([])  
         fig.tight_layout()
      
-        
-fig,ax=plt.subplots(dpi=300);
-ax.imshow(frame[xlos[2][0]:xhis[2][0],ylos[2][0]:yhis[2][0]],cmap='grey');
+normalized = (frame-frame.min()) /(frame.max() -frame.min())
+fig,ax=plt.subplots(dpi=400);
+ax.imshow(np.log10(normalized[xlos[2][0]:xhis[2][0],ylos[2][0]:yhis[2][0]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
 
 for i in range(15):
     ax.plot([lineloxs[2][i],linehixs[2][i]],[lineloys[2][i], linehiys[2][i]],c=cmap_choice[i])
 plt.show()
 
-fig,ax=plt.subplots(dpi=300);
-ax.imshow(frame[xlos[2][1]:xhis[2][1],ylos[2][1]:yhis[2][1]],cmap='grey');
+fig,ax=plt.subplots(dpi=400);
+ax.imshow(np.log10(normalized[xlos[2][1]:xhis[2][1],ylos[2][1]:yhis[2][1]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
 
 for i in range(15):
     ax.plot([lineloxs[2][15+i],linehixs[2][15+i]],[lineloys[2][15+i], linehiys[2][15+i]],c=cmap_choice[15+i])
 plt.show()
 
-fig,ax=plt.subplots(dpi=300);
-ax.imshow(frame[xlos[2][2]:xhis[2][2],ylos[2][2]:yhis[2][2]],cmap='grey');
+fig,ax=plt.subplots(dpi=400);
+ax.imshow(np.log10(normalized[xlos[2][2]:xhis[2][2],ylos[2][2]:yhis[2][2]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
 
 for i in range(15):
     ax.plot([lineloxs[2][30+i],linehixs[2][30+i]],[lineloys[2][30+i], linehiys[2][30+i]],c=cmap_choice[30+i])
 plt.show()
-           
         
-fig,ax=plt.subplots(dpi=200,figsize=(10,10))
-ax.imshow(frame,cmap='grey')
+fig,ax=plt.subplots(dpi=400,figsize=(10,10))
+ax.imshow(np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
 ax.set_aspect('equal')
 for i in range(len(ylos[1])):
     rect = patches.Rectangle((ylos[2][i], xlos[2][i]), yhis[2][i]-ylos[2][i], xhis[2][i]-xlos[2][i], linewidth=1, edgecolor='r', \

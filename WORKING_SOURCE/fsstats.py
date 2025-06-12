@@ -418,9 +418,15 @@ yarr_km = yarr*spatial_samp
 # Meshgrid for plotting
 XKM,YKM =np.meshgrid(xarr_km,yarr_km)
 
+normalized = (frame-frame.min()) /(frame.max() -frame.min())
+#gamma = 0.7  # Adjust this value to control brightness (gamma < 1 brightens)
+#corrected_data = np.power(normalized, gamma)
+
+import matplotlib
+
 # Plot first frame
 fig,ax=plt.subplots(dpi=200,figsize=(10,10))
-ax.imshow(frame,cmap='grey')
+ax.imshow(np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
 ax.set_aspect('equal')
 for i in range(len(ylo1)):
     rect = patches.Rectangle((ylo0[i], xlo0[i]), yhi0[i]-ylo0[i], xhi0[i]-xlo0[i], linewidth=1, edgecolor='r', \
@@ -469,7 +475,7 @@ plt.show()
 # plotting the frames to select from
 
 fig,ax=plt.subplots(dpi=300);
-ax.imshow(frame[xlo0[2]:xhi0[2],ylo0[2]:yhi0[2]],cmap='grey');
+ax.imshow(np.log10(normalized[xlo0[2]:xhi0[2],ylo0[2]:yhi0[2]]),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
 
 for i in range(15):
     ax.plot([linelox2[i+30], linehix2[i+30]], [lineloy2[i+30], linehiy2[i+30]],c='red')
