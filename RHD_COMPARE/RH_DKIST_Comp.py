@@ -118,7 +118,8 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,ntw,gaussian_psf):
 
 flag = 'f-chroma' # longdur/f-chrom
 if flag == 'f-chroma':
-    times = [2,5,6,8,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50]
+    #times = [2,5,6,8,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50]
+    times=[43]
     #times = [1,5,7,17,19,21,25,30]
     #times = [25,30,35,37,40,43,44,47,50]
     #times= [37,40,43,44,47]
@@ -154,7 +155,8 @@ base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
 
 # hep_inds = np.where((rh_file3['wl_rh']>396.95) & (rh_file3['wl_rh']< 397.07))
 
-filename_dkist = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/dkist_obs_file.npz'
+#filename_dkist = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/dkist_obs_file.npz'
+filename_dkist = '/Users/coletamburri/Desktop/subbed.npz'
 if flag == 'f-chroma':
     modelnameqs = 'fchroma30_50b_5vt_0s_H6.npz'
 elif flag == 'longdur':

@@ -47,7 +47,7 @@ muted = DKISTanalysis.color_muted2()
 
 # path and file ID for ViSP data
 path = '/Volumes/VBI_External/pid_2_11/'
-folder1 = 'AXXJL'
+folder1 = 'AXXJL' 
 #folder2 = 'BDPMQ' # for QS calibration - data from 22UT on 19 August
 
 # list of files in directory for DKIST/ViSP
@@ -57,16 +57,20 @@ dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
 
 fried=[]
 aolock = []
-for i in range(len(dir_list2)):
-    i_file_raster1 = fits.open(path+folder1+'/'+dir_list2[i])  
-    fried.append(i_file_raster1[1].header['ATMOS_R0'])
-    aolock.append(i_file_raster1[1].header['AO_LOCK'])
+#for i in range(len(dir_list2)):
+#    i_file_raster1 = fits.open(path+folder1+'/'+dir_list2[i])  
+#    fried.append(i_file_raster1[1].header['ATMOS_R0'])
+#    aolock.append(i_file_raster1[1].header['AO_LOCK'])
     
-dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
-dCslice=dC[0:350,:,:]
+dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
+#dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/BDJKM/postdestretch_dataCube.fits')[0].data # Mclass
+#dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/postdestretch_dataCubeFlareImpulsivePhase.fits')[0].data
+dCslice=dC[0:300,:,:] #Xclass
+#dCslice = dC #Mclass or C class (100 and 250 frames, respectively
 
-friedarr = np.asarray(fried)
-indices = np.argwhere(friedarr[0:350]>0.035)
+#friedarr = np.asarray(fried)
+#ndices = np.argwhere(friedarr[0:350]>0.035)
+indices = np.arange(len(dCslice))
 
 def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
     fig =plt.figure(dpi=300)
@@ -102,12 +106,14 @@ def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
     ani = animation.FuncAnimation(fig, animate, frames=data.shape[0], interval=100)
     
     if write:
-        writer = animation.writers['ffmpeg'](fps=10)
+        writer = animation.writers['ffmpeg'](fps=40)
         ani.save(movieName, writer=writer, dpi=dpi)
     plt.close(fig)  
 
 
 
-dataCubeTracked=fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
+#dataCubeTracked=fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
 
-storeSequence(dCslice,'/Users/coletamburri/Desktop/movie_removeframes.mp4', dpi=300, write=True,inds=indices)
+#dataCubeTracked=fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
+
+storeSequence(dCslice,'/Users/coletamburri/Desktop/movie_Xclass_faster.mp4', dpi=300, write=True,inds=indices)

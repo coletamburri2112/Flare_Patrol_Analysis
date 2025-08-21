@@ -1657,7 +1657,7 @@ def pltraster(caiiavgs,raster_range,spatial_range2,pid='pid_1_84'):
     return None
 
 
-def vbi_process(path_vbi,folder1_vbi):
+def vbi_process(path_vbi,folder1_vbi,timestep):
     
     # Process VBI data similarly to ViSP above; only intensity files
     
@@ -1674,7 +1674,7 @@ def vbi_process(path_vbi,folder1_vbi):
     
     dir_list2_vbi
     
-    hdul1_vbi = fits.open(path_vbi+folder1_vbi+'/'+dir_list2_vbi[0])
+    hdul1_vbi = fits.open(path_vbi+folder1_vbi+'/'+dir_list2_vbi[timestep])
     dat0_vbi = hdul1_vbi[1].data[0,:,:]
     
     xcent = hdul1_vbi[1].header['CRVAL1']
@@ -1690,7 +1690,7 @@ def vbi_process(path_vbi,folder1_vbi):
     yarr = np.linspace(((ycent-ydelt/2)-((ynum-1)/2)*ydelt),
                        ((ycent-ydelt/2)+((ynum-1)/2)*ydelt),ynum)
     
-    vbi_X,vbi_Y = np.meshgrid(np.flip(xarr),yarr)
+    vbi_X,vbi_Y = np.meshgrid(xarr,np.flip(yarr))
     
     dat0_vbi = hdul1_vbi[1].data[0,:,:]
     
@@ -1720,9 +1720,9 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     ax[0].set_aspect('equal')
     ax[0].grid()
     ax[1].pcolormesh(visp_X,visp_Y,np.transpose(vispimg),cmap='hot')
-    ax[1].set_aspect('equal')
+    #ax[1].set_aspect('equal')
     ax[1].grid()
-    #ax[1].invert_xaxis()
+    
     plt.tight_layout()
     
     plt.show()
@@ -1779,8 +1779,8 @@ def vbi_visp_transformation(aa, visp_X,visp_Y,nslit,nwave,vbi_X,vbi_Y,dat0_vbi,
     
     new_ViSP = np.zeros(np.shape(ViSP_points))
         
-    for i in range(nslit+1):
-        for j in range(nwave+1):
+    for i in range(nslit):
+        for j in range(nwave):
             point_x = visp_X[i,j]
             point_y = visp_Y[i,j]
             

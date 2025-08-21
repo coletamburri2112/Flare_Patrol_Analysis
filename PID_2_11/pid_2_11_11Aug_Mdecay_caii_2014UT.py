@@ -78,7 +78,7 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
 startstepqs = 0
 endstepqs=100
 startstep=0#where does interesting bit begin?
-endstep=1400#where does interesting bit end?
+endstep=1000#where does interesting bit end?
 print('here2')
 # process multi-step raster - for qs time
 image_data_arr_arr, rasterpos, times = \

@@ -16,7 +16,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=3
+end=2
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -76,9 +76,9 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
     
 # time step start for chosen QS observations
 startstepqs = 0
-endstepqs=100
+endstepqs=20
 startstep=2400#where does interesting bit begin?
-endstep=2800#where does interesting bit end?
+endstep=3400#where does interesting bit end?
 print('here2')
 # process multi-step raster - for qs time
 image_data_arr_arr, rasterpos, times = \

@@ -28,15 +28,15 @@ from skimage.exposure import match_histograms
 pid='2_11'
 vbifold = '/Volumes/VBI_External/pid_'+pid+'/'
 # vbiexp ='BXWNO' # 19 August 2022
-# vbiexp = 'BDJKM' # 11 August 2024 M-class
-vbiexp = 'AKDKX' # 11 August 2024 C-class
+vbiexp = 'BDJKM' # 11 August 2024 M-class
+#vbiexp = 'AKDKX' # 11 August 2024 C-class
 #vbiexp = 'AZLRR' # 8 August 2024 X-class blue continuum
-#vbiexp = 'AWYMX' # 8 August 2024 X-class
+# vbiexp = 'AWYMX' # 8 August 2024 M-class
 
 # file = '/VBI_2022_08_19T20_42_07_333_00656282_I_BXWNO_L1.fits' # 19 August 2022
 #file = '/VBI_2024_08_08T20_12_32_333333_00656282_I_AXXJL_L1.fits' # 11 August 2024 M-class
 #file = '/VBI_2024_08_11T20_12_34_333333_00450400_I_AZLRR_L1.fits'
-file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_AKDKX_L1.fits'
+file = '/VBI_2024_08_11T20_12_34_333333_00656282_I_BDJKM_L1.fits'
 savfold='/Users/coletamburri/Desktop/VBI_Destretching/'+vbiexp+'/'
 filt='Halpha'
 xtraflag = 'C_class_impulsive_phase'

@@ -39,21 +39,31 @@ path = '/Volumes/ViSP_External/pid_2_11/'
 folder1 = 'AQWDJ'
 
 #VBI
-path_vbi = '/Volumes/VBI_Aug_15_Aug_25_22/pid_1_84/'
-folder1_vbi = 'BXWNO'
-folder2_vbi = 'BYMOL'
+path_vbi = '/Volumes/VBI_External/pid_2_11/'
+folder1_vbi = 'AKDKX'
+#folder2_vbi = 'BYMOL'
 
 dir_list2 = DKISTanalysis.pathdef(path,folder1)
+dir_list2_vbi = DKISTanalysis.pathdef(path_vbi,folder1_vbi)
 
 # Stonyhurst lon/lat from JHv
-lon = 57.99 #degrees
-lat = -15 #degrees
+lon = 60.6 #degrees
+lat = -11.76 #degrees
 
 #central wl
-wl = 396.8 # Ca II H
+wl = 396.846 # Ca II H
 
-startstep=2000 #where does interesting bit begin?
-endstep=4500#where does interesting bit end?
+startstep=1500 #where does interesting bit begin?
+endstep=4000#where does interesting bit end?
+
+# with start of array at 2000
+flstart = 1048
+flend = 1048+91
+
+caII_low = 570
+caII_high = 775
+hep_low = 775
+hep_high = 918
 
 #spatial coordinates
 hpc1_arcsec, hpc2_arcsec, x_center, y_center, z, rho, mu, \
@@ -65,7 +75,7 @@ limbdarkening = DKISTanalysis.limbdarkening(wl,mu=mu,nm=True) # for Ca II H
 
 #processing of raster
 image_data_arr_arr, rasterpos, times = \
-    DKISTanalysis.multistepprocess(path,folder1,dir_list2,startstep=startstep,div=1,endstep=endstep)
+    DKISTanalysis.multistepprocess(path,folder1,dir_list2,startstep=startstep+flstart,div=1,endstep=startstep+flend)
 
 hdul1 = fits.open(path+folder1+'/'+dir_list2[0])
 
@@ -85,24 +95,33 @@ image_data_arrs0 = DKISTanalysis.imgprep(path,folder1,dir_list2,startstep,
                                          endstep,pid='2_11')
 
 #plotting of ViSP scan
-caiiavgs = DKISTanalysis.line_avg(image_data_arr_arr,600,750,1999,nspace)
-hepavgs = DKISTanalysis.line_avg(image_data_arr_arr,750,915,1999,nspace)
+caiiavgs = DKISTanalysis.line_avg(image_data_arr_arr,caII_low,caII_high,90,nspace)
+hepavgs = DKISTanalysis.line_avg(image_data_arr_arr,hep_low,hep_high,90,nspace)
 
-DKISTanalysis.pltraster(caiiavgs,raster_range,spatial_range2)
+#DKISTanalysis.pltraster(caiiavgs,raster_range,spatial_range2)
 
 #processing of VBI data
 vbi_X, vbi_Y, hdul1_vbi, dat0_vbi = DKISTanalysis.vbi_process(path_vbi,
-                                                              folder1_vbi)
+                                                              folder1_vbi,219)
 
-X,Y = np.meshgrid(raster_range,spatial_range2)
+X,Y = np.meshgrid(raster_range[:-1],spatial_range2)
+
+#just pixels
+vbix0 = np.arange(4096)
+vbiy0 = np.arange(4096)
+vispx0 = np.arange(89,-1,-1)
+vispy0 = np.arange(2556)
+
+vbiX0,vbiY0= np.meshgrid(vbix0,vbiy0)
+vispX0,vispY0 = np.meshgrid(vispx0,vispy0)
 
 #ID corresponding points in ViSP and VBI
-aa = DKISTanalysis.plt_precoalign(vbi_X,vbi_Y,hdul1_vbi,X,Y,caiiavgs,
+aa = DKISTanalysis.plt_precoalign(vbiX0,vbiY0,hdul1_vbi,vispX0,vispY0,caiiavgs,
                                   matplotlib,dat0_vbi)
 
 #ViSP to VBI
-visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa,X,Y,nspace,4,
-                                                               vbi_X,vbi_Y,
+visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa,vispX0,vispY0,nspace,90,
+                                                               vbiX0,vbiY0,
                                                                dat0_vbi,
                                                                caiiavgs,
                                                                matplotlib)

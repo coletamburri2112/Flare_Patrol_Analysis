@@ -89,7 +89,7 @@ def min_max_normalize(data):
 
 muted = tc.tol_cset('muted')
 
-root = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/FS_Runs/'
+root = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/VBI_X_class/Fine_Structure/FS_Runs/'
 
 folders = []
 samples = []
@@ -121,14 +121,14 @@ clrs = ['#E8ECFB', '#D9CCE3', '#D1BBD7', '#CAACCB', '#BA8DB4',
         '#00767B', '#238F9D', '#42A7C6', '#60BCE9','#9DCCEF', 
         '#C6DBED', '#DEE6E7', '#ECEADA', '#F0E6B2','#F9D576']
 selind=[0,1,2,3,4]
-#for i in range(len(largestind)):
-for i in range(len(selind)):
+for i in range(len(largestind)):
+#for i in range(len(selind)):
     #if i == 2 or i == 16 or i == 1:
     #    folders.append('/Users/coletamburri/Desktop/single_loop_frame'+str(largestind[i])+'final2/')
     #else:
-    #folders.append(root+'small_loop_frame'+str(largestind[i])+'final/')
+    folders.append(root+'small_loop_frame'+str(largestind[i])+'final/')
     #folders.append('/Users/coletamburri/Desktop/'+'single_loop_frame'+str(selind[i])+'_testlater_blurred/')
-    folders.append(root+'small_loop_frame'+str(selind[i])+'_validate2/')
+    #folders.append(root+'small_loop_frame'+str(selind[i])+'_validate2/')
     filename='widths_errors.npz'
     samples.append(np.load(folders[i]+filename))
     widths.append(samples[i]['arr_0'])
@@ -143,18 +143,23 @@ for i in range(len(selind)):
     linehixs.append(samples[i]['arr_4'])
     linehiys.append(samples[i]['arr_5'])    
     widtherrs.append(samples[i]['arr_1'])
-    # if i == 2:
-    #     cents.append(samples[i]['arr_13'])
-    #     stds.append(samples[i]['arr_14'])
-    #     slopes.append(samples[i]['arr_15'])
-    #     intercepts.append(samples[i]['arr_16'])
-    #     sts.append(samples[i]['arr_17'])   
-    #     ends.append(samples[i]['arr_18']) 
+    if i == 2:
+        cents.append(samples[i]['arr_13'])
+        stds.append(samples[i]['arr_14'])
+        slopes.append(samples[i]['arr_15'])
+        intercepts.append(samples[i]['arr_16'])
+        sts.append(samples[i]['arr_17'])   
+        ends.append(samples[i]['arr_18']) 
 for i in range(len(largestind)):
     idx = np.where(np.logical_or(widths[i]<dkistresolution,widtherrs[i]>13))
     widths[i][idx] = np.nan
     amps[i][idx] = np.nan
     widtherrs[i][idx] = np.nan
+    
+#removal of feature too large in frame 178
+widths[12][25]=np.nan
+amps[12][25]=np.nan
+widtherrs[12][25]=np.nan
     
 fig,ax=plt.subplots(dpi=200)
 
@@ -206,7 +211,7 @@ for i in range(len(largestind)):
         modified_array = [original_value + offset for original_value in widths[i]]
         ax.hist(modified_array,edgecolor='k',alpha=1,bins=bins,bottom = 15*(i-10),zorder=1,color=clrs[2*i],
                 label='Frame '+str(largestind[i]))
-        ax.axvline(np.nanmean(modified_array),ymin=0+((i-10)/5),ymax=(((i+1)-10)/5),linestyle='--',c='black',linewidth=1)
+        ax.axvline(np.nanmean(modified_array),ymin=0+((i-10)/5),ymax=(((i+1)-10)/5),linestyle='-o',c='black',linewidth=1)
         ax.text(.75-.09,((i+1-10)/5)-0.03, 'Frame '+str(largestind[i]), transform=ax.transAxes, fontsize=5)
         ax.text(.75-.1,((i+1-10)/5)-0.06, r'$\mu =$ '+str(round(np.nanmean(widths[i]),2))+ 'km', transform=ax.transAxes, fontsize=5)
         ax.text(.75-.095,((i+1-10)/5)-0.09, r'$r_0 =$ '+str(round(np.nanmean(largestfried[i]),1))+ 'cm', transform=ax.transAxes, fontsize=5)
@@ -315,7 +320,7 @@ frame = fullhalpha[1].data[0]
 def Gauss_func(x,A,mu,sigma,m,b):
     return A * np.exp(-(x - mu)**2 / (2 * sigma**2))+ m*x + b
 
-fig,ax=plt.subplots(5,9,dpi=300)
+fig,ax=plt.subplots(5,9,dpi=150)
 
 ncol = 45
 colormap = tc.tol_cmap(colormap='rainbow_discrete',lut=ncol+4)
@@ -387,39 +392,100 @@ for i in range(3):
             # Plot intensity profile in separate window
            
             #ax.flatten()[(15*i)+j].plot(xdirection[int(sts[0][15*i+j]):int(ends[0][15*i+j])],profile[int(sts[0][15*i+j]):int(ends[0][15*i+j])],'-.',markersize=1,c='black')
-            ax.flatten()[(15*i)+j].plot(xdirection,profile,marker='.',markersize=3,c=cmap_choice[15*i+j])
+            ax.flatten()[(15*i)+j].plot(xdirection*727,profile,marker='.',markersize=5,c=cmap_choice[15*i+j],linewidth=2.5)
             
-            ax.flatten()[(15*i)+j].plot(xdirection_finer,Gauss_func(xdirection_finer,*popt),'-',c='red',alpha=0.9,linewidth=0.9)
+            ax.flatten()[(15*i)+j].plot(xdirection_finer*727,Gauss_func(xdirection_finer,*popt),'-',c='red',alpha=0.9,linewidth=2)
             ax.flatten()[(15*i)+j].axes.get_yaxis().set_ticks([])
-            ax.flatten()[(15*i)+j].axes.get_xaxis().set_ticks([])
+            ax.flatten()[(15*i)+j].tick_params(axis='both', which='major', labelsize=7)
+            
+            
  
         else:
-            ax.flatten()[(15*i)+j].plot(xdirection,profile,'--',markersize=1,c=cmap_choice[15*i+j],alpha=0.5)
+            ax.flatten()[(15*i)+j].plot(xdirection*727,profile,'--',marker='o',markersize=3,c=cmap_choice[15*i+j],alpha=0.5,linewidth=2.5)
 
             ax.flatten()[(15*i)+j].axes.get_yaxis().set_ticks([])
-            ax.flatten()[(15*i)+j].axes.get_xaxis().set_ticks([])  
-        fig.tight_layout()
+            ax.flatten()[(15*i)+j].tick_params(axis='both', which='major', labelsize=7)
+             
+            
+fig.subplots_adjust(wspace=0.25, hspace=.6)
      
+
+lineloxkms = [element*0.017*727 for element in lineloxs]
+linehixkms = [element*0.017*727 for element in linehixs]
+
+lineloykms = [element*0.017*727 for element in lineloys]
+linehiykms = [element*0.017*727 for element in linehiys]
+
+    
 normalized = (frame-frame.min()) /(frame.max() -frame.min())
-fig,ax=plt.subplots(dpi=400);
-ax.imshow(np.log10(normalized[xlos[2][0]:xhis[2][0],ylos[2][0]:yhis[2][0]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
 
-for i in range(15):
-    ax.plot([lineloxs[2][i],linehixs[2][i]],[lineloys[2][i], linehiys[2][i]],c=cmap_choice[i])
+xarr = np.arange(0,4096,1)*0.017*727
+yarr = np.arange(4096,0,-1)*0.017*727
+X,Y = np.meshgrid(xarr,yarr)
+
+from matplotlib.ticker import AutoMinorLocator
+
+
+fig,ax=plt.subplots(dpi=100);
+#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
+ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
+ax.set_xticks([0,10000,20000,30000,40000,50000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$',r'$4\times10^4\;km$',r'$5\times10^4\;km$'])
+ax.set_yticks([0,10000,20000,30000,40000,50000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$',r'$4\times10^4\;km$',r'$5\times10^4\;km$'])
+#ax.invert_yaxis()
+ax.set_aspect('equal')
+minor_locator = AutoMinorLocator(2) 
+ax.xaxis.set_minor_locator(minor_locator)
+ax.yaxis.set_minor_locator(minor_locator)
 plt.show()
 
-fig,ax=plt.subplots(dpi=400);
-ax.imshow(np.log10(normalized[xlos[2][1]:xhis[2][1],ylos[2][1]:yhis[2][1]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
+fig,ax=plt.subplots(dpi=200);
+yarr2 = np.arange(0,yhis[2][0]-ylos[2][0]+1,1)*0.017*727
+xarr2 = np.arange(xhis[2][0]-xlos[2][0]+1,0,-1)*0.017*727
+#xarr2 = np.arange(0,xhis[2][0]-xlos[2][0]+1,1)*0.017*727
+X2,Y2 = np.meshgrid(yarr2,xarr2)
+ax.set_yticks([0,1000,2000,3000,4000],[r'0',r'$10^3\;km$',r'$2\times10^3\;km$',r'$3\times10^3\;km$',r'$4\times10^3\;km$'])
+ax.set_xticks([0,2000,4000,6000],[r'0',r'$2\times10^3\;km$',r'$4\times10^3\;km$',r'$6\times10^3\;km$'])
 
+minor_locator = AutoMinorLocator(2) 
+ax.xaxis.set_minor_locator(minor_locator)
+ax.yaxis.set_minor_locator(minor_locator)
+
+ax.pcolormesh(X2,Y2,np.log10(normalized[xlos[2][0]:xhis[2][0],ylos[2][0]:yhis[2][0]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
+ax.set_aspect('equal')
 for i in range(15):
-    ax.plot([lineloxs[2][15+i],linehixs[2][15+i]],[lineloys[2][15+i], linehiys[2][15+i]],c=cmap_choice[15+i])
+    ax.plot([lineloxkms[2][i],linehixkms[2][i]],[xarr2[0]-lineloykms[2][i], xarr2[0]-linehiykms[2][i]],c=cmap_choice[i])
 plt.show()
 
-fig,ax=plt.subplots(dpi=400);
-ax.imshow(np.log10(normalized[xlos[2][2]:xhis[2][2],ylos[2][2]:yhis[2][2]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
-
+fig,ax=plt.subplots(dpi=200);
+yarr3 = np.arange(0,yhis[2][1]-ylos[2][1],1)*0.017*727
+xarr3 = np.arange(xhis[2][1]-xlos[2][1],0,-1)*0.017*727
+X3,Y3 = np.meshgrid(yarr3,xarr3)
+ax.set_yticks([0,2000,4000,6000,8000],[r'0',r'$2\times10^3\;km$',r'$4\times10^3\;km$',r'$6\times10^3\;km$',r'$8\times10^3\;km$'])
+ax.set_xticks([0,4000,8000,12000],[r'0',r'$4\times10^3\;km$',r'$8\times10^3\;km$',r'$1.2\times10^4\;km$'])
+ax.set_aspect('equal')
+ax.pcolormesh(X3,Y3,np.log10(normalized[xlos[2][1]:xhis[2][1],ylos[2][1]:yhis[2][1]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
+#ax.invert_xaxis()
 for i in range(15):
-    ax.plot([lineloxs[2][30+i],linehixs[2][30+i]],[lineloys[2][30+i], linehiys[2][30+i]],c=cmap_choice[30+i])
+    ax.plot([lineloxkms[2][15+i],linehixkms[2][15+i]],[xarr3[0]-lineloykms[2][15+i], xarr3[0]-linehiykms[2][15+i]],c=cmap_choice[15+i])
+minor_locator = AutoMinorLocator(2) 
+ax.xaxis.set_minor_locator(minor_locator)
+ax.yaxis.set_minor_locator(minor_locator)
+plt.show()
+
+fig,ax=plt.subplots(dpi=200);
+yarr4 = np.arange(0,yhis[2][2]-ylos[2][2],1)*0.017*727
+xarr4 = np.arange(xhis[2][2]-xlos[2][2],0,-1)*0.017*727
+X4,Y4 = np.meshgrid(yarr4,xarr4)
+ax.pcolormesh(X4,Y4,np.log10(normalized[xlos[2][2]:xhis[2][2],ylos[2][2]:yhis[2][2]]),cmap=matplotlib.colormaps['afmhot'],vmax=np.log(1.2))#,vmin=np.log10(0.12),vmax=np.log10(0.7),alpha=0.8)
+ax.set_yticks([0,2000,4000,6000,8000],[r'0',r'$2\times10^3\;km$',r'$4\times10^3\;km$',r'$6\times10^3\;km$',r'$8\times10^3\;km$'])
+ax.set_xticks([0,4000,8000,12000],[r'0',r'$4\times10^3\;km$',r'$8\times10^3\;km$',r'$1.2\times10^4\;km$'])
+minor_locator = AutoMinorLocator(2) 
+ax.xaxis.set_minor_locator(minor_locator)
+ax.yaxis.set_minor_locator(minor_locator)
+#ax.invert_yaxis()
+ax.set_aspect('equal')
+for i in range(15):
+    ax.plot([lineloxkms[2][30+i],linehixkms[2][30+i]],[xarr4[0]-lineloykms[2][30+i], xarr4[0]-linehiykms[2][30+i]],c=cmap_choice[30+i])
 plt.show()
         
 fig,ax=plt.subplots(dpi=400,figsize=(10,10))
@@ -434,7 +500,10 @@ ax.set_yticks([])
 plt.show()
 
     
-    
+# symmetry tests
+sym1 = 3*(np.nanmean(widthsall)-np.nanmedian(widthsall))/np.nanstd(widthsall)
+sym2 = scipy.stats.skewtest(widthsall,nan_policy='omit')
+
     
     
     

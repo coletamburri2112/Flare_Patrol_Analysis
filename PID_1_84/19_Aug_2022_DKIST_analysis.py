@@ -32,10 +32,10 @@ muted = DKISTanalysis.color_muted2()
 
 # path and file ID for ViSP data
 path = '/Volumes/ViSP_External/pid_1_84/'
-#folder1 = 'AZVXV' # for flare time
-folder1 = 'BEONE'
-#folder2 = 'ANYDJ' # for QS calibration - data from 22UT on 19 August
-folder2 = 'AJDZR' # alternative for QS calibration 
+folder1 = 'AZVXV' # for flare time
+#folder1 = 'BEONE'
+folder2 = 'ANYDJ' # for QS calibration - data from 22UT on 19 August
+#folder2 = 'AJDZR' # alternative for QS calibration 
 
 # list of files in directory for DKIST/ViSP
 dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime

@@ -28,7 +28,7 @@ from pyclustering.cluster.encoder import cluster_encoder
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
 
-filename = '/Users/coletamburri/Desktop/11AugCclass_caii.npz'
+filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/11AugCclass_caii.npz'
 res = np.load(filename)
 
 flare_arr = res['arr_0']
@@ -45,7 +45,7 @@ hepsilon_high = 900
 
 cutoff0 = 3 # factor of minimum- 1 means all pixels, >1 is search for flare
 
-n_clusters0 = 10
+n_clusters0 = 12
 
 nframes = 10
 startspace = 500
@@ -56,7 +56,7 @@ start = 149
 # change based on line
 
 linelow = caII_low
-linehigh = caII_high
+linehigh = hepsilon_high
 
 obs_avg_line = np.mean(flare_arr[:,linelow:linehigh,:],1)
 

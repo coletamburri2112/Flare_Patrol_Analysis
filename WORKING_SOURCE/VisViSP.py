@@ -12,9 +12,9 @@ import tol_colors as tc
 
 #file = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/ViSPselection8AugXclass_hbeta.npz'
 #file = '/Users/coletamburri/Desktop/ViSPselectionHbeta11aug.npz'
-file = '/Users/coletamburri/Desktop/11August2024_Cclass_imp_CaII.npz'
+#file = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
 #file = '/Users/coletamburri/Desktop/ViSPselection8AugXclass.npz'
-
+file = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
 
 data = np.load(file)
 

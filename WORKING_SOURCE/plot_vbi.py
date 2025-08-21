@@ -60,8 +60,8 @@ for i in range(len(stack)):
     
 path = '/Volumes/VBI_External/pid_2_11/'
 
-folder_vbi = 'AXXJL'
-#'AWYMX'
+#folder_vbi = 'AXXJL' # X class flare
+folder_vbi = 'AWYMX' # M class flare
 dir_list = os.listdir(path+folder_vbi)
 dir_list.sort()
 dir_list2 = []
@@ -110,11 +110,11 @@ for i in range(50):
     
     
 #this file is indices 150 to 250
-data1 = np.load('/Users/coletamburri/Desktop/VBI_Destretching/AXXJL/AXXJLselections.npz')
-#data = normalize_3d_array(data1['first50'])
-
-data = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
-#data = fits.open('/Users/coletamburri/Desktop/VBI_Destretching/AWYMX/postdestretch_histomatch_dataCubeX_class_decay_blue_continuum.fits')
+data1 = np.load('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AXXJL/AXXJLselections.npz')
+data = normalize_3d_array(data1['first50'])
+rain = data = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AWYMX/pre-destretch_dataCubeX_class_decay_coronal_rain.fits')[0].data
+#data = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
+#data = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AWYMX/postdestretch_histomatch_dataCubeX_class_decay_blue_continuum.fits')[0].data
 #data = fits.open('/Users/coletamburri/Desktop/VBI_Destretching/AKDKX/postdestretch_histomatch_dataCubeFlareImpulsivePhase.fits')
 
 props = dict(edgecolor='black',facecolor='white', alpha=0.8,boxstyle='square,pad=0.4')
@@ -175,11 +175,16 @@ for j in range(int(xpix),-1,-1):
 for j in range(int(ypix),-1,-1):
     yarr[j] = yarr[j+1] - ydelt
     
+xarr_arb = np.linspace(45,0,num=4095)
+yarr_arb = np.linspace(45,0,num=4095)
+
 
 xarrs.append(xarr)
 yarrs.append(yarr)
 
 X,Y = np.meshgrid(xarrs[0],yarrs[0][::-1])
+
+X,Y = np.meshgrid(xarr_arb, yarr_arb)
 #X,Y = np.meshgrid(xarrs[0],yarrs[0][::-1])
 
 #normalized = data[0].data[i]/data[0].data[i].max()   
@@ -194,21 +199,49 @@ normalized = (data[i]-data[i].min()) /(data[i].max() -data[i].min())
 print(stack[i])
 
 fig,ax=plt.subplots(dpi=200,figsize=(20,20))
+
+xarr = np.arange(0,4096,1)*0.017*727
+yarr = np.arange(4096,0,-1)*0.017*727
+X,Y = np.meshgrid(xarr,yarr)
+
+xarrb = np.arange(4096,0,-1)*0.011*727
+yarrb = np.arange(4096,0,-1)*0.011*727
+
+Xb,Yb = np.meshgrid(xarrb,yarrb)
+
+from matplotlib.ticker import AutoMinorLocator
+
+fig,ax=plt.subplots(dpi=200);
+#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
+#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
+# ax.set_xticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
+# ax.set_yticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
+ax.set_xticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
+ax.set_yticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
+minor_locator = AutoMinorLocator(2) 
+ax.xaxis.set_minor_locator(minor_locator)
+ax.yaxis.set_minor_locator(minor_locator)
+
+#ax.invert_xaxis()
+#ax.set_xticks([100,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
+#ax.set_yticks([109,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
+
 #im = ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.15),vmax=np.log10(0.96)) #4
-ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92)) # 1 and 3
+#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92)) # 1 and 3
+ax.pcolormesh(Xb,Yb,normalized,cmap=matplotlib.colormaps['sdoaia4500'],vmin=0.3,vmax=0.9)
 #im = ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.25),vmax=np.log10(0.92)) #2
-#im = ax.imshow(normalized,cmap=matplotlib.colormaps['afmhot'],vmin=0.07,vmax=0.7)
+#im = ax.imshow(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=0.07,vmax=0.7)
 ax.set_aspect('equal')
 #ax.invert_yaxis()
 #ax.invert_xaxis()
-ax.tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
+ax.tick_params(top=False, labeltop=False, bottom=True, labelbottom=True)
 ax.tick_params(axis='both', which='minor', labelsize=2)
 fig.show()
 
 #masking
 
-lower_intensity = 0.4  # Example lower threshold
-upper_intensity = 0.285 # Example upper threshold
+lower_intensity = 0.35  # Example lower threshold
+upper_intensity = 0.28 # Example upper threshold
 
 mask = np.copy(normalized)
 mask[mask<lower_intensity] = 0
@@ -233,13 +266,13 @@ ncuts = 3 # for each power spec
 
 # first plot for the ribbons - positive mask
 fig,ax=plt.subplots(dpi=300)
-ax.imshow(normalized)
+ax.imshow(mask)
 fig.show()
 aa = plt.ginput(ncuts*2,timeout = 120)
 
 # next plot for the arcade - negative mask
 fig,ax=plt.subplots(dpi=300)
-ax.imshow(normalized)
+ax.imshow(maskneg)
 fig.show()
 bb = plt.ginput(ncuts*2,timeout = 120)
 
@@ -251,9 +284,9 @@ cc = plt.ginput(ncuts*2,timeout = 120)
 
 import skimage
 #for ribbon
-n=10
+n=20
 fig1,ax1=plt.subplots();
-
+ps_rib_all = []
 for j in range(0,2*ncuts,2):
     print(j)
     x0, y0, x1, y1 = aa[j][0], aa[j][1], aa[j+1][0], aa[j+1][1]
@@ -265,13 +298,13 @@ for j in range(0,2*ncuts,2):
     
     # Find the intensities nearest to the (x,y) coordinates above
     # This essentially finds the intensity profile along the cut.
-    zi = normalized[x.astype(int), y.astype(int)]
+    zi =mask[x.astype(int), y.astype(int)]
     
     # Use skimage to find the intensity profile along the line.
     # skimage.measure.profile_line returns a 1D array of intensity values 
     # in a directly line from (x0,y0) to (x1,y1), of length equal to the 
     # ceil of the computed length of the line (in units of pixels)
-    profile = skimage.measure.profile_line(normalized,[y1,x0],[y0,x1])
+    profile = skimage.measure.profile_line(mask,[y1,x0],[y0,x1])
     
     # Convert the length of the skimage output to arcsec
     xdirection = np.arange(len(profile))
@@ -281,21 +314,23 @@ for j in range(0,2*ncuts,2):
     a#x.plot(profile,'-x')
     #fig.show()
     
-    ps = np.abs(np.fft.fft(profile))**2
-
+    ps_rib = np.abs(np.fft.fft(profile))**2
+    ps_rib_all.append(ps_rib)
     step = 0.017
-    freqs = np.fft.fftfreq(profile.size, step)
-    idx = np.argsort(freqs)
+    freqsrib = np.fft.fftfreq(profile.size, step)
+    idx = np.argsort(freqsrib)
 
-    ps_smooth = np.convolve(ps, np.ones(n)/n, mode='full')
-    ax1.loglog((1/freqs[idx])*727, ps_smooth[idx])
+    ps_smooth = np.convolve(ps_rib, np.ones(n)/n, mode='full')
+    ax1.loglog((1/freqsrib[idx])*727, ps_smooth[idx])
 ax1.set_xlim([0,3000])
 ax1.axvline(0.034*727)
 ax1.axvline(45)
+ax1.set_xlim([0,600])
+ax1.set_title('Ribbon')
 fig1.show()
    
 fig1,ax1=plt.subplots();
-
+ps_arc_all = []
 for j in range(0,2*ncuts,2):
     print(j)
     x0, y0, x1, y1 = bb[j][0], bb[j][1], bb[j+1][0], bb[j+1][1]
@@ -307,13 +342,13 @@ for j in range(0,2*ncuts,2):
     
     # Find the intensities nearest to the (x,y) coordinates above
     # This essentially finds the intensity profile along the cut.
-    zi = normalized[x.astype(int), y.astype(int)]
+    zi = maskneg[x.astype(int), y.astype(int)]
     
     # Use skimage to find the intensity profile along the line.
     # skimage.measure.profile_line returns a 1D array of intensity values 
     # in a directly line from (x0,y0) to (x1,y1), of length equal to the 
     # ceil of the computed length of the line (in units of pixels)
-    profile = skimage.measure.profile_line(normalized,[y1,x0],[y0,x1])
+    profile = skimage.measure.profile_line(maskneg,[y1,x0],[y0,x1])
     
     # Convert the length of the skimage output to arcsec
     xdirection = np.arange(len(profile))
@@ -323,22 +358,35 @@ for j in range(0,2*ncuts,2):
     a#x.plot(profile,'-x')
     #fig.show()
     
-    ps = np.abs(np.fft.fft(profile))**2
-
-    step = 0.017
-    freqs = np.fft.fftfreq(profile.size, step)
-    idx = np.argsort(freqs)
+    # compute PSD of intensity "profile"
+    ps_arc = np.abs(np.fft.fft(profile))**2
     
-
-    ps_smooth = np.convolve(ps, np.ones(n)/n, mode='full')
-    ax1.loglog((1/freqs[idx])*727, ps_smooth[idx])
+    #define pixel scale
+    step = 0.017
+    
+    #define frequency array in VBI pixels
+    freqsarc = np.fft.fftfreq(profile.size, step)
+    idx = np.argsort(freqsarc)
+    
+    # smooth for visuallization
+    ps_smooth = np.convolve(ps_arc, np.ones(n)/n, mode='full')
+    
+    # plot space vs. PSD
+    ax1.loglog((1/freqsarc[idx])*727, ps_smooth[idx])
+    
+    ps_arc_all.append(ps_arc)
+    
+    
 ax1.set_xlim([0,3000])
 ax1.axvline(0.034*727)
 ax1.axvline(45)
+ax1.set_xlim([0,600])
+ax1.set_title('Arcade')
 fig1.show()
         
 
 fig1,ax1=plt.subplots();
+ps_qs_all =[]
 for j in range(0,2*ncuts,2):
     print(j)
     x0, y0, x1, y1 = cc[j][0], cc[j][1], cc[j+1][0], cc[j+1][1]
@@ -366,18 +414,42 @@ for j in range(0,2*ncuts,2):
     a#x.plot(profile,'-x')
     #fig.show()
     
-    ps = np.abs(np.fft.fft(profile))**2
-
+    ps_qs = np.abs(np.fft.fft(profile))**2
+    ps_qs_all.append(ps_qs)
     step = 0.017
-    freqs = np.fft.fftfreq(profile.size, step)
-    idx = np.argsort(freqs)
+    freqsqs = np.fft.fftfreq(profile.size, step)
+    idx = np.argsort(freqsqs)
 
-    ps_smooth = np.convolve(ps, np.ones(n)/n, mode='full')
-    ax1.loglog((1/freqs[idx])*727, ps_smooth[idx])
+    ps_smooth = np.convolve(ps_qs, np.ones(n)/n, mode='full')
+    ax1.loglog((1/freqsqs[idx])*727, ps_smooth[idx],label=str(j))
 ax1.set_xlim([0,3000])
 ax1.axvline(0.034*727)
 ax1.axvline(45)
+#ax1.legend()
+ax1.set_xlim([0,600])
+ax1.set_title('Quiescent')
 fig1.show()
+
+minqs = np.min((len(ps_qs_all[0]),len(ps_qs_all[1]),len(ps_qs_all[2])))
+minrib = np.min((len(ps_rib_all[0]),len(ps_rib_all[1]),len(ps_rib_all[2])))
+minarc = np.min((len(ps_arc_all[0]),len(ps_arc_all[1]),len(ps_arc_all[2])))
+
+arrayqs = [ps_qs_all[0][0:minqs],ps_qs_all[1][0:minqs],ps_qs_all[2][0:minqs]]
+meanqs = np.mean(arrayqs,axis=0)
+arrayrib = [ps_rib_all[0][0:minrib],ps_rib_all[1][0:minrib],ps_rib_all[2][0:minrib]]
+arrayarc = [ps_arc_all[0][0:minarc],ps_arc_all[1][0:minarc],ps_arc_all[2][0:minarc]]
+meanrib = np.mean(arrayrib,axis=0)
+meanarc = np.mean(arrayarc,axis=0)
+
+fig,ax=plt.subplots();
+ax.loglog((1/freqsqs[0:minqs])*727,np.convolve(meanqs,np.ones(n)/n,mode='full')[0:minqs],label='QS');
+ax.loglog((1/freqsrib[0:minrib])*727,np.convolve(meanrib,np.ones(n)/n,mode='full')[0:minrib],label='rib');
+ax.loglog((1/freqsarc[0:minarc])*727,np.convolve(meanarc,np.ones(n)/n,mode='full')[0:minarc],label='arc');
+ax.legend();
+ax.set_xlim([0,3000])
+ax.axvline(0.034*727)
+ax.axvline(45)
+ax.set_xlim([0,600]);fig.show()
 
 
 # def power_spectrum_1d(image):

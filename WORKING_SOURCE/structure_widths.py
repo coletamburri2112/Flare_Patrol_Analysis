@@ -74,10 +74,10 @@ largestfried = [13.01338884612327,
  10.922861871485543,
  10.7695324996077]
 
-ind = largestind[0]
+ind = largestind[12]
 #directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'final2/' #folder to save output images, array to
 #time = '2024-08-08T20:12:32.333333' #time for observations... not really necessary
-directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'_testagain/'
+directory = '/Users/coletamburri/Desktop/single_loop_frame'+str(ind)+'_smallest/'
 if os.path.isdir(directory) == 0:
     os.mkdir(directory)
 filenamesave = directory+'widths_errors.npz' # filename for output
@@ -333,7 +333,9 @@ for i in range(0,2*numareas,2):
             
             # Perform the fit, extract parameters (popt) and cov. matrix (pcov)
             try:
+# %%
                 popt,pcov = scipy.optimize.curve_fit(Gauss_func,\
+
                                                      xdirection[st:end+1],\
                                                          profile[st:end+1],p0=p0,
                                                          maxfev=200000)

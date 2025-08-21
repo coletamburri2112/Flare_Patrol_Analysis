@@ -32,7 +32,7 @@ matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 muted = DKISTanalysis.color_muted2()
 
 # path and file ID for ViSP data
-path = '/Users/coletamburri/Desktop/'
+path = '/Users/coletamburri/Desktop/August_2022_Observations_Paper/'
 folder1 = 'All_Stokes_pid_1_84'
 #folder2 = 'ANYDJ' # for QS calibration - data from 22UT on 19 August
 #folder2 = 'AJDZR' # alternative for QS calibration 
