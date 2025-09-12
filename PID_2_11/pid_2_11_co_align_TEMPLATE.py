@@ -116,11 +116,23 @@ vbiX0,vbiY0= np.meshgrid(vbix0,vbiy0)
 vispX0,vispY0 = np.meshgrid(vispx0,vispy0)
 
 #ID corresponding points in ViSP and VBI
-aa = DKISTanalysis.plt_precoalign(vbiX0,vbiY0,hdul1_vbi,vispX0,vispY0,caiiavgs,
+aa = DKISTanalysis.plt_precoalign(vbiX0,vbiY0,hdul1_vbi,vispX0,vispY0,hepavgs,
                                   matplotlib,dat0_vbi)
 
+# JUST for co-aligning when I know where one axis is.  first point is upper left
+# of triangle; second is upper right; third is lower left
+aa_arr = np.asarray(aa)
+
+
+aa_arr[2][1] = aa_arr[0][1]
+aa_arr[3][1] = aa_arr[1][1]
+aa_arr[4][0] = aa_arr[0][0]
+aa_arr[5][0] = aa_arr[1][0]
+
+
+
 #ViSP to VBI
-visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa,vispX0,vispY0,nspace,90,
+visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa_arr,vispX0,vispY0,nspace,90,
                                                                vbiX0,vbiY0,
                                                                dat0_vbi,
                                                                caiiavgs,

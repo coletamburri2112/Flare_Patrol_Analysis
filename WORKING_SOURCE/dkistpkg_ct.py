@@ -1716,14 +1716,15 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
 
 
     fig,ax=plt.subplots(1,2,figsize=(10,5),sharey=True)
-    ax[0].pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='hot')
-    ax[0].set_aspect('equal')
+    ax[0].pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='grey')
+    #ax[0].set_aspect('equal')
     ax[0].grid()
-    ax[1].pcolormesh(visp_X,visp_Y,np.transpose(vispimg),cmap='hot')
+    ax[1].pcolormesh(visp_X,visp_Y,np.transpose(vispimg),cmap='grey')
     #ax[1].set_aspect('equal')
     ax[1].grid()
     
-    plt.tight_layout()
+    
+    #plt.tight_layout()
     
     plt.show()
     

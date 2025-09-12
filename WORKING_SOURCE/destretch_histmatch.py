@@ -28,7 +28,8 @@ from skimage.exposure import match_histograms
 pid='2_11'
 vbifold = '/Volumes/VBI_External/pid_'+pid+'/'
 # vbiexp ='BXWNO' # 19 August 2022
-vbiexp = 'BDJKM' # 11 August 2024 M-class
+#vbiexp = 'BDJKM' # 11 August 2024 M-class
+vbiexp = 'L1-HDGZO' # 11 August 2024 C-class with new ID
 #vbiexp = 'AKDKX' # 11 August 2024 C-class
 #vbiexp = 'AZLRR' # 8 August 2024 X-class blue continuum
 # vbiexp = 'AWYMX' # 8 August 2024 M-class
@@ -37,7 +38,7 @@ vbiexp = 'BDJKM' # 11 August 2024 M-class
 #file = '/VBI_2024_08_08T20_12_32_333333_00656282_I_AXXJL_L1.fits' # 11 August 2024 M-class
 #file = '/VBI_2024_08_11T20_12_34_333333_00450400_I_AZLRR_L1.fits'
 file = '/VBI_2024_08_11T20_12_34_333333_00656282_I_BDJKM_L1.fits'
-savfold='/Users/coletamburri/Desktop/VBI_Destretching/'+vbiexp+'/'
+savfold='/Users/coletamburri/Desktop/'+vbiexp+'/'
 filt='Halpha'
 xtraflag = 'C_class_impulsive_phase'
 
@@ -64,7 +65,7 @@ dir_list.sort()
 #plt.show()
 
 dataCube=[]
-#loc_files=ds.files.filenames[200:450] 
+#loc_files=ds.files.filenames[200:450] # I think this should be the original destretching for C-class flare
 loc_files = dir_list[150:450]
 lowx=0
 highx=-1
