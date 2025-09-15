@@ -10,6 +10,7 @@ import dkistpkg_ct as DKISTanalysis
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+import os
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -31,6 +32,9 @@ muted = DKISTanalysis.color_muted2()
 
 l=0
 CUT=3.8 # cutoff for mask-making
+binning = 1
+bin_x = 1
+bin_y = 1
 
 # limits for flare region
 xlow = 1700
@@ -83,21 +87,55 @@ else:
 
 vbi_DSimgs = vbi_DS[0].data
 
-fig,ax=plt.subplots()
-ax.imshow(vbi_DS[0].data[40,:,:])
-fig.show()
+
+
+arr = vbi_DSimgs
+
+def rebin_image(arr, new_shape):
+    """
+    Rebins a 2D array (image) to a new shape by averaging pixel values.
+
+    Parameters:
+    arr (numpy.ndarray): The original 2D image array.
+    new_shape (tuple): The desired new shape (rows, columns).
+                       Each dimension of new_shape must be a factor of
+                       the corresponding dimension in arr.shape.
+
+    Returns:
+    numpy.ndarray: The binned 2D array.
+    """
+    if not (arr.shape[0] % new_shape[0] == 0 and arr.shape[1] % new_shape[1] == 0):
+        raise ValueError("New shape dimensions must be factors of original shape dimensions.")
+
+    shape = (new_shape[0], arr.shape[0] // new_shape[0],
+             new_shape[1], arr.shape[1] // new_shape[1])
+    return arr.reshape(shape).mean(-1).mean(1)
+
+
+
+if binning == 1:
+    bin_x = 7
+    bin_y = 7
+    new_height = vbi_DSimgs.shape[1] // bin_y
+    new_width = vbi_DSimgs.shape[2] // bin_x
+    
+    binned = np.zeros((250,new_height,new_width))
+    
+    for i in range(250):
+        binned[i,:,:] = rebin_image(vbi_DSimgs[i,:,:], (new_height,new_width))
+    
+    arr = binned
 
 # create cumulative mask
-mask = np.zeros(np.shape(vbi_DSimgs))
-timing = np.zeros(np.shape(vbi_DSimgs)[1:3])
+mask = np.zeros(np.shape(arr))
+timing = np.zeros(np.shape(arr)[1:3])
 
 for i in range(100):
     l+=1
     if i>0:
         mask[i,:,:]=mask[i-1,:,:]
-    maskvals = np.nonzero((vbi_DSimgs[i,:,:]>CUT*np.median(vbi_DSimgs[i,:,:])))
+    maskvals = np.nonzero((arr[i,:,:]>CUT*np.median(arr[i,:,:])))
     for j in range(np.shape(maskvals)[1]):
-        #mask[i,maskvals[0][j],maskvals[1][j]] += vbi_DSimgs[i,maskvals[0][j],maskvals[1][j]]
         mask[i,maskvals[0][j],maskvals[1][j]] += 1
         #logic for timing array
         if timing[maskvals[0][j],maskvals[1][j]]==0:
@@ -115,13 +153,13 @@ fig,ax=plt.subplots(dpi=200)
 ax.imshow(mask[99,:,:],cmap='jet')
 ax.set_xlim([1700,2200])
 ax.set_ylim([2600,1200])
-fig.show()
+
             
 # plot timing series (evolution of ribbon mask)
 fig,ax=plt.subplots(dpi=200)
 pcm=ax.pcolormesh(timing,cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'))
-ax.set_xlim([1600,2300])
-ax.set_ylim([2700,900])
+ax.set_xlim([1600/bin_x,2300/bin_x])
+ax.set_ylim([2700/bin_y,900/bin_y])
 ax.set_aspect('equal')
 cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
 cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
@@ -137,7 +175,7 @@ final_mask = mask[99,:,:]
 
 for i in range(np.shape(final_mask)[0]):
     for j in range(np.shape(final_mask)[1]):
-        if final_mask[i,j] > 0.0 and j>xlow and j<xhigh and i>ylow and i<yhigh:
+        if final_mask[i,j] > 0.0 and j>xlow/bin_x and j<xhigh/bin_x and i>ylow/bin_x and i<yhigh/bin_x:
             i_vals.append(i)
             j_vals.append(j)
             
@@ -145,7 +183,7 @@ for i in range(np.shape(final_mask)[0]):
 lc=[]
 
 for i in range(250):
-    lc.append(np.sum(vbi_DSimgs[i,ylow:yhigh,xlow:xhigh]))
+    lc.append(np.sum(arr[i,int(ylow/bin_y):int(yhigh/bin_y),int(xlow/bin_x):int(xhigh/bin_x)]))
     
 #compare light curves
 numcolor_timing = int(np.nanmax(timing))
@@ -155,18 +193,39 @@ cmap_choice2 = maps(np.linspace(0,1,numcolor_timing))
 fig,ax=plt.subplots(figsize=(20,10))
 # for i in np.arange(0,len(i_vals)):
 for i in np.arange(1,len(i_vals)):
-    if np.nanmax(vbi_DSimgs[0:119,i_vals[i],j_vals[i]])>50000:
-        ax.plot(vbi_DSimgs[0:119,i_vals[i],j_vals[i]],c=cmap_choice2[int(timing[i_vals[i],j_vals[i]])-1],linewidth=0.1)
+    if np.nanmax(arr[0:119,i_vals[i],j_vals[i]])>50000:
+        ax.plot(arr[0:119,i_vals[i],j_vals[i]],c=cmap_choice2[int(timing[i_vals[i],j_vals[i]])-1],linewidth=.1*bin_x)
 
-ax.plot(strtime[0:100],vbi_DSimgs[0:100,i_vals[0],j_vals[0]],c=cmap_choice2[int(timing[i_vals[i],j_vals[i]])-1],linewidth=0.1)
+ax.plot(strtime[0:100],arr[0:100,i_vals[0],j_vals[0]],c=cmap_choice2[int(timing[i_vals[i],j_vals[i]])-1],linewidth=.1*bin_x)
 ax2=ax.twinx()
 ax2.plot(strtime[0:100],lc[0:100],c='crimson',linewidth=5,marker='.')
 ax.set_xticks(strtime[0:101:20])
 ax.set_ylim([-50000,300000])
 
 
+# difference imaging
 
+diffarr = np.zeros(np.shape(arr))
+
+m=0
+folder = '/Users/coletamburri/Desktop/diffimg_pre/'
+
+
+
+
+for i in range(np.shape(diffarr)[0]-20):
+    diffarr[m,:,:] = np.subtract(arr[i,:,:],arr[i+20,:,:])
     
+    
+    fig,ax=plt.subplots(dpi=200);
+    ax.imshow(diffarr[m,:,:],cmap='grey')
+    fig.savefig(folder+str(i)+'.png')
+    
+    m+=1
+    
+    
+    
+
 
 
 
