@@ -32,13 +32,20 @@ nsteps = 91
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_caII_hep.npz'
 #filename = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
 #filename = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
-#filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
-filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/11aug24_Cclass_Hbeta.npz'
+filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
+coord_filename='/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
+#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/11aug24_Cclass_Hbeta.npz'
 res = np.load(filename)
+
+coordres = np.load(coord_filename)
+
+vispx = coordres['arr_0']
+vispy = coordres['arr_1']
 
 flare_arr = res['flare']
 wave = res['wl']
 #times = res['arr_1']
+
 
 hbeta_low =500
 hbeta_high = 660
@@ -49,14 +56,14 @@ caII_high = 775
 hepsilon_low = 775
 hepsilon_high = 900
 
-#cutoff0 = 1.5 # for more than one frame
-cutoff0 = 1.5 # for h-beta
+cutoff0 = 1.5 # for more than one frame
+#cutoff0 = 1.5 # for h-beta
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 #cutoff0=2.9 # for hepsilon
 
 n_clusters0 = 6 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 
-nframes = 4
+nframes = 1
 startspace = 0 # 500 for ca ii
 endspace = -1 # 1500 for ca ii
 nsteps = 91
@@ -133,7 +140,7 @@ arr_normprofs0 = normprofiles_line
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
     
 fig,ax=plt.subplots(figsize=(1,10),dpi=200)
-ax.pcolormesh(np.transpose(frame_line),cmap = 'hot',alpha=0.5)
+ax.pcolormesh(vispx,vispy,np.transpose(frame_line),cmap = 'hot',alpha=0.5)
 ax.scatter(x_mask0,y_mask0,2,color=colors[groups0],alpha=1,marker='s')
 #ax.invert_xaxis()
 ax.invert_yaxis()

@@ -129,6 +129,16 @@ aa_arr[3][1] = aa_arr[1][1]
 aa_arr[4][0] = aa_arr[0][0]
 aa_arr[5][0] = aa_arr[1][0]
 
+# results from 15 september co-align
+load=1
+if load == 1:
+    aa_arr = [[1836.46057348, 2326.73014872],
+           [  11.84946237, 1299.16774314],
+           [2045.05316607, 2326.73014872],
+           [  44.67204301, 1299.16774314],
+           [1836.46057348, 1492.19051546],
+           [  11.84946237,  850.67365452]]
+
 
 
 #ViSP to VBI
@@ -137,6 +147,9 @@ visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa_arr,vispX0,vis
                                                                dat0_vbi,
                                                                caiiavgs,
                                                                matplotlib)
+
+filename = '/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
+np.savez(filename,visp_X_new,visp_Y_new,caiiavgs)
 
 #VBI to SDO calibration
 start_time = Time('2022-08-19T20:42:30', scale='utc', format='isot')

@@ -9,34 +9,25 @@ Created on Mon Sep 15 09:00:58 2025
 import dkistpkg_ct as DKISTanalysis
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-import os
-
-import astropy.units as u
-from astropy.coordinates import SkyCoord
-from astropy.time import Time
-from astropy.visualization import ImageNormalize, SqrtStretch
-
-import sunpy.coordinates
-import sunpy.map
-from sunpy.net import Fido
-from sunpy.net import attrs as a
 import tol_colors
-
+import os
 from astropy.io import fits
-from datetime import datetime
 from datetime import time
-import matplotlib.dates as mdates
 
 muted = DKISTanalysis.color_muted2()
 
 l=0
-CUT=3.8 # cutoff for mask-making
-binning = 1
-bin_x = 1
-bin_y = 1
+CUT=2.5 # cutoff for mask-making
+binning = 1 # to bin or not to bin?
+diff = 0 # to diff or not to diff
+if binning == 1:
+    bin_x = 7 # this bins the VBI pixels to largest ViSP spatial scale (in scan dir), plus 1 for "safety"
+    bin_y = 7
+else:
+    bin_x = 1 #initialize this parameter - will change if binning selected, below
+    bin_y = 1 #initialize this parameter - will change if binning selected, below
 
-# limits for flare region
+# limits for flare region (defined by raw image)
 xlow = 1700
 xhigh = 2350
 ylow = 1000
@@ -58,6 +49,16 @@ dir_list2_vbi = DKISTanalysis.pathdef(path_vbi,folder1_vbi)
 #destretched dataset
 filename = ['/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/'+
                 'postdestretch_dataCubeFlareImpulsivePhase.fits'][0]
+
+visp_file = '/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
+
+vispload = np.load(visp_file)
+
+vispX = vispload['arr_0']
+vispY = vispload['arr_1']
+vispavg = vispload['arr_2']
+
+
 
 
 times=[]
@@ -114,8 +115,6 @@ def rebin_image(arr, new_shape):
 
 
 if binning == 1:
-    bin_x = 7
-    bin_y = 7
     new_height = vbi_DSimgs.shape[1] // bin_y
     new_width = vbi_DSimgs.shape[2] // bin_x
     
@@ -205,24 +204,24 @@ ax.set_ylim([-50000,300000])
 
 # difference imaging
 
-diffarr = np.zeros(np.shape(arr))
-
-m=0
-folder = '/Users/coletamburri/Desktop/diffimg_pre/'
-
-
-
-
-for i in range(np.shape(diffarr)[0]-20):
-    diffarr[m,:,:] = np.subtract(arr[i,:,:],arr[i+20,:,:])
+if diff == 1:
+    diffarr = np.zeros(np.shape(arr))
     
+    m=0
+    folder = '/Users/coletamburri/Desktop/diffimg_pre/'
+    if ~os.path.isdir(folder):
+        os.mkdir(folder)
     
-    fig,ax=plt.subplots(dpi=200);
-    ax.imshow(diffarr[m,:,:],cmap='grey')
-    fig.savefig(folder+str(i)+'.png')
-    
-    m+=1
-    
+    for i in range(np.shape(diffarr)[0]-20):
+        diffarr[m,:,:] = np.subtract(arr[i,:,:],arr[i+20,:,:])
+        
+        
+        fig,ax=plt.subplots(dpi=200);
+        ax.imshow(diffarr[m,:,:],cmap='grey')
+        fig.savefig(folder+str(i)+'.png')
+        
+        m+=1
+        
     
     
 
