@@ -6,11 +6,15 @@ Created on Fri Oct  4 06:18:46 2024
 @author: coletamburri
 """
 
+
 import numpy as np
+import dkistpkg_ct as DKISTanalysis
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 import scipy as scp
 import pandas as pd
+import scipy.integrate as integrate
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from tslearn.clustering import TimeSeriesKMeans
@@ -56,23 +60,25 @@ caII_high = 775
 hepsilon_low = 775
 hepsilon_high = 900
 
-cutoff0 = 1.5 # for more than one frame
+#cutoff0 = 1.5 # for more than one frame
 #cutoff0 = 1.5 # for h-beta
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
-#cutoff0=2.9 # for hepsilon
+cutoff0=2.9 # for hepsilon
 
-n_clusters0 = 6 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+n_clusters0 = 40 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 
 nframes = 1
 startspace = 0 # 500 for ca ii
 endspace = -1 # 1500 for ca ii
 nsteps = 91
-start = 0 #148 for saved Ca II H/Hepsilon files
+start = 148 #148 for saved Ca II H/Hepsilon files
+
+cent = 396.85
 
 # change based on line
 
-linelow = hbeta_low
-linehigh = hbeta_high
+linelow = caII_low
+linehigh = caII_high
 
 obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,startspace:endspace],1)
 flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
@@ -138,18 +144,40 @@ frame_line, mask0, km0, normprofiles_line, groups0, x_mask0, y_mask0 = \
     
 arr_normprofs0 = normprofiles_line
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
+
+aa_arr = [[1836.46057348, 2326.73014872],
+       [  11.84946237, 1299.16774314],
+       [2045.05316607, 2326.73014872],
+       [  44.67204301, 1299.16774314],
+       [1836.46057348, 1492.19051546],
+       [  11.84946237,  850.67365452]]
+
+for i in range(len(x_mask0)):
+    x_mask0[i] = 91-x_mask0[i]
+
+#transformation - variation on the function in dkistpkg_ct, without plotting
+x_mask_t,y_mask_t = DKISTanalysis.vbi_visp_transformation(aa_arr,x_mask0,y_mask0,matplotlib,d1=1)
+
+# order by area under the curve
+
+areas = []
+
+for i in range(len(km0.means())):
+    areas.append(integrate.cumulative_trapezoid(km0.means()[i])[-1])
     
-fig,ax=plt.subplots(figsize=(1,10),dpi=200)
-ax.pcolormesh(vispx,vispy,np.transpose(frame_line),cmap = 'hot',alpha=0.5)
-ax.scatter(x_mask0,y_mask0,2,color=colors[groups0],alpha=1,marker='s')
-#ax.invert_xaxis()
+fig,ax=plt.subplots(figsize=(3,10),dpi=100)
+ax.pcolormesh(vispx,vispy,np.transpose(frame_line[:-2,:]),cmap='hot',alpha=0.5)
+ax.scatter(x_mask_t,y_mask_t,4,color=colors[groups0],alpha=1,marker='s')
 ax.invert_yaxis()
+ax.set_ylim([2800,800])
+ax.set_xlim([1750,2100])
+ax.tick_params(axis='y', labelrotation=90)
 
 fig.show()
 
 #fig,ax=plt.subplots(3,4,figsize=(5,4),dpi=200)
 #fig,ax=plt.subplots(2,3,figsize=(5,4),dpi=200) #if hep
-fig,ax=plt.subplots(2,4,figsize=(5,4),dpi=200) #if hep and caii
+fig,ax=plt.subplots(5,8,figsize=(5,4),dpi=200) #if hep and caii
 arr_normprofs0 = normprofiles_line
 
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
@@ -160,7 +188,7 @@ colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
     
 #     ax.flatten()[group].plot(curve,alpha=0.01,color='black')
 
-# for i in range(n_clusters0):
+# for i in range(n_clusters0)
 #     ax.flatten()[i].plot(km0.means()[i],marker='*',color=colors[i])
     
 for i in range(len(arr_normprofs0)):
@@ -168,6 +196,7 @@ for i in range(len(arr_normprofs0)):
     group = groups0[i]
     #ind = np.where(sortarr==group)
     ax.flatten()[group].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
+    ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
     
 for i in range(n_clusters0):
     ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[i],marker='*',color=colors[i],markersize=.1)
@@ -175,7 +204,7 @@ for i in range(n_clusters0):
     #ax.flatten()[i].axvline(397.01)
     #ax.flatten()[i].set_title(int(i),fontsize=10,y=-0.4)
     #ax.flatten()[i].text(9, .85, str(fwhms[sortarr[i]]), ha='center', size=13)
-
+    ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
     ax.flatten()[i].tick_params(
     axis='x',          # changes apply to the x-axis
     which='both',      # both major and minor ticks are affected

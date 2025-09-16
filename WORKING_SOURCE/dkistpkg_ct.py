@@ -1742,12 +1742,14 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     
     return aa
 
-def vbi_visp_transformation(aa, visp_X,visp_Y,nslit,nwave,vbi_X,vbi_Y,dat0_vbi,
-                            vispimg,matplotlib,vbiband='H-alpha',
-                            vispband='CaII H 396.8 nm',pid='pid_1_84'):
+def vbi_visp_transformation(aa, visp_X,visp_Y,matplotlib,nslit=91,vbi_X=[],vbi_Y=[],
+                            nwave=2556,vbiband='H-alpha',vispimg=[],dat0_vbi=[],
+                            vispband='CaII H 396.8 nm',pid='pid_1_84',plot=0,d1=0):
     
     # Simple transformation matrix between ViSP and VBI using output of ginput
     # process in function above
+    
+    #d1 should be 1 if the input vectors are 1d (like in the masking scheme)
     
     # visp points
     A1 = np.array(aa[1])
@@ -1779,67 +1781,83 @@ def vbi_visp_transformation(aa, visp_X,visp_Y,nslit,nwave,vbi_X,vbi_Y,dat0_vbi,
     ViSP_points = [visp_X,visp_Y]
     
     new_ViSP = np.zeros(np.shape(ViSP_points))
-        
-    for i in range(nslit):
-        for j in range(nwave):
-            point_x = visp_X[i,j]
-            point_y = visp_Y[i,j]
-            
+       
+    if d1 == 1:
+        for i in range(len(visp_X)):
+            point_x = visp_X[i]
+            point_y = visp_Y[i]
             point = [point_x,point_y]
             ViSPvec = point - A1
-            
             A2_1 = np.matmul(COB,ViSPvec)+A2
             
-            new_ViSP[:,i,j] = A2_1
+            new_ViSP[:,i] = A2_1
             
-    visp_X_new = new_ViSP[0,:,:]
-    visp_Y_new = new_ViSP[1,:,:]
+        visp_X_new = new_ViSP[0,:]
+        visp_Y_new = new_ViSP[1,:]
+    
+    else:
+        for i in range(nslit):
+            for j in range(nwave):
+                point_x = visp_X[i,j]
+                point_y = visp_Y[i,j]
+                
+                point = [point_x,point_y]
+                ViSPvec = point - A1
+                
+                A2_1 = np.matmul(COB,ViSPvec)+A2
+                
+                new_ViSP[:,i,j] = A2_1
+            
+        visp_X_new = new_ViSP[0,:,:]
+        visp_Y_new = new_ViSP[1,:,:]
     
     # plot new axes
     
-    fig,ax=plt.subplots(1,2,figsize=(10,5),sharey=True)
-    ax[0].pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='grey')
-    ax[0].set_aspect('equal')
-    #ax[0].invert_xaxis()
-    ax[0].grid()
-    ax[1].pcolormesh(visp_X_new,visp_Y_new,np.transpose(vispimg),cmap='hot')
-    ax[1].set_aspect('equal')
-    ax[1].grid()
-    #ax[1].invert_xaxis()
-    # custom_xlim = (-455,-410)
-    # custom_ylim = (285,332)
-    
-    # # Setting the values for all axes.
-    # plt.setp(ax, xlim=custom_xlim, ylim=custom_ylim)
-    
-    plt.tight_layout()
-    
-    plt.show()
-    
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
-                'postcalib.png')
-    
-    # plot overlay
-    
-    verts=np.array([[visp_X_new[-1,-1],visp_Y_new[-1,-1]],
-                    [visp_X_new[-1,0],visp_Y_new[-1,0]],
-                    [visp_X_new[0,0],visp_Y_new[0,0]],
-                    [visp_X_new[0,-1],visp_Y_new[0,-1]]])
-    
-    fig,ax = plt.subplots(1,1,figsize = (5,5))
-    ax.pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='gray')
-    ax.pcolormesh(visp_X_new,visp_Y_new,np.transpose(vispimg),cmap='hot',
-                  alpha = 0.3)
-    boxy = matplotlib.patches.Polygon(verts,fill=False,edgecolor='black',lw=3)
-    ax.add_patch(boxy)
-    ax.set_title('VBI '+vbiband+' and ViSP '+vispband,fontsize=15)
-    ax.set_xlabel('Heliocentric Longitude',fontsize=10)
-    ax.set_ylabel('Heliocentric Latitude',fontsize=10)
-    
-    plt.show()
-    
-    fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
-                'postcalib_overlay.png')
+    if plot == 1:
+        
+        fig,ax=plt.subplots(1,2,figsize=(10,5),sharey=True)
+        ax[0].pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='grey')
+        ax[0].set_aspect('equal')
+        #ax[0].invert_xaxis()
+        ax[0].grid()
+        ax[1].pcolormesh(visp_X_new,visp_Y_new,np.transpose(vispimg),cmap='hot')
+        ax[1].set_aspect('equal')
+        ax[1].grid()
+        #ax[1].invert_xaxis()
+        # custom_xlim = (-455,-410)
+        # custom_ylim = (285,332)
+        
+        # # Setting the values for all axes.
+        # plt.setp(ax, xlim=custom_xlim, ylim=custom_ylim)
+        
+        plt.tight_layout()
+        
+        plt.show()
+        
+        fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
+                    'postcalib.png')
+        
+        # plot overlay
+        
+        verts=np.array([[visp_X_new[-1,-1],visp_Y_new[-1,-1]],
+                        [visp_X_new[-1,0],visp_Y_new[-1,0]],
+                        [visp_X_new[0,0],visp_Y_new[0,0]],
+                        [visp_X_new[0,-1],visp_Y_new[0,-1]]])
+        
+        fig,ax = plt.subplots(1,1,figsize = (5,5))
+        ax.pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='gray')
+        ax.pcolormesh(visp_X_new,visp_Y_new,np.transpose(vispimg),cmap='hot',
+                      alpha = 0.3)
+        boxy = matplotlib.patches.Polygon(verts,fill=False,edgecolor='black',lw=3)
+        ax.add_patch(boxy)
+        ax.set_title('VBI '+vbiband+' and ViSP '+vispband,fontsize=15)
+        ax.set_xlabel('Heliocentric Longitude',fontsize=10)
+        ax.set_ylabel('Heliocentric Latitude',fontsize=10)
+        
+        plt.show()
+        
+        fig.savefig('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/'+pid+
+                    'postcalib_overlay.png')
     
     
     return visp_X_new, visp_Y_new

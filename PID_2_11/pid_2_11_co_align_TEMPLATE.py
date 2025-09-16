@@ -142,6 +142,8 @@ if load == 1:
 
 
 #ViSP to VBI
+
+# will need to alter this to account for new optional arguments...
 visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa_arr,vispX0,vispY0,nspace,90,
                                                                vbiX0,vbiY0,
                                                                dat0_vbi,
