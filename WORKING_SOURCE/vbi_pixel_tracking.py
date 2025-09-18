@@ -18,7 +18,7 @@ muted = DKISTanalysis.color_muted2()
 
 l=0
 CUT=2.5 # cutoff for mask-making
-binning = 1 # to bin or not to bin?
+binning = 0 # to bin or not to bin?
 diff = 0 # to diff or not to diff
 if binning == 1:
     bin_x = 7 # this bins the VBI pixels to largest ViSP spatial scale (in scan dir), plus 1 for "safety"
@@ -223,12 +223,100 @@ if diff == 1:
         m+=1
         
     
+# instantaneous mask movie
+for i in range(1,100):
+    inds = np.where(timing==int(i))
+    arrsamp = np.zeros(np.shape(timing))
+    for j in range(np.shape(inds)[1]):
+        arrsamp[inds[0][j],inds[1][j]]=timing[inds[0][j],inds[1][j]]
+    arrsamp[arrsamp == 0] = np.nan
+    fig,ax=plt.subplots(dpi=200)
+    pcm = ax.pcolormesh(arrsamp,cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=100)
+    ax.set_xlim([1600/bin_x,2300/bin_x])
+    ax.set_ylim([2700/bin_y,900/bin_y])
+    ax.set_aspect('equal')
+    cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
+    cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+    ax.set_xticks([])
+    ax.set_yticks([])
+    fig.savefig('/Users/coletamburri/Desktop/maskseq/'+str(i)+'.png')
     
+for i in range(1,100):
+    inds = np.where(timing==int(i))
+    arrsamp = np.zeros(np.shape(timing))
+    for j in range(np.shape(inds)[1]):
+        arrsamp[inds[0][j],inds[1][j]]=timing[inds[0][j],inds[1][j]]
+    arrsamp[arrsamp == 0] = np.nan
+    fig,ax=plt.subplots(dpi=200)
+    ax.pcolormesh(arrsamp,cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=100)
+    ax.set_ylim([1890/bin_x,1730/bin_x])
+    ax.set_xlim([1750/bin_y,1900/bin_y])
+    ax.set_aspect('equal')
+    cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
+    cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+    ax.set_xticks([])
+    ax.set_yticks([])
+    fig.savefig('/Users/coletamburri/Desktop/maskseq_small/'+str(i)+'.png')
+    
+# cumulative mask movie
+cumul_mask = np.zeros([100,np.shape(timing)[0],np.shape(timing)[1]])
+
+for i in range(1,99):
+    inds = np.where(timing==int(i))
+    arrsamp = np.zeros(np.shape(timing))
+    for j in range(np.shape(inds)[1]):
+        arrsamp[inds[0][j],inds[1][j]]=timing[inds[0][j],inds[1][j]]
+    cumul_mask[i,:,:]=cumul_mask[i-1,:,:]+arrsamp
+    
+cumul_mask[cumul_mask == 0] = np.nan
+
+inst_mask = np.zeros([100,np.shape(timing)[0],np.shape(timing)[1]])
+
+for i in range(1,99):
+    inds = np.where(timing==int(i))
+    arrsamp = np.zeros(np.shape(timing))
+    for j in range(np.shape(inds)[1]):
+        arrsamp[inds[0][j],inds[1][j]]=1.0
+    inst_mask[i,:,:]=arrsamp
+
+inst_mask[inst_mask == 0] = np.nan
+
+for i in range(1,99):
+    fig,ax=plt.subplots(dpi=200)
+    pcm=ax.pcolormesh(cumul_mask[i,:,:],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=100)
+    ax.set_xlim([1600/bin_x,2300/bin_x])
+    ax.set_ylim([2700/bin_y,900/bin_y])
+    ax.set_aspect('equal')
+    cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
+    cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+    ax.set_xticks([])
+    ax.set_yticks([])
+    fig.savefig('/Users/coletamburri/Desktop/cumul_maskseq/'+str(i)+'.png')
+
+# light curve of region
+
+lcsmall=[]
+
+for i in range(100):
+    lcsmall.append(np.nansum(arr[i,1770:1840,1790:1840])) #limits for small thing
+    
+fig,ax=plt.subplots();ax.plot(lcsmall)
 
 
+from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
 
-
+for i in range(0,100):
+    fig,[ax,ax1,ax2]=plt.subplots(1,3,dpi=200)
+    ax.imshow(arr[i,1770:1840,1790:1840],cmap='hot')
+    ax1.imshow(inst_mask[i,1770:1840,1790:1840],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+    ax2.imshow(cumul_mask[i,1770:1840,1790:1840],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+    ins = ax.inset_axes([0.5,0.7,0.4,0.2])
+    ins.plot(lcsmall,c='black')
+    ins.axvline(i,c='red')
+    ins.set_xticks([])
+    ins.set_yticks([])
+    fig.savefig('/Users/coletamburri/Desktop/kernzoom/'+str(i)+'.png')
 
 
 
