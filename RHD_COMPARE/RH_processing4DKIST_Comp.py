@@ -37,7 +37,7 @@ def tosi(wav, s):
     s /= cm_to_m**2 * aa_to_m # from from Watt /(s cm2 ster AA) to Watt/(s m2 ster m) 
     s *= (wav*aa_to_m)**2 / clight # to Watt/(s m2 Hz ster)
     return s
-times = np.arange(60) #
+times = [500] #
 
 for i in range(len(times)):
     time=times[i]+1
@@ -51,11 +51,13 @@ for i in range(len(times)):
     #define model to read in
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_'+time+'s_mod30_20broadc_5vt_H20/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
+    #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_15_8_5e10_20_600_0s/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/longduration_'+time+'_50broadc_5vt/run')
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
-    filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
+    #filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
+    filename = base2+'cat_15_8_5e10_20_600_0'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                
@@ -67,8 +69,8 @@ for i in range(len(times)):
     
     # Get parameters of your favorite line and atom
     
-    ATOMNO = 0  ## ['0=Ca', 1='H', '2=Na']
-    LINENO = 0 ### ['0=Ca IIH';'22-H-epsilon']
+    ATOMNO = 1  ## ['0=Ca', 1='H', '2=Na']
+    LINENO = 22 ### ['0=Ca IIH';'22-H-epsilon']
     DWING  = 2
     DLAMB  = 2.0
     

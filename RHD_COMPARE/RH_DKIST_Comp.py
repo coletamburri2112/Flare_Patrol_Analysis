@@ -116,7 +116,7 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,ntw,gaussian_psf):
         
     return yconv
 
-flag = 'f-chroma' # longdur/f-chrom
+flag = 'cat_longdur' # longdur/f-chrom
 if flag == 'f-chroma':
     #times = [2,5,6,8,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50]
     times=[43]
@@ -129,6 +129,8 @@ elif flag == 'longdur':
     #times = [0,3,5,10,13,17,20]'
     times=[70]
     #times = [20,25,30,40,50,60,70,100]
+elif flag == 'cat_longdur':
+    times=[500]
 
 broads = [1,20,50,70,100]
 #broads=[1,50]
@@ -156,11 +158,13 @@ base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
 # hep_inds = np.where((rh_file3['wl_rh']>396.95) & (rh_file3['wl_rh']< 397.07))
 
 #filename_dkist = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/dkist_obs_file.npz'
-filename_dkist = '/Users/coletamburri/Desktop/subbed.npz'
+filename_dkist = '/Users/coletamburri/Desktop/Misc_DKIST/subbed.npz'
 if flag == 'f-chroma':
     modelnameqs = 'fchroma30_50b_5vt_0s_H6.npz'
 elif flag == 'longdur':
     modelnameqs = 'longduration_0s_H6.npz'
+elif flag == 'cat_longdur':
+    modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz' # need to change this!!
 
 dkist_file = np.load(filename_dkist)
 
@@ -178,7 +182,7 @@ model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
 maxind = dkist_file['arr_3'][0]
 
 dkist_wl = dkist_file['arr_2']
-dkist_int = dkist_file['arr_0'][0,:,maxind] #before background subtraction
+dkist_int = dkist_file['arr_1'][0,:,maxind] #before background subtraction
 dkist_int_trail = dkist_file['arr_0'][0,:,maxind+120]
 dkist_int_front = dkist_file['arr_0'][0,:,maxind-100]
 
@@ -610,6 +614,52 @@ if flag == 'longdur':
         model_subtract2 = yconv2-yconvqs
         
         models_tocomp.append(model_subtract2)
+elif flag == 'cat_longdur':
+    for i in times:
+        modelname1 = 'cat_15_8_5e10_20_600_500.npz'
+    
+        #chosen model to compare (can/will be many)
+        model_choice1 = np.load(base+modelname1)
+        
+        model_choice1_wl = model_choice1['wl_rh'][caiih_inds]
+        model_choice1_int = model_choice1['int_rh'][caiih_inds]
+        model_choice1_wlshift = model_choice1_wl-lamb0
+        model_choice1_wlshift_hep = model_choice1_wl-lamb1
+            
+        # adjust for instrument PSF
+        
+        model1_copy_int = model_choice1_int
+        model1_copy_wl = model_choice1_wl
+        
+        yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                       gaussian_psf)
+        
+        model_subtract = yconv1-yconvqs
+        
+        models_tocomp.append(model_subtract)
+        
+        # # added for new broadc
+        # modelname2 = 'longduration_'+str(int(i))+'s_H6_1broadc.npz'
+    
+        # #chosen model to compare (can/will be many)
+        # model_choice2 = np.load(base+modelname2)
+        
+        # model_choice2_wl = model_choice2['wl_rh'][caiih_inds]
+        # model_choice2_int = model_choice2['int_rh'][caiih_inds]
+        # model_choice2_wlshift = model_choice2_wl-lamb0
+        # model_choice2_wlshift_hep = model_choice2_wl-lamb1
+            
+        # # adjust for instrument PSF
+        
+        # model2_copy_int = model_choice2_int
+        # model2_copy_wl = model_choice2_wl
+        
+        # yconv2=psf_adjust(model2_copy_wl,model2_copy_int,fwhm,dkist_wl,ntw,
+        #                                gaussian_psf)
+        
+        # model_subtract2 = yconv2-yconvqs
+        
+        # models_tocomp.append(model_subtract2)
         
 
 if flagh20sum == 1:
