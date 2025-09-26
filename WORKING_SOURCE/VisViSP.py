@@ -40,7 +40,7 @@ caii_inner_high = 680
 hbeta_low = 400
 hbeta_high = 500
 
-n_points = 20
+n_points = 12
 
 caII_avg = np.mean(spectra[:,caII_low:caII_high,:],1)
 hep_avg = np.mean(spectra[:,hep_low:hep_high,:],1)
@@ -68,6 +68,7 @@ xlo, xhi, ylo, yhi = int(aa[0][0]), int(aa[1][0]), int(aa[0][1]),\
 
 fig,ax=plt.subplots()
 ax.pcolormesh(np.transpose(choice[xlo:xhi,ylo:yhi]),cmap='magma')
+ax.invert_xaxis()
 ax.invert_yaxis()
 fig.show()
 
@@ -82,6 +83,7 @@ for i in range(len(cc)):
     ax.flatten()[i].plot(wl,spectra[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
     ax.flatten()[i].axvline(396.85)
     ax.flatten()[i].axvline(397.01)
+    ax.flatten()[i].set_xlim([396.7,397.07])
 fig.show()
     
 

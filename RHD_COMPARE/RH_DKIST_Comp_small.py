@@ -215,7 +215,7 @@ model_subtract_TC = yconv1-yconvqs
 
 fig,ax=plt.subplots(dpi=200,figsize=(5,4))
 ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,heplowh20,hephighh20),alpha=1,c='b',linewidth=2,label='EB1, 500s')
-ax.plot(dkist_wl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='#CC6677',linewidth=2,label='TC1, 90s')
+ax.plot(dkist_wl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
 ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
 
 # ax.plot(dkist_wl,model_subtract1/1e6,alpha=1,c='b',linewidth=3)
@@ -451,11 +451,22 @@ ax.plot(dkist_wl-hepwl,normalize_range(model_subtract1/1e6,heplowh20,hephighh20)
 lns3 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[2][heplowh20:hephighh20]),linestyle=(0, (5, 1)),alpha=.7,label='EB2, 43s',c=cmap_choice2[12],linewidth=2)
 lns4 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[3][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
 lns6 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[5][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
-lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2)
+lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
 #lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2,zorder=7)
 ax.plot(dkist_wl-hepwl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
 
 ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(dkist_int[heplowh20:hephighh20]),label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
+
+# ax.plot(dkist_wl-hepwl,model_subtract1,alpha=1,c='b',linewidth=2,label='EB1, 500s')
+
+# lns3 = ax.plot(dkist_wl-hepwl,models_tocomp[2],linestyle=(0, (5, 1)),alpha=.7,label='EB2, 43s',c=cmap_choice2[12],linewidth=2)
+# lns4 = ax.plot(dkist_wl-hepwl,models_tocomp[3],'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
+# lns6 = ax.plot(dkist_wl-hepwl,models_tocomp[5],'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
+# lns7 = ax.plot(dkist_wl-hepwl,models_tocomp[6],'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
+# #lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2,zorder=7)
+# ax.plot(dkist_wl-hepwl,model_subtract_TC,alpha=1,c='red',linewidth=2,label='TC1, 90s')
+
+# ax.plot(dkist_wl-hepwl,dkist_int,label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
 
 ax.axvline(.0175,color=cmap_choice2[7],alpha=.7,linestyle='-.')
 ax.axvline(.03,color=cmap_choice2[7],alpha=.7,linestyle='-.')
