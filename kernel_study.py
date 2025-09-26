@@ -256,8 +256,8 @@ fig.show()
 fig,[ax0,ax1]=plt.subplots(1,2)
 ax0.imshow(arr[i,1770:1840,1790:1840],cmap='hot')
 ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
-ax1.set_xlim([1790,1840]);
-ax1.set_ylim([1770,1840]);
+ax1.set_xlim([1750,1840]);
+ax1.set_ylim([1770,1900]);
 ax1.invert_yaxis();
 plt.show()
 
@@ -269,6 +269,19 @@ def find_nearest_numpy(array, value):
     """
     idx = (np.abs(array - value)).argmin()
     return array[idx]
+n_points = len(aa)
+colors = plt.cm.jet(np.linspace(0,1,n_points))
+
+fig,[ax0,ax1]=plt.subplots(1,2)
+ax0.imshow(arr[21,1770:1840,1790:1840],cmap='hot')
+ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
+ax1.set_xlim([1750,1840]);
+ax1.set_ylim([1770,1900]);
+ax1.invert_yaxis();
+for i in range(len(aa)):
+    xsel,ysel = aa[i][0],aa[i][1]
+    ax1.plot(xsel,ysel,'x',color=colors[i])
+plt.show()
 
 fig,ax=plt.subplots(1,4)
 for i in range(len(cc)):
