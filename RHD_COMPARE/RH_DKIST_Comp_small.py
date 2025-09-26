@@ -51,6 +51,8 @@ flagb = 0
 flagvt = 0
 flagt = 0
 
+hepwl=397.01
+
 heplowh20 = 690
 hephighh20 = 850
 
@@ -118,12 +120,17 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,ntw,gaussian_psf):
 
 times=[500]
 
+flag = 'f_chroma'
+h20mods = [79,19,25,31]
+h20vals = [3e10,1e11,3e11,1e12]
+
 ncol=len(times)
 map = tol_colors.tol_cmap(colormap='rainbow_discrete',lut=ncol+5)
 cmap_choice = map(np.linspace(0,1,ncol))
 
 base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
 modelnameqs = 'cat_15_8_5e10_20_600_0.npz'
+#modelnameqs = 'radyn_TC_0s'
 
 filename_dkist = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/dkist_obs_file.npz'
 filename_dkist_sub = '/Users/coletamburri/Desktop/Misc_DKIST/subbed.npz'
@@ -156,7 +163,6 @@ yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaus
 
 
 modelname1 = 'cat_15_8_5e10_20_600_500.npz'
-
 #chosen model to compare (can/will be many)
 model_choice1 = np.load(base+modelname1)
 caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
@@ -175,10 +181,308 @@ yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaus
 yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
                                gaussian_psf)
 
-model_subtract = yconv1-yconvqs
+model_subtract1 = yconv1-yconvqs
 
 
+
+modelnameTC = 'rhf1d_5_TC_90s.npz'
+
+#chosen model to compare (can/will be many)
+model_choice1 = np.load(base+modelnameTC)
+caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+
+model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+model_choice1_wlshift = model_choice1_wl-lamb0
+model_choice1_wlshift_hep = model_choice1_wl-lamb1
     
+# adjust for instrument PSF
+
+model1_copy_int = model_choice1_int
+model1_copy_wl = model_choice1_wl
+yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+
+yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                               gaussian_psf)
+
+model_subtract_TC = yconv1-yconvqs
+
+# ax.set_xlabel(r'Wavelength ($\lambda-\lambda_c$) [nm]')
+# # secaxx = ax.secondary_xaxis('top', functions=(veltrans,wltrans))
+# # secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$')
+# # secaxx.set_xticks([-120,-80,-40,0,40,80,120])
+# # secaxx.grid('on')
+
+fig,ax=plt.subplots(dpi=200,figsize=(5,4))
+ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,heplowh20,hephighh20),alpha=1,c='b',linewidth=2,label='EB1, 500s')
+ax.plot(dkist_wl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
+ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
+
+# ax.plot(dkist_wl,model_subtract1/1e6,alpha=1,c='b',linewidth=3)
+# ax.plot(dkist_wl,model_subtract_TC/1e6,alpha=1,c='#CC6677',linewidth=3)
+# ax.plot(dkist_wl,dkist_int/1e6,alpha=1,c='black',linewidth=3)
+
+ax.legend(fontsize=10)
+ax.set_xlim([396.75,397.1])
+ax.grid()
+ax.axvline(396.844,linestyle='dashed',c='grey',linewidth=2)
+ax.axvline(397.01,linestyle='dashed',c='grey',linewidth=2)
+ax.set_ylabel(r'Intensity (Normalized to $H\epsilon$)')
+ax.set_xlabel('Wavelength [nm]')
+ax.set_xticks([396.8,396.9,397.0,397.1])
+plt.show()
     
+models_tocomp=[]
+# add H20
+if flag =='f_chroma':
+    if flagh20sum == 1:
+        for i in times:
+            modelname1 = 'fchroma30_20b_5vt_'+str(int(i))+'s_H20.npz'
+        
+            #chosen model to compare (can/will be many)
+            model_choice1 = np.load(base+modelname1)
+            caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+            
+            model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+            model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+            model_choice1_wlshift = model_choice1_wl-lamb0
+            model_choice1_wlshift_hep = model_choice1_wl-lamb1
+            
+            modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz'
+            
+            model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
+            model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
+            model_choiceqs_wlshift = model_choiceqs_wl-lamb0
+            model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
+                
+            # adjust for instrument PSF
+            
+            model1_copy_int = model_choice1_int
+            model1_copy_wl = model_choice1_wl
+            yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+            
+            yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                           gaussian_psf)
+            
+            model_subtract = yconv1-yconvqs
+            #model_subtract = yconv1
+            
+            models_tocomp.append(model_subtract)
+            
+    elif flagh20 == 1:
+        for i in h20mods:
+            
+            if i == 25 or i == 31:
+                modelname1 = 'fchroma'+str(int(i))+'_20b_5vt_43s_H20_2ndadjust.npz'
+            else:
+                modelname1 = 'fchroma'+str(int(i))+'_20b_5vt_43s_H20.npz'
+        
+            #chosen model to compare (can/will be many)
+            model_choice1 = np.load(base+modelname1)
+            caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+            
+            model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+            model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+            model_choice1_wlshift = model_choice1_wl-lamb0
+            model_choice1_wlshift_hep = model_choice1_wl-lamb1
+            
+            modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz'
+            
+            model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
+            model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
+            model_choiceqs_wlshift = model_choiceqs_wl-lamb0
+            model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
+                
+            # adjust for instrument PSF
+            
+            model1_copy_int = model_choice1_int
+            model1_copy_wl = model_choice1_wl
+            yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+            
+            yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                           gaussian_psf)
+            
+            model_subtract = yconv1-yconvqs
+            #model_subtract = yconv1
+            
+            models_tocomp.append(model_subtract)
+        
+        modelname1 = 'fchroma30_50b_5vt_43s_H20.npz'
     
+        #chosen model to compare (can/will be many)
+        model_choice1 = np.load(base+modelname1)
+        caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+        
+        model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+        model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+        model_choice1_wlshift = model_choice1_wl-lamb0
+        model_choice1_wlshift_hep = model_choice1_wl-lamb1
+        
+        modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz'
+        
+        model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
+        model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
+        model_choiceqs_wlshift = model_choiceqs_wl-lamb0
+        model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
+            
+        # adjust for instrument PSF
+        
+        model1_copy_int = model_choice1_int
+        model1_copy_wl = model_choice1_wl
+        yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+        
+        yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                       gaussian_psf)
+        
+        model_subtract = yconv1-yconvqs
+        #model_subtract = yconv1
+        h20mods.append(30)
+        
+        models_tocomp.append(model_subtract)
+        
+        modelname1 = 'fchroma30_20b_5vt_43s_H20_2ndadjust.npz'
     
+        #chosen model to compare (can/will be many)
+        model_choice1 = np.load(base+modelname1)
+        caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+        
+        model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+        model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+        model_choice1_wlshift = model_choice1_wl-lamb0
+        model_choice1_wlshift_hep = model_choice1_wl-lamb1
+        
+        modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz'
+        
+        model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
+        model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
+        model_choiceqs_wlshift = model_choiceqs_wl-lamb0
+        model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
+            
+        # adjust for instrument PSF
+        
+        model1_copy_int = model_choice1_int
+        model1_copy_wl = model_choice1_wl
+        yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+        
+        yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                       gaussian_psf)
+        
+        model_subtract = yconv1-yconvqs
+        #model_subtract = yconv1
+        h20mods.append(30)
+        
+        models_tocomp.append(model_subtract)
+        
+        modelname1 = 'fchroma30_50b_5vt_21s_H20_2ndadjust.npz'
+    
+        #chosen model to compare (can/will be many)
+        model_choice1 = np.load(base+modelname1)
+        caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+        
+        model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+        model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+        model_choice1_wlshift = model_choice1_wl-lamb0
+        model_choice1_wlshift_hep = model_choice1_wl-lamb1
+        
+        modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz'
+        
+        model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
+        model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
+        model_choiceqs_wlshift = model_choiceqs_wl-lamb0
+        model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
+            
+        # adjust for instrument PSF
+        
+        model1_copy_int = model_choice1_int
+        model1_copy_wl = model_choice1_wl
+        yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+        
+        yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                       gaussian_psf)
+        
+        model_subtract = yconv1-yconvqs
+        #model_subtract = yconv1
+        h20mods.append(30)
+        
+        models_tocomp.append(model_subtract)
+        
+        modelname1 = 'fchroma30_1b_2vt_21s_H20_2ndadjust.npz'
+    
+        #chosen model to compare (can/will be many)
+        model_choice1 = np.load(base+modelname1)
+        caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+        
+        model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+        model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+        model_choice1_wlshift = model_choice1_wl-lamb0
+        model_choice1_wlshift_hep = model_choice1_wl-lamb1
+        
+        modelnameqs = 'fchroma30_50b_5vt_0s_H20.npz'
+        
+        model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
+        model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
+        model_choiceqs_wlshift = model_choiceqs_wl-lamb0
+        model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
+            
+        # adjust for instrument PSF
+        
+        model1_copy_int = model_choice1_int
+        model1_copy_wl = model_choice1_wl
+        yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+        
+        yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                                       gaussian_psf)
+        
+        model_subtract = yconv1-yconvqs
+        #model_subtract = yconv1
+        h20mods.append(30)
+        
+        models_tocomp.append(model_subtract)
+
+
+
+fig,ax=plt.subplots(dpi=200,figsize=(5,4))
+ncol2 = 20
+map = tol_colors.tol_cmap(colormap='rainbow_discrete',lut=ncol2+4)
+cmap_choice2 = map(np.linspace(0,1,ncol2+2))
+
+ax.plot(dkist_wl-hepwl,normalize_range(model_subtract1/1e6,heplowh20,hephighh20),alpha=1,c='b',linewidth=2,label='EB1, 500s')
+
+lns3 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[2][heplowh20:hephighh20]),linestyle=(0, (5, 1)),alpha=.7,label='EB2, 43s',c=cmap_choice2[12],linewidth=2)
+lns4 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[3][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
+lns6 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[5][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
+lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
+#lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2,zorder=7)
+ax.plot(dkist_wl-hepwl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
+
+ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(dkist_int[heplowh20:hephighh20]),label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
+
+# ax.plot(dkist_wl-hepwl,model_subtract1,alpha=1,c='b',linewidth=2,label='EB1, 500s')
+
+# lns3 = ax.plot(dkist_wl-hepwl,models_tocomp[2],linestyle=(0, (5, 1)),alpha=.7,label='EB2, 43s',c=cmap_choice2[12],linewidth=2)
+# lns4 = ax.plot(dkist_wl-hepwl,models_tocomp[3],'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
+# lns6 = ax.plot(dkist_wl-hepwl,models_tocomp[5],'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
+# lns7 = ax.plot(dkist_wl-hepwl,models_tocomp[6],'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
+# #lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2,zorder=7)
+# ax.plot(dkist_wl-hepwl,model_subtract_TC,alpha=1,c='red',linewidth=2,label='TC1, 90s')
+
+# ax.plot(dkist_wl-hepwl,dkist_int,label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
+
+ax.axvline(.0175,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+ax.axvline(.03,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+ax.axvline(.04,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+ax.axvline(-.04,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+ax.axvline(-.047,color=cmap_choice2[7],alpha=.7,linestyle='-.')
+
+
+ax.legend(fontsize=8)
+ax.set_ylabel('Normalized Intensity')
+ax.grid()
+ax.set_xlabel(r'Wavelength ($\lambda-\lambda_c$ [nm])')
+#ax.set_xlabel(r'Wavelength')
+secaxx = ax.secondary_xaxis('top', functions=(veltrans,wltrans))
+secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$')
+ax.set_xlim([-0.06,0.06])
+ax.set_ylim([-.1,1.1])
+
+fig.show()

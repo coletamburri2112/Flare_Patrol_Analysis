@@ -46,8 +46,8 @@ matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 muted = DKISTanalysis.color_muted2()
 
 # path and file ID for ViSP data
-path = '/Volumes/VBI_External/pid_2_11/'
-folder1 = 'AXXJL' 
+path = '/Users/coletamburri/Desktop/'
+folder1 = 'DXHIEL' 
 #folder2 = 'BDPMQ' # for QS calibration - data from 22UT on 19 August
 
 # list of files in directory for DKIST/ViSP
@@ -62,11 +62,13 @@ aolock = []
 #    fried.append(i_file_raster1[1].header['ATMOS_R0'])
 #    aolock.append(i_file_raster1[1].header['AO_LOCK'])
     
-dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
+#dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
+dC = fits.open('/Users/coletamburri/Desktop/DXHIEL/postdestretch_dataCube_blue_cont_C_class_impulsive_phase.fits')[0].data # Xclass
+
 #dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/BDJKM/postdestretch_dataCube.fits')[0].data # Mclass
 #dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/postdestretch_dataCubeFlareImpulsivePhase.fits')[0].data
-dCslice=dC[0:300,:,:] #Xclass
-#dCslice = dC #Mclass or C class (100 and 250 frames, respectively
+#dCslice=dC[0:300,:,:] #Xclass
+dCslice = dC #Mclass or C class (100 and 250 frames, respectively
 
 #friedarr = np.asarray(fried)
 #ndices = np.argwhere(friedarr[0:350]>0.035)
@@ -76,9 +78,10 @@ def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
     fig =plt.figure(dpi=300)
     max1=np.max(data[0])
     min1=np.min(data[0])
-    #norm = (data[0]-min1)/(max1-min1)
-    norm=data[0]/max1
-    im = plt.imshow(norm,cmap=matplotlib.colormaps['afmhot'],vmin=0,vmax=.98)
+    norm = (data[0]-min1)/(max1-min1)
+    #norm=data[0]/max1
+    #im = plt.imshow(norm,cmap=matplotlib.colormaps['afmhot'],vmin=0,vmax=.98)
+    im = plt.imshow(norm)
     plt.tick_params(
       axis='x',          # changes apply to the x-axis
       which='both',      # both major and minor ticks are affected
@@ -116,4 +119,4 @@ def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
 
 #dataCubeTracked=fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
 
-storeSequence(dCslice,'/Users/coletamburri/Desktop/movie_Xclass_faster.mp4', dpi=300, write=True,inds=indices)
+storeSequence(dCslice,'/Users/coletamburri/Desktop/movie_Cclass_bluecont_faster.mp4', dpi=300, write=True,inds=indices)

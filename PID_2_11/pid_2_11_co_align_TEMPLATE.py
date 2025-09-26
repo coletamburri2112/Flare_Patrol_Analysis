@@ -115,20 +115,6 @@ vispy0 = np.arange(2556)
 vbiX0,vbiY0= np.meshgrid(vbix0,vbiy0)
 vispX0,vispY0 = np.meshgrid(vispx0,vispy0)
 
-#ID corresponding points in ViSP and VBI
-aa = DKISTanalysis.plt_precoalign(vbiX0,vbiY0,hdul1_vbi,vispX0,vispY0,hepavgs,
-                                  matplotlib,dat0_vbi)
-
-# JUST for co-aligning when I know where one axis is.  first point is upper left
-# of triangle; second is upper right; third is lower left
-aa_arr = np.asarray(aa)
-
-
-aa_arr[2][1] = aa_arr[0][1]
-aa_arr[3][1] = aa_arr[1][1]
-aa_arr[4][0] = aa_arr[0][0]
-aa_arr[5][0] = aa_arr[1][0]
-
 # results from 15 september co-align
 load=1
 if load == 1:
@@ -137,18 +123,34 @@ if load == 1:
            [2045.05316607, 2326.73014872],
            [  44.67204301, 1299.16774314],
            [1836.46057348, 1492.19051546],
-           [  11.84946237,  850.67365452]]
+           [  11.84946237,  875.67365452]]
+else:
+
+    #ID corresponding points in ViSP and VBI
+    aa = DKISTanalysis.plt_precoalign(vbiX0,vbiY0,hdul1_vbi,vispX0,vispY0,hepavgs,
+                                      matplotlib,dat0_vbi)
+
+    # JUST for co-aligning when I know where one axis is.  first point is upper left
+    # of triangle; second is upper right; third is lower left
+    aa_arr = np.asarray(aa)
+
+
+aa_arr[2][1] = aa_arr[0][1]
+aa_arr[3][1] = aa_arr[1][1]
+aa_arr[4][0] = aa_arr[0][0]
+aa_arr[5][0] = aa_arr[1][0]
+
+
 
 
 
 #ViSP to VBI
 
 # will need to alter this to account for new optional arguments...
-visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa_arr,vispX0,vispY0,nspace,90,
-                                                               vbiX0,vbiY0,
-                                                               dat0_vbi,
-                                                               caiiavgs,
-                                                               matplotlib)
+visp_X_new, visp_Y_new = DKISTanalysis.vbi_visp_transformation(aa_arr,vispX0,vispY0,matplotlib,nslit=90,
+                                                               vbi_X=vbiX0,vbi_Y=vbiY0,
+                                                               dat0_vbi=dat0_vbi,
+                                                               vispimg=caiiavgs,plot=1)
 
 filename = '/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
 np.savez(filename,visp_X_new,visp_Y_new,caiiavgs)

@@ -13,6 +13,9 @@ import tol_colors
 import os
 from astropy.io import fits
 from datetime import time
+import matplotlib.patches as patches
+
+
 
 muted = DKISTanalysis.color_muted2()
 
@@ -61,19 +64,19 @@ vispavg = vispload['arr_2']
 
 
 
-times=[]
+timesvbi=[]
 for i in range(len(dir_list2_vbi)):
-    times.append(time(int(dir_list2_vbi[i][15:17]),
+    timesvbi.append(time(int(dir_list2_vbi[i][15:17]),
                       int(dir_list2_vbi[i][18:20]),
                       int(dir_list2_vbi[i][21:23])))
     
-times = times[200:450]
+timesvbi = timesvbi[200:450]
 
 #another time array
-string = times[0].strftime("%H:%M:%S")
+string = timesvbi[0].strftime("%H:%M:%S")
 strtime =[]
-for i in range(len(times)):
-    strtime.append(times[i].strftime("%H:%M:%S"))
+for i in range(len(timesvbi)):
+    strtime.append(timesvbi[i].strftime("%H:%M:%S"))
 
 #optional - processing just from the files on HD (raw, not destretched)
 if stretched == 1:
@@ -161,7 +164,7 @@ ax.set_xlim([1600/bin_x,2300/bin_x])
 ax.set_ylim([2700/bin_y,900/bin_y])
 ax.set_aspect('equal')
 cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
-cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+cbar.ax.set_yticklabels([timesvbi[1],timesvbi[20],timesvbi[40],timesvbi[60],timesvbi[80],timesvbi[100]])
 ax.set_xticks([])
 ax.set_yticks([])
 fig.show()
@@ -236,7 +239,7 @@ for i in range(1,100):
     ax.set_ylim([2700/bin_y,900/bin_y])
     ax.set_aspect('equal')
     cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
-    cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+    cbar.ax.set_yticklabels([timesvbi[1],timesvbi[20],timesvbi[40],timesvbi[60],timesvbi[80],timesvbi[100]])
     ax.set_xticks([])
     ax.set_yticks([])
     fig.savefig('/Users/coletamburri/Desktop/maskseq/'+str(i)+'.png')
@@ -253,7 +256,7 @@ for i in range(1,100):
     ax.set_xlim([1750/bin_y,1900/bin_y])
     ax.set_aspect('equal')
     cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
-    cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+    cbar.ax.set_yticklabels([timesvbi[1],timesvbi[20],timesvbi[40],timesvbi[60],timesvbi[80],timesvbi[100]])
     ax.set_xticks([])
     ax.set_yticks([])
     fig.savefig('/Users/coletamburri/Desktop/maskseq_small/'+str(i)+'.png')
@@ -288,7 +291,7 @@ for i in range(1,99):
     ax.set_ylim([2700/bin_y,900/bin_y])
     ax.set_aspect('equal')
     cbar = fig.colorbar(pcm, ax=ax,ticks=[1,20,40,60,80,100])
-    cbar.ax.set_yticklabels([times[1],times[20],times[40],times[60],times[80],times[100]])
+    cbar.ax.set_yticklabels([timesvbi[1],timesvbi[20],timesvbi[40],timesvbi[60],timesvbi[80],timesvbi[100]])
     ax.set_xticks([])
     ax.set_yticks([])
     fig.savefig('/Users/coletamburri/Desktop/cumul_maskseq/'+str(i)+'.png')
@@ -303,7 +306,6 @@ for i in range(100):
 fig,ax=plt.subplots();ax.plot(lcsmall)
 
 
-from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
 
 for i in range(0,100):
@@ -318,6 +320,31 @@ for i in range(0,100):
     ins.set_yticks([])
     fig.savefig('/Users/coletamburri/Desktop/kernzoom/'+str(i)+'.png')
 
+for i in range(0,40):
+    fig,[(ax,ax1,ax2),(ax3,ax4,ax5)]=plt.subplots(2,3,dpi=200)
+    ax.imshow(arr[i,1770:1840,1790:1840],cmap='hot')
+    ax1.imshow(inst_mask[i,1770:1840,1790:1840],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+    ax2.imshow(cumul_mask[i,1770:1840,1790:1840],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+    ax3.imshow(arr[i,900:2700,1600:2300],cmap='hot')
+    ax4.imshow(inst_mask[i,900:2700,1600:2300],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+    ax5.imshow(cumul_mask[i,900:2700,1600:2300],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+    rect = patches.Rectangle((1790-1600, 1770-900), 50, 70, linewidth=1, edgecolor='k', facecolor='none')
+
+    # Add the patch to the Axes
+    ax3.add_patch(rect)
+    rect = patches.Rectangle((1790-1600, 1770-900), 50, 70, linewidth=1, edgecolor='k', facecolor='none')
+
+    ax4.add_patch(rect)
+    rect = patches.Rectangle((1790-1600, 1770-900), 50,70, linewidth=1, edgecolor='k', facecolor='none')
+
+    ax5.add_patch(rect)
+
+    ins = ax.inset_axes([0.5,0.7,0.4,0.2])
+    ins.plot(lcsmall,c='black')
+    ins.axvline(i,c='red')
+    ins.set_xticks([])
+    ins.set_yticks([])
+    fig.savefig('/Users/coletamburri/Desktop/fullframe/'+str(i)+'.png',format='png',dpi=200)
 
 
 

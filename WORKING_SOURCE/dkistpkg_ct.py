@@ -1703,7 +1703,7 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     # points for similar structures.  The result of the process which this
     # starts will be ViSP axes transformed into the VBI coordinate system; 
     # which is still not correct, but we can use to simultaneously get ViSP
-    # and VBI in the SDO image frame
+    # and VBI in the SDO image frfname
     
     # VBI is much higher-resolution, obviously, so easier/more effective in 
     # comparison to appropriate SDO bandpass.  
@@ -1715,13 +1715,15 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     # in uncaffeinated state (jitters)
 
 
-    fig,ax=plt.subplots(1,2,figsize=(10,5),sharey=True)
-    ax[0].pcolormesh(vbi_X,vbi_Y,dat0_vbi,cmap='grey')
+    gs = matplotlib.gridspec.GridSpec(nrows=1, ncols=2, width_ratios=[3, 1])
+    fig=plt.figure(figsize=(10,5))
+    ax=fig.add_subplot(gs[0,0])
+    ax1=fig.add_subplot(gs[0,1])
+    ax.pcolormesh(vbi_X,vbi_Y,hdul1_vbi[1].data[0],cmap='grey')
     #ax[0].set_aspect('equal')
-    ax[0].grid()
-    ax[1].pcolormesh(visp_X,visp_Y,np.transpose(vispimg),cmap='grey')
-    #ax[1].set_aspect('equal')
-    ax[1].grid()
+    ax.grid()
+    ax1.pcolormesh(visp_X,visp_Y,np.transpose(vispimg),cmap='grey')
+    ax1.grid()
     
     
     #plt.tight_layout()
@@ -1743,7 +1745,7 @@ def plt_precoalign(vbi_X, vbi_Y, hdul1_vbi, visp_X, visp_Y, vispimg,matplotlib,
     return aa
 
 def vbi_visp_transformation(aa, visp_X,visp_Y,matplotlib,nslit=91,vbi_X=[],vbi_Y=[],
-                            nwave=2556,vbiband='H-alpha',vispimg=[],dat0_vbi=[],
+                            npos=2556,vbiband='H-alpha',vispimg=[],dat0_vbi=[],
                             vispband='CaII H 396.8 nm',pid='pid_1_84',plot=0,d1=0):
     
     # Simple transformation matrix between ViSP and VBI using output of ginput
@@ -1796,8 +1798,8 @@ def vbi_visp_transformation(aa, visp_X,visp_Y,matplotlib,nslit=91,vbi_X=[],vbi_Y
         visp_Y_new = new_ViSP[1,:]
     
     else:
-        for i in range(nslit):
-            for j in range(nwave):
+        for i in range(npos):
+            for j in range(nslit):
                 point_x = visp_X[i,j]
                 point_y = visp_Y[i,j]
                 

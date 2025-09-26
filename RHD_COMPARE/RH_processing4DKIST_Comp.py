@@ -49,15 +49,16 @@ for i in range(len(times)):
     base2 = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
     
     #define model to read in
-    #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_'+time+'s_mod30_20broadc_5vt_H20/run')
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_21s_mod30_20broadc_5vt_H20/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_15_8_5e10_20_600_0s/run')
+    
+    #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_15_8_5e10_20_600/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/longduration_'+time+'_50broadc_5vt/run')
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
     #filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
-    filename = base2+'cat_15_8_5e10_20_600_0'
+    filename = base2+'rand'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                
@@ -158,10 +159,11 @@ for i in range(len(times)):
         contrib = rhd_choice.opacity.S * np.exp(-rhd_choice.opacity.tau) * dtaudh
     
         plt.plot(rhd_choice.geometry.height/1.0E3, contrib, color[l], label=label[l])
+        if l==2:
+            locmax = np.argwhere(contrib==np.nanmax(contrib))[0][0]
         #plt.xlim([100,1000])
     
     #here define the location of maximum intensity - for n_e determination
-    #locmax = 953
     #plt.axvline(locmax)
         
         
@@ -201,10 +203,12 @@ for i in range(len(times)):
     
     plt.show()
     
+    
     #nearestidx, nearest = find_nearest(height,locmax)
     
     # define the nearest index 
-    #n_e_maxC = rhd_choice.atmos.n_elec[nearestidx]
+    n_e_maxC = rhd_choice.atmos.n_elec[locmax]
+    print(n_e_maxC)
     
     xmu = rhd_choice.geometry.xmu
     
