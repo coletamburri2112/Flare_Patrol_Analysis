@@ -107,9 +107,11 @@ fullframenum = 1 #1 is the good seeing frame in visp data
 # For example, fr=21 is the time corresponding to the first kernel studied, middle of scan
 # For the good seeing frame, all steps are between 22:33:19 and 22:33:24...
 # these correspond roughly to indices 19 through 22 in the VBI.
-fr=20
+fr=21
 
 specvisp = specvisp0[start+fullframenum*nstep:start+(fullframenum+1)*nstep,:,:]
+timeframe = timesvisp[start+fullframenum*nstep:start+(fullframenum+1)*nstep]
+
 
 caiiavg = np.mean(specvisp[:,caII_low:caII_high,:],1)
 hepavg = np.mean(specvisp[:,hep_low:hep_high,:],1)
@@ -302,7 +304,7 @@ colors = plt.cm.jet(np.linspace(0,1,n_points))
 
 fig,[ax0,ax1]=plt.subplots(1,2)
 ax0.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
-ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
+ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1.2)
 ax1.set_xlim([xlow+upperleftx,xlow+lowerrightx]);
 ax1.set_ylim([ylow+upperlefty,ylow+lowerrighty]);
 ax1.invert_yaxis();
@@ -330,11 +332,10 @@ for i in range(len(aa)):
     xsel,ysel = aa[i][0],aa[i][1]
     idx_x = find_nearest_numpy(vispx_1,xsel)
     idx_y = find_nearest_numpy(vispy_1,ysel)
-    ax.flatten()[i].plot(specvisp[idx_x,:,idx_y],color=colors[i])
-    ax.flatten()[i].set_xlim([500,930])
-    #ax.flatten()[i].axvline(396.85)
-    #ax.flatten()[i].axvline(397.01)
-    #ax.flatten()[i].set_xlim([396.7,397.07])
+    ax.flatten()[i].plot(wlvisp,specvisp[idx_x,:,idx_y],color=colors[i])
+    ax.flatten()[i].axvline(396.85)
+    ax.flatten()[i].axvline(397.01)
+    ax.flatten()[i].set_xlim([396.7,397.07])
 fig.show()
 
 
