@@ -291,7 +291,7 @@ ax1.set_ylim([ylow+upperlefty,ylow+lowerrighty]);
 ax1.invert_yaxis();
 plt.show()
 
-aa = plt.ginput(6,timeout=120)
+aa = plt.ginput(12,timeout=120)
 
 def find_nearest_numpy(array, value):
     """
@@ -327,7 +327,7 @@ for i in range(len(aa)):
     xsspec.append(idx_x)
     ysspec.append(idx_y)
 
-fig,ax=plt.subplots(2,3)
+fig,ax=plt.subplots(3,4)
 for i in range(len(aa)):
     xsel,ysel = aa[i][0],aa[i][1]
     idx_x = find_nearest_numpy(vispx_1,xsel)
@@ -337,6 +337,52 @@ for i in range(len(aa)):
     ax.flatten()[i].axvline(397.01)
     ax.flatten()[i].set_xlim([396.7,397.07])
 fig.show()
+
+
+num_areas = 6
+
+fig,ax=plt.subplots();
+ax.imshow(cumul_mask[98,ylow:yhigh,xlow:xhigh])
+fig.show()
+dd=plt.ginput(num_areas*2,timeout=120)
+
+lcs = []
+
+for i in range(num_areas):
+    upperleftx = int(dd[2*i][0])
+    upperlefty = int(dd[2*i][1])
+    lowerrightx = int(dd[2*i+1][0])
+    lowerrighty = int(dd[2*i+1][1])
+    
+    lcsmall=[]
+    for j in range(100):
+        lcsmall.append(np.nansum(arr[j,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx])) #limits for small thing
+        
+    lcs.append(lcsmall)
+    
+n_points = num_areas
+colors2 = plt.cm.jet(np.linspace(0,1,n_points))
+
+fig,ax=plt.subplots()
+ax.imshow(cumul_mask[98,ylow:yhigh,xlow:xhigh])
+for i in range(num_areas):
+    upperleftx = int(dd[2*i][0])
+    upperlefty = int(dd[2*i][1])
+    lowerrightx = int(dd[2*i+1][0])
+    lowerrighty = int(dd[2*i+1][1])
+    rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor=colors2[i], facecolor='none')
+    ax.add_patch(rect)
+fig.show()
+
+fig,ax=plt.subplots()
+for i in range(num_areas):
+    lc = np.array(lcs[i])
+    #normalized = (lc-lc.min()) /(lc.max() -lc.min())
+    ax.plot(lc,color=colors2[i])
+    
+fig.show()
+
+
 
 
 
