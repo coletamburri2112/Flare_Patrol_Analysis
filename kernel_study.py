@@ -107,9 +107,11 @@ fullframenum = 1 #1 is the good seeing frame in visp data
 # For example, fr=21 is the time corresponding to the first kernel studied, middle of scan
 # For the good seeing frame, all steps are between 22:33:19 and 22:33:24...
 # these correspond roughly to indices 19 through 22 in the VBI.
-fr=20
+fr=21
 
 specvisp = specvisp0[start+fullframenum*nstep:start+(fullframenum+1)*nstep,:,:]
+timeframe = timesvisp[start+fullframenum*nstep:start+(fullframenum+1)*nstep]
+
 
 caiiavg = np.mean(specvisp[:,caII_low:caII_high,:],1)
 hepavg = np.mean(specvisp[:,hep_low:hep_high,:],1)
@@ -289,7 +291,7 @@ ax1.set_ylim([ylow+upperlefty,ylow+lowerrighty]);
 ax1.invert_yaxis();
 plt.show()
 
-aa = plt.ginput(6,timeout=120)
+aa = plt.ginput(12,timeout=120)
 
 def find_nearest_numpy(array, value):
     """
@@ -302,7 +304,7 @@ colors = plt.cm.jet(np.linspace(0,1,n_points))
 
 fig,[ax0,ax1]=plt.subplots(1,2)
 ax0.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
-ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
+ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1.2)
 ax1.set_xlim([xlow+upperleftx,xlow+lowerrightx]);
 ax1.set_ylim([ylow+upperlefty,ylow+lowerrighty]);
 ax1.invert_yaxis();
@@ -325,17 +327,62 @@ for i in range(len(aa)):
     xsspec.append(idx_x)
     ysspec.append(idx_y)
 
-fig,ax=plt.subplots(2,3)
+fig,ax=plt.subplots(3,4)
 for i in range(len(aa)):
     xsel,ysel = aa[i][0],aa[i][1]
     idx_x = find_nearest_numpy(vispx_1,xsel)
     idx_y = find_nearest_numpy(vispy_1,ysel)
-    ax.flatten()[i].plot(specvisp[idx_x,:,idx_y],color=colors[i])
-    ax.flatten()[i].set_xlim([500,930])
-    #ax.flatten()[i].axvline(396.85)
-    #ax.flatten()[i].axvline(397.01)
-    #ax.flatten()[i].set_xlim([396.7,397.07])
+    ax.flatten()[i].plot(wlvisp,specvisp[idx_x,:,idx_y],color=colors[i])
+    ax.flatten()[i].axvline(396.85)
+    ax.flatten()[i].axvline(397.01)
+    ax.flatten()[i].set_xlim([396.7,397.07])
 fig.show()
+
+
+num_areas = 6
+
+fig,ax=plt.subplots();
+ax.imshow(cumul_mask[98,ylow:yhigh,xlow:xhigh])
+fig.show()
+dd=plt.ginput(num_areas*2,timeout=120)
+
+lcs = []
+
+for i in range(num_areas):
+    upperleftx = int(dd[2*i][0])
+    upperlefty = int(dd[2*i][1])
+    lowerrightx = int(dd[2*i+1][0])
+    lowerrighty = int(dd[2*i+1][1])
+    
+    lcsmall=[]
+    for j in range(100):
+        lcsmall.append(np.nansum(arr[j,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx])) #limits for small thing
+        
+    lcs.append(lcsmall)
+    
+n_points = num_areas
+colors2 = plt.cm.jet(np.linspace(0,1,n_points))
+
+fig,ax=plt.subplots()
+ax.imshow(cumul_mask[98,ylow:yhigh,xlow:xhigh])
+for i in range(num_areas):
+    upperleftx = int(dd[2*i][0])
+    upperlefty = int(dd[2*i][1])
+    lowerrightx = int(dd[2*i+1][0])
+    lowerrighty = int(dd[2*i+1][1])
+    rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor=colors2[i], facecolor='none')
+    ax.add_patch(rect)
+fig.show()
+
+fig,ax=plt.subplots()
+for i in range(num_areas):
+    lc = np.array(lcs[i])
+    #normalized = (lc-lc.min()) /(lc.max() -lc.min())
+    ax.plot(lc,color=colors2[i])
+    
+fig.show()
+
+
 
 
 
