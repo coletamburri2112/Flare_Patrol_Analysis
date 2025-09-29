@@ -263,12 +263,9 @@ rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lower
 # Add the patch to the Axes
 ax3.add_patch(rect)
 rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
-
 ax4.add_patch(rect)
 rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
-
 ax5.add_patch(rect)
-
 ins = ax.inset_axes([0.5,0.7,0.4,0.2])
 ins.plot(lcsmall,c='black')
 ins.axvline(fr,c='red')
@@ -276,20 +273,13 @@ ins.set_xticks([])
 ins.set_yticks([])
 fig.show()
 
-# plot visp
-fig,ax=plt.subplots();
-ax.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1);
-ax.set_xlim([1790,1840]);
-ax.set_ylim([1770,1840]);
-ax.invert_yaxis();
-fig.show()
 
 #find points
 fig,[ax0,ax1]=plt.subplots(1,2)
-ax0.imshow(arr[i,1770:1840,1790:1840],cmap='hot')
+ax0.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
 ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
-ax1.set_xlim([1750,1840]);
-ax1.set_ylim([1770,1900]);
+ax1.set_xlim([1811,1972]);
+ax1.set_ylim([1266,1422]);
 ax1.invert_yaxis();
 plt.show()
 
