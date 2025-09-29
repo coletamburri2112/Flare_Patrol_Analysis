@@ -50,10 +50,15 @@ else:
     bin_y = 1 #initialize this parameter - will change if binning selected, below
 
 # limits for flare region (defined by raw image)
-xlow = 1700
-xhigh = 2350
-ylow = 1000
-yhigh = 2800
+xlow = 1600
+xhigh = 2300
+ylow = 900
+yhigh = 2700
+
+caII_low = 570
+caII_high = 730
+hep_low = 730
+hep_high = 900
 
 #define start and end times for series
 starttime = 200
@@ -61,6 +66,8 @@ endtime = 450
 
 # use destretched (0) or pre-destretched (1)?
 stretched = 0
+
+
 
 #VBI directory
 path_vbi = '/Volumes/VBI_External/pid_2_11/'
@@ -82,11 +89,30 @@ vispX = vispload['arr_0']
 vispY = vispload['arr_1']
 vispavg = vispload['arr_2']
 
-#load visp spec
-vispspec = np.load('/Users/coletamburri/Desktop/ViSPspec.npz')
-timesvisp = vispspec['arr_0']
-specvisp = vispspec['arr_1']
+file = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
 
+#load visp spec
+vispspec = np.load(file) #arrays allspc,flare,wl,range
+timesvisp = vispspec['time']
+specvisp0 = vispspec['flare']
+wlvisp = vispspec['wl']
+
+#specific to this save
+start = 57
+nstep = 91
+fullframenum = 1 #1 is the good seeing frame in visp data
+
+# First need to define which frame in the VBI sequence 
+# is most appropriate for the kernel you're searching for in the ViSP scan!
+# For example, fr=21 is the time corresponding to the first kernel studied, middle of scan
+# For the good seeing frame, all steps are between 22:33:19 and 22:33:24...
+# these correspond roughly to indices 19 through 22 in the VBI.
+fr=20
+
+specvisp = specvisp0[start+fullframenum*nstep:start+(fullframenum+1)*nstep,:,:]
+
+caiiavg = np.mean(specvisp[:,caII_low:caII_high,:],1)
+hepavg = np.mean(specvisp[:,hep_low:hep_high,:],1)
 
 
 
@@ -203,61 +229,63 @@ if diff == 1:
         diffarr[m,:,:] = np.subtract(arr[i,:,:],arr[i+20,:,:])
         
         
-        fig,ax=plt.subplots(dpi=200);
-        ax.imshow(diffarr[m,:,:],cmap='grey')
-        fig.savefig(folder+str(i)+'.png')
+        # fig,ax=plt.subplots(dpi=200);
+        # ax.imshow(diffarr[m,:,:],cmap='grey')
+        # fig.savefig(folder+str(i)+'.png')
         
         m+=1
         
+
+
+#select the thing you want to look at
+fig,[ax,ax1]=plt.subplots(1,2);
+ax.imshow(inst_mask[fr,ylow:yhigh,xlow:xhigh])
+ax1.imshow(cumul_mask[fr,ylow:yhigh,xlow:xhigh])
+fig.show()
+cc=plt.ginput(2,timeout=120)
+
+upperleftx = int(cc[0][0])
+upperlefty = int(cc[0][1])
+lowerrightx = int(cc[1][0])
+lowerrighty = int(cc[1][1])
+
 lcsmall=[]
-
 for i in range(100):
-    lcsmall.append(np.nansum(arr[i,1770:1840,1790:1840])) #limits for small thing
+    lcsmall.append(np.nansum(arr[i,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx])) #limits for small thing
     
-fig,ax=plt.subplots();ax.plot(lcsmall)
+fig,ax=plt.subplots();ax.plot(lcsmall);fig.show()
 
 
-i = 21
 
 fig,[(ax,ax1,ax2),(ax3,ax4,ax5)]=plt.subplots(2,3,dpi=200)
-ax.imshow(arr[i,1770:1840,1790:1840],cmap='hot')
-ax1.imshow(inst_mask[i,1770:1840,1790:1840],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-ax2.imshow(cumul_mask[i,1770:1840,1790:1840],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-ax3.imshow(arr[i,900:2700,1600:2300],cmap='hot')
-ax4.imshow(inst_mask[i,900:2700,1600:2300],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-ax5.imshow(cumul_mask[i,900:2700,1600:2300],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-rect = patches.Rectangle((1790-1600, 1770-900), 50, 70, linewidth=1, edgecolor='k', facecolor='none')
+ax.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
+ax1.imshow(inst_mask[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+ax2.imshow(cumul_mask[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+ax3.imshow(arr[fr,ylow:yhigh,xlow:xhigh],cmap='hot')
+ax4.imshow(inst_mask[fr,ylow:yhigh,xlow:xhigh],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+ax5.imshow(cumul_mask[fr,ylow:yhigh,xlow:xhigh],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
 
 # Add the patch to the Axes
 ax3.add_patch(rect)
-rect = patches.Rectangle((1790-1600, 1770-900), 50, 70, linewidth=1, edgecolor='k', facecolor='none')
-
+rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
 ax4.add_patch(rect)
-rect = patches.Rectangle((1790-1600, 1770-900), 50,70, linewidth=1, edgecolor='k', facecolor='none')
-
+rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
 ax5.add_patch(rect)
-
 ins = ax.inset_axes([0.5,0.7,0.4,0.2])
 ins.plot(lcsmall,c='black')
-ins.axvline(i,c='red')
+ins.axvline(fr,c='red')
 ins.set_xticks([])
 ins.set_yticks([])
 fig.show()
 
-# plot visp
-fig,ax=plt.subplots();
-ax.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1);
-ax.set_xlim([1790,1840]);
-ax.set_ylim([1770,1840]);
-ax.invert_yaxis();
-fig.show()
 
 #find points
 fig,[ax0,ax1]=plt.subplots(1,2)
-ax0.imshow(arr[i,1770:1840,1790:1840],cmap='hot')
+ax0.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
 ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
-ax1.set_xlim([1790,1840]);
-ax1.set_ylim([1770,1840]);
+ax1.set_xlim([xlow+upperleftx,xlow+lowerrightx]);
+ax1.set_ylim([ylow+upperlefty,ylow+lowerrighty]);
 ax1.invert_yaxis();
 plt.show()
 
@@ -268,23 +296,47 @@ def find_nearest_numpy(array, value):
     Finds the element in a NumPy array closest to the given value.
     """
     idx = (np.abs(array - value)).argmin()
-    return array[idx]
+    return idx
+n_points = len(aa)
+colors = plt.cm.jet(np.linspace(0,1,n_points))
 
-fig,ax=plt.subplots(1,4)
-for i in range(len(cc)):
+fig,[ax0,ax1]=plt.subplots(1,2)
+ax0.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
+ax1.pcolormesh(vispX,vispY,np.transpose(vispavg),cmap='hot',vmin=0.1,vmax=1)
+ax1.set_xlim([xlow+upperleftx,xlow+lowerrightx]);
+ax1.set_ylim([ylow+upperlefty,ylow+lowerrighty]);
+ax1.invert_yaxis();
+for i in range(len(aa)):
     xsel,ysel = aa[i][0],aa[i][1]
-    ax.flatten()[i].plot(visp[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
-    ax.flatten()[i].axvline(396.85)
-    ax.flatten()[i].axvline(397.01)
-    ax.flatten()[i].set_xlim([396.7,397.07])
+    ax1.plot(xsel,ysel,'x',color=colors[i])
+plt.show()
+
+vispx_1 = vispX[0]
+vispy_1 = vispY[:,0]
+
+xsspec = []
+ysspec = []
+
+for i in range(len(aa)):
+    xsel,ysel = aa[i][0],aa[i][1]
+    idx_x = find_nearest_numpy(vispx_1,xsel)
+    idx_y = find_nearest_numpy(vispy_1,ysel)
+    
+    xsspec.append(idx_x)
+    ysspec.append(idx_y)
+
+fig,ax=plt.subplots(2,3)
+for i in range(len(aa)):
+    xsel,ysel = aa[i][0],aa[i][1]
+    idx_x = find_nearest_numpy(vispx_1,xsel)
+    idx_y = find_nearest_numpy(vispy_1,ysel)
+    ax.flatten()[i].plot(specvisp[idx_x,:,idx_y],color=colors[i])
+    ax.flatten()[i].set_xlim([500,930])
+    #ax.flatten()[i].axvline(396.85)
+    #ax.flatten()[i].axvline(397.01)
+    #ax.flatten()[i].set_xlim([396.7,397.07])
 fig.show()
 
-fig,ax=plt.subplots(dpi=300)
-ax.pcolormesh(np.transpose(choice[xlo:xhi,ylo:yhi]),cmap='magma')
-for i in range(len(cc)):
-    xsel,ysel = aa[i][0],aa[i][1]
-    ax.plot(xsel,ysel,'x',color=colors[i])
-    
 
 
 
