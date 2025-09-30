@@ -12,17 +12,17 @@ import tol_colors as tc
 
 #file = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/ViSPselection8AugXclass_hbeta.npz'
 #file = '/Users/coletamburri/Desktop/ViSPselectionHbeta11aug.npz'
-file = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
+file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
 #file = '/Users/coletamburri/Desktop/ViSPselection8AugXclass.npz'
 #file = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
 
 data = np.load(file)
 
-raw = data['raw']
+#raw = data['raw']
 wl = data['wl']
 # scaled = data['scaled']
 flare = data['flare']
-# time = data['time']
+time = data['time']
 
 spectra = flare
 
@@ -55,6 +55,7 @@ both_avg = np.mean(spectra[:,caII_low:hep_high,:],1)
 all_avg = np.mean(spectra,1)
 
 choice = caii_avg_inner
+
 fig,ax=plt.subplots()
 ax.pcolormesh(np.transpose(choice),cmap='magma')
 ax.invert_yaxis()
