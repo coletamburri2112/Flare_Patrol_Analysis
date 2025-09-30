@@ -79,7 +79,7 @@ dir_list2_vbi = DKISTanalysis.pathdef(path_vbi,folder1_vbi)
 filename = ['/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/'+
                 'postdestretch_dataCubeFlareImpulsivePhase.fits'][0]
 
-visp_file = '/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
+visp_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
 
 vispload = np.load(visp_file)
 
@@ -89,7 +89,7 @@ vispX = vispload['arr_0']
 vispY = vispload['arr_1']
 vispavg = vispload['arr_2']
 
-file = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
+file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
 
 #load visp spec
 vispspec = np.load(file) #arrays allspc,flare,wl,range
@@ -209,6 +209,7 @@ for i in range(1,99):
     
 cumul_mask[cumul_mask == 0] = np.nan
 
+#instantaneous mask (new pixels)
 inst_mask = np.zeros([100,np.shape(timing)[0],np.shape(timing)[1]])
 
 for i in range(1,99):
@@ -219,6 +220,19 @@ for i in range(1,99):
     inst_mask[i,:,:]=arrsamp
 
 inst_mask[inst_mask == 0] = np.nan
+
+#instantaneous masks (all currently-lit pixels)
+inst_mask_all = np.zeros([100,np.shape(timing)[0],np.shape(timing)[1]])
+
+for i in range(1,99):
+    mask = np.zeros(np.shape(timing))
+    maskvals = np.nonzero((arr[i,:,:]>CUT*np.median(arr[i,:,:])))
+    for j in range(np.shape(maskvals)[1]):
+        mask[maskvals[0][j],maskvals[1][j]] += 1
+    inst_mask_all[i,:,:]=mask
+
+inst_mask_all[inst_mask_all == 0] = np.nan
+
 if diff == 1:
     diffarr = np.zeros(np.shape(arr))
     
@@ -339,7 +353,8 @@ for i in range(len(aa)):
 fig.show()
 
 
-num_areas = 6
+#to show light curves in different regions
+num_areas = 4
 
 fig,ax=plt.subplots();
 ax.imshow(cumul_mask[98,ylow:yhigh,xlow:xhigh])
@@ -383,6 +398,32 @@ for i in range(num_areas):
 fig.show()
 
 
+# to study kernel areas - use limits from above
+
+#timestep
+t = 11
+
+for t in range(6,22,1):
+    print(timesvbi[t])
+    print(t)
+
+    if t<11:
+        mask = inst_mask_all[t,ylow+850:ylow+1200,xlow:xhigh]
+    elif t==11:
+        mask = inst_mask_all[t,ylow+850:ylow+1300,xlow:xhigh]
+    elif t>11 and t<19:
+        mask = inst_mask_all[t,ylow+1150:ylow+1600,xlow:xhigh]
+    elif t>18:
+        mask = inst_mask_all[t,ylow+1350:ylow+1600,xlow:xhigh]
+    fig,ax=plt.subplots();
+    ax.pcolormesh(mask)
+    ax.invert_yaxis()
+    ax.set_title(t)
+    fig.show()
+    
+    area = np.nansum(mask)*(0.017*727)**2*1e10 # in cm2
+    print(area/1e15)
+    print(' ')
 
 
 
