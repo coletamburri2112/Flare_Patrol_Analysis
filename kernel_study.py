@@ -57,7 +57,7 @@ yhigh = 2700
 
 caII_low = 570
 caII_high = 730
-hep_low = 730
+hep_low = 750
 hep_high = 900
 
 #define start and end times for series
@@ -425,6 +425,34 @@ for t in range(6,22,1):
     print(area/1e15)
     print(' ')
 
+
+shiftarr = np.zeros((np.shape(specvisp0)[0],np.shape(specvisp0)[2]))
+
+for i in range(np.shape(specvisp0)[0]):
+    for j in range(np.shape(specvisp0)[2]):
+        wlline = wlvisp[caII_low:caII_high]
+        lineline = specvisp0[i,caII_low:caII_high,j]
+        centroid = np.average(wlline,weights=lineline)
+        shiftarr[i,j]=centroid
+        
+fig,ax=plt.subplots()
+ax.pcolormesh(np.transpose(shiftarr),vmin=396.82,vmax=396.88,cmap='seismic')
+ax.invert_yaxis()
+fig.show()
+
+shiftarr_he = np.zeros((np.shape(specvisp0)[0],np.shape(specvisp0)[2]))
+
+for i in range(np.shape(specvisp0)[0]):
+    for j in range(np.shape(specvisp0)[2]):
+        wlline = wlvisp[hep_low:hep_high]
+        lineline = specvisp0[i,hep_low:hep_high,j]
+        centroid = np.average(wlline,weights=lineline)
+        shiftarr_he[i,j]=centroid
+        
+fig,ax=plt.subplots()
+ax.pcolormesh(np.transpose(shiftarr_he),vmin=396.99,vmax=397.03,cmap='jet')
+ax.invert_yaxis()
+fig.show()
 
 
 
