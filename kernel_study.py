@@ -398,7 +398,8 @@ for i in range(num_areas):
 fig.show()
 
 
-# to study kernel areas - use limits from above
+# to study kernel areas - contributions from all "flaring regions" at the time
+# of the HXR observations.  Would this be integrated actually?
 
 #timestep
 t = 11
@@ -408,27 +409,35 @@ for t in range(6,22,1):
     print(t)
 
     if t<11:
-        mask = inst_mask_all[t,ylow+850:ylow+1200,xlow:xhigh]
+        mask = inst_mask_all[t,ylow+850:ylow+1200,xlow:xhigh] #ribbon r1a
+        mask2 = inst_mask_all[t,1400:1800,600:1000] #ribbon r2
+        mask3 = inst_mask_all[t,1380:1700,xlow:xhigh] #ribbon r1b
     elif t==11:
         mask = inst_mask_all[t,ylow+850:ylow+1300,xlow:xhigh]
+        mask2 = inst_mask_all[t,1400:1800,600:1000]
+        mask3 =[]
     elif t>11 and t<19:
         mask = inst_mask_all[t,ylow+1150:ylow+1600,xlow:xhigh]
+        mask2 = inst_mask_all[t,1800:2600,500:1200]
+        mask3 =[]
     elif t>18:
         mask = inst_mask_all[t,ylow+1350:ylow+1600,xlow:xhigh]
+        ask2 = inst_mask_all[t,1800:2600,500:1200]
+        mask3 =[]
     fig,ax=plt.subplots();
     ax.pcolormesh(mask)
     ax.invert_yaxis()
     ax.set_title(t)
     fig.show()
     
-    area = np.nansum(mask)*(0.017*727)**2*1e10 # in cm2
+    area = (np.nansum(mask)+np.nansum(mask2)+np.nansum(mask3))*(0.017*727)**2*1e10 # in cm2
     print(area/1e15)
     print(' ')
 
 
 shiftarr = np.zeros((np.shape(specvisp0)[0],np.shape(specvisp0)[2]))
 
-for i in range(np.shape(specvisp0)[0]):
+for i in range(np.shape(specvisp)[0]):
     for j in range(np.shape(specvisp0)[2]):
         wlline = wlvisp[caII_low:caII_high]
         lineline = specvisp0[i,caII_low:caII_high,j]
@@ -449,9 +458,64 @@ for i in range(np.shape(specvisp0)[0]):
         centroid = np.average(wlline,weights=lineline)
         shiftarr_he[i,j]=centroid
         
-fig,ax=plt.subplots()
-ax.pcolormesh(np.transpose(shiftarr_he),vmin=396.99,vmax=397.03,cmap='jet')
-ax.invert_yaxis()
+#only best frame
+        
+shiftarr1 = np.zeros((np.shape(specvisp)[0]-1,np.shape(specvisp)[2]))
+
+for i in range(np.shape(specvisp)[0]-1):
+    for j in range(np.shape(specvisp)[2]):
+        wlline = wlvisp[caII_low:caII_high]
+        lineline = specvisp[i,caII_low:caII_high,j]
+        centroid = np.average(wlline,weights=lineline)
+        shiftarr1[i,j]=centroid
+        
+
+shiftarr_he1 = np.zeros((np.shape(specvisp)[0]-1,np.shape(specvisp)[2]))
+
+for i in range(np.shape(specvisp)[0]-1):
+    for j in range(np.shape(specvisp)[2]):
+        wlline = wlvisp[hep_low:hep_high]
+        lineline = specvisp[i,hep_low:hep_high,j]
+        centroid = np.average(wlline,weights=lineline)
+        if centroid > 397.03:
+            shiftarr_he1[i,j]='nan'
+        else:
+            shiftarr_he1[i,j]=centroid
+
+fig,[ax0,ax1,ax2,ax3]=plt.subplots(1,4,dpi=200)
+ax0.pcolormesh(vispX,vispY,np.transpose(shiftarr1),vmin=396.82,vmax=396.88,cmap='seismic')
+ax1.pcolormesh(vispX,vispY,np.transpose(shiftarr_he1),vmin=396.98,vmax=397.04,cmap='seismic')
+ax2.pcolormesh(vispX,vispY,np.transpose(caiiavg[:-1,:]),cmap='inferno');
+ax3.pcolormesh(arr[20,ylow:yhigh,xlow+145:xlow+145+400],cmap='grey',vmin=200,vmax=160000);
+
+ax0.set_ylim([ylow,yhigh])
+ax1.set_ylim([ylow,yhigh])
+ax2.set_ylim([ylow,yhigh])
+
+
+ax0.set_xlim([xlow+145,xlow+145+400])
+ax1.set_xlim([xlow+145,xlow+145+400])
+ax2.set_xlim([xlow+145,xlow+145+400])
+
+
+ax0.invert_yaxis()
+ax1.invert_yaxis()
+ax2.invert_yaxis()
+ax3.invert_yaxis()
+
+ax0.set_xticks([])
+ax1.set_xticks([])
+ax2.set_xticks([])
+ax3.set_xticks([])
+
+
+ax0.set_yticks([])
+ax1.set_yticks([])
+ax2.set_yticks([])
+ax3.set_yticks([])
+
+
+
 fig.show()
 
 

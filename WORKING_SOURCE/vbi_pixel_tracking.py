@@ -31,7 +31,7 @@ else:
     bin_y = 1 #initialize this parameter - will change if binning selected, below
 
 # limits for flare region (defined by raw image)
-xlow = 1700
+xlow = 500 # 500 for include r2, 1700 for only r1
 xhigh = 2350
 ylow = 1000
 yhigh = 2800
@@ -53,7 +53,7 @@ dir_list2_vbi = DKISTanalysis.pathdef(path_vbi,folder1_vbi)
 filename = ['/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/'+
                 'postdestretch_dataCubeFlareImpulsivePhase.fits'][0]
 
-visp_file = '/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
+visp_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
 
 vispload = np.load(visp_file)
 
@@ -345,6 +345,8 @@ for i in range(0,40):
     ins.set_xticks([])
     ins.set_yticks([])
     fig.savefig('/Users/coletamburri/Desktop/fullframe/'+str(i)+'.png',format='png',dpi=200)
+    
+
 
 
 

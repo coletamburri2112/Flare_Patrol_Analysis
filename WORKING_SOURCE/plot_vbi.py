@@ -60,8 +60,8 @@ for i in range(len(stack)):
     
 path = '/Volumes/VBI_External/pid_2_11/'
 
-#folder_vbi = 'AXXJL' # X class flare
-folder_vbi = 'AWYMX' # M class flare
+folder_vbi = 'AKDKX' # X class flare
+#folder_vbi = 'AWYMX' # M class flare
 dir_list = os.listdir(path+folder_vbi)
 dir_list.sort()
 dir_list2 = []
@@ -72,56 +72,56 @@ for i in range(1182):
     if filename[-5:] == '.fits' and '_I_' in filename:
         dir_list2.append(filename)
     
-# load fits file
-times = []
-xarrs = []
-yarrs = []
+# # load fits file
+# times = []
+# xarrs = []
+# yarrs = []
 
-for i in range(50):
-    hdul = fits.open(path+folder_vbi+'/'+dir_list2[i+150])
-    times.append(hdul[1].header['DATE-BEG'])
-    xloc = hdul[1].header['CRVAL1']
-    yloc = hdul[1].header['CRVAL2']
-    xpix = hdul[1].header['CRPIX1']
-    ypix = hdul[1].header['CRPIX2']
-    xdelt = hdul[1].header['CDELT1']
-    ydelt = hdul[1].header['CDELT2']
+# for i in range(50):
+#     hdul = fits.open(path+folder_vbi+'/'+dir_list2[i+150])
+#     times.append(hdul[1].header['DATE-BEG'])
+#     xloc = hdul[1].header['CRVAL1']
+#     yloc = hdul[1].header['CRVAL2']
+#     xpix = hdul[1].header['CRPIX1']
+#     ypix = hdul[1].header['CRPIX2']
+#     xdelt = hdul[1].header['CDELT1']
+#     ydelt = hdul[1].header['CDELT2']
     
-    xarr = np.zeros(4095)
-    yarr = np.zeros(4095)
+#     xarr = np.zeros(4095)
+#     yarr = np.zeros(4095)
     
-    xarr[int(xpix)]=xloc
-    yarr[int(ypix)]=yloc
+#     xarr[int(xpix)]=xloc
+#     yarr[int(ypix)]=yloc
     
-    for j in range(int(xpix)+1,4095,1):
-        xarr[j] = xarr[j-1] + xdelt
-    for j in range(int(ypix)+1,4095,1):
-        yarr[j] = yarr[j-1] + ydelt
+#     for j in range(int(xpix)+1,4095,1):
+#         xarr[j] = xarr[j-1] + xdelt
+#     for j in range(int(ypix)+1,4095,1):
+#         yarr[j] = yarr[j-1] + ydelt
         
-    for j in range(int(xpix),-1,-1):
-        xarr[j] = xarr[j+1] - xdelt
-    for j in range(int(ypix),-1,-1):
-        yarr[j] = yarr[j+1] - ydelt
+#     for j in range(int(xpix),-1,-1):
+#         xarr[j] = xarr[j+1] - xdelt
+#     for j in range(int(ypix),-1,-1):
+#         yarr[j] = yarr[j+1] - ydelt
         
-    xarrs.append(xarr)
-    yarrs.append(yarr)
+#     xarrs.append(xarr)
+#     yarrs.append(yarr)
     
     
     
     
 #this file is indices 150 to 250
-data1 = np.load('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AXXJL/AXXJLselections.npz')
-data = normalize_3d_array(data1['first50'])
-rain = data = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AWYMX/pre-destretch_dataCubeX_class_decay_coronal_rain.fits')[0].data
+#data1 = np.load('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AXXJL/AXXJLselections.npz')
+#data = normalize_3d_array(data1['first50'])
+#rain = data = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AWYMX/pre-destretch_dataCubeX_class_decay_coronal_rain.fits')[0].data
 #data = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data
 #data = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AWYMX/postdestretch_histomatch_dataCubeX_class_decay_blue_continuum.fits')[0].data
-#data = fits.open('/Users/coletamburri/Desktop/VBI_Destretching/AKDKX/postdestretch_histomatch_dataCubeFlareImpulsivePhase.fits')
+data = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/postdestretch_histomatch_dataCubeFlareImpulsivePhase.fits')
 
 props = dict(edgecolor='black',facecolor='white', alpha=0.8,boxstyle='square,pad=0.4')
-data1179 = fits.open('/Volumes/VBI_External/pid_2_11/AXXJL/VBI_2024_08_08T21_04_56_333333_00656282_I_AXXJL_L1.fits')[1].data
+# data1179 = fits.open('/Volumes/VBI_External/pid_2_11/AXXJL/VBI_2024_08_08T21_04_56_333333_00656282_I_AXXJL_L1.fits')[1].data
 
-data750 = fits.open('/Volumes/VBI_External/pid_2_11/AXXJL/VBI_2024_08_08T20_45_52_333333_00656282_I_AXXJL_L1.fits')[1].data
-data260 = fits.open('/Volumes/VBI_External/pid_2_11/AXXJL/VBI_2024_08_08T20_24_05_666666_00656282_I_AXXJL_L1.fits')[1].data
+# data750 = fits.open('/Volumes/VBI_External/pid_2_11/AXXJL/VBI_2024_08_08T20_45_52_333333_00656282_I_AXXJL_L1.fits')[1].data
+# data260 = fits.open('/Volumes/VBI_External/pid_2_11/AXXJL/VBI_2024_08_08T20_24_05_666666_00656282_I_AXXJL_L1.fits')[1].data
 # fig,ax=plt.subplots(1,1,dpi=300,figsize=(10,5))
 # for i in range(1):
 #     #X,Y=np.meshgrid(xarrs[i],np.transpose(yarrs[i]))
@@ -143,17 +143,20 @@ times=[]
 xarrs=[]
 yarrs=[]
 
-i =0
+i =240
 
 hdul = fits.open(path+folder_vbi+'/'+dir_list2[i])
 #hdul = fits.open()
 #times.append(hdul[1].header['DATE-BEG'])
+time=hdul[1].header['DATE-BEG']
 xloc = hdul[1].header['CRVAL1']
 yloc = hdul[1].header['CRVAL2']
 xpix = hdul[1].header['CRPIX1']
 ypix = hdul[1].header['CRPIX2']
 xdelt = hdul[1].header['CDELT1']
 ydelt = hdul[1].header['CDELT2']
+
+data = hdul[1].data[0,:,:]
 
 xarr = np.zeros(4095)
 yarr = np.zeros(4095)
@@ -190,9 +193,9 @@ X,Y = np.meshgrid(xarr_arb, yarr_arb)
 #normalized = data[0].data[i]/data[0].data[i].max()   
 
 #data=data260[0][:-1,:-1]
-#normalized = (data-data.min()) /(data.max() -data.min())
+normalized = (data-data.min()) /(data.max() -data.min())
 
-normalized = (data[i]-data[i].min()) /(data[i].max() -data[i].min())
+#normalized = (data[i]-data[i].min()) /(data[i].max() -data[i].min())
 #gamma = 0.7  # Adjust this value to control brightness (gamma < 1 brightens)
 #corrected_data = np.power(normalized, gamma)
 
@@ -214,8 +217,8 @@ from matplotlib.ticker import AutoMinorLocator
 fig,ax=plt.subplots(dpi=200);
 #ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
 #ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
-# ax.set_xticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
-# ax.set_yticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
+ax.set_xticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
+ax.set_yticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
 ax.set_xticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
 ax.set_yticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
 minor_locator = AutoMinorLocator(2) 
@@ -227,8 +230,8 @@ ax.yaxis.set_minor_locator(minor_locator)
 #ax.set_yticks([109,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
 
 #im = ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.15),vmax=np.log10(0.96)) #4
-#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92)) # 1 and 3
-ax.pcolormesh(Xb,Yb,normalized,cmap=matplotlib.colormaps['sdoaia4500'],vmin=0.3,vmax=0.9)
+ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.1),vmax=np.log10(0.99)) # 1 and 3
+#ax.pcolormesh(Xb,Yb,normalized,cmap=matplotlib.colormaps['sdoaia4500'],vmin=0.3,vmax=0.9)
 #im = ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.25),vmax=np.log10(0.92)) #2
 #im = ax.imshow(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=0.07,vmax=0.7)
 ax.set_aspect('equal')
