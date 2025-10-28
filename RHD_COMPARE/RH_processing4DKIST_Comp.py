@@ -49,7 +49,9 @@ for i in range(len(times)):
     base2 = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
     
     #define model to read in
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_fchroma_21s_mod30_20broadc_5vt_H20/run')
+
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_5_TC_90s_7kms/run')
+
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
     
@@ -58,7 +60,7 @@ for i in range(len(times)):
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
     #filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
-    filename = base2+'rand'
+    filename = base2+'TC_19Aug2022_7kms'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                

@@ -162,7 +162,28 @@ dkist_wl_shift_hep = dkist_wl-lamb1
 yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
 
 
-modelname1 = 'cat_15_8_5e10_20_600_500.npz'
+modelname1_orig = 'cat_15_8_5e10_20_600_500.npz'
+model_choice1 = np.load(base+modelname1_orig)
+caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+
+model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+model_choice1_wlshift = model_choice1_wl-lamb0
+model_choice1_wlshift_hep = model_choice1_wl-lamb1
+    
+# adjust for instrument PSF
+
+model1_copy_int = model_choice1_int
+model1_copy_wl = model_choice1_wl
+yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+
+yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                               gaussian_psf)
+
+model_subtract1_orig = yconv1-yconvqs
+
+
+modelname1 = 'EBLD_19Aug2022_7kms.npz'
 #chosen model to compare (can/will be many)
 model_choice1 = np.load(base+modelname1)
 caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
@@ -185,7 +206,28 @@ model_subtract1 = yconv1-yconvqs
 
 
 
-modelnameTC = 'rhf1d_5_TC_90s.npz'
+modelnameTC_orig = 'rhf1d_5_TC_90s.npz'
+#chosen model to compare (can/will be many)
+model_choice1 = np.load(base+modelnameTC_orig)
+caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
+
+model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+model_choice1_wlshift = model_choice1_wl-lamb0
+model_choice1_wlshift_hep = model_choice1_wl-lamb1
+    
+# adjust for instrument PSF
+
+model1_copy_int = model_choice1_int
+model1_copy_wl = model_choice1_wl
+yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl,ntw,gaussian_psf)
+
+yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
+                               gaussian_psf)
+
+model_subtract_TC_orig = yconv1-yconvqs
+
+modelnameTC = 'TC_19Aug2022_7kms.npz'
 
 #chosen model to compare (can/will be many)
 model_choice1 = np.load(base+modelnameTC)
@@ -214,18 +256,33 @@ model_subtract_TC = yconv1-yconvqs
 # # secaxx.grid('on')
 
 fig,ax=plt.subplots(dpi=200,figsize=(5,4))
-ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,heplowh20,hephighh20),alpha=1,c='b',linewidth=2,label='EB1, 500s')
-ax.plot(dkist_wl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
-ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
+# ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,heplowh20,hephighh20),alpha=1,c='b',linewidth=2,label=r'EB1, 500s, $v_{turb} = 7\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label=r'TC1, 90s, $v_{turb} = 7\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(model_subtract1_orig/1e6,heplowh20,hephighh20),alpha=.7,c='b',linewidth=2,linestyle='dashed',label=r'EB1, 500s, $v_{turb} = 2\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(model_subtract_TC_orig/1e6,heplowh20,hephighh20),alpha=.7,c='red',linewidth=2,linestyle='dashed',label=r'TC1, 90s, $v_{turb} = 2\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(dkist_int/1e6,heplowh20,hephighh20),alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
+
+# ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,400,heplowh20),alpha=1,c='b',linewidth=2,label=r'EB1, 500s, $v_{turb} = 7\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(model_subtract_TC/1e6,400,heplowh20),alpha=1,c='red',linewidth=2,label=r'TC1, 90s, $v_{turb} = 7\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(model_subtract1_orig/1e6,400,heplowh20),alpha=.7,c='b',linewidth=2,linestyle='dashed',label=r'EB1, 500s, $v_{turb} = 2\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(model_subtract_TC_orig/1e6,400,heplowh20),alpha=.7,c='red',linewidth=2,linestyle='dashed',label=r'TC1, 90s, $v_{turb} = 2\;km\;s^{-1}$')
+# ax.plot(dkist_wl,normalize_range(dkist_int/1e6,400,heplowh20),alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
+
+
+ax.plot(dkist_wl,model_subtract1/1e6,alpha=1,c='b',linewidth=2,label=r'EB1, 500s, $v_{turb} = 7\;km\;s^{-1}$')
+ax.plot(dkist_wl,model_subtract_TC/1e6,alpha=1,c='red',linewidth=2,label=r'TC1, 90s, $v_{turb} = 7\;km\;s^{-1}$')
+ax.plot(dkist_wl,model_subtract1_orig/1e6,alpha=.7,c='b',linewidth=2,linestyle='dashed',label=r'EB1, 500s, $v_{turb} = 2\;km\;s^{-1}$')
+ax.plot(dkist_wl,model_subtract_TC_orig/1e6,alpha=.7,c='red',linewidth=2,linestyle='dashed',label=r'TC1, 90s, $v_{turb} = 2\;km\;s^{-1}$')
+ax.plot(dkist_wl,dkist_int/1e6,alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
 
 # ax.plot(dkist_wl,model_subtract1/1e6,alpha=1,c='b',linewidth=3)
 # ax.plot(dkist_wl,model_subtract_TC/1e6,alpha=1,c='#CC6677',linewidth=3)
 # ax.plot(dkist_wl,dkist_int/1e6,alpha=1,c='black',linewidth=3)
 
-ax.legend(fontsize=10)
+ax.legend(fontsize=8)
 ax.set_xlim([396.75,397.1])
 ax.grid()
-ax.axvline(396.844,linestyle='dashed',c='grey',linewidth=2)
+ax.axvline(396.846,linestyle='dashed',c='grey',linewidth=2)
 ax.axvline(397.01,linestyle='dashed',c='grey',linewidth=2)
 ax.set_ylabel(r'Intensity (Normalized to $H\epsilon$)')
 ax.set_xlabel('Wavelength [nm]')
@@ -452,21 +509,21 @@ lns3 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[2][h
 lns4 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[3][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
 lns6 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[5][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
 lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
-#lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2,zorder=7)
+#lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='black',linewidth=2,zorder=7)
 ax.plot(dkist_wl-hepwl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
 
 ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(dkist_int[heplowh20:hephighh20]),label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
 
-# ax.plot(dkist_wl-hepwl,model_subtract1,alpha=1,c='b',linewidth=2,label='EB1, 500s')
+# lns3 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[2][heplowh20:hephighh20]),linestyle=(0, (5, 1)),alpha=.7,label='EB2, 43s',c=cmap_choice2[12],linewidth=2)
+# lns4 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[3][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
+# lns6 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[5][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
+# lns7 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[6][heplowh20:hephighh20]),'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
+# #lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='black',linewidth=2,zorder=7)
+# ax.plot(dkist_wl-hepwl,normalize_range(model_subtract_TC/1e6,heplowh20,hephighh20),alpha=1,c='red',linewidth=2,label='TC1, 90s')
 
-# lns3 = ax.plot(dkist_wl-hepwl,models_tocomp[2],linestyle=(0, (5, 1)),alpha=.7,label='EB2, 43s',c=cmap_choice2[12],linewidth=2)
-# lns4 = ax.plot(dkist_wl-hepwl,models_tocomp[3],'-.',alpha=.7,label=r'EB3, 43s',c=cmap_choice2[6],linewidth=2)
-# lns6 = ax.plot(dkist_wl-hepwl,models_tocomp[5],'-',alpha=.7,label=r'EB4, 43s',c='#CC6677',linewidth=2)
-# lns7 = ax.plot(dkist_wl-hepwl,models_tocomp[6],'-',alpha=.7,label=r'EB4, 21s',c='#999933',linewidth=2)
-# #lns8 = ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(models_tocomp[7][heplowh20:hephighh20]),'-.',alpha=.7,label=r'EB5, 21s',c='#999933',linewidth=2,zorder=7)
-# ax.plot(dkist_wl-hepwl,model_subtract_TC,alpha=1,c='red',linewidth=2,label='TC1, 90s')
+# ax.plot(dkist_wl[heplowh20:hephighh20]-hepwl,normalize(dkist_int[heplowh20:hephighh20]),label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
 
-# ax.plot(dkist_wl-hepwl,dkist_int,label='DKIST/ViSP',linewidth=3,c='black',zorder=6,alpha=1)
+
 
 ax.axvline(.0175,color=cmap_choice2[7],alpha=.7,linestyle='-.')
 ax.axvline(.03,color=cmap_choice2[7],alpha=.7,linestyle='-.')

@@ -39,7 +39,7 @@ def rebin_image(arr, new_shape):
 muted = DKISTanalysis.color_muted2()
 
 l=0
-CUT=2.5 # cutoff for mask-making
+CUT=2.2 # cutoff for mask-making
 binning = 0 # to bin or not to bin?
 diff = 0 # to diff or not to diff
 if binning == 1:
@@ -412,6 +412,7 @@ for t in range(6,22,1):
         mask = inst_mask_all[t,ylow+850:ylow+1200,xlow:xhigh] #ribbon r1a
         mask2 = inst_mask_all[t,1400:1800,600:1000] #ribbon r2
         mask3 = inst_mask_all[t,1380:1700,xlow:xhigh] #ribbon r1b
+        fig,ax=plt.subplots();
     elif t==11:
         mask = inst_mask_all[t,ylow+850:ylow+1300,xlow:xhigh]
         mask2 = inst_mask_all[t,1400:1800,600:1000]
@@ -422,13 +423,15 @@ for t in range(6,22,1):
         mask3 =[]
     elif t>18:
         mask = inst_mask_all[t,ylow+1350:ylow+1600,xlow:xhigh]
-        ask2 = inst_mask_all[t,1800:2600,500:1200]
+        mask2 = inst_mask_all[t,1800:2600,500:1200]
         mask3 =[]
-    fig,ax=plt.subplots();
-    ax.pcolormesh(mask)
-    ax.invert_yaxis()
-    ax.set_title(t)
-    fig.show()
+    # fig,[ax,ax1,ax2]=plt.subplots(3,1);
+    # ax.pcolormesh(mask)
+    # ax1.pcolormesh(mask2)
+    # ax2.pcolormesh(mask3)
+    # ax.invert_yaxis()
+    # ax.set_title(t)
+    # fig.show()
     
     area = (np.nansum(mask)+np.nansum(mask2)+np.nansum(mask3))*(0.017*727)**2*1e10 # in cm2
     print(area/1e15)
