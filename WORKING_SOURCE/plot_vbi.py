@@ -143,7 +143,7 @@ times=[]
 xarrs=[]
 yarrs=[]
 
-i =240
+i =207
 
 hdul = fits.open(path+folder_vbi+'/'+dir_list2[i])
 #hdul = fits.open()
@@ -199,7 +199,7 @@ normalized = (data-data.min()) /(data.max() -data.min())
 #gamma = 0.7  # Adjust this value to control brightness (gamma < 1 brightens)
 #corrected_data = np.power(normalized, gamma)
 
-print(stack[i])
+print(time)
 
 fig,ax=plt.subplots(dpi=200,figsize=(20,20))
 
@@ -215,12 +215,12 @@ Xb,Yb = np.meshgrid(xarrb,yarrb)
 from matplotlib.ticker import AutoMinorLocator
 
 fig,ax=plt.subplots(dpi=200);
-#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
+ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
 #ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.2),vmax=np.log10(0.92))
 ax.set_xticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
 ax.set_yticks([100,20000,40000],[r'0',r'$2\times10^4\;km$',r'$4\times10^4\;km$'])
-ax.set_xticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
-ax.set_yticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
+#ax.set_xticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
+#ax.set_yticks([0,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
 minor_locator = AutoMinorLocator(2) 
 ax.xaxis.set_minor_locator(minor_locator)
 ax.yaxis.set_minor_locator(minor_locator)
@@ -230,7 +230,7 @@ ax.yaxis.set_minor_locator(minor_locator)
 #ax.set_yticks([109,10000,20000,30000],[r'0',r'$10^4\;km$',r'$2\times10^4\;km$',r'$3\times10^4\;km$'])
 
 #im = ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.15),vmax=np.log10(0.96)) #4
-ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.1),vmax=np.log10(0.99)) # 1 and 3
+#ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.1),vmax=np.log10(0.99)) # 1 and 3
 #ax.pcolormesh(Xb,Yb,normalized,cmap=matplotlib.colormaps['sdoaia4500'],vmin=0.3,vmax=0.9)
 #im = ax.pcolormesh(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=np.log10(.25),vmax=np.log10(0.92)) #2
 #im = ax.imshow(X,Y,np.log10(normalized),cmap=matplotlib.colormaps['afmhot'],vmin=0.07,vmax=0.7)
