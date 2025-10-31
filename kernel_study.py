@@ -39,7 +39,7 @@ def rebin_image(arr, new_shape):
 muted = DKISTanalysis.color_muted2()
 
 l=0
-CUT=2.5 # cutoff for mask-making
+CUT=2.2 # cutoff for mask-making
 binning = 0 # to bin or not to bin?
 diff = 0 # to diff or not to diff
 if binning == 1:
@@ -272,28 +272,39 @@ for i in range(100):
 fig,ax=plt.subplots();ax.plot(lcsmall);fig.show()
 
 
-
-fig,[(ax,ax1,ax2),(ax3,ax4,ax5)]=plt.subplots(2,3,dpi=200)
-ax.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
-ax1.imshow(inst_mask[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-ax2.imshow(cumul_mask[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+#fig,[(ax,ax1,ax2),(ax3,ax4,ax5)]=plt.subplots(2,3,dpi=200)
+fig,[ax3,ax4,ax5]=plt.subplots(1,3,dpi=200)
+#ax.imshow(arr[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap='hot')
+#ax1.imshow(inst_mask[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+#ax2.imshow(cumul_mask[fr,ylow+upperlefty:ylow+lowerrighty,xlow+upperleftx:xlow+lowerrightx],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
 ax3.imshow(arr[fr,ylow:yhigh,xlow:xhigh],cmap='hot')
 ax4.imshow(inst_mask[fr,ylow:yhigh,xlow:xhigh],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-ax5.imshow(cumul_mask[fr,ylow:yhigh,xlow:xhigh],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
-rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
+img = ax5.imshow(cumul_mask[fr,ylow:yhigh,xlow:xhigh],cmap=tol_colors.tol_cmap(colormap='rainbow_PuRd'), vmin=0, vmax=40)
+#rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
+ax3.set_xticks([])
+ax3.set_yticks([])
+ax4.set_xticks([])
+ax4.set_yticks([])
+ax5.set_xticks([])
+ax5.set_yticks([])
 
-# Add the patch to the Axes
-ax3.add_patch(rect)
-rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
-ax4.add_patch(rect)
-rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
-ax5.add_patch(rect)
-ins = ax.inset_axes([0.5,0.7,0.4,0.2])
-ins.plot(lcsmall,c='black')
-ins.axvline(fr,c='red')
-ins.set_xticks([])
-ins.set_yticks([])
+cbar = fig.colorbar(img,ticks=[0,10,20,30,40])
+cbar.ax.set_yticklabels([str(timesvbi[0]),str(timesvbi[10]),str(timesvbi[20]),str(timesvbi[30]),str(timesvbi[40])])
+
+## Add the patch to the Axes
+# ax3.add_patch(rect)
+# rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
+# ax4.add_patch(rect)
+# rect = patches.Rectangle((upperleftx, upperlefty), lowerrightx-upperleftx, lowerrighty-upperlefty, linewidth=1, edgecolor='k', facecolor='none')
+# ax5.add_patch(rect)
+# ins = ax.inset_axes([0.5,0.7,0.4,0.2])
+# ins.plot(lcsmall,c='black')
+# ins.axvline(fr,c='red')
+# ins.set_xticks([])
+# ins.set_yticks([])
 fig.show()
+
+print(timesvbi[fr])
 
 
 #find points
@@ -412,6 +423,7 @@ for t in range(6,22,1):
         mask = inst_mask_all[t,ylow+850:ylow+1200,xlow:xhigh] #ribbon r1a
         mask2 = inst_mask_all[t,1400:1800,600:1000] #ribbon r2
         mask3 = inst_mask_all[t,1380:1700,xlow:xhigh] #ribbon r1b
+        fig,ax=plt.subplots();
     elif t==11:
         mask = inst_mask_all[t,ylow+850:ylow+1300,xlow:xhigh]
         mask2 = inst_mask_all[t,1400:1800,600:1000]
@@ -422,13 +434,15 @@ for t in range(6,22,1):
         mask3 =[]
     elif t>18:
         mask = inst_mask_all[t,ylow+1350:ylow+1600,xlow:xhigh]
-        ask2 = inst_mask_all[t,1800:2600,500:1200]
+        mask2 = inst_mask_all[t,1800:2600,500:1200]
         mask3 =[]
-    fig,ax=plt.subplots();
-    ax.pcolormesh(mask)
-    ax.invert_yaxis()
-    ax.set_title(t)
-    fig.show()
+    # fig,[ax,ax1,ax2]=plt.subplots(3,1);
+    # ax.pcolormesh(mask)
+    # ax1.pcolormesh(mask2)
+    # ax2.pcolormesh(mask3)
+    # ax.invert_yaxis()
+    # ax.set_title(t)
+    # fig.show()
     
     area = (np.nansum(mask)+np.nansum(mask2)+np.nansum(mask3))*(0.017*727)**2*1e10 # in cm2
     print(area/1e15)
@@ -445,7 +459,7 @@ for i in range(np.shape(specvisp)[0]):
         shiftarr[i,j]=centroid
         
 fig,ax=plt.subplots()
-ax.pcolormesh(np.transpose(shiftarr),vmin=396.82,vmax=396.88,cmap='seismic')
+ax.pcolormesh(np.transpose(shiftarr),vmin=396.816,vmax=396.876,cmap='seismic')
 ax.invert_yaxis()
 fig.show()
 
@@ -481,10 +495,13 @@ for i in range(np.shape(specvisp)[0]-1):
             shiftarr_he1[i,j]='nan'
         else:
             shiftarr_he1[i,j]=centroid
+            
+he_cent = 397.007
+caii_cent = 396.848
 
 fig,[ax0,ax1,ax2,ax3]=plt.subplots(1,4,dpi=200)
-ax0.pcolormesh(vispX,vispY,np.transpose(shiftarr1),vmin=396.82,vmax=396.88,cmap='seismic')
-ax1.pcolormesh(vispX,vispY,np.transpose(shiftarr_he1),vmin=396.98,vmax=397.04,cmap='seismic')
+ax0.pcolormesh(vispX,vispY,np.transpose(shiftarr1),vmin=caii_cent-0.03,vmax=caii_cent+0.03,cmap='seismic')
+ax1.pcolormesh(vispX,vispY,np.transpose(shiftarr_he1),vmin=he_cent-0.03,vmax=he_cent+0.03,cmap='seismic')
 ax2.pcolormesh(vispX,vispY,np.transpose(caiiavg[:-1,:]),cmap='inferno');
 ax3.pcolormesh(arr[20,ylow:yhigh,xlow+145:xlow+145+400],cmap='grey',vmin=200,vmax=160000);
 

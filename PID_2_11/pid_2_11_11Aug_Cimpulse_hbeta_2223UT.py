@@ -17,7 +17,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=5
+end=2
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -76,8 +76,8 @@ clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True)
 # time step start for chosen QS observations
 startstepqs = 0
 endstepqs=100
-startstep=2000 #where does interesting bit begin?
-endstep=2500#where does interesting bit end?
+startstep=2400 #where does interesting bit begin?
+endstep=2800#where does interesting bit end? #originally 3400, shortening
 
     
 # process multi-step raster - for hbeta
@@ -112,12 +112,9 @@ spatial_range , dispersion_range = DKISTanalysis.spatialaxis(path,folder3hbeta,
     
 # Begin calibration based on QS
 
-# Load Kurucz FTS Atlas
-#wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range-.01)
-#wlsel=wlsel/10
-
 # # Load Kurucz FTS Atlas
 wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range-.101)
+#wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range)
 wlsel=wlsel/10
 
 
