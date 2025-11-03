@@ -2291,7 +2291,6 @@ def gaussian_psf(x, fwhm):
 #write adjustment for point spread function from atlas
 def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,calibrated_qs,limbdarkqs,ntw,gaussian_psf):
    
-    
     func=interp1d(wlsel,ilamsel,kind='linear',fill_value='extrapolate')
     yatlas = func(new_dispersion_range)
     dw=new_dispersion_range[1]-new_dispersion_range[0]

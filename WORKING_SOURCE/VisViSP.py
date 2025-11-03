@@ -35,8 +35,8 @@ caii_inner_high = 680
 hbeta_low = 500
 hbeta_high = 650
 
-n_points = 3
-spec=1
+n_points = 10
+spec=0
 
 
 if hbeta==1:
@@ -70,7 +70,7 @@ else:
     # hep_avg = np.mean(spectra[:,hep_low:hep_high,:],1)
     # hep_avg_inner = np.mean(spectra[:,hep_inner_low:hep_inner_high,:],1)
     
-    # caii_avg_inner = np.mean(spectra[:,caii_inner_low:caii_inner_high,:],1)
+    #caii_avg_inner = np.mean(spectra[:,caii_inner_low:caii_inner_high,:],1)
     
     # caii_avg_redwing = spectra[:,700,:]
     
@@ -82,7 +82,7 @@ else:
     # both_avg = np.mean(spectra[:,caII_low:hep_high,:],1)
     
     # all_avg = np.mean(spectra,1)
-    choice=caii_avg_core
+    choice=caII_avg
     
 
 if spec == 1: # just want to look at spectra

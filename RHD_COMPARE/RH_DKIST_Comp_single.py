@@ -37,12 +37,13 @@ def normalize_range(arr,lowlim,highlim):
 c=2.99e5
 lamb0 = 396.847
 lamb1 = 397.01
+lamb2 = 486.1
 mu = 0.4760111410077789
 mu2 = 0.4266927415494022
 
 #ViSP instrument
-fwhm = .005 # in nm
-ntw = 45
+fwhm = .04 # in nm
+ntw = 100
 flagh20 = 1
 flagh20sum = 0
 
@@ -56,13 +57,17 @@ hepwl=397.01
 heplowh20 = 690
 hephighh20 = 850
 
-caII_low = 570
-caII_high = 730
+caII_low = 630
+caII_high = 670
 hep_low = 730
 hep_high = 900
 
-lowvisp=141
-highvisp=241
+
+
+lowvisp=148
+highvisp=148+91
+#lowvisp=0
+#highvisp=-1
 
 def veltrans(x):
     return ((((x+lamb0)/lamb0)-1)*c)/mu
@@ -110,6 +115,7 @@ def gaussian_psf(x, fwhm):
     tr = np.exp(-(x)**2 / (2 * (sigma**2)))
     tr /= tr.sum()
     return tr
+
 #write adjustment for point spread function from atlas
 def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,ntw,gaussian_psf):
     func=interp1d(wlsel,ilamsel,kind='linear',fill_value='extrapolate')
@@ -125,31 +131,49 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,ntw,gaussian_psf):
         
     return yconv
 
-time = 21
+hbeta = 0
+
 
 base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
-modelname = '11Aug_Cclass_d_21s_7kms.npz'
+modelname = '11Aug_Cclass_A_final_36s_mu0.5.npz'
 
 modelnameqs = 'cat_15_8_5e10_20_600_0.npz'
 
 dkist_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
+if hbeta==1:
+    dkist_file_hb = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
 
 model_choiceqs = np.load(base+modelnameqs)
 
 dkist_file = np.load(dkist_file)
+if hbeta==1:
+    dkist_file_hbeta = np.load(dkist_file_hb)
 
 caiih_inds = np.where((model_choiceqs['wl_rh']>396.7) & (model_choiceqs['wl_rh']< 397.94))
+if hbeta==1:
+    hbeta_inds= np.where((model_choiceqs['wl_rh']>485.95) & (model_choiceqs['wl_rh']< 486.25))
 
 model_choiceqs_wl = model_choiceqs['wl_rh'][caiih_inds]
 model_choiceqs_int = model_choiceqs['int_rh'][caiih_inds]
 model_choiceqs_wlshift = model_choiceqs_wl-lamb0
 model_choiceqs_wlshift_hep = model_choiceqs_wl-lamb1
 
+if hbeta==1:
+    model_choiceqs_wl_hbeta = model_choiceqs['wl_rh'][hbeta_inds]
+    model_choiceqs_int_hbeta = model_choiceqs['int_rh'][hbeta_inds]
+    model_choiceqs_wlshift_hbeta = model_choiceqs_wl_hbeta-lamb2
+
 #maxind =
 dkist_wl = dkist_file['wl']
 dkist_int = dkist_file['flare']
-dkist_avg = np.mean(dkist_int[lowvisp:highvisp,caII_low:hep_high,:],1)
+dkist_avg = np.mean(dkist_int[lowvisp:highvisp,caII_low:caII_high,:],1)
 dkist_time = dkist_file['time']
+
+if hbeta==1:
+    dkist_wl_hbeta = dkist_file_hbeta['wl']
+    dkist_int_hbeta = dkist_file_hbeta['flare']
+    dkist_avg_hbeta = np.mean(dkist_int_hbeta[lowvisp:highvisp,422:706,:],1)
+    dkist_time_hbeta = dkist_file_hbeta['time']
 
 dkist_wl_shift = dkist_wl-lamb0
 dkist_wl_shift_hep = dkist_wl-lamb1
@@ -175,40 +199,138 @@ yconv1=psf_adjust(model1_copy_wl,model1_copy_int,fwhm,dkist_wl,ntw,
 
 model_subtract1 = yconv1-yconvqs
 
+#for hbeta
+if hbeta==1:
+    model_choice1_hb = np.load(base+modelname)
+    hb_inds = np.where((model_choice1['wl_rh']>485.95) & (model_choice1['wl_rh']< 486.25))
+    
+    model_choice1_wl_hb = model_choice1_hb['wl_rh'][hb_inds]
+    model_choice1_int_hb = model_choice1_hb['int_rh'][hb_inds]
+    model_choice1_wlshift_hb = model_choice1_wl_hb-lamb2
+        
+    # adjust for instrument PSF
+    
+    model1_copy_int_hb = model_choice1_int_hb
+    model1_copy_wl_hb = model_choice1_wl_hb
+    yconvqs_hb = psf_adjust(model_choiceqs_wl_hbeta,model_choiceqs_int_hbeta,fwhm,dkist_wl_hbeta,ntw,gaussian_psf)
+    
+    yconv1_hb=psf_adjust(model1_copy_wl_hb,model1_copy_int_hb,fwhm,dkist_wl_hbeta,ntw,
+                                   gaussian_psf)
+    
+    model_subtract1_hb = yconv1_hb-yconvqs_hb
+
 #get pixel
+npoints = 9
 
 fig,ax=plt.subplots()
-ax.pcolormesh(dkist_avg)
+ax.pcolormesh(np.transpose(dkist_avg),cmap='inferno')
+ax.invert_xaxis()
+ax.invert_yaxis()
 fig.show()
 
-cc = plt.ginput(2,timeout=120)
+cc = plt.ginput(npoints,timeout=120)
 
-fig,ax=plt.subplots()
+# fig,[ax,ax2]=plt.subplots(1,2)
+# ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,caII_low,hep_high),alpha=1,c='b',linewidth=2,label='EB1, 500s')
+# for i in range(len(cc)):
+#     ax.plot(dkist_wl,normalize_range(dkist_int[int(cc[i][1]),:,int(cc[i][0])]/1e6,caII_low,hep_high),alpha=1,linewidth=2,label='DKIST/ViSP')
+# ax.set_xlim([396.6,397.1])
+# ax2.pcolormesh(dkist_avg)
+# for i in range(len(cc)):
+#     ax2.scatter(int(cc[i][0]),int(cc[i][1]),marker='x')
+# ax.axvline(396.85)
+# ax.axvline(397.01)
+
+# fig.show()
+
+
+colors = plt.cm.turbo(np.linspace(0,1,npoints))
+
+fig,ax=plt.subplots(3,3,dpi=150)
 for i in range(len(cc)):
-    ax.plot(dkist_int[lowvisp+int(cc[i][1]),:,int(cc[i][0])])
+    ax.flatten()[i].plot(dkist_wl,model_subtract1/1e6,alpha=.7,c='k',linewidth=2,linestyle='dashed')
+    ax.flatten()[i].plot(dkist_wl,dkist_int[lowvisp+int(cc[i][0]),:,int(cc[i][1])]/1e6,alpha=1,linewidth=2,c=colors[i])
+    ax.flatten()[i].set_xlim([396.6,397.1])
+    ax.flatten()[i].axvline(396.85,c='black',linestyle='dotted',linewidth=1)
+    ax.flatten()[i].axvline(397.01,c='black',linestyle='dotted',linewidth=1)
+    ax.flatten()[i].set_xticks([396.6,396.8,397])
+    #ax.flatten()[i].set_xlabel('Wavelength [nm]')
+    #ax.flatten()[i].set_ylabel('Intensity')
+
 fig.show()
 
-fig,[ax,ax2]=plt.subplots(1,2)
-ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,caII_low,hep_high),alpha=1,c='b',linewidth=2,label='EB1, 500s')
+fig,ax2=plt.subplots(dpi=200,figsize=(2,10))
+ax2.pcolormesh(np.transpose(dkist_avg),cmap='Reds')
 for i in range(len(cc)):
-    ax.plot(dkist_wl,normalize_range(dkist_int[lowvisp+int(cc[i][1]),:,int(cc[i][0])]/1e6,caII_low,hep_high),alpha=1,linewidth=2,label='DKIST/ViSP')
-ax.set_xlim([396.6,397.1])
-ax2.pcolormesh(dkist_avg)
-for i in range(len(cc)):
-    ax2.scatter(int(cc[i][0]),int(cc[i][1]),marker='x')
+    ax2.scatter(int(cc[i][0]),int(cc[i][1]),marker='x',c=colors[i])
+ax2.invert_xaxis()
+ax2.invert_yaxis()
+
+ax2.set_ylim([1500,950])
 fig.show()
 
+#now for hbeta
+if hbeta==1:
+    npoints = 4
+    
+    fig,ax=plt.subplots()
+    ax.pcolormesh(np.transpose(dkist_avg_hbeta),cmap='Reds')
+    ax.invert_xaxis()
+    ax.invert_yaxis()
+    fig.show()
+    
+    cc = plt.ginput(npoints,timeout=120)
+    
+    # fig,[ax,ax2]=plt.subplots(1,2)
+    # ax.plot(dkist_wl,normalize_range(model_subtract1/1e6,caII_low,hep_high),alpha=1,c='b',linewidth=2,label='EB1, 500s')
+    # for i in range(len(cc)):
+    #     ax.plot(dkist_wl,normalize_range(dkist_int[int(cc[i][1]),:,int(cc[i][0])]/1e6,caII_low,hep_high),alpha=1,linewidth=2,label='DKIST/ViSP')
+    # ax.set_xlim([396.6,397.1])
+    # ax2.pcolormesh(dkist_avg)
+    # for i in range(len(cc)):
+    #     ax2.scatter(int(cc[i][0]),int(cc[i][1]),marker='x')
+    # ax.axvline(396.85)
+    # ax.axvline(397.01)
+    
+    # fig.show()
+    
+    
+    colors = plt.cm.jet(np.linspace(0,1,npoints))
+    
+    fig,ax=plt.subplots(2,2,dpi=200)
+    for i in range(len(cc)):
+        ax.flatten()[i].plot(dkist_wl_hbeta,model_subtract1_hb/1e6,alpha=.7,c='k',linewidth=2)
+        ax.flatten()[i].plot(dkist_wl_hbeta,dkist_int_hbeta[lowvisp+int(cc[i][0]),:,int(cc[i][1])]/1e6,alpha=1,linewidth=1,c=colors[i])
+        #ax.flatten()[i].set_xlim([396.6,397.1])
+        ax.flatten()[i].axvline(486.1)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        #ax.flatten()[i].axvline(397.01)
+    fig.show()
+    
+    fig,ax2=plt.subplots(dpi=200,figsize=(2,10))
+    ax2.pcolormesh(np.transpose(dkist_avg_hbeta),cmap='inferno')
+    for i in range(len(cc)):
+        ax2.scatter(int(cc[i][0]),int(cc[i][1]),marker='x',c=colors[i])
+    ax2.invert_xaxis()
+    ax2.invert_yaxis()
+    ax2.set_xlim([100,50])
+    ax2.set_ylim([1500,950])
+    fig.show()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
