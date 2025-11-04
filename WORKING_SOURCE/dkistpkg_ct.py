@@ -2294,7 +2294,7 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,calibrated_qs,limbdarkqs,
     func=interp1d(wlsel,ilamsel,kind='linear',fill_value='extrapolate')
     yatlas = func(new_dispersion_range)
     dw=new_dispersion_range[1]-new_dispersion_range[0]
-    dw=dw*10
+    dw=dw
     tw=(np.arange(ntw)-ntw//2)*dw
     
     for i in range(1):

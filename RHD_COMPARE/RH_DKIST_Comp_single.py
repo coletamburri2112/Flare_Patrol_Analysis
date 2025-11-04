@@ -42,8 +42,8 @@ mu = 0.4760111410077789
 mu2 = 0.4266927415494022
 
 #ViSP instrument
-fwhm = .04 # in nm
-ntw = 100
+fwhm = .004 # in nm
+ntw = 50
 flagh20 = 1
 flagh20sum = 0
 
