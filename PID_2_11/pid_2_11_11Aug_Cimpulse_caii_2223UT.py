@@ -152,10 +152,10 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.004 # in nm
+fwhm = 0.002 # in nm
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
-ntw = 10
+ntw = 45
 
 # perform PSF convolution.  Result 'yconv' is Atlas*PSF
 yconv=DKISTanalysis.psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,
@@ -168,6 +168,14 @@ ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
 ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
 ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
 ax.set_xlim([line1-0.05,line1+0.05]);#ax.set_ylim([0,0.6e6])
+ax.legend();plt.show()
+
+#show comparison of atlas to qs # line2
+fig,ax=plt.subplots()
+ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
+ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
+ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
+ax.set_xlim([line2-0.05,line2+0.05]);#ax.set_ylim([0,0.6e6])
 ax.legend();plt.show()
 
 #do another iteration of the calibration step after peforming the PSF conv.

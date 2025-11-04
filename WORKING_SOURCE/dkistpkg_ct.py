@@ -37,9 +37,10 @@ import astropy
 from astropy.table import Table
 from scipy.optimize import differential_evolution
 from scipy.interpolate import interp1d
-from scipy.signal import convolve
+#from scipy.signal import convolve
 import matplotlib.pylab as pl 
 from datetime import datetime
+from astropy.convolution import convolve, Gaussian1DKernel
 
 
 # from sunpy.net import Fido, attrs as a
@@ -2293,15 +2294,17 @@ def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,calibrated_qs,limbdarkqs,
    
     func=interp1d(wlsel,ilamsel,kind='linear',fill_value='extrapolate')
     yatlas = func(new_dispersion_range)
-    dw=new_dispersion_range[1]-new_dispersion_range[0]
-    dw=dw
-    tw=(np.arange(ntw)-ntw//2)*dw
+    #dw=new_dispersion_range[1]-new_dispersion_range[0]
+    #dw=dw
+    #tw=(np.arange(ntw)-ntw//2)*dw
     
-    for i in range(1):
-
-    	psf = gaussian_psf(tw, fwhm) # guassian transmission profiles
-    	yconv = convolve(yatlas, psf, mode='same', method='fft')
-        
+    stddev_pixels = fwhm/(new_dispersion_range[1]-new_dispersion_range[0])
+    gaussian_kernel = Gaussian1DKernel(stddev=stddev_pixels)
+   	
+    #psf = gaussian_psf(tw, fwhm) # guassian transmission profiles
+    #yconv = convolve(yatlas, psf, mode='same', method='fft')
+    yconv = convolve(yatlas,gaussian_kernel)
+    
     return yconv
     
 # write calibration function for polynomial-fitting intensity calibration
