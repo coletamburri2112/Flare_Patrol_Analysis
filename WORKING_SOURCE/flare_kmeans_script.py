@@ -11,23 +11,12 @@ import numpy as np
 import dkistpkg_ct as DKISTanalysis
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.pylab as pl
-import scipy as scp
+
 import pandas as pd
-import scipy.integrate as integrate
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from tslearn.clustering import TimeSeriesKMeans
-import sklearn
+
 
 from nltk.cluster import KMeansClusterer
 import nltk
-
-from pyclustering.cluster.kmeans import kmeans
-from pyclustering.utils.metric import distance_metric
-from pyclustering.cluster.center_initializer import random_center_initializer
-from pyclustering.cluster.encoder import type_encoding
-from pyclustering.cluster.encoder import cluster_encoder
 
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
@@ -37,7 +26,7 @@ nsteps = 91
 #filename = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
 #filename = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
 filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
-coord_filename='/Users/coletamburri/Desktop/co_align_res_11Aug.npz'
+coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/11aug24_Cclass_Hbeta.npz'
 res = np.load(filename)
 

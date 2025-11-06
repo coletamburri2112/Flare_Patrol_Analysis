@@ -43,8 +43,8 @@ mu = 0.4760111410077789
 mu2 = 0.4266927415494022
 
 #ViSP instrument
-fwhm = .002 # in nm # 0.002 is from the convolution and comparison to atlas, 
-            #but 0.01 makaes RADYN/DKIST match a lot better? extra psf somewhere?
+fwhm = .003 # in nm # 0.003 is from the convolution and comparison to atlas, 
+            #but 0.01 makes RADYN/DKIST match a lot better? extra gaussian impact somewhere?
 flagh20 = 1
 flagh20sum = 0
 
@@ -139,10 +139,9 @@ hbeta = 0
 
 
 base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
-modelname = '11Aug_Cclass_A_final_36s_mu0.5.npz'
-#modelname = '11Aug_Cclass_A_final_36s.npz'
-
-modelnameqs = 'cat_15_8_5e10_20_600_0.npz'
+modelname = '11Aug_Cclass_A_final_7s_mu1.npz'
+#modelname = '11Aug_Cclass_A_final_36s_5vt.npz'
+modelnameqs = '11Aug_Cclass_A_final_0s_mu1.npz'
 
 dkist_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
 if hbeta==1:
@@ -236,10 +235,10 @@ cc = plt.ginput(npoints,timeout=120)
 colors = plt.cm.turbo(np.linspace(0,1,npoints))
 
 
-fig,ax=plt.subplots(3,3,dpi=150)
+fig,ax=plt.subplots(3,3,dpi=100)
 for i in range(len(cc)):
-    ax.flatten()[i].plot(dkist_wl,normalize_range(model_subtract1/1e6,caII_low-200,hep_high),alpha=.7,c='k',linewidth=2,linestyle='dashed')
-    ax.flatten()[i].plot(dkist_wl,normalize_range(dkist_int[lowvisp+int(cc[i][0]),:,int(cc[i][1])]/1e6,caII_low-200,hep_high),alpha=1,linewidth=2,c=colors[i])
+    ax.flatten()[i].plot(dkist_wl,normalize_range(model_subtract1/1e6,caII_low-50,caII_high+50),alpha=.7,c='k',linewidth=2,linestyle='dashed')
+    ax.flatten()[i].plot(dkist_wl,normalize_range(dkist_int[lowvisp+int(cc[i][0]),:,int(cc[i][1])]/1e6,caII_low-50,caII_high+50),alpha=1,linewidth=2,c=colors[i])
     ax.flatten()[i].set_xlim([396.6,397.1])
     ax.flatten()[i].axvline(396.85,c='black',linestyle='dotted',linewidth=1)
     ax.flatten()[i].axvline(397.01,c='black',linestyle='dotted',linewidth=1)
@@ -251,7 +250,7 @@ fig.show()
 
 
 
-fig,ax=plt.subplots(3,3,dpi=150)
+fig,ax=plt.subplots(3,3,dpi=100)
 for i in range(len(cc)):
     ax.flatten()[i].plot(dkist_wl,model_subtract1/1e6,alpha=.7,c='k',linewidth=2,linestyle='dashed')
     ax.flatten()[i].plot(dkist_wl,dkist_int[lowvisp+int(cc[i][0]),:,int(cc[i][1])]/1e6,alpha=1,linewidth=2,c=colors[i])
