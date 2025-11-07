@@ -73,6 +73,8 @@ fig,ax=plt.subplots()
 ax.plot(wl,avgspec)
 
 
+
+
     
 
 
