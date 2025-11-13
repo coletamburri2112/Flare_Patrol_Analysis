@@ -139,7 +139,7 @@ hbeta = 0
 
 
 base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
-modelname = '11Aug_Cclass_A_final_7s_mu1.npz'
+modelname = '11Aug_Cclass_regionD_gentleevap_11s_mu1.npz'
 #modelname = '11Aug_Cclass_A_final_36s_5vt.npz'
 modelnameqs = '11Aug_Cclass_A_final_0s_mu1.npz'
 

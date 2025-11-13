@@ -50,7 +50,7 @@ for i in range(len(times)):
     
     #define model to read in
 
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_11Aug_Cclass_A_final_0s/run')
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_11Aug_Cclass_gentleevap_25s_H6/run')
 
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
@@ -60,7 +60,7 @@ for i in range(len(times)):
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
     #filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
-    filename = base2+'11Aug_Cclass_A_final_0s_mu0.5.npz'
+    filename = base2+'11Aug_Cclass_regionD_gentleevap_25s_H6_mu1.npz'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                
@@ -78,7 +78,7 @@ for i in range(len(times)):
     DLAMB  = 2.0
     
     # if Ca II H
-    linelow = 396.95
+    linelow = 396.75
     linehigh = 396.95
     
     # if Hep
@@ -216,6 +216,7 @@ for i in range(len(times)):
     
     plt.figure(figsize=[9, 6])
     plt.xlim([396.6, 397.2])
+    plt.axvline(396.85)
     plt.ylim([-1e-8,5.0e-8])
     
     plt.plot(rhd_choice.spectrum.waves, rhd_choice.rays[0].I,\
@@ -231,7 +232,7 @@ for i in range(len(times)):
     plt.legend(title='mu')
     plt.show()
     
-    mu = 2#ray of choice
+    mu = 4#ray of choice
     intensity_new = rhd_choice.spectrum.I[mu, :]*1.9e14 #conversion factor
     
     np.savez(filename,wl_rh=rhd_choice.spectrum.waves,int_rh=intensity_new)
