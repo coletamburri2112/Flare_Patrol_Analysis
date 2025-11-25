@@ -12,13 +12,13 @@ import tol_colors as tc
 
 hbeta=0
 
-#filehbeta = '/Users/coletamburri/Desktop/8_August_2024_Xclass_flare/ViSPselection8AugXclass_hbeta.npz'
+#filehbeta = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass_hbeta.npz'
 filehbeta = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
 hbetascaled = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta_scaled.npz'
 
 file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
-#file = '/Users/coletamburri/Desktop/ViSPselection8AugXclass.npz'
-#file = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
+#file = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass.npz'
+#file = '/Users/coletamburri/Desktop/Misc_DKIST/ViSPselection11August24Mclass.npz'
 
 
 caII_low = 570
@@ -51,10 +51,11 @@ else:
     data = np.load(file)
 
     #raw = data['raw']
-    wl = data['wl']
+    wl = data['wl'] # not for X-class
     #scaled = data['scaled']
+
     flare = data['flare']
-    time = data['time']
+    #time = data['time']
     
 
 spectra = flare
@@ -72,7 +73,7 @@ else:
     
     #caii_avg_inner = np.mean(spectra[:,caii_inner_low:caii_inner_high,:],1)
     
-    # caii_avg_redwing = spectra[:,700,:]
+    caii_avg_redwing = spectra[:,700,:]
     
     caii_avg_bluewing = spectra[:,622,:]
     caii_avg_core = spectra[:,650,:]
@@ -82,7 +83,7 @@ else:
     # both_avg = np.mean(spectra[:,caII_low:hep_high,:],1)
     
     # all_avg = np.mean(spectra,1)
-    choice=caII_avg
+    choice=caii_avg_redwing
     
 
 if spec == 1: # just want to look at spectra
@@ -139,19 +140,19 @@ else:
     for i in range(len(cc)):
         xsel,ysel = cc[i][0],cc[i][1]
         #ax.flatten()[i].plot(spectra[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
-        #ax.flatten()[i].plot(flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
+        ax.flatten()[i].plot(flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
         #ax.flatten()[i].plot(flare[int(cc[-1][0])+xlo,:,int(cc[-1][1])+ylo],color='black',alpha=0.5)
         
-        ax.flatten()[i].plot(wl,flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
-        if hbeta == 0:
-            ax.flatten()[i].axvline(396.85)
-            ax.flatten()[i].axvline(397.01)
-            ax.flatten()[i].set_xlim([396.7,397.07])
-            ax.flatten()[i].set_ylim([-.1e6,7e6])
-        if hbeta == 1:
-            ax.flatten()[i].axvline(486.14)
-            ax.flatten()[i].set_xlim([486.14-0.6,486.14+.6])
-            ax.flatten()[i].set_ylim([-.1e6,3e6])
+        #ax.flatten()[i].plot(wl,flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
+        # if hbeta == 0:
+        #     ax.flatten()[i].axvline(396.85)
+        #     ax.flatten()[i].axvline(397.01)
+        #     ax.flatten()[i].set_xlim([396.7,397.07])
+        #     ax.flatten()[i].set_ylim([-.1e6,7e6])
+        # if hbeta == 1:
+        #     ax.flatten()[i].axvline(486.14)
+        #     ax.flatten()[i].set_xlim([486.14-0.6,486.14+.6])
+        #     ax.flatten()[i].set_ylim([-.1e6,6e6])
     fig.show()
         
     

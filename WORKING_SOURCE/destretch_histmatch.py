@@ -30,18 +30,18 @@ vbifold = '/Volumes/VBI_External/pid_'+pid+'/'
 # vbiexp ='BXWNO' # 19 August 2022
 #vbiexp = 'BDJKM' # 11 August 2024 M-class
 #vbiexp = 'L1-HDGZO' # 11 August 2024 C-class with new ID
-#vbiexp = 'AKDKX' # 11 August 2024 C-class
+vbiexp = 'AKDKX' # 11 August 2024 C-class
 #vbiexp = 'AZLRR' # 8 August 2024 X-class blue continuum
 # vbiexp = 'AWYMX' # 8 August 2024 M-class
-vbiexp= 'DXHIEL' # 11 August 2024 in blue continuum
+#vbiexp= 'DXHIEL' # 11 August 2024 in blue continuum
 
 # file = '/VBI_2022_08_19T20_42_07_333_00656282_I_BXWNO_L1.fits' # 19 August 2022
 #file = '/VBI_2024_08_08T20_12_32_333333_00656282_I_AXXJL_L1.fits' # 11 August 2024 M-class
 #file = '/VBI_2024_08_11T20_12_34_333333_00450400_I_AZLRR_L1.fits'
-file = '/VBI_2024_08_11T22_23_34_333333_00450400_I_DXHIEL_L1.fits'
-savfold='/Users/coletamburri/Desktop/'+vbiexp+'/'
-filt='blue_cont'
-xtraflag = 'C_class_impulsive_phase'
+file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_AKDKX_L1.fits'
+savfold='/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/'+vbiexp+'/'
+filt='H_alpha'
+xtraflag = 'C_class_impulsive_phase_100_350'
 
 hdu_list = fits.open(vbifold+vbiexp+file)
 image=hdu_list[1].data[0,:,:]
@@ -66,7 +66,9 @@ dir_list.sort()
 #plt.show()
 
 dataCube=[]
-loc_files=dir_list[200:450] # I think this should be the original destretching for C-class flare
+
+# here define times.  For C-class flare, 200:450 is the original destretching range
+loc_files=dir_list[100:350] # I think this should be the original destretching for C-class flare
 #loc_files = [150:450]
 lowx=0
 highx=-1
@@ -97,42 +99,42 @@ dataCubeTracked = destr.destretchSeq(dataCube, tileSizeInput, rMean=3, globalTra
 #save as Tracked datacube 
 fits.writeto(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits',dataCubeTracked,overwrite=True)
 
-#restore tracked datacube
-dataCubeTracked=fits.open(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
+# #restore tracked datacube
+# dataCubeTracked=fits.open(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
 
-utilvbi.storeSequence(dataCubeTracked,savfold+'postdestretch_'+filt+'_'+xtraflag+'.mp4', dpi=300, write=True)
+# utilvbi.storeSequence(dataCubeTracked,savfold+'postdestretch_'+filt+'_'+xtraflag+'.mp4', dpi=300, write=True)
 
-#histo match
-#restore tracked datacube
-dataCubeTracked=fits.open(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
+# #histo match
+# #restore tracked datacube
+# dataCubeTracked=fits.open(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
 
-gbref=dataCubeTracked[0,:,:] #choosing here the first image as a reference
-timegb,yy,xx=dataCubeTracked.shape
+# gbref=dataCubeTracked[0,:,:] #choosing here the first image as a reference
+# timegb,yy,xx=dataCubeTracked.shape
    
-dataCubeTrackedhist=[]
-for idata in range(timegb):
- image=dataCubeTracked[idata,:,:]
- matched = match_histograms(image, gbref)
- dataCubeTrackedhist.append(matched)
+# dataCubeTrackedhist=[]
+# for idata in range(timegb):
+#  image=dataCubeTracked[idata,:,:]
+#  matched = match_histograms(image, gbref)
+#  dataCubeTrackedhist.append(matched)
    
-dataCubeTrackedhist=np.asarray(dataCubeTrackedhist)
+# dataCubeTrackedhist=np.asarray(dataCubeTrackedhist)
     
-#save result and movie  
-fits.writeto(savfold+'postdestretch_histomatch_dataCube'+'_'+filt+'_'+xtraflag+'.fits',dataCubeTrackedhist,overwrite=True)#save movie
-dataCubeTracked=fits.open(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
+# #save result and movie  
+# fits.writeto(savfold+'postdestretch_histomatch_dataCube'+'_'+filt+'_'+xtraflag+'.fits',dataCubeTrackedhist,overwrite=True)#save movie
+# dataCubeTracked=fits.open(savfold+'postdestretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
 
-gbref=dataCubeTracked[0,:,:] #choosing here the first image as a reference
-timegb,yy,xx=dataCubeTracked.shape
+# gbref=dataCubeTracked[0,:,:] #choosing here the first image as a reference
+# timegb,yy,xx=dataCubeTracked.shape
    
-dataCubeTrackedhist=[]
-for idata in range(timegb):
- image=dataCubeTracked[idata,:,:]
- matched = match_histograms(image, gbref)
- dataCubeTrackedhist.append(matched)
+# dataCubeTrackedhist=[]
+# for idata in range(timegb):
+#  image=dataCubeTracked[idata,:,:]
+#  matched = match_histograms(image, gbref)
+#  dataCubeTrackedhist.append(matched)
  
-utilvbi.storeSequence(dataCubeTrackedhist,savfold+'postdestretch_histomatch_'+filt+'_'+xtraflag+'.mp4', dpi=300, write=True)
+# utilvbi.storeSequence(dataCubeTrackedhist,savfold+'postdestretch_histomatch_'+filt+'_'+xtraflag+'.mp4', dpi=300, write=True)
 
-Video(savfold+'postdestretch_histomatch_'+filt+'_'+xtraflag+'.mp4', embed=True, width=600, height=600)
+# Video(savfold+'postdestretch_histomatch_'+filt+'_'+xtraflag+'.mp4', embed=True, width=600, height=600)
 
 
 

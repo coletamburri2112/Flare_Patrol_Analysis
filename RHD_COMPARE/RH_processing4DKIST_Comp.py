@@ -50,7 +50,7 @@ for i in range(len(times)):
     
     #define model to read in
 
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_11Aug_Cclass_gentleevap_25s_H6/run')
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_11Aug_Cclass_EB+TC_8s/run')
 
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
@@ -60,7 +60,7 @@ for i in range(len(times)):
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
     #filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
-    filename = base2+'11Aug_Cclass_regionD_gentleevap_25s_H6_mu1.npz'
+    filename = base2+'rhf1d_11Aug_Cclass_EB+TC_8s_mu1.npz'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                
@@ -72,8 +72,8 @@ for i in range(len(times)):
     
     # Get parameters of your favorite line and atom
     
-    ATOMNO = 0  ## ['0=Ca', 1='H', '2=Na']
-    LINENO = 0 ### ['0=Ca IIH';'22-H-epsilon']
+    ATOMNO = 1  ## ['0=Ca', 1='H', '2=Na']
+    LINENO = 19 ### ['0=Ca IIH';'22-H-epsilon';'19-H-beta']
     DWING  = 2
     DLAMB  = 2.0
     
@@ -84,6 +84,10 @@ for i in range(len(times)):
     # if Hep
     linelow = 396.9
     linehigh = 397.1
+    
+    # if Hbeta
+    linelow = 486.1
+    linehigh = 486.6
     
     #definition of central lambda
     lambda0 = rhd_choice.atoms[ATOMNO].transition[LINENO].lambda0
@@ -215,8 +219,9 @@ for i in range(len(times)):
     xmu = rhd_choice.geometry.xmu
     
     plt.figure(figsize=[9, 6])
-    plt.xlim([396.6, 397.2])
-    plt.axvline(396.85)
+    #plt.xlim([396.6, 397.2])
+    plt.xlim([485.9, 486.3])
+    plt.axvline(486.13)
     plt.ylim([-1e-8,5.0e-8])
     
     plt.plot(rhd_choice.spectrum.waves, rhd_choice.rays[0].I,\

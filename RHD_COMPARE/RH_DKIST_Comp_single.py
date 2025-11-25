@@ -39,12 +39,15 @@ c=2.99e5
 lamb0 = 396.847
 lamb1 = 397.01
 lamb2 = 486.1
-mu = 0.4760111410077789
+mu1 = 0.4760111410077789
 mu2 = 0.4266927415494022
+mu3=.54
+muhead = 1
 
 #ViSP instrument
 fwhm = .003 # in nm # 0.003 is from the convolution and comparison to atlas, 
             #but 0.01 makes RADYN/DKIST match a lot better? extra gaussian impact somewhere?
+            # 0.001 to preserve shape of Hbeta in care for deep heating...
 flagh20 = 1
 flagh20sum = 0
 
@@ -70,11 +73,11 @@ highvisp=148+91
 #lowvisp=0
 #highvisp=-1
 
-def veltrans(x):
+def veltrans(x,mu):
     return ((((x+lamb0)/lamb0)-1)*c)/mu
 
-def veltrans2(x):
-    return ((((x+lamb0)/lamb0)-1)*c)/mu2
+def veltrans2(x,mu):
+    return ((((x+lamb0)/lamb0)-1)*c)/mu
 
 def wltrans(x):
     return ((((x/c)+1)*lamb0)-lamb0)
@@ -139,7 +142,7 @@ hbeta = 0
 
 
 base = '/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_output_files_npz/'
-modelname = '11Aug_Cclass_regionD_gentleevap_11s_mu1.npz'
+modelname = '11Aug_Cclass_deepheating_12s_mu1.npz'
 #modelname = '11Aug_Cclass_A_final_36s_5vt.npz'
 modelnameqs = '11Aug_Cclass_A_final_0s_mu1.npz'
 
@@ -187,10 +190,15 @@ yconvqs = psf_adjust(model_choiceqs_wl,model_choiceqs_int,fwhm,dkist_wl)
 model_choice1 = np.load(base+modelname)
 caiih_indsh20 = np.where((model_choice1['wl_rh']>396.7) & (model_choice1['wl_rh']< 397.94))
 
-model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
-model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
-model_choice1_wlshift = model_choice1_wl-lamb0
-model_choice1_wlshift_hep = model_choice1_wl-lamb1
+if hbeta==1:
+    model_choice1_wl = model_choice1['wl_rh'][hbeta_inds]
+    model_choice1_int = model_choice1['int_rh'][hbeta_inds]
+    model_choice1_wlshift = model_choice1_wl-lamb2
+else:
+    model_choice1_wl = model_choice1['wl_rh'][caiih_indsh20]
+    model_choice1_int = model_choice1['int_rh'][caiih_indsh20]
+    model_choice1_wlshift = model_choice1_wl-lamb0
+    model_choice1_wlshift_hep = model_choice1_wl-lamb1
     
 # adjust for instrument PSF
 

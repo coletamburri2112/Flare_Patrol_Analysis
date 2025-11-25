@@ -54,7 +54,7 @@ hepsilon_high = 900
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 cutoff0=2.6 # for hepsilon
 
-n_clusters0 = 40 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+n_clusters0 = 10 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 
 nframes = 1
 startspace = 0 # 500 for ca ii
@@ -62,12 +62,13 @@ endspace = -1 # 1500 for ca ii
 nsteps = 91
 start = 148 #148 for saved Ca II H/Hepsilon files
 
-cent = 396.85
+#cent = 396.85
+cent=397.01
 
 # change based on line
 
-linelow = caII_low
-linehigh = caII_high
+linelow = hepsilon_low
+linehigh = hepsilon_high
 
 obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,startspace:endspace],1)
 flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
@@ -171,7 +172,7 @@ def find_relint(curve,find_nearest):
     return relint
 
 def find_weightmean(curve,find_nearest):
-    values = np.linspace(0,205,205)
+    values = np.linspace(0,len(curve),len(curve))
     
     # Corresponding weights for each data point
     # These weights could represent the importance or frequency of each point
@@ -225,7 +226,7 @@ fig.show()
 
 #fig,ax=plt.subplots(3,4,figsize=(5,4),dpi=200)
 #fig,ax=plt.subplots(2,3,figsize=(5,4),dpi=200) #if hep
-fig,ax=plt.subplots(5,8,figsize=(5,4),dpi=200) #if hep and caii
+fig,ax=plt.subplots(2,5,figsize=(5,4),dpi=200) #if hep and caii
 arr_normprofs0 = normprofiles_line
 
     
