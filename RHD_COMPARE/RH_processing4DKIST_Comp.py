@@ -50,7 +50,7 @@ for i in range(len(times)):
     
     #define model to read in
 
-    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_11Aug_Cclass_EB+TC_8s/run')
+    rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/rhf1d_11Aug_Cclass_D_proton_35s/run')
 
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_25s_CRD/run')
     #rhd_choice = rhanalyze.rhout('/Users/coletamburri/Desktop/RH_Versions_and_Tools/RH_Oct_2023/RH/cat_15_8_5e10_wRC_updated_'+str(time)+'s_CRD/run')
@@ -60,7 +60,7 @@ for i in range(len(times)):
     # define output fil13
     #filename = base2+'fchroma30_20b_5vt_'+time+'s_H20'
     #filename = base2+'cat_15_8_5e10_wRC_updated_'+str(time)+'s_H6_CRD'
-    filename = base2+'rhf1d_11Aug_Cclass_EB+TC_8s_mu1.npz'
+    filename = base2+'rhf1d_11Aug_Cclass_D_proton_35s_mu0.5.npz'
     #filename = base2+'longduration_'+time+'s_H6_50broadc'
                                                       
     # generalize - choice of rhd file                                                
@@ -237,7 +237,7 @@ for i in range(len(times)):
     plt.legend(title='mu')
     plt.show()
     
-    mu = 4#ray of choice
+    mu = 2#ray of choice
     intensity_new = rhd_choice.spectrum.I[mu, :]*1.9e14 #conversion factor
     
     np.savez(filename,wl_rh=rhd_choice.spectrum.waves,int_rh=intensity_new)
