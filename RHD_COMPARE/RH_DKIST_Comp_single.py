@@ -174,7 +174,7 @@ if hbeta==1:
 dkist_wl = dkist_file['wl']
 dkist_int = dkist_file['flare']
 dkist_avg = np.mean(dkist_int[lowvisp:highvisp,caII_low:caII_high,:],1)
-dkist_choice = (dkist_int[lowvisp:highvisp,650,:])
+dkist_choice = (dkist_int[lowvisp:highvisp,600,:])
 dkist_time = dkist_file['time']
 
 if hbeta==1:
@@ -274,18 +274,18 @@ fig.show()
 choice=1
 
 if choice == 1:
-    choice_is = np.arange(9) #see notebook on 11/24 for points
+    choice_is = [3,4,5,6] #see notebook on 11/24 for points
     colors=tol_colors.tol_cset('muted')
     
     
     fig,ax2=plt.subplots(dpi=200,figsize=(2,10))
-    ax2.pcolormesh(np.transpose(dkist_avg),cmap='Greens') #Reds if redshifts, Blues if Deepheating, greys if symmetric
+    ax2.pcolormesh(np.transpose(dkist_choice),cmap='Purples') #Reds if redshifts, Blues if Deepheating, greys if symmetric
     for i in range(len(choice_is)):
         ax2.scatter(int(cc[choice_is[i]][0]),int(cc[choice_is[i]][1]),marker='x',c=colors[i])
     ax2.invert_xaxis()
     ax2.invert_yaxis()
     
-    ax2.set_ylim([1400,500])
+    ax2.set_ylim([1100,600])
     fig.show()
 else:
     fig,ax2=plt.subplots(dpi=200,figsize=(2,10))

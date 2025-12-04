@@ -2335,7 +2335,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
     
     # shift in lines
     dw1 = w0_1-absline1
-    dw2 = w0_2-absline2
+    dw2 = w0_2-absline2x
     
     dt = absline2 - absline1
 
@@ -2360,7 +2360,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
 
     # Correct for limb-darkening if profile to calibrate on is not from
     # disc centre (and presumably at same mu as observations)
-    spec_obs = spec_obs/limbdark_fact
+    spec_obs2 = spec_obs/limbdark_fact
     
     #this really does not work for either the intensity scale or plate scale
     #Using just the new_dispersion_range above, and the polynomial intensity calibration
@@ -2416,25 +2416,44 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
     #                        contwind2_wave,contwind3_wave,
     #                        contwind4_wave,contwind5_wave,
     #                        contwind6_wave]
-
-    obs_cont_loc = []
-    fts_cont_loc = []
-
-    for i in cont_vals:
-        obs_cont_loc.append(find_nearest(new_dispersion_range,i)[1])
-        fts_cont_loc.append(find_nearest(wave_atlas,i)[1])
-
-    flux_obs = spec_obs
-
-    cont_flux_obs = np.take(flux_obs,obs_cont_loc)
-    cont_flux_fts = np.take(spec_atlas,fts_cont_loc)
+    if order == 0: # if we just want to scale based on one continuum point
+        obs_cont_loc = []
+        fts_cont_loc = []
     
-    cont_mult_facts = cont_flux_fts/cont_flux_obs
+        for i in cont_vals:
+            obs_cont_loc.append(find_nearest(new_dispersion_range,i)[1])
+            fts_cont_loc.append(find_nearest(wave_atlas,i)[1])  
+            
+        flux_obs = spec_obs2
 
+        cont_flux_obs = np.take(flux_obs,obs_cont_loc)
+        cont_flux_fts = np.take(spec_atlas,fts_cont_loc)
+        
+        cont_mult_facts = cont_flux_fts/cont_flux_obs
+        print('here')
+        fit_vals = cont_mult_facts
+        print(fit_vals)
+    else:
+        obs_cont_loc = []
+        fts_cont_loc = []
     
-    mult_fit = np.polyfit(new_dispersion_range[obs_cont_loc],cont_mult_facts,order)
-    fit_cont_mult = np.poly1d(mult_fit)
-    fit_vals = fit_cont_mult(new_dispersion_range)
+        for i in cont_vals:
+            obs_cont_loc.append(find_nearest(new_dispersion_range,i)[1])
+            fts_cont_loc.append(find_nearest(wave_atlas,i)[1])
+    
+        flux_obs = spec_obs2
+    
+        cont_flux_obs = np.take(flux_obs,obs_cont_loc)
+        cont_flux_fts = np.take(spec_atlas,fts_cont_loc)
+        
+        cont_mult_facts = cont_flux_fts/cont_flux_obs
+    
+        
+        mult_fit = np.polyfit(new_dispersion_range[obs_cont_loc],cont_mult_facts,order)
+        fit_cont_mult = np.poly1d(mult_fit)
+        fit_vals = fit_cont_mult(new_dispersion_range)
+        
+
     
     # if noqs_flag==1:
     #     return cont_mult_facts, fit_vals, new_dispersion_range,calibrated_qs
