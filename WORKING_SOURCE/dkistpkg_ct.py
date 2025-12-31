@@ -2335,7 +2335,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
     
     # shift in lines
     dw1 = w0_1-absline1
-    dw2 = w0_2-absline2x
+    dw2 = w0_2-absline2
     
     dt = absline2 - absline1
 

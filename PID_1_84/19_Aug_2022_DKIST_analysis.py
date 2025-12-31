@@ -147,7 +147,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.05
+fwhm = 0.005
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45
@@ -175,6 +175,7 @@ cont_mult_facts,fit_vals,\
                                            line1,line2,lowinds,highinds,
                                            limbdark_fact=clv_corrqs,noqs_flag=2)
         
+
 # calibrated quiet sun, again, using updated fit values
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
 nonflare_average_avg = calibrated_qs

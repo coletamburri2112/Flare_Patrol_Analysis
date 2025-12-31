@@ -62,8 +62,9 @@ aolock = []
 #    fried.append(i_file_raster1[1].header['ATMOS_R0'])
 #    aolock.append(i_file_raster1[1].header['AO_LOCK'])
     
-#dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
-dC = fits.open('/Users/coletamburri/Desktop/DXHIEL/postdestretch_dataCube_blue_cont_C_class_impulsive_phase.fits')[0].data # Xclass
+dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
+#dC = fits.open('/Users/coletamburri/Desktop/DXHIEL/postdestretch_dataCube_blue_cont_C_class_impulsive_phase.fits')[0].data # Xclass
+
 
 #dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/BDJKM/postdestretch_dataCube.fits')[0].data # Mclass
 #dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/postdestretch_dataCubeFlareImpulsivePhase.fits')[0].data
