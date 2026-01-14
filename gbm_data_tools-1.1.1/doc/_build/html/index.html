@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Welcome to the Fermi GBM Data Tools documentation! &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Welcome to the Fermi GBM Data Tools documentation!</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="welcome-to-the-fermi-gbm-data-tools-documentation">
+<h1>Welcome to the Fermi GBM Data Tools documentation!<a class="headerlink" href="#welcome-to-the-fermi-gbm-data-tools-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default" id="id1">
+<img alt="_images/gdt_logo.png" src="_images/gdt_logo.png" />
+<p class="caption"><span class="caption-text">Hello, I’m Fermi.  Pleased to meet you!</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The Fermi GBM Data Tools is an Application Programming Interface (API) for
+GBM data.  The fundamental purpose of the Data Tools is to allow general users
+to incorporate GBM analysis into their scripts and workflows without having to
+sweat very many details.  To this end, the Data Tools have a fairly high-level
+API layer allowing a user to read, reduce, and visualize GBM data with only a
+few lines of code.  For expert users, and users who want fine control over
+various aspects of their analysis, the Data Tools exposes a lower-level API
+layer, which can also be used to generalize the GBM Data Tools to data from
+other like instruments.</p>
+<p class="rubric">Architecture</p>
+<p>The Data Tools are designed with generalization in mind.  Underlying the
+science data interfaces are primitive data types that allow similar data to be
+used with the Data Tools, even if the exact data file definitions are different
+from the GBM file definitions. The inheritance structure of the Data Tools allows
+generalization of many of the Data Tools functionality to data from other
+instruments, once the interface to those data files are defined.</p>
+<p>The Data Tools are designed with various aspects to be plugin-like.  For example,
+The Data Tools provides a <code class="docutils literal notranslate"><span class="pre">binning</span></code> module that contains a number of binning
+algorithms for pre-binned and unbinned data.  A user is not restricted to using
+only the pre-packaged binning algorithms provided, but can write their own
+algorithms by following the instructions on the required inputs and outputs
+expected.  The user-defined algorithms can then be used seamlessly with the
+Data Tools.  The same architecture can be leveraged to allow for user-defined
+background estimation algorithms, spectral models/functions, and spectral
+fitting algorithms.</p>
+<p class="rubric">Future</p>
+<p>We are working to provide the GBM Data Tools via the NASA GitHub to allow
+for pull and merge requests from the community.  Planned features in an upcoming
+release include a response generator and the GBM localization algorithms used
+for on-board GRB triggers.</p>
+<p>Funding through the NASA Astrophysics Data Analysis Program (ADAP) will allow
+development of a generalized set of tools to expand these data tools to other
+legacy missions with similar data, including BATSE, HETE-2, Suzaku, and others.
+Planned work on these Gamma-ray Data Tools, of which the GBM Data Tools will
+form a core component, will commence in 2021.</p>
+<p class="rubric">Citing</p>
+<p>If you use the GBM Data Tools in your research and publications, we would
+definitely appreciate an appropriate acknowledgment and citation! We suggest the
+following BibTex:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@misc</span><span class="p">{</span><span class="n">GbmDataTools</span><span class="p">,</span>
+      <span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">Adam</span> <span class="n">Goldstein</span> <span class="ow">and</span> <span class="n">William</span> <span class="n">H</span><span class="o">.</span> <span class="n">Cleveland</span> <span class="ow">and</span> <span class="n">Daniel</span> <span class="n">Kocevski</span><span class="p">},</span>
+      <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">Fermi</span> <span class="n">GBM</span> <span class="n">Data</span> <span class="n">Tools</span><span class="p">:</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="p">},</span>
+      <span class="n">year</span> <span class="o">=</span> <span class="mi">2022</span><span class="p">,</span>
+      <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">fermi</span><span class="o">.</span><span class="n">gsfc</span><span class="o">.</span><span class="n">nasa</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">ssc</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">analysis</span><span class="o">/</span><span class="n">gbm</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="rubric">Additional Resources</p>
+<p>The Fermi Science Support Center is a fantastic resource for all things Fermi.
+Specifically, for GBM, a lot of useful information about the data products can
+be found <a class="reference external" href="https://fermi.gsfc.nasa.gov/ssc/data/access/gbm/">here</a>.  For
+questions, bug reports, and comments, please visit the
+<a class="reference external" href="https://fermi.gsfc.nasa.gov/ssc/help/">Fermi Help Desk</a>.</p>
+<p class="rubric">Acknowledgments</p>
+<p>The Fermi GBM Data Tools were partially funded by the Fermi Guest Investigator
+program (NNH18ZDA001N). Special appreciation for the volunteer testers.</p>
+</div>
+<div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#how-to-install">How to Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#how-to-uninstall">How to Uninstall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#launching-the-notebooks">Launching the Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#known-issues">Known Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/index.html">Jupyter Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/TteData.html">TTE Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Responses.html">Detector Response Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/PositionHistory.html">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/DataFinders.html">Finding GBM Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/PhaExport.html">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/SpectralFitting.html">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Plugins.html">Plugin-like Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">GBM Data Tools API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/api-data.html">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-binning.html">Data Binning Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-background.html">Background Estimation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-spectra.html">Spectra Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-sims.html">Simulate Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-plot.html">Plotting Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-finders.html">Data Finders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/api-utils.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Change Logs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/v1.1.1.html">v1.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog/v1.1.0.html">v1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog/v1.0.4.html">v1.0.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog/v1.0.3.html">v1.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog/v1.0.2.html">v1.0.2</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

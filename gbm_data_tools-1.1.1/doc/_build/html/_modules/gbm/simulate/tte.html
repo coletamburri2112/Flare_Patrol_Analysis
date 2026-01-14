@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.simulate.tte &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.simulate.tte</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.simulate.tte</h1><div class="highlight"><pre>
+<span></span><span class="c1"># tte.py: Class for simulating TTE (event) data</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">..data</span> <span class="kn">import</span> <span class="n">TTE</span>
+<span class="kn">from</span> <span class="nn">..data.primitives</span> <span class="kn">import</span> <span class="n">EventList</span>
+<span class="kn">from</span> <span class="nn">.generators</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="TteSourceSimulator"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteSourceSimulator">[docs]</a><span class="k">class</span> <span class="nc">TteSourceSimulator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Simulate TTE or EventList data for a source spectrum given a detector </span>
+<span class="sd">    response, spectral model and time profile model.  The spectral shape is </span>
+<span class="sd">    fixed throughout the time profile of the signal, but the amplitude of the </span>
+<span class="sd">    spectrum is time-dependent, set by the time profile function.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        rsp (:class:`~gbm.data.RSP`): A detector response object</span>
+<span class="sd">        spec_func (:class:`~gbm.spectra.functions.Function`):</span>
+<span class="sd">            A photon model function</span>
+<span class="sd">        spec_params (iterable): The parameters for the function</span>
+<span class="sd">        time_func (&lt;function&gt;): A time profile function</span>
+<span class="sd">        time_params (iterable): Parameters for the time profile function</span>
+<span class="sd">        sample_period (float, optional): The sampling period of the simulator</span>
+<span class="sd">            in seconds. Default is 0.001. The simulator will produce arrival </span>
+<span class="sd">            times consistent with a spectrum over a finite time slice.  This </span>
+<span class="sd">            time slice should be short enough to approximate a non-homogeneous </span>
+<span class="sd">            Poisson process, but long enough to allow for a tractable </span>
+<span class="sd">            computation time.</span>
+<span class="sd">        deadtime (float, optional): The dead time in seconds for each recorded </span>
+<span class="sd">                                    count during which another count cannot be </span>
+<span class="sd">                                    recorded. Default is 2e-6 s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rsp</span><span class="p">,</span> <span class="n">spec_func</span><span class="p">,</span> <span class="n">spec_params</span><span class="p">,</span> <span class="n">time_func</span><span class="p">,</span> <span class="n">time_params</span><span class="p">,</span>
+                 <span class="n">sample_period</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">deadtime</span><span class="o">=</span><span class="mf">2e-6</span><span class="p">):</span>
+        
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">sample_period</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Sample period must be positive&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">deadtime</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Deadtime must be non-negative&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span> <span class="o">=</span> <span class="n">rsp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_func</span> <span class="o">=</span> <span class="n">spec_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_params</span> <span class="o">=</span> <span class="n">spec_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_func</span> <span class="o">=</span> <span class="n">time_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_params</span> <span class="o">=</span> <span class="n">time_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span> <span class="o">=</span> <span class="n">sample_period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span> <span class="o">=</span> <span class="n">VariableSourceSpectrumGenerator</span><span class="p">(</span><span class="n">rsp</span><span class="p">,</span> <span class="n">spec_func</span><span class="p">,</span>
+                                                         <span class="n">spec_params</span><span class="p">,</span>
+                                                         <span class="n">sample_period</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_gen</span> <span class="o">=</span> <span class="n">EventSpectrumGenerator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">rsp</span><span class="o">.</span><span class="n">numchans</span><span class="p">),</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">,</span> 
+                                                 <span class="n">min_sep</span><span class="o">=</span><span class="n">deadtime</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TteSourceSimulator.set_response"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteSourceSimulator.set_response">[docs]</a>    <span class="k">def</span> <span class="nf">set_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rsp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set/change the detector response.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            rsp (:class:`~gbm.data.RSP`): A detector response object        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span> <span class="o">=</span> <span class="n">rsp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span> <span class="o">=</span> <span class="n">VariableSourceSpectrumGenerator</span><span class="p">(</span><span class="n">rsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spec_func</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_spec_params</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TteSourceSimulator.set_spectrum"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteSourceSimulator.set_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">set_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec_func</span><span class="p">,</span> <span class="n">spec_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set/change the spectrum.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            spec_func (:class:`~gbm.spectra.functions.Function`):</span>
+<span class="sd">                A photon model function</span>
+<span class="sd">            spec_params (iterable): The parameters for the function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_func</span> <span class="o">=</span> <span class="n">spec_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_params</span> <span class="o">=</span> <span class="n">spec_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span> <span class="o">=</span> <span class="n">VariableSourceSpectrumGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_spec_func</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_spec_params</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TteSourceSimulator.set_time_profile"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteSourceSimulator.set_time_profile">[docs]</a>    <span class="k">def</span> <span class="nf">set_time_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_func</span><span class="p">,</span> <span class="n">time_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set/change the time profile.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            time_func (&lt;function&gt;): A time profile function</span>
+<span class="sd">            time_params (iterable): Parameters for the time profile function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_func</span> <span class="o">=</span> <span class="n">time_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_params</span> <span class="o">=</span> <span class="n">time_params</span></div>
+
+<div class="viewcode-block" id="TteSourceSimulator.simulate"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteSourceSimulator.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an EventList containing the individual counts from the </span>
+<span class="sd">        simulation</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (float): The start time of the simulation</span>
+<span class="sd">            tstop (float): The stop time of the simulation</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~gbm.data.primitives.EventList`:</span>
+<span class="sd">                The simulated EventList</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create the time grid</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstop</span> <span class="o">-</span> <span class="n">tstart</span><span class="p">)</span>
+        <span class="n">numpts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dur</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">))</span>
+        <span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">numpts</span><span class="p">)</span>
+
+        <span class="c1"># calculate the spectral amplitudes over the grid</span>
+        <span class="n">amps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_func</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_params</span><span class="p">)</span>
+
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpts</span><span class="p">):</span>
+            <span class="c1"># update amplitude and generate the count spectrum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="n">amps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_gen</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span><span class="p">)</span><span class="o">.</span><span class="n">counts</span>
+            <span class="c1"># generate the count arrival times for the time slice spectrum</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event_gen</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">times</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">time_array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                <span class="n">chans</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+        <span class="c1"># create the eventlist</span>
+        <span class="n">eventlist</span> <span class="o">=</span> <span class="n">EventList</span><span class="o">.</span><span class="n">from_lists</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">chans</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">])</span>
+        <span class="n">eventlist</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;TIME&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">eventlist</span></div>
+
+<div class="viewcode-block" id="TteSourceSimulator.to_tte"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteSourceSimulator.to_tte">[docs]</a>    <span class="k">def</span> <span class="nf">to_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an TTE object containing the individual counts from the </span>
+<span class="sd">        simulation</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (float): The start time of the simulation</span>
+<span class="sd">            tstop (float): The stop time of the simulation</span>
+<span class="sd">            trigtime (float, optional): The trigger time. Default is 0.</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~gbm.data.TTE`</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~gbm.data.TTE`:</span>
+<span class="sd">                The simulated TTE object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">eventlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">)</span>
+        <span class="n">tte</span> <span class="o">=</span> <span class="n">TTE</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">eventlist</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tte</span></div></div>
+
+
+<div class="viewcode-block" id="TteBackgroundSimulator"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteBackgroundSimulator">[docs]</a><span class="k">class</span> <span class="nc">TteBackgroundSimulator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Simulate TTE or EventList data given a modeled background spectrum and</span>
+<span class="sd">    time profile model. The spectrum is fixed throughout the time profile of</span>
+<span class="sd">    the background, but the amplitude of the background is time-dependent, set</span>
+<span class="sd">    by the time profile function.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        bkgd_spectrum (:class:`~gbm.background.BackgroundSpectrum`):</span>
+<span class="sd">            A modeled background spectrum</span>
+<span class="sd">        distrib (str): The distribution from which the background is</span>
+<span class="sd">                       simulated; either &#39;Poisson&#39; or &#39;Gaussian&#39;</span>
+<span class="sd">        time_func (&lt;function&gt;): A time profile function</span>
+<span class="sd">        time_params (iterable): Parameters for the time profile function</span>
+<span class="sd">        sample_period (float, optional): The sampling period of the simulator</span>
+<span class="sd">            in seconds. Default is 0.001. The simulator will produce arrival </span>
+<span class="sd">            times consistent with a spectrum over a finite time slice.  This </span>
+<span class="sd">            time slice should be short enough to approximate a non-homogeneous </span>
+<span class="sd">            Poisson process, but long enough to allow for a tractable </span>
+<span class="sd">            computation time.</span>
+<span class="sd">        deadtime (float, optional): The dead time in seconds for each recorded </span>
+<span class="sd">                                    count during which another count cannot be </span>
+<span class="sd">                                    recorded. Default is 2e-6 s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bkgd_spectrum</span><span class="p">,</span> <span class="n">distrib</span><span class="p">,</span> <span class="n">time_func</span><span class="p">,</span> <span class="n">time_params</span><span class="p">,</span>
+                 <span class="n">sample_period</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">deadtime</span><span class="o">=</span><span class="mf">2e-6</span><span class="p">):</span>
+        
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sample_period</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Sample period must be positive&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">deadtime</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Deadtime must be non-negative&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bkgd</span> <span class="o">=</span> <span class="n">bkgd_spectrum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_func</span> <span class="o">=</span> <span class="n">time_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_params</span> <span class="o">=</span> <span class="n">time_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span> <span class="o">=</span> <span class="n">sample_period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deadtime</span> <span class="o">=</span> <span class="n">deadtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_gen</span> <span class="o">=</span> <span class="n">EventSpectrumGenerator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bkgd</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">,</span> 
+                                                 <span class="n">min_sep</span><span class="o">=</span><span class="n">deadtime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_background</span><span class="p">(</span><span class="n">bkgd_spectrum</span><span class="p">,</span> <span class="n">distrib</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TteBackgroundSimulator.set_background"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteBackgroundSimulator.set_background">[docs]</a>    <span class="k">def</span> <span class="nf">set_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bkgd_spectrum</span><span class="p">,</span> <span class="n">distrib</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set/change the spectrum.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            bkgd_spectrum (:class:`~gbm.background.BackgroundSpectrum`):</span>
+<span class="sd">                A modeled background spectrum</span>
+<span class="sd">            distrib (str): The distribution from which the background is</span>
+<span class="sd">                           simulated; either &#39;Poisson&#39; or &#39;Gaussian&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bkgd</span> <span class="o">=</span> <span class="n">BackgroundSpectrum</span><span class="p">(</span><span class="n">bkgd_spectrum</span><span class="o">.</span><span class="n">rates</span><span class="p">,</span>
+                                  <span class="n">bkgd_spectrum</span><span class="o">.</span><span class="n">rate_uncertainty</span><span class="p">,</span>
+                                  <span class="n">bkgd_spectrum</span><span class="o">.</span><span class="n">lo_edges</span><span class="p">,</span>
+                                  <span class="n">bkgd_spectrum</span><span class="o">.</span><span class="n">hi_edges</span><span class="p">,</span>
+                                  <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">]</span> <span class="o">*</span> <span class="n">bkgd_spectrum</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">distrib</span> <span class="o">==</span> <span class="s1">&#39;Poisson&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span> <span class="o">=</span> <span class="n">VariablePoissonBackground</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">distrib</span> <span class="o">==</span> <span class="s1">&#39;Gaussian&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span> <span class="o">=</span> <span class="n">VariableGaussianBackground</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;distrib can only be &#39;Poisson&#39; or &#39;Gaussian&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TteBackgroundSimulator.simulate"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteBackgroundSimulator.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an EventList containing the individual counts from the </span>
+<span class="sd">        background simulation</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (float): The start time of the simulation</span>
+<span class="sd">            tstop (float): The stop time of the simulation</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~gbm.data.primitives.EventList`:</span>
+<span class="sd">                The simulated EventList</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create the time grid</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstop</span> <span class="o">-</span> <span class="n">tstart</span><span class="p">)</span>
+        <span class="n">numpts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dur</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_per</span><span class="p">))</span>
+        <span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">numpts</span><span class="p">)</span>
+
+        <span class="c1"># calculate the spectral amplitudes over the grid</span>
+        <span class="n">amps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_func</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_params</span><span class="p">)</span>
+
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpts</span><span class="p">):</span>
+            <span class="c1"># update amplitude and generate the count spectrum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="n">amps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_gen</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_whole_counts</span><span class="p">(</span>
+                <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spec_gen</span><span class="p">)</span><span class="o">.</span><span class="n">counts</span><span class="p">)</span>
+            <span class="c1"># generate the count arrival times for the time slice spectrum</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event_gen</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">times</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">time_array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                <span class="n">chans</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+        <span class="c1"># create the eventlist</span>
+        <span class="n">eventlist</span> <span class="o">=</span> <span class="n">EventList</span><span class="o">.</span><span class="n">from_lists</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">chans</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bkgd</span><span class="o">.</span><span class="n">lo_edges</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">_bkgd</span><span class="o">.</span><span class="n">hi_edges</span><span class="p">)</span>
+        <span class="n">eventlist</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;TIME&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">eventlist</span></div>
+
+<div class="viewcode-block" id="TteBackgroundSimulator.to_tte"><a class="viewcode-back" href="../../../api/api-sims.html#gbm.simulate.TteBackgroundSimulator.to_tte">[docs]</a>    <span class="k">def</span> <span class="nf">to_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an TTE object containing the individual counts from the </span>
+<span class="sd">        background simulation</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (float): The start time of the simulation</span>
+<span class="sd">            tstop (float): The stop time of the simulation</span>
+<span class="sd">            trigtime (float, optional): The trigger time. Default is 0.</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~gbm.data.TTE`</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~gbm.data.TTE`:</span>
+<span class="sd">                The simulated TTE object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">eventlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">)</span>
+        <span class="n">tte</span> <span class="o">=</span> <span class="n">TTE</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">eventlist</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tte</span></div>
+
+    <span class="k">def</span> <span class="nf">_whole_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
+        <span class="c1"># because we can end up with fractional counts for the background</span>
+        <span class="c1"># (the *rate* is what is typically modeled, and so no guarantee that</span>
+        <span class="c1">#  counts will come out to whole integers)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">whole_counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">counts</span> <span class="o">-</span> <span class="n">whole_counts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">u</span>
+        <span class="n">whole_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">whole_counts</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

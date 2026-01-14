@@ -1,0 +1,1289 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Utilities &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Change Logs" href="../changelog/index.html" />
+    <link rel="prev" title="Data Finders" href="api-finders.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">GBM Data Tools API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api-data.html">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-binning.html">Data Binning Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-background.html">Background Estimation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-spectra.html">Spectra Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-sims.html">Simulate Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-plot.html">Plotting Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-finders.html">Data Finders</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#coordinate-geometry">Coordinate/Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detector-definitions">Detector Definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filenaming">Filenaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-conversions">Time Conversions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">GBM Data Tools API</a> &raquo;</li>
+        
+      <li>Utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/api-utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="utilities">
+<span id="api-utils"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<p>Several useful utilities used throughout the various Data Tools modules</p>
+<div class="section" id="coordinate-geometry">
+<h2>Coordinate/Geometry<a class="headerlink" href="#coordinate-geometry" title="Permalink to this headline">¶</a></h2>
+<p>The following functions in <code class="docutils literal notranslate"><span class="pre">gbm.coords</span></code> are used in various coordinate
+transforms and geometry calculations.</p>
+<span class="target" id="module-gbm.coords"></span><dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.azzen_to_cartesian">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">azzen_to_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">az</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#azzen_to_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.azzen_to_cartesian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert spacecraft azimuth/zenith to Cartesian coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>az</strong> (<em>float</em><em> or </em><em>np.array</em>) – Spacecraft azimuth</p></li>
+<li><p><strong>zen</strong> (<em>float</em><em> or </em><em>np.array</em>) – Spacecraft zenith</p></li>
+<li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – True (default) if input is in degrees,
+otherwise input is radians</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – 3-element Cartesian coordinate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.calc_mcilwain_l">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">calc_mcilwain_l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longitude</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#calc_mcilwain_l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.calc_mcilwain_l" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the McIlwain L value given the latitude (-30, +30) and
+East Longitude.  This uses a cubic polynomial approximation to the full
+calculation and is similar to the approach used by the GBM FSW.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>latitude</strong> (<em>np.array</em>) – Latitude in degrees from -180 to 180</p></li>
+<li><p><strong>longitude</strong> (<em>np.array</em>) – East longitude in degrees from 0 to 360</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – McIlwain L value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.geocenter_direction_cosines">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">geocenter_direction_cosines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#geocenter_direction_cosines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.geocenter_direction_cosines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create <cite>n</cite> geocenter direction cosine matrix(es) for a position or
+positions in spacecraft coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gz</strong> (<em>np.array</em>) – Geocenter vector in spacecraft Cartesian coordinates</p></li>
+<li><p><strong>az</strong> (<em>float</em><em> or </em><em>np.array</em>) – The azimuth location of positions in spacecraft
+coordinates</p></li>
+<li><p><strong>zen</strong> (<em>float</em><em> or </em><em>np.array</em>) – The zenith location of positions in spacecraft
+coordinates</p></li>
+<li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the input is in degrees. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – (3,3, <cite>n</cite>) array containing the geocenter direction cosines                   for each point</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.geocenter_in_radec">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">geocenter_in_radec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#geocenter_in_radec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.geocenter_in_radec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the location of the Earth center RA and Dec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coord</strong> (<em>np.array</em>) – (3, <cite>n</cite>) array containing Geocentric cartesian
+coordinates in meters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – RA and Dec of Earth center as viewed by                               Fermi in degrees</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.geocenter_to_spacecraft">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">geocenter_to_spacecraft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geo_cosines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#geocenter_to_spacecraft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.geocenter_to_spacecraft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert <cite>n</cite> points from geocenter frame to spacecraft frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> (<em>float</em><em> or </em><em>np.array</em>) – The azimuthal location of positions in
+geocentric coordinates</p></li>
+<li><p><strong>theta</strong> (<em>float</em><em> or </em><em>np.array</em>) – The polar location of positions in
+geocentric coordinates</p></li>
+<li><p><strong>geo_cosines</strong> (<em>np.array</em>) – (3,3) array containing the direction cosines</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – Azimuth and zenith positions in the spacecraft frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.get_sun_loc">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">get_sun_loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">met</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#get_sun_loc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.get_sun_loc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate sun location in RA/Dec for a given MET.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>met</strong> (<em>float</em>) – The MET time(s)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(float, float)</em> – RA and Dec of the sun</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.haversine">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">haversine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#haversine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.haversine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the angular separation between two points using the
+haversine equation. If degrees are passed, degrees are returned. else
+the input/output is assumed to be radians.
+lon -&gt; azimuth
+lat -&gt; zenith</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lon1</strong> (<em>float</em>) – lon/az of first point</p></li>
+<li><p><strong>lat1</strong> (<em>float</em>) – lat/zen of first point</p></li>
+<li><p><strong>lon2</strong> (<em>float</em>) – lon/az of second point</p></li>
+<li><p><strong>lat2</strong> (<em>float</em>) – lat/zen of second point</p></li>
+<li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – True if input/output in degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – Angular separation between points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.latitude_from_geocentric_coords_complex">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">latitude_from_geocentric_coords_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#latitude_from_geocentric_coords_complex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.latitude_from_geocentric_coords_complex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate latitude from Geocentric Cartesian coordinates. Uses the
+WGS 1984 model of the shape of the Earth.  Also returns altitude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coord</strong> (<em>np.array</em>) – (3, <cite>n</cite>) array containing Geocentric cartesian
+coordinates in meters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – Position of Fermi in Earth Latitude and altitude                               in meters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.latitude_from_geocentric_coords_simple">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">latitude_from_geocentric_coords_simple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#latitude_from_geocentric_coords_simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.latitude_from_geocentric_coords_simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate latitude from Geocentric Cartesian coordinates. Assumes the
+Earth is a simple sphere.  Also returns altitude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coord</strong> (<em>np.array</em>) – (3, <cite>n</cite>) array containing Geocentric cartesian
+coordinates in meters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – Position of Fermi in Earth Latitude and altitude                               in meters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.longitude_from_geocentric_coords">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">longitude_from_geocentric_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">met</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ut1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#longitude_from_geocentric_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.longitude_from_geocentric_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the East longitude from Geocentric coordinates. Requires the
+conversion of Fermi MET to sidereal time to rotate the Earth under the
+spacecraft.  The conversion can either be performed using UTC (less
+accurate) or UT1 (more accurate) which uses IERS tables to correct for
+variations in Earth rotation velocity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coord</strong> (<em>np.array</em>) – (3, <cite>n</cite>) array containing Geocentric cartesian
+coordinates in meters</p></li>
+<li><p><strong>met</strong> – (float or np.array): The MET time(s)</p></li>
+<li><p><strong>ut1</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, use UT1 instead of UTC to calculate
+sidereal time. Default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array or float</em> – Position of Fermi in East Longitude</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.quaternion_conj">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">quaternion_conj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#quaternion_conj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.quaternion_conj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate conjugate of quaternion</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GBM quaternions are defined with the last element as the scalar value</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>quat</strong> (<em>np.array</em>) – 4-element quaternion</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – quaternion conjugate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.quaternion_inv">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">quaternion_inv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#quaternion_inv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.quaternion_inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate inverse of quaternion</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GBM quaternions are defined with the last element as the scalar value</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>quat</strong> (<em>np.array</em>) – 4-element quaternion</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – quaternion inverse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.quaternion_prod">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">quaternion_prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quat1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quat2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#quaternion_prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.quaternion_prod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate product of two quaternions</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GBM quaternions are defined with the last element as the scalar value</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quat1</strong> (<em>np.array</em>) – 4-element quaternion</p></li>
+<li><p><strong>quat2</strong> (<em>np.array</em>) – 4-element quaternion</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – product of the quaternions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.radec_to_cartesian">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">radec_to_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#radec_to_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.radec_to_cartesian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert RA/Dec to Cartesian coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra</strong> (<em>float</em><em> or </em><em>np.array</em>) – Right Ascension</p></li>
+<li><p><strong>dec</strong> (<em>float</em><em> or </em><em>np.array</em>) – Declination</p></li>
+<li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – True (default) if input is in degrees,
+otherwise input is radians</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – 3-element Cartesian coordinate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.radec_to_spacecraft">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">radec_to_spacecraft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#radec_to_spacecraft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.radec_to_spacecraft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a position in J2000 RA/Dec to spacecraft coordinates (Az/Zen).
+The options for input for this function are as follows:</p>
+<ul class="simple">
+<li><p>a single RA/Dec position and multiple attitude transforms</p></li>
+<li><p>multiple RA/Dec positions and a single attitude transform</p></li>
+<li><p>multiple RA/Dec positions each with a corresponding attitude transform</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra</strong> (<em>float</em><em> or </em><em>np.array</em>) – Right Ascension</p></li>
+<li><p><strong>dec</strong> (<em>float</em><em> or </em><em>np.array</em>) – Declination</p></li>
+<li><p><strong>quat</strong> (<em>np.array</em>) – (4, <cite>n</cite>) spacecraft attitude quaternion array</p></li>
+<li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – True if input/output in degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – Spacecraft azimuth and zenith of the transformed                               position</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.saa_boundary">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">saa_boundary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#saa_boundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.saa_boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>The coordinates of the SAA boundary in latitude and East longitude</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>(np.array, np.array)</em> – The latitude and East longitude values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.spacecraft_direction_cosines">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">spacecraft_direction_cosines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#spacecraft_direction_cosines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.spacecraft_direction_cosines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert <cite>n</cite> spacecraft quaternions to direction cosine matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>quat</strong> (<em>np.array</em>) – (4, <cite>n</cite>) element array of quaternions</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – (3,3, <cite>n</cite>) array containing the spacecraft direction cosines</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.coords.spacecraft_to_radec">
+<span class="sig-prename descclassname"><span class="pre">gbm.coords.</span></span><span class="sig-name descname"><span class="pre">spacecraft_to_radec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">az</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/coords.html#spacecraft_to_radec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.coords.spacecraft_to_radec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a position in spacecraft coordinates (Az/Zen) to J2000 RA/Dec
+The options for input for this function are as follows:</p>
+<ul class="simple">
+<li><p>a single Az/Zen position and multiple attitude transforms</p></li>
+<li><p>multiple Az/Zen positions and a single attitude transform</p></li>
+<li><p>multiple Az/Zen positions each with a corresponding attitude transform</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>az</strong> (<em>float</em><em> or </em><em>np.array</em>) – Spacecraft azimuth</p></li>
+<li><p><strong>zen</strong> (<em>float</em><em> or </em><em>np.array</em>) – Spacecraft zenith</p></li>
+<li><p><strong>quat</strong> (<em>np.array</em>) – (4, <cite>n</cite>) spacecraft attitude quaternion array</p></li>
+<li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – True if input/output in degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – RA and Dec of the transformed position</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="detector-definitions">
+<h2>Detector Definitions<a class="headerlink" href="#detector-definitions" title="Permalink to this headline">¶</a></h2>
+<p>The class in <code class="docutils literal notranslate"><span class="pre">gbm.detector</span></code> contains the GBM Detector parameters.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.detectors.Detector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.detectors.</span></span><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>The GBM detector names and pointings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing</strong> (<em>float, float</em>) – The spacecraft Azimuth/Zenith pointing</p></li>
+<li><p><strong>short_name</strong> (<em>str</em>) – The short name of the detector (e.g. NaI 0 -&gt; ‘n0’)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.detectors.Detector.bgo">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bgo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector.bgo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector.bgo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all detectors that are BGOs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#gbm.detectors.Detector" title="gbm.detectors.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> – The BGO detectors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.detectors.Detector.from_num">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_num</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector.from_num"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector.from_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Detector from an index number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>int</em>) – The index number</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.detectors.Detector" title="gbm.detectors.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> – The detector enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.detectors.Detector.from_str">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector.from_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector.from_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Detector from a short string name (e.g. ‘n0’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – The short name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.detectors.Detector" title="gbm.detectors.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> – The detector enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.detectors.Detector.is_bgo">
+<span class="sig-name descname"><span class="pre">is_bgo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector.is_bgo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector.is_bgo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if detector is a BGO</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>bool</em> – True if detector is BGO, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.detectors.Detector.is_nai">
+<span class="sig-name descname"><span class="pre">is_nai</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector.is_nai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector.is_nai" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if detector is an NaI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>bool</em> – True if detector is NaI, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.detectors.Detector.nai">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nai</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/detectors.html#Detector.nai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.detectors.Detector.nai" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all detectors that are NaIs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#gbm.detectors.Detector" title="gbm.detectors.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> – The NaI detectors</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="filenaming">
+<h2>Filenaming<a class="headerlink" href="#filenaming" title="Permalink to this headline">¶</a></h2>
+<p>The class in <code class="docutils literal notranslate"><span class="pre">gbm.file</span></code> contains the standardized definitions for the GBM
+file naming scheme and other associated utilities</p>
+<span class="target" id="module-gbm.file"></span><dl class="py class">
+<dt class="sig sig-object py" id="gbm.file.GbmFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">GbmFile</span></span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse or construct a GBM standardized filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_type</strong> (<em>str</em>) – The datatype of the file</p></li>
+<li><p><strong>detector</strong> (<em>str</em>) – The detector with which the file is associated</p></li>
+<li><p><strong>directory</strong> (<em>str</em>) – The directory hosting the file</p></li>
+<li><p><strong>extension</strong> (<em>str</em>) – The filename extension</p></li>
+<li><p><strong>meta</strong> (<em>str</em>) – Additional metadata in the filename</p></li>
+<li><p><strong>trigger</strong> (<em>bool</em>) – True if the file is from a trigger. False otherwise</p></li>
+<li><p><strong>uid</strong> (<em>str</em>) – The unique id of the file</p></li>
+<li><p><strong>version</strong> (<em>int</em>) – The version number of the file</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.basename">
+<span class="sig-name descname"><span class="pre">basename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.basename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file basename</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>str</em> – The file basename</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.create">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a GbmFile from keywords</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – The properties of a GbmFile</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.file.GbmFile" title="gbm.file.GbmFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GbmFile</span></code></a> – The new filename object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.detector_list">
+<span class="sig-name descname"><span class="pre">detector_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.detector_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.detector_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a list of GbmFile objects, one for each GBM detector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#gbm.file.GbmFile" title="gbm.file.GbmFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GbmFile</span></code></a> – The new filename objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.from_path">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.from_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a GbmFile from parsing a filename</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – A filename path</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.file.GbmFile" title="gbm.file.GbmFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GbmFile</span></code></a> – The new filename object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.list_from_paths">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_from_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.list_from_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.list_from_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a many GbmFiles from a list of filepaths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_list</strong> (<em>list of str</em>) – List of filepaths</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="#gbm.file.GbmFile" title="gbm.file.GbmFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GbmFile</span></code></a> – The new filename object(s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.path">
+<span class="sig-name descname"><span class="pre">path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>str</em> – The path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.file.GbmFile.version_str">
+<span class="sig-name descname"><span class="pre">version_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#GbmFile.version_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.GbmFile.version_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the file version number as a string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>str</em> – The file version</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.file.all_exists">
+<span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">all_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#all_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.all_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do all the files in the list exist in the filesystem?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_list</strong> (<em>list of str</em>) – List of file names to check</p></li>
+<li><p><strong>parent_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – parent directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True if all files exist</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.file.has_detector">
+<span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">has_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#has_detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.has_detector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the file list contain a file for the given detector?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_list</strong> (<em>list of str</em>) – List of file names</p></li>
+<li><p><strong>detector</strong> (<em>str</em>) – Detector being searched</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True if the list of file names includes the given detector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.file.is_complete">
+<span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">is_complete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#is_complete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.is_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the file list contain a file for every detector?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_list</strong> (<em>list of str</em>) – List of files that represent a detector set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True if the file list contains a file for every detector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.file.max_version">
+<span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">max_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#max_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.max_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum _version of file name in the given list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_list</strong> (<em>list of str</em>) – list of file names</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – Largest _version number in the list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.file.min_version">
+<span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">min_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#min_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.min_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimum _version of file name in the given list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_list</strong> (<em>list of str</em>) – list of file names</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – Smallest _version number in the list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.file.scan_dir">
+<span class="sig-prename descclassname"><span class="pre">gbm.file.</span></span><span class="sig-name descname"><span class="pre">scan_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">absolute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/file.html#scan_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.file.scan_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scans the given directory for files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – The root directory to scan.</p></li>
+<li><p><strong>hidden</strong> (<em>bool</em><em>, </em><em>optional</em>) – Set True if you want to include hidden files.</p></li>
+<li><p><strong>recursive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Set True if you want to scan subdirectories
+within the given path.</p></li>
+<li><p><strong>absolute</strong> (<em>bool</em><em>, </em><em>optional</em>) – Set true if you want the absolute path of
+each file returned.</p></li>
+<li><p><strong>regex</strong> (<em>str</em>) – Set if you want to only return files matching the given
+regular expression.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>str</em> – Full path to a file for each iteration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="time-conversions">
+<h2>Time Conversions<a class="headerlink" href="#time-conversions" title="Permalink to this headline">¶</a></h2>
+<p>The class in <code class="docutils literal notranslate"><span class="pre">gbm.time</span></code> contains Fermi MET time definition, a class for time
+conversions to and from Fermi MET and other time utilities.</p>
+<span class="target" id="module-gbm.time"></span><dl class="py class">
+<dt class="sig sig-object py" id="gbm.time.Met">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">Met</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class representing the Fermi MET Epoch and allowing time conversions
+to and from it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>secs</strong> (<em>float</em>) – The MET</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>bn</strong> (<em>str</em>) – The MET converted to bust number format: ‘YYMMDDfff’</p></li>
+<li><p><strong>datetime</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code>) – A datetime object for the MET</p></li>
+<li><p><strong>gps</strong> (<em>float</em>) – The number of seconds since Jan 6, 1980 00:00:00
+(leap seconds are removed)</p></li>
+<li><p><strong>jd</strong> (<em>float</em>) – The Julian Date associated with the MET</p></li>
+<li><p><strong>met</strong> (<em>float</em>) – The MET</p></li>
+<li><p><strong>mjd</strong> (<em>float</em>) – The modified Julian Date associated with the MET</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">astropy.time.Time</span></code>) – The astropy time object for the MET</p></li>
+<li><p><strong>unix</strong> (<em>float</em>) – The number of seconds since Jan 1, 1970 00:00:00 with
+the leap seconds removed</p></li>
+<li><p><strong>ymd</strong> (<em>str</em>) – The MET converted to the form <cite>YYMMDD</cite> in UTC</p></li>
+<li><p><strong>ymd_h</strong> (<em>str</em>) – The MET converted to the form of YYMMDD_HHz in UTC</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an Met object with its value set to this object’s value
+with x seconds added to it. Can also use the <code class="docutils literal notranslate"><span class="pre">+</span></code> operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em>) – seconds to add</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_bn">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_bn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_bn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a ‘YYMMDDfff’ string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bn</strong> (<em>str</em>) – A burst number string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_datetime">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a datetime.datetime object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code>) – The datetime object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_gps">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_gps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_gps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_gps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a GPS timestamp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gsp</strong> (<em>float</em>) – A GPS time</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_iso">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_iso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_iso" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new Met object from an ISO-format UTC string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str_time</strong> (<em>str</em>) – The ISO string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_jd">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_jd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_jd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_jd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a Julian Date</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>jd</strong> (<em>float</em>) – A Julian Date</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_mjd">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_mjd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mjd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_mjd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_mjd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a Modified Julian Date</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mjd</strong> (<em>float</em>) – A Modified Julian Date</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_time">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from an astropy.Time object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atime</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">astropy.time.Time</span></code>) – The astropy time object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_unix">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_unix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_unix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_unix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a Unix timestamp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>unix</strong> (<em>float</em>) – A Unix time</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_ymd">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ymd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ymd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_ymd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_ymd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a ‘YYMMDD’ string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ymd</strong> (<em>str</em>) – A YYMMDD string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.from_ymd_h">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ymd_h</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ymd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.from_ymd_h"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.from_ymd_h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from a ‘YYMMDD_HHz’ string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ymd</strong> (<em>str</em>) – A YYMMDD_HHz string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.iso">
+<span class="sig-name descname"><span class="pre">iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.iso" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the MET value as a string in the form of
+yyyy-mm-ddTHH:MM:SS in UT</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>str: the ISO string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.now">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.now"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Met object from the current time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.Met.sub">
+<span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#Met.sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.Met.sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an Met object with its value set to this object’s value
+with x seconds subtracted from it. Can also use the <code class="docutils literal notranslate"><span class="pre">-</span></code> operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em>) – seconds to subtract</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The Met object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">TimeFermiSec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_subfmt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_subfmt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_jd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#TimeFermiSec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.TimeFermiSec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">astropy.time.formats.TimeFromEpoch</span></code></p>
+<p>Represents the number of seconds elapsed since Jan 1, 2001 00:00:00 UTC
+including leap seconds</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec.cache">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><a class="headerlink" href="#gbm.time.TimeFermiSec.cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cache associated with this instance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec.epoch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">epoch</span></span><a class="headerlink" href="#gbm.time.TimeFermiSec.epoch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference epoch time from which the time interval is measured</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec.scale">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#gbm.time.TimeFermiSec.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time scale</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec.set_jds">
+<span class="sig-name descname"><span class="pre">set_jds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.time.TimeFermiSec.set_jds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the internal jd1 and jd2 attributes given val1 and val2.
+For an TimeFromEpoch subclass like TimeUnix these will be floats giving
+the effective seconds since an epoch time (e.g. 1970-01-01 00:00:00).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec.to_value">
+<span class="sig-name descname"><span class="pre">to_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.time.TimeFermiSec.to_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return time representation from internal jd1 and jd2.
+Subclasses that require <code class="docutils literal notranslate"><span class="pre">parent</span></code> or to adjust the jds should
+override this method.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbm.time.TimeFermiSec.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gbm.time.TimeFermiSec.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return time representation from internal jd1 and jd2.
+Subclasses that require <code class="docutils literal notranslate"><span class="pre">parent</span></code> or to adjust the jds should
+override this method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.time.dates_from_hours">
+<span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">dates_from_hours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hours</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#dates_from_hours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.dates_from_hours" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a list of hours to a list of days spanned</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hours</strong> (list of <code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.date</span></code>) – List of hours</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – The list of dates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.time.dates_range_from">
+<span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">dates_range_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_days</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.date(2022,</span> <span class="pre">5,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#dates_range_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.dates_range_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list of dates within the given range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_days</strong> (<em>int</em>) – Number of days to include in the list</p></li>
+<li><p><strong>dt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.date</span></code>, optional) – The last date to be included in the list. Default is current date.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – List of date values representing hours.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.time.fraction_of_day_to_hms">
+<span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">fraction_of_day_to_hms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#fraction_of_day_to_hms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.fraction_of_day_to_hms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hour, minute, second for a given fraction of day</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – The fraction of day</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(int, int, int)</em> – Hour, minute, second</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.time.hms_to_fraction_of_day">
+<span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">hms_to_fraction_of_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#hms_to_fraction_of_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.hms_to_fraction_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>The fraction of day as computed by the original ops code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code>) – The date/time</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – The fraction of day</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.time.hours_range_from">
+<span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">hours_range_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2022,</span> <span class="pre">5,</span> <span class="pre">10,</span> <span class="pre">17,</span> <span class="pre">41,</span> <span class="pre">26,</span> <span class="pre">103528)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#hours_range_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.hours_range_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list of datetimes within the given range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_hours</strong> (<em>int</em>) – Number of hours to include in the list</p></li>
+<li><p><strong>dt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code>, optional) – The last hour to be included in the list (datetime will be
+truncated to hour value). Default is current hour.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – List of datetime values representing hours.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.time.inclusive_date_range">
+<span class="sig-prename descclassname"><span class="pre">gbm.time.</span></span><span class="sig-name descname"><span class="pre">inclusive_date_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/time.html#inclusive_date_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.time.inclusive_date_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list of Met from start to stop times</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a>) – The start MET</p></li>
+<li><p><strong>stop</strong> (<a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a>) – The end MET</p></li>
+<li><p><strong>(</strong> (<em>step</em>) – class:<a href="#id1"><span class="problematic" id="id2">`</span></a>datetime.timedelta, optional):
+The step size. Default is 1 day.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a> – The list of Met objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<hr class="docutils" />
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../changelog/index.html" class="btn btn-neutral float-right" title="Change Logs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api-finders.html" class="btn btn-neutral float-left" title="Data Finders" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

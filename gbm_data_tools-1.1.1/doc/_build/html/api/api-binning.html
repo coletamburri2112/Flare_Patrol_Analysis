@@ -1,0 +1,615 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Data Binning Module &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Background Estimation Module" href="api-background.html" />
+    <link rel="prev" title="Data Module" href="api-data.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">GBM Data Tools API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api-data.html">Data Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Binning Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#for-pre-binned-data">For Pre-Binned Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#combine-by-factor">combine_by_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#combine-into-one">combine_into_one</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebin-by-edge">rebin_by_edge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebin-by-edge-index">rebin_by_edge_index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebin-by-snr">rebin_by_snr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebin-by-time">rebin_by_time</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#for-unbinned-data">For Unbinned Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bin-by-edges">bin_by_edges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bin-by-snr">bin_by_snr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bin-by-time">bin_by_time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">combine_by_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">combine_into_one</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-to-spill">time_to_spill</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-background.html">Background Estimation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-spectra.html">Spectra Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-sims.html">Simulate Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-plot.html">Plotting Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-finders.html">Data Finders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-utils.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">GBM Data Tools API</a> &raquo;</li>
+        
+      <li>Data Binning Module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/api-binning.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="data-binning-module">
+<span id="api-binning"></span><h1>Data Binning Module<a class="headerlink" href="#data-binning-module" title="Permalink to this headline">¶</a></h1>
+<p>The functions in <code class="docutils literal notranslate"><span class="pre">gbm.binning</span></code> are standard functions available to rebin
+pre-binned data and to bin unbinned data.</p>
+<div class="section" id="for-pre-binned-data">
+<h2>For Pre-Binned Data<a class="headerlink" href="#for-pre-binned-data" title="Permalink to this headline">¶</a></h2>
+<p>The following functions in <code class="docutils literal notranslate"><span class="pre">gbm.binning.binned</span></code> can be used to rebin
+pre-binned data.</p>
+<p>User-defined algorithms can be used as long as the function has the following
+inputs:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">old_counts</span></code>:  The current array of counts in each bin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">old_exposure</span></code>: The current array of exposure for each bin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">old_edges</span></code>: The current array of bin edges</p></li>
+</ol>
+<p>Additionally, you can define any algorithm-specific positional arguments after
+the required inputs.</p>
+<p>The required outputs are:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">new_counts</span></code>:  The new array of counts in the rebinned data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_exposure</span></code>: The new array of exposure for the rebinned data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_edges</span></code>: The new array of bin edges for the binned data</p></li>
+</ol>
+<p>Essentially, the function should read in the old histogram data and provide
+updated values for the new histogram. As long as you design your function like
+this, you can use it to bin PHAII data.</p>
+<hr class="docutils" />
+<div class="section" id="combine-by-factor">
+<h3>combine_by_factor<a class="headerlink" href="#combine-by-factor" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.binned.combine_by_factor">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.binned.</span></span><span class="sig-name descname"><span class="pre">combine_by_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/binned.html#combine_by_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.binned.combine_by_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebins binned data to a multiple factor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The time edges of each bin</p></li>
+<li><p><strong>bin_factor</strong> (<em>int</em>) – The number of consecutive bins to be combined</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array, np.array)</em> – The counts and exposure in each bin                                         and the new bin edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="combine-into-one">
+<h3>combine_into_one<a class="headerlink" href="#combine-into-one" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.binned.combine_into_one">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.binned.</span></span><span class="sig-name descname"><span class="pre">combine_into_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/binned.html#combine_into_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.binned.combine_into_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines binned data into a single bin</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The time edges of each bin</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array, np.array)</em> – The counts and exposure in each bin                                         and the new bin edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="rebin-by-edge">
+<h3>rebin_by_edge<a class="headerlink" href="#rebin-by-edge" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.binned.rebin_by_edge">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.binned.</span></span><span class="sig-name descname"><span class="pre">rebin_by_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/binned.html#rebin_by_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.binned.rebin_by_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebins binned data based on an array of bin edge indices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The time edges of each bin</p></li>
+<li><p><strong>new_edges</strong> (<em>np.array</em>) – The new edges of the binned data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array, np.array)</em> – The counts and exposure in each bin                                         and the new bin edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="rebin-by-edge-index">
+<h3>rebin_by_edge_index<a class="headerlink" href="#rebin-by-edge-index" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.binned.rebin_by_edge_index">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.binned.</span></span><span class="sig-name descname"><span class="pre">rebin_by_edge_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_edge_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/binned.html#rebin_by_edge_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.binned.rebin_by_edge_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebins binned data based on an array of bin edge indices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The time edges of each bin</p></li>
+<li><p><strong>new_edge_index</strong> (<em>np.array</em>) – The edge indices for the new binned data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array, np.array)</em> – The counts and exposure in each bin                                         and the new bin edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="rebin-by-snr">
+<h3>rebin_by_snr<a class="headerlink" href="#rebin-by-snr" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.binned.rebin_by_snr">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.binned.</span></span><span class="sig-name descname"><span class="pre">rebin_by_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/binned.html#rebin_by_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.binned.rebin_by_snr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebins binned data such that each bin is above a minimum signal-to-noise ratio</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The time edges of each bin</p></li>
+<li><p><strong>background_counts</strong> (<em>np.array</em>) – The background counts in each bin</p></li>
+<li><p><strong>snr</strong> (<em>float</em>) – The minimum signal-to-ratio threshold</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array, np.array)</em> – The counts and exposure in each bin                                         and the new bin edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="rebin-by-time">
+<h3>rebin_by_time<a class="headerlink" href="#rebin-by-time" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.binned.rebin_by_time">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.binned.</span></span><span class="sig-name descname"><span class="pre">rebin_by_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/binned.html#rebin_by_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.binned.rebin_by_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebins binned data to a specified temporal bin width.</p>
+<p>If the requested bin width is smaller than some of the original bin widths,
+those bins will be left as is.</p>
+<p>If the requested bin width is an exact factor of all the current bin widths,
+the resulting bin width will be exactly as requested.  If the requested bin
+width is not an exact factor, then the resulting bin width will be
+approximately the requested bin width without exceeding the requested bin
+width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The time edges of each bin</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – The requested temporal bin width in seconds</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array, np.array)</em> – The counts and exposure in each bin                                         and the new bin edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="for-unbinned-data">
+<h2>For Unbinned Data<a class="headerlink" href="#for-unbinned-data" title="Permalink to this headline">¶</a></h2>
+<p>The following functions in <code class="docutils literal notranslate"><span class="pre">gbm.binning.unbinned</span></code> can be used to bin
+unbinned data</p>
+<p>User-defined algorithms can be used as long as the function has the following
+required input:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">times</span></code>: The array of event times</p></li>
+</ol>
+<p>Additionally, you can define any algorithm-specific positional or keyword
+arguments after the required inputs.</p>
+<p>The required output is:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_edges</span></code>: The bin edges</p></li>
+</ol>
+<p>The algorithm should read in the event times and return the bin edges.
+A function designed like this can be used to bin event data.</p>
+<hr class="docutils" />
+<div class="section" id="bin-by-edges">
+<h3>bin_by_edges<a class="headerlink" href="#bin-by-edges" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.unbinned.bin_by_edges">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.unbinned.</span></span><span class="sig-name descname"><span class="pre">bin_by_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/unbinned.html#bin_by_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.unbinned.bin_by_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bins unbinned data by pre-defined edges. A rather trivial function :)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>np.array</em>) – The time of each event</p></li>
+<li><p><strong>time_edges</strong> (<em>np.array</em>) – The pre-defined time edges</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The edges of the binned data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="bin-by-snr">
+<h3>bin_by_snr<a class="headerlink" href="#bin-by-snr" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.unbinned.bin_by_snr">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.unbinned.</span></span><span class="sig-name descname"><span class="pre">bin_by_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">back_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/unbinned.html#bin_by_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.unbinned.bin_by_snr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bins unbinned data by SNR</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>np.array</em>) – The time of each event</p></li>
+<li><p><strong>back_rates</strong> (<em>np.array</em>) – The background rate at the time of each event</p></li>
+<li><p><strong>snr</strong> (<em>float</em>) – The signal-to-noise ratio</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The edges of the binned data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="bin-by-time">
+<h3>bin_by_time<a class="headerlink" href="#bin-by-time" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.unbinned.bin_by_time">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.unbinned.</span></span><span class="sig-name descname"><span class="pre">bin_by_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/unbinned.html#bin_by_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.unbinned.bin_by_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bins unbinned data to a specified temporal bin width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>np.array</em>) – The time of each event</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – The requested temporal bin width in seconds</p></li>
+<li><p><strong>tstart</strong> (<em>float</em><em>, </em><em>optional</em>) – The first bin edge time. Will use the first
+event time if omitted.</p></li>
+<li><p><strong>tstop</strong> – (float, optional): The last bin edge time. Will use the last
+event time if omitted.</p></li>
+<li><p><strong>time_ref</strong> (<em>float</em><em>, </em><em>optional</em>) – The reference time at which the binning will be based. If the set,
+the binning will proceed starting at <code class="docutils literal notranslate"><span class="pre">time_ref</span></code> and moving forward
+in time as well as starting at <code class="docutils literal notranslate"><span class="pre">time_ref</span></code> and moving backward in
+time.  If not set, the binning will start at the beginning of the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The edges of the binned data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="id1">
+<h3>combine_by_factor<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.unbinned.combine_by_factor">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.unbinned.</span></span><span class="sig-name descname"><span class="pre">combine_by_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/unbinned.html#combine_by_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.unbinned.combine_by_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bins individual events to a multiple factor of bins given a
+set of bin edges</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>np.array</em>) – The time of each event</p></li>
+<li><p><strong>old_edges</strong> (<em>np.array</em>) – The edges to be combined</p></li>
+<li><p><strong>bin_factor</strong> (<em>int</em>) – The number of bins to be combined</p></li>
+<li><p><strong>tstart</strong> (<em>float</em><em>, </em><em>optional</em>) – The first bin edge time. Will use the first
+event time if omitted.</p></li>
+<li><p><strong>tstop</strong> – (float, optional): The last bin edge time. Will use the last
+event time if omitted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The edges of the binned data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="id2">
+<h3>combine_into_one<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.unbinned.combine_into_one">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.unbinned.</span></span><span class="sig-name descname"><span class="pre">combine_into_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/unbinned.html#combine_into_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.unbinned.combine_into_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bins unbinned data to a single bin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>np.array</em>) – The time of each event</p></li>
+<li><p><strong>tstart</strong> (<em>float</em>) – The first bin edge time. Will use the first
+event time if omitted.</p></li>
+<li><p><strong>tstop</strong> – (float): The last bin edge time. Will use the last
+event time if omitted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The edges of the binned data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="time-to-spill">
+<h3>time_to_spill<a class="headerlink" href="#time-to-spill" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.binning.unbinned.time_to_spill">
+<span class="sig-prename descclassname"><span class="pre">gbm.binning.unbinned.</span></span><span class="sig-name descname"><span class="pre">time_to_spill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/binning/unbinned.html#time_to_spill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.binning.unbinned.time_to_spill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time-to-Spill Binning for an event list
+Bins an event list by accumulating counts until the set threshold is reached,
+and then creating a new bin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>np.array</em>) – The time of each event</p></li>
+<li><p><strong>threshold</strong> (<em>int</em>) – The count threshold for the histogram</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The edges of the binned data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<hr class="docutils" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api-background.html" class="btn btn-neutral float-right" title="Background Estimation Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api-data.html" class="btn btn-neutral float-left" title="Data Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

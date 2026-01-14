@@ -1,0 +1,800 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.background.background &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.background.background</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.background.background</h1><div class="highlight"><pre>
+<span></span><span class="c1"># background.py: Module containing background fitting and model classes</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">..data.primitives</span> <span class="kn">import</span> <span class="n">EventList</span><span class="p">,</span> <span class="n">TimeEnergyBins</span><span class="p">,</span> <span class="n">EnergyBins</span>
+<span class="kn">from</span> <span class="nn">..data</span> <span class="kn">import</span> <span class="n">PHAII</span><span class="p">,</span> <span class="n">TTE</span>
+
+
+<div class="viewcode-block" id="BackgroundFitter"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundFitter">[docs]</a><span class="k">class</span> <span class="nc">BackgroundFitter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class for fitting a background, given a fitting algorithm,</span>
+<span class="sd">    to time-energy data (e.g. :class:`~gbm.data.phaii.PHAII`, </span>
+<span class="sd">    :class:`~gbm.data.TTE`).</span>
+<span class="sd">    </span>
+<span class="sd">    When a BackgroundFitter is created, an algorithm must be specified.  In </span>
+<span class="sd">    particular, the algorithm must be a class that has two public methods:</span>
+<span class="sd">    ``fit()`` and ``interpolate()``. </span>
+<span class="sd">    </span>
+<span class="sd">    For PHAII data, the class, upon initialization, must take the following as </span>
+<span class="sd">    arguments: </span>
+<span class="sd">    </span>
+<span class="sd">    1. a 2D array of counts with shape (``numtimes``, ``numchans``);</span>
+<span class="sd">    2. a 1D array of time bin start times, shape (``numtimes``,); </span>
+<span class="sd">    3. a 1D array of time bin end times, shape (``numtimes``,);</span>
+<span class="sd">    4. a 1D array of exposures for each time bin, shape (``numtimes``,).</span>
+
+<span class="sd">    While for TTE data, the class, upon initialization, must take the following </span>
+<span class="sd">    as an argument: </span>
+
+<span class="sd">    1. a list, of length ``numchans``, where each item is a np.array</span>
+<span class="sd">       of event times.</span>
+<span class="sd">    </span>
+<span class="sd">    The ``fit()`` method takes no arguments, hoewever, parameters that are </span>
+<span class="sd">    required for the algorithm may be specified as keywords.</span>
+<span class="sd">    </span>
+<span class="sd">    The interpolate() method must take in the following as arguments:</span>
+<span class="sd">    </span>
+<span class="sd">    1. a 1D array of time bin start times, shape (``numtimes``,);</span>
+<span class="sd">    2. a 1D array of time bin end times, shape (``numtimes``,).</span>
+<span class="sd">    </span>
+<span class="sd">    Any additional parameters required can be specified as keywords. </span>
+<span class="sd">    The ``interpolate()`` method must return:</span>
+<span class="sd">    </span>
+<span class="sd">    1. a 2D rates array, shape (``numtimes``, ``numchans``);</span>
+<span class="sd">    2. a 2D rate uncertainty array, shape (``numtimes``, ``numchans``).</span>
+<span class="sd">    </span>
+<span class="sd">    Additionally, the class can provide the following public attributes that </span>
+<span class="sd">    will be exposed by BackgroundFitter:</span>
+<span class="sd">   </span>
+<span class="sd">    - ``dof``: The degrees of freedom of the fits, array shape (``numchans``,)</span>
+<span class="sd">    - ``statistic``: The fit statistic for each fit, array shape (``numchans``,)</span>
+<span class="sd">    - ``statistic_name``: A string of the fit statistic used    </span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        dof (np.array): If available, the degrees-of-freedom of the fit for </span>
+<span class="sd">                        each energy channel</span>
+<span class="sd">        livetime (float): The total livetime of the data used for the background</span>
+<span class="sd">        method (str): The name of the fitting algorithm class</span>
+<span class="sd">        parameters (dict): All parameters passed to the fitting algorithm</span>
+<span class="sd">        statistic (np.array): If available, the fit statistic for each energy </span>
+<span class="sd">                              channel</span>
+<span class="sd">        statistic_name (str): If available, the name of the fit statistic</span>
+<span class="sd">        type (str): The type of background algorithm, either &#39;binned&#39; or &#39;unbinned&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dof</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_livetime</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="p">,</span> <span class="s1">&#39;statistic_name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="p">,</span> <span class="s1">&#39;statistic&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="p">,</span> <span class="s1">&#39;dof&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">livetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_livetime</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span>
+
+<div class="viewcode-block" id="BackgroundFitter.from_phaii"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundFitter.from_phaii">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_phaii</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">phaii</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">time_ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a background fitter from a PHAII object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            phaii (:class:`~gbm.data.phaii.PHAII`): A PHAII data object</span>
+<span class="sd">            method (&lt;class&gt;): A background fitting/estimation class for binned data </span>
+<span class="sd">            time_ranges ([(float, float), ...]): </span>
+<span class="sd">                The time range or time ranges over which to fit the background. </span>
+<span class="sd">                If omitted, uses the full time range of the data </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`BackgroundFitter`: The initialized background fitting object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phaii</span><span class="p">,</span> <span class="n">PHAII</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Input data must be a PHAII object&#39;</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_data_obj</span> <span class="o">=</span> <span class="n">phaii</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_validate_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">time_ranges</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_validate_time_ranges</span><span class="p">(</span><span class="n">time_ranges</span><span class="p">)</span>
+
+        <span class="c1"># Slice the PHAII data and merge if multiple slices</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">phaii</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">slice_time</span><span class="p">(</span><span class="n">trange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">trange</span> <span class="ow">in</span>
+                <span class="n">time_ranges</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">TimeEnergyBins</span><span class="o">.</span><span class="n">merge_time</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">counts</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span>
+                             <span class="n">data</span><span class="o">.</span><span class="n">exposure</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s1">&#39;binned&#39;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_livetime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">exposure</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BackgroundFitter.from_tte"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundFitter.from_tte">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_tte</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tte</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">time_ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a background fitter from a TTE object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tte (:class:`~gbm.data.TTE`): A TTE data object</span>
+<span class="sd">            method (&lt;class&gt;): A background fitting/estimation class for unbinned data </span>
+<span class="sd">            time_ranges ([(float, float), ...]): </span>
+<span class="sd">                The time range or time ranges over which to fit the background. </span>
+<span class="sd">                If omitted, uses the full time range of the data </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`BackgroundFitter`: The initialized background fitting object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tte</span><span class="p">,</span> <span class="n">TTE</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Input data must be a TTE object&#39;</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_data_obj</span> <span class="o">=</span> <span class="n">tte</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_validate_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">time_ranges</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_validate_time_ranges</span><span class="p">(</span><span class="n">time_ranges</span><span class="p">)</span>
+
+        <span class="c1"># Slice the TTE data and merge if multiple slices</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">tte</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">time_slice</span><span class="p">(</span><span class="n">trange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">trange</span> <span class="ow">in</span>
+                <span class="n">time_ranges</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">EventList</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;TIME&#39;</span><span class="p">)</span>
+        <span class="c1"># pull out the events in each channel</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">channel_slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                  <span class="nb">range</span><span class="p">(</span><span class="n">tte</span><span class="o">.</span><span class="n">numchans</span><span class="p">)]</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s1">&#39;unbinned&#39;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_livetime</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_exposure</span><span class="p">(</span><span class="n">time_ranges</span><span class="o">=</span><span class="n">time_ranges</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BackgroundFitter.fit"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundFitter.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform a background fit of the data</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Options to be passed as parameters to the fitting class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BackgroundFitter.interpolate_bins"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundFitter.interpolate_bins">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate the fitted background model over a set of bins.</span>
+<span class="sd">        The exposure is calculated for each bin of the background model </span>
+<span class="sd">        in case the background model counts is needed.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (np.array): The starting times</span>
+<span class="sd">            tstop (np.array): The ending times</span>
+<span class="sd">            **kwargs: Options to be passed as parameters to the interpolation method </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BackgroundRates`: The background rates/uncertainty object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tstart_</span><span class="p">,</span> <span class="n">tstop_</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstart</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">tstop</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="c1"># do the interpolation</span>
+        <span class="n">rate</span><span class="p">,</span> <span class="n">rate_uncert</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">tstart_</span><span class="p">,</span> <span class="n">tstop_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># get the exposure</span>
+        <span class="n">numtimes</span> <span class="o">=</span> <span class="n">tstart_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">get_exposure</span><span class="p">((</span><span class="n">tstart_</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tstop_</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> \
+                             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimes</span><span class="p">)])</span>
+        <span class="c1"># create the rates object</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">detector</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="n">trigtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">BackgroundRates</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">rate_uncert</span><span class="p">,</span> <span class="n">tstart_</span><span class="p">,</span> <span class="n">tstop_</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">emin</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">emax</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> 
+                                <span class="n">exposure</span><span class="o">=</span><span class="n">exposure</span><span class="p">,</span>
+                                <span class="n">detector</span><span class="o">=</span><span class="n">det</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rates</span></div>
+
+<div class="viewcode-block" id="BackgroundFitter.interpolate_times"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundFitter.interpolate_times">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate the fitted background model over a set of times.</span>
+<span class="sd">        Does not calculate an exposure since this returns a set of point</span>
+<span class="sd">        estimates of the background rates.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (np.array): The sampling times</span>
+<span class="sd">            **kwargs: Options to be passed as parameters to the interpolation method </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BackgroundRates`: The background rates/uncertainty object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># do the interpolation</span>
+        <span class="n">rate</span><span class="p">,</span> <span class="n">rate_uncert</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># create the rates object</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">detector</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="n">trigtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">BackgroundRates</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">rate_uncert</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">emin</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">emax</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">detector</span><span class="o">=</span><span class="n">det</span><span class="p">,</span>
+                                <span class="n">datatype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rates</span></div>
+
+    <span class="k">def</span> <span class="nf">_validate_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">method</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Input method is not a known function&#39;</span><span class="p">)</span>
+
+        <span class="n">has_fit</span> <span class="o">=</span> <span class="n">callable</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">fit</span><span class="p">)</span>
+        <span class="n">has_interp</span> <span class="o">=</span> <span class="n">callable</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">interpolate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">has_fit</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">has_interp</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;User-defined Background class must have &quot;</span>
+                <span class="s2">&quot;both fit() and an interpolate() methods&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_time_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_ranges</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">time_ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time_ranges</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_obj</span><span class="o">.</span><span class="n">time_range</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">time_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;time_ranges must be a list of tuples&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">time_ranges</span></div>
+
+
+<div class="viewcode-block" id="BackgroundRates"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates">[docs]</a><span class="k">class</span> <span class="nc">BackgroundRates</span><span class="p">(</span><span class="n">TimeEnergyBins</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class containing the background rate data.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        rates (np.array): The array of background rates in each bin</span>
+<span class="sd">        rate_uncertainty (np.array): The array of background rate uncertainties </span>
+<span class="sd">                                     in each bin</span>
+<span class="sd">        tstart (np.array): The low-value edges of the time bins</span>
+<span class="sd">        tstop (np.array): The high-value edges of the time bins</span>
+<span class="sd">        emin (np.array): The low-value edges of the energy bins</span>
+<span class="sd">        emax (np.array): The high-value edges of the energy bins</span>
+<span class="sd">        exposure (np.array, optional): The exposure of each bin</span>
+<span class="sd">        detector (str, optional): The associated detector</span>
+<span class="sd">        datatype (str, optional): The datatype associated with the background</span>
+<span class="sd">        trigtime (float, optional): The trigger time</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        chanwidths (np.array): The bin widths along the energy axis</span>
+<span class="sd">        count_uncertainty (np.array): The counts uncertainty in each bin</span>
+<span class="sd">        energy_centroids (np.array): The bin centroids along the energy axis</span>
+<span class="sd">        energy_range (float, float): The range of the data along the energy axis</span>
+<span class="sd">        numchans (int): The number of energy channels along the energy axis</span>
+<span class="sd">        numtimes (int): The number of bins along the time axis</span>
+<span class="sd">        rates (np.array): The rates in each Time-Energy Bin</span>
+<span class="sd">        rates_per_kev (np.array): The differential rates in units of counts/s/keV</span>
+<span class="sd">        rate_uncertainty (np.array): The rate uncertainty in each bin</span>
+<span class="sd">        rate_uncertainty_per_kev (np.array):</span>
+<span class="sd">            The differential rate uncertainty in units of counts/s/keV</span>
+<span class="sd">        size (int, int): The number of bins along both axes (numtimes, numchans)</span>
+<span class="sd">        time_centroids (np.array): The bin centroids along the time axis</span>
+<span class="sd">        time_range (float, float): The range of the data along the time axis</span>
+<span class="sd">        time_widths (np.array): The bin widths along the time axis    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">rate_uncertainty</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span>
+                 <span class="n">exposure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exposure</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">tstart</span><span class="p">)</span>
+
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">rates</span> <span class="o">*</span> <span class="n">exposure</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_uncertainty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">rate_uncertainty</span> <span class="o">*</span> <span class="n">exposure</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span> <span class="o">=</span> <span class="n">rates</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rate_uncertainty</span> <span class="o">=</span> <span class="n">rate_uncertainty</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detector</span> <span class="o">=</span> <span class="n">detector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span> <span class="o">=</span> <span class="n">datatype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="n">trigtime</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">count_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_uncertainty</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rate_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rate_uncertainty</span>
+
+<div class="viewcode-block" id="BackgroundRates.integrate_energy"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.integrate_energy">[docs]</a>    <span class="k">def</span> <span class="nf">integrate_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Integrate the over the energy axis.</span>
+<span class="sd">        Limits on the integration smaller than the full range can be set.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            emin (float, optional): The low end of the integration range. If not </span>
+<span class="sd">                               set, uses the lowest energy edge of the histogram</span>
+<span class="sd">            emax (float, optional): The high end of the integration range. If not </span>
+<span class="sd">                              set, uses the highest energy edge of the histogram</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gbm.data.primitives.TimeBins`: A TimeBins object containing \</span>
+<span class="sd">                                                   the lightcurve histogram</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">emin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">emin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">emax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">emax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice_energy_mask</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">)</span>
+        <span class="n">emin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emin</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">emax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emax</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rate_uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate_uncertainty</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">BackgroundRates</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">rate_uncert</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> 
+                              <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">emin</span><span class="p">]),</span> 
+                              <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">emax</span><span class="p">]),</span> <span class="n">exposure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exposure</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BackgroundRates.integrate_time"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.integrate_time">[docs]</a>    <span class="k">def</span> <span class="nf">integrate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Integrate the background over the time axis (producing a count rate</span>
+<span class="sd">        spectrum). Limits on the integration smaller than the full range can </span>
+<span class="sd">        be set.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (float, optional): The low end of the integration range.  </span>
+<span class="sd">                          If not set, uses the lowest time edge of the histogram</span>
+<span class="sd">            tstop (float, optional): The high end of the integration range. </span>
+<span class="sd">                         If not set, uses the highest time edge of the histogram</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BackgroundSpectrum`: A BackgroundSpectrum object containing \</span>
+<span class="sd">                                         the count rate spectrum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tstart</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">tstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice_time_mask</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">)</span>
+        <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exposure</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">exposure</span>
+        <span class="n">rate_uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count_uncertainty</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                                        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">exposure</span>
+        <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">rates</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">exposure</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">BackgroundSpectrum</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">rate_uncert</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">emin</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> 
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">emax</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">exposure</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BackgroundRates.to_bak"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.to_bak">[docs]</a>    <span class="k">def</span> <span class="nf">to_bak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Integrate over the time axis and produce a BAK object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            time_range ((float, float), optional): </span>
+<span class="sd">                The time range to integrate over</span>
+<span class="sd">            **kwargs: Options to pass to BAK.from_data()</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gbm.data.BAK`: The background BAK object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">gbm.data.pha</span> <span class="kn">import</span> <span class="n">BAK</span>
+
+        <span class="k">if</span> <span class="n">time_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_range</span>
+        <span class="n">back_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrate_time</span><span class="p">(</span><span class="o">*</span><span class="n">time_range</span><span class="p">)</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">bak</span> <span class="o">=</span> <span class="n">BAK</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">back_spec</span><span class="p">,</span> <span class="o">*</span><span class="n">time_range</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                            <span class="n">detector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_detector</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bak</span></div>
+
+<div class="viewcode-block" id="BackgroundRates.rebin_time"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.rebin_time">[docs]</a>    <span class="k">def</span> <span class="nf">rebin_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not Implemented      </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BackgroundRates.rebin_energy"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.rebin_energy">[docs]</a>    <span class="k">def</span> <span class="nf">rebin_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not Implemented      </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BackgroundRates.merge_time"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.merge_time">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">merge_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">histos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Merge multiple BackroundRates together along the time axis.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            histos (list of :class:`BackgroundRates`): </span>
+<span class="sd">                A list containing the BackgroundRates to be merged</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BackgroundRates`: A new BackgroundRates object containing \</span>
+<span class="sd">                                      the merged BackgroundRates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">histo</span><span class="o">.</span><span class="n">rates</span> <span class="k">for</span> <span class="n">histo</span> <span class="ow">in</span> <span class="n">histos</span><span class="p">))</span>
+        <span class="n">rate_uncertainty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">histo</span><span class="o">.</span><span class="n">rate_uncertainty</span> <span class="k">for</span> <span class="n">histo</span> <span class="ow">in</span> <span class="n">histos</span><span class="p">))</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">TimeEnergyBins</span><span class="o">.</span><span class="n">merge_time</span><span class="p">(</span><span class="n">histos</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">rate_uncertainty</span><span class="p">,</span> <span class="n">bins</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span> <span class="n">bins</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span>
+                  <span class="n">bins</span><span class="o">.</span><span class="n">emin</span><span class="p">,</span> <span class="n">bins</span><span class="o">.</span><span class="n">emax</span><span class="p">,</span> <span class="n">exposure</span><span class="o">=</span><span class="n">bins</span><span class="o">.</span><span class="n">exposure</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BackgroundRates.sum_time"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundRates.sum_time">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">sum_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bkgds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sum multiple TimeBins together if they have the same time range.  </span>
+<span class="sd">        Example use would be summing two backgrounds from two detectors.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            bkgds (list of :class:`BackgroundRates):</span>
+<span class="sd">                A list containing the BackgroundRates to be summed</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BackgroundRates`: A new BackgroundRates object containing \</span>
+<span class="sd">                                      the summed BackgroundRates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bkgds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rates</span><span class="p">)</span>
+        <span class="n">rates_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bkgds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rates</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bkgd</span> <span class="ow">in</span> <span class="n">bkgds</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">numtimes</span> <span class="o">==</span> <span class="n">bkgds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numtimes</span><span class="p">,</span> \
+                <span class="s2">&quot;The backgrounds must all have the same support&quot;</span>
+            <span class="n">rates</span> <span class="o">+=</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">rates</span>
+            <span class="n">rates_var</span> <span class="o">+=</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">rate_uncertainty</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="c1"># averaged exposure, sampling times</span>
+        <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">bkgd</span><span class="o">.</span><span class="n">exposure</span> <span class="k">for</span> <span class="n">bkgd</span> <span class="ow">in</span> <span class="n">bkgds</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">tstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">bkgd</span><span class="o">.</span><span class="n">tstart</span> <span class="k">for</span> <span class="n">bkgd</span> <span class="ow">in</span> <span class="n">bkgds</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">tstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">bkgd</span><span class="o">.</span><span class="n">tstop</span> <span class="k">for</span> <span class="n">bkgd</span> <span class="ow">in</span> <span class="n">bkgds</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">emin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">bkgd</span><span class="o">.</span><span class="n">emin</span> <span class="k">for</span> <span class="n">bkgd</span> <span class="ow">in</span> <span class="n">bkgds</span><span class="p">])])</span>
+        <span class="n">emax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">bkgd</span><span class="o">.</span><span class="n">emax</span> <span class="k">for</span> <span class="n">bkgd</span> <span class="ow">in</span> <span class="n">bkgds</span><span class="p">])])</span>
+
+        <span class="n">sum_bkgd</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rates_var</span><span class="p">),</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span>
+                       <span class="n">exposure</span><span class="o">=</span><span class="n">exposure</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">bkgds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_datatype</span><span class="p">,</span>
+                       <span class="n">trigtime</span><span class="o">=</span><span class="n">bkgds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_trigtime</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sum_bkgd</span></div></div>
+
+
+<div class="viewcode-block" id="BackgroundSpectrum"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundSpectrum">[docs]</a><span class="k">class</span> <span class="nc">BackgroundSpectrum</span><span class="p">(</span><span class="n">EnergyBins</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class defining a Background Spectrum.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        rates (np.array): The array of background rates in each bin</span>
+<span class="sd">        rate_uncertainty (np.array): The array of background rate uncertainties </span>
+<span class="sd">                                     in each bin</span>
+<span class="sd">        lo_edges (np.array): The low-value edges of the bins</span>
+<span class="sd">        hi_edges (np.array): The high-value edges of the bins</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        centroids (np.array): The geometric centroids of the bins</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        count_uncertainty (np.array): The count uncertainty in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        hi_edges (np.array): The high-value edges of the bins</span>
+<span class="sd">        lo_edges (np.array): The low-value edges of the bins</span>
+<span class="sd">        range (float, float): The range of the bin edges</span>
+<span class="sd">        rates (np.array): count rate of each bin</span>
+<span class="sd">        rate_uncertainty (np.array): The count rate uncertainty of each bin</span>
+<span class="sd">        size (int): Number of bins</span>
+<span class="sd">        widths (np.array): The widths of the bins</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">rate_uncertainty</span><span class="p">,</span> <span class="n">lo_edges</span><span class="p">,</span> <span class="n">hi_edges</span><span class="p">,</span> <span class="n">exposure</span><span class="p">):</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">rates</span> <span class="o">*</span> <span class="n">exposure</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">lo_edges</span><span class="p">,</span> <span class="n">hi_edges</span><span class="p">,</span> <span class="n">exposure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_uncertainty</span> <span class="o">=</span> <span class="n">rate_uncertainty</span> <span class="o">*</span> <span class="n">exposure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span> <span class="o">=</span> <span class="n">rates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rate_uncertainty</span> <span class="o">=</span> <span class="n">rate_uncertainty</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">count_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_uncertainty</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rate_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rate_uncertainty</span>
+
+<div class="viewcode-block" id="BackgroundSpectrum.sum"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundSpectrum.sum">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">histos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sum multiple BackgroundSpectrums together if they have the same </span>
+<span class="sd">        energy range (support).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            histos (list of :class:`BackgroundSpectrum`):  </span>
+<span class="sd">                A list containing the background spectra to be summed</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`BackgroundSpectrum`: A new object containing the \</span>
+<span class="sd">                                         summed BackgroundSpectrum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">histos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">count_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">histos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">exposure</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">histo</span> <span class="ow">in</span> <span class="n">histos</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">histo</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">histos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> \
+                <span class="s2">&quot;The histograms must all have the same size&quot;</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">histo</span><span class="o">.</span><span class="n">lo_edges</span> <span class="o">==</span> <span class="n">histos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lo_edges</span><span class="p">),</span> \
+                <span class="s2">&quot;The histograms must all have the same support&quot;</span>
+            <span class="n">counts</span> <span class="o">+=</span> <span class="n">histo</span><span class="o">.</span><span class="n">counts</span>
+            <span class="n">count_variance</span> <span class="o">+=</span> <span class="n">histo</span><span class="o">.</span><span class="n">count_uncertainty</span><span class="o">**</span><span class="mi">2</span>
+            <span class="n">exposure</span> <span class="o">+=</span> <span class="n">histo</span><span class="o">.</span><span class="n">exposure</span>
+        
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">counts</span><span class="o">/</span><span class="n">exposure</span>
+        <span class="n">rate_uncertainty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">count_variance</span><span class="p">)</span><span class="o">/</span><span class="n">exposure</span>
+        
+        <span class="n">sum_bins</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">rate_uncertainty</span><span class="p">,</span> <span class="n">histos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lo_edges</span><span class="p">,</span> 
+                       <span class="n">histos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hi_edges</span><span class="p">,</span> <span class="n">exposure</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sum_bins</span></div>
+
+<div class="viewcode-block" id="BackgroundSpectrum.slice"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.BackgroundSpectrum.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform a slice over an energy range and return a new </span>
+<span class="sd">        BackgroundSpectrum object. Note that the emin and emax values that fall </span>
+<span class="sd">        inside a bin will result in that bin being included.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            emin (float): The low energy edge of the slice</span>
+<span class="sd">            emax (float): The high energy of the slice</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BackgroundSpectrum`: A new object containing the energy slice</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">emin_snap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_edge</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">)</span>
+        <span class="n">emax_snap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_edge</span><span class="p">(</span><span class="n">emax</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lo_edges</span> <span class="o">&lt;</span> <span class="n">emax_snap</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hi_edges</span> <span class="o">&gt;</span> <span class="n">emin_snap</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_uncertainty</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">lo_edges</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">hi_edges</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> 
+                             <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">obj</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.data.drm &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.data.drm</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.data.drm</h1><div class="highlight"><pre>
+<span></span><span class="c1"># drm.py: Detector response matrix class</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">trapz</span>
+
+<span class="kn">from</span> <span class="nn">gbm.time</span> <span class="kn">import</span> <span class="n">Met</span>
+<span class="kn">from</span> <span class="nn">gbm.data.primitives</span> <span class="kn">import</span> <span class="n">Bins</span>
+<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DataFile</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">headers</span> <span class="k">as</span> <span class="n">hdr</span>
+
+
+<div class="viewcode-block" id="RSP"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP">[docs]</a><span class="k">class</span> <span class="nc">RSP</span><span class="p">(</span><span class="n">DataFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for single- and multi-DRM response files</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        channel_centroids (np.array): Geometric centroids of the energy channel bins</span>
+<span class="sd">        channel_widths (np.array): Widths of the energy channel bins</span>
+<span class="sd">        datatype (str): The datatype of the file</span>
+<span class="sd">        detector (str): The GBM detector the file is associated with</span>
+<span class="sd">        directory (str): The directory the file is located in</span>
+<span class="sd">        ebounds (:obj:`np.recarray`): The energy channel bounds</span>
+<span class="sd">        filename (str): The filename</span>
+<span class="sd">        full_path (str): The full path+filename</span>
+<span class="sd">        headers (dict): The headers of the RSP file</span>
+<span class="sd">        id (str): The GBM file ID</span>
+<span class="sd">        is_gbm_file (bool): True if the file is a valid GBM standard file, </span>
+<span class="sd">                            False if it is not.</span>
+<span class="sd">        is_trigger (bool): True if the file is a GBM trigger file, False if not</span>
+<span class="sd">        numchans (int): Number of energy channels</span>
+<span class="sd">        numdrms (int): Number of DRMs</span>
+<span class="sd">        numebins (int): Number of photon bins</span>
+<span class="sd">        photon_bins (np.array, np.array): The photon bin edges</span>
+<span class="sd">        photon_bin_centroids (np.array): Geometric centroids of the photon bins</span>
+<span class="sd">        photon_bin_widths (np.array): Widths of the photon bins</span>
+<span class="sd">        trigtime (float): The trigger time, if applicable</span>
+<span class="sd">        tcent (np.array): The center times of the intervals over which the DRMs are valid</span>
+<span class="sd">        tstart (np.array): The start times of the intervals over which the DRMs are valid</span>
+<span class="sd">        tstop (np.array): The end times of the intervals over which the DRMs are valid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RSP</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numchans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numebins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numdrms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;TRIGTIME&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">trigtime</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">trigtime</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">trigtime</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tcent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ebounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_bin_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_bin_widths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">channel_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">channel_widths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="RSP.open"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.open">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read a RSP or RSP2 file from disk</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The filename</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`RSP` The RSP object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_file_properties</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># open FITS file</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
+            <span class="c1"># read the headers and valid times (can be any number of drms)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">ispec</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">hdulist</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">hdu</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;SPECRESP MATRIX&#39;</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">hdu</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ispec</span><span class="p">)</span>
+                    <span class="n">ispec</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;TSTART&#39;</span><span class="p">])</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;TSTOP&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">hdu</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">})</span>
+
+            <span class="c1"># set the time ranges of each DRM</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span>
+
+            <span class="c1"># now pull out the actual data</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_ebounds</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">num_drms</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DRM_NUM&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">idrm</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_drms</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">drm_data</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;SPECRESP MATRIX&#39;</span><span class="p">,</span> <span class="n">idrm</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;N_GRP&#39;</span><span class="p">])</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_fchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;F_CHAN&#39;</span><span class="p">])</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_nchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;N_CHAN&#39;</span><span class="p">])</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_pbounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;ENERG_LO&#39;</span><span class="p">],</span> <span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;ENERG_HI&#39;</span><span class="p">])</span>
+                <span class="n">decompressed</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_decompress_drm</span><span class="p">(</span><span class="n">drm_data</span><span class="p">,</span> <span class="n">idrm</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_drm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decompressed</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="RSP.from_arrays"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.from_arrays">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_arrays</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chan_lo</span><span class="p">,</span> <span class="n">chan_hi</span><span class="p">,</span> <span class="n">energies_lo</span><span class="p">,</span> <span class="n">energies_hi</span><span class="p">,</span> <span class="n">eff_area</span><span class="p">,</span>
+                    <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detnam</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ch2e_ver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mat_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">src_az</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">src_el</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geo_az</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geo_el</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">det_ang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geo_ang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atscat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;DRM&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a single-DRM RSP object from arrays of channel energies, </span>
+<span class="sd">        incident photon energies and effective area.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chan_lo (np.array): The low edges of the energy channels</span>
+<span class="sd">            chan_hi (np.array): The high edges of the energy channels</span>
+<span class="sd">            energies_lo (np.array): The low edges of the photon bins</span>
+<span class="sd">            energies_hi (np.array): The high edges of the photon bins</span>
+<span class="sd">            eff_area (np.array): The effective area of each photon bin mapped </span>
+<span class="sd">                                  to each energy channel </span>
+<span class="sd">            trigtime (float, optional): The trigger time, if applicable.</span>
+<span class="sd">            tstart (float, optional): The start time of the observation for </span>
+<span class="sd">                                      which the response is valid</span>
+<span class="sd">            tstop (float, optional): The stop time of the observation for </span>
+<span class="sd">                                     which the response is valid</span>
+<span class="sd">            detnam (str, optional): The detector name the corresponds to the response</span>
+<span class="sd">            object (str, optional): The object being observed</span>
+<span class="sd">            ra_obj (float, optional): The RA of the object</span>
+<span class="sd">            dec_obj (float, optional): The Dec of the object</span>
+<span class="sd">            err_rad (float, optional): The localization error radius of the object</span>
+<span class="sd">            infile (str, optional): The file from which the response was made</span>
+<span class="sd">            ch2e_ver (str, optional): The version of the channel to energy calibration</span>
+<span class="sd">            gain (float, optional): The gain, if applicable</span>
+<span class="sd">            mat_type (int, optional): If set: 0=instrument scattering only, </span>
+<span class="sd">                                      1=atmospheric scattering only, </span>
+<span class="sd">                                      2=instrument+atmospheric scattering</span>
+<span class="sd">            src_az (float, optional): The azimuth in spacecraft coordinates for </span>
+<span class="sd">                                      which the response is valid</span>
+<span class="sd">            src_el (float, optional): The elevation in spacecraft coordinates for </span>
+<span class="sd">                                      which the response is valid</span>
+<span class="sd">            geo_az (float, optional): The location of the geocenter in spacecraft azimuth</span>
+<span class="sd">            geo_el (float, optional): The location of the geocenter in spacecraft elevation</span>
+<span class="sd">            det_ang (float, optional): The angle between detector normal and </span>
+<span class="sd">                                       position for which the response is valid</span>
+<span class="sd">            geo_ang (float, optional): The angle between the geocenter and the </span>
+<span class="sd">                                       position for which the response is valid</span>
+<span class="sd">            atscat (str, optional): The atmospheric scattering database used</span>
+<span class="sd">            datatype (str, optional): The datatype to which the response corresponds</span>
+<span class="sd">            filetype (str, optional): If not set, default is &#39;DRM&#39;</span>
+<span class="sd">            filename (str, optional): If not set, a default name will be </span>
+<span class="sd">                                      constructed from other inputs</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`RSP`: The newly created RSP object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="c1"># set up the photon bounds and ebounds</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_pbounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">energies_lo</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">energies_hi</span><span class="p">))</span>
+        <span class="n">nbounds</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">chan_lo_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">chan_lo</span><span class="p">)</span>
+        <span class="n">chan_hi_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">chan_hi</span><span class="p">)</span>
+        <span class="n">nchannels</span> <span class="o">=</span> <span class="n">chan_lo_unique</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ebounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">(</span><span class="n">nchannels</span><span class="p">,</span>
+                                   <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">),</span>
+                                          <span class="p">(</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">)])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nchannels</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_lo_unique</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_hi_unique</span>
+
+        <span class="c1"># put the matrix in the correct format</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_drm_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">eff_area</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nbounds</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+        <span class="c1"># Set dummy compression information, equal to no compression at all</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ngrp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nbounds</span><span class="p">)]</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_fchan_list</span> <span class="o">=</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nbounds</span><span class="p">]</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_nchan_list</span> <span class="o">=</span> <span class="p">[[</span><span class="n">nchannels</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nbounds</span><span class="p">]</span>
+        
+        <span class="c1"># set the metadata and headers</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">tstart</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">tstop</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">-=</span> <span class="n">trigtime</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">-=</span> <span class="n">trigtime</span>
+        
+        <span class="n">pri_hdr</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">primary</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detnam</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="n">filetype</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                              <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+                              <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                              <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="n">infile</span><span class="p">)</span>
+        <span class="n">pri_hdr</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;DRM_NUM&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Number of DRMs stored in this file&#39;</span><span class="p">))</span>
+
+        <span class="n">eb_hdr</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">ebounds</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detnam</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                             <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                             <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span>
+                             <span class="n">detchans</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">ch2e_ver</span><span class="o">=</span><span class="n">ch2e_ver</span><span class="p">,</span>
+                             <span class="n">gain</span><span class="o">=</span><span class="n">gain</span><span class="p">,</span>
+                             <span class="n">infile</span><span class="o">=</span><span class="n">infile</span><span class="p">)</span>
+
+        <span class="n">spec_hdr</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">specresp</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detnam</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                                <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                                <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">mat_type</span><span class="o">=</span><span class="n">mat_type</span><span class="p">,</span> <span class="n">rsp_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">src_az</span><span class="o">=</span><span class="n">src_az</span><span class="p">,</span> <span class="n">src_el</span><span class="o">=</span><span class="n">src_el</span><span class="p">,</span> <span class="n">geo_az</span><span class="o">=</span><span class="n">geo_az</span><span class="p">,</span>
+                                <span class="n">geo_el</span><span class="o">=</span><span class="n">geo_el</span><span class="p">,</span> <span class="n">det_ang</span><span class="o">=</span><span class="n">det_ang</span><span class="p">,</span>
+                                <span class="n">geo_ang</span><span class="o">=</span><span class="n">geo_ang</span><span class="p">,</span>
+                                <span class="n">numebins</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">numebins</span><span class="p">,</span> <span class="n">detchans</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span>
+                                <span class="n">atscat</span><span class="o">=</span><span class="n">atscat</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">:</span> <span class="n">pri_hdr</span><span class="p">,</span> <span class="s1">&#39;EBOUNDS&#39;</span><span class="p">:</span> <span class="n">eb_hdr</span><span class="p">,</span>
+                        <span class="s1">&#39;SPECRESP MATRIX&#39;</span><span class="p">:</span> <span class="n">spec_hdr</span><span class="p">}</span>
+
+        <span class="c1"># set file properties</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">trigtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tstart</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">tstart</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="n">detector</span><span class="o">=</span><span class="n">detnam</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                           <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;rsp&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+    
+<div class="viewcode-block" id="RSP.effective_area"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.effective_area">[docs]</a>    <span class="k">def</span> <span class="nf">effective_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                       <span class="n">interp_kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the effective area at a given energy or an array of</span>
+<span class="sd">        energies.  This function interpolates the DRM (in log10(cm^2)) to</span>
+<span class="sd">        provide the effective area for any energy within the photon energy</span>
+<span class="sd">        bounds of the DRM.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            energy (float or np.array): The photon energy or energies at which</span>
+<span class="sd">                                        to calculate the effective area.</span>
+<span class="sd">            index (int, optional): The DRM index. Default is 0</span>
+<span class="sd">            atime (float, optional):  The time corresponding to a DRM.  </span>
+<span class="sd">                                     The nearest DRM to the time will be chosen</span>
+<span class="sd">            interp_kind (str, optional): The kind of interpolation to be </span>
+<span class="sd">                                         passed to scipy.interp1d.  Default is</span>
+<span class="sd">                                         &#39;linear&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): The effective area</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">energy</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;energy must be a positive float&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">energy</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;energy must be positive&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">atime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="n">effarea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_effective_area</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="n">atime</span><span class="p">)</span>
+        <span class="n">diff_effarea</span> <span class="o">=</span> <span class="n">effarea</span><span class="o">.</span><span class="n">counts</span>
+
+        
+        <span class="c1"># create the DRM interpolator</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diff_effarea</span><span class="p">,</span> <span class="n">diff_effarea</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">nz_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">effarea_interpolator</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">nz_mask</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">nz_mask</span><span class="p">]),</span> 
+                                        <span class="n">kind</span><span class="o">=</span><span class="n">interp_kind</span><span class="p">,</span> 
+                                        <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># do the interpolation</span>
+        <span class="n">effarea</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">**</span><span class="n">effarea_interpolator</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">effarea</span></div>
+    
+<div class="viewcode-block" id="RSP.extract_drm"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.extract_drm">[docs]</a>    <span class="k">def</span> <span class="nf">extract_drm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extract a single DRM from a multi-DRM RSP2 object and return</span>
+<span class="sd">        a new single-DRM RSP object.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int, optional): The DRM index to retrieve</span>
+<span class="sd">            atime (float, optional): The time corresponding to a DRM.  </span>
+<span class="sd">                                     The nearest DRM to the time will be chosen</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`RSP` : The single-DRM RSP object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">atime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">atime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm_index</span><span class="p">((</span><span class="n">atime</span><span class="p">,</span> <span class="n">atime</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+        <span class="n">drm_ext</span> <span class="o">=</span> <span class="s1">&#39;SPECRESP MATRIX</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">atscat</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;INFILE04&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">]:</span>
+            <span class="n">atscat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;INFILE04&#39;</span><span class="p">]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">],</span>
+                              <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">,</span> <span class="n">drm</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstart</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">detnam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
+                              <span class="nb">object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">],</span>
+                              <span class="n">ra_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">dec_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">infile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                              <span class="n">ch2e_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;CH2E_VER&#39;</span><span class="p">],</span>
+                              <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;GAIN_COR&#39;</span><span class="p">],</span>
+                              <span class="n">mat_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;MAT_TYPE&#39;</span><span class="p">],</span>
+                              <span class="n">src_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">src_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_EL&#39;</span><span class="p">],</span>
+                              <span class="n">geo_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">geo_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_EL&#39;</span><span class="p">],</span>
+                              <span class="n">det_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;DET_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">geo_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">atscat</span><span class="o">=</span><span class="n">atscat</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_fchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_nchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+    <span class="k">def</span> <span class="nf">extract_weighted_drm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bin_centers</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Not implemented yet.&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RSP.interpolate"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate over a multi-DRM object for a given time and return</span>
+<span class="sd">        a new single-DRM RSP object. This function uses `scipy.interpolate.interp1d</span>
+<span class="sd">        &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_.</span>
+<span class="sd">        </span>
+<span class="sd">        If the given time is before (after) the times covered by the DRMs</span>
+<span class="sd">        within the RSP object, then the first (last) DRM will be returned.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            atime (float): The time corresponding to a DRM.  The nearest DRM to </span>
+<span class="sd">                           the time will be chosen</span>
+<span class="sd">            **kwargs: Keyword arguments to be passed to scipy.interpolate.interp1d</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`RSP`: The interpolated single-DRM RSP object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numdrms</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Single DRM response.  Cannot interpolate&#39;</span><span class="p">)</span>
+
+        <span class="c1"># create the interpolate and interpolate</span>
+        <span class="n">tcent</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">drm_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">tcent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                              <span class="n">fill_value</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                              <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">new_drm</span> <span class="o">=</span> <span class="n">drm_interp</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span>
+
+        <span class="c1"># create the object</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm_index</span><span class="p">((</span><span class="n">atime</span><span class="p">,</span> <span class="n">atime</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drm_ext</span> <span class="o">=</span> <span class="s1">&#39;SPECRESP MATRIX</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">atscat</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;INFILE04&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">]:</span>
+            <span class="n">atscat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;INFILE04&#39;</span><span class="p">]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">],</span>
+                              <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">,</span> <span class="n">new_drm</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstart</span><span class="o">=</span><span class="n">atime</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstop</span><span class="o">=</span><span class="n">atime</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">detnam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
+                              <span class="nb">object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">],</span>
+                              <span class="n">ra_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">dec_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">infile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                              <span class="n">ch2e_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;CH2E_VER&#39;</span><span class="p">],</span>
+                              <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;GAIN_COR&#39;</span><span class="p">],</span>
+                              <span class="n">mat_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;MAT_TYPE&#39;</span><span class="p">],</span>
+                              <span class="n">src_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">src_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_EL&#39;</span><span class="p">],</span>
+                              <span class="n">geo_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">geo_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_EL&#39;</span><span class="p">],</span>
+                              <span class="n">det_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;DET_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">geo_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">atscat</span><span class="o">=</span><span class="n">atscat</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_fchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_nchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="RSP.fold_spectrum"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.fold_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">fold_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">channel_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fold a photon spectrum through a DRM to get a count spectrum</span>
+<span class="sd">        </span>
+<span class="sd">        Args: </span>
+<span class="sd">            function (&lt;function&gt;): </span>
+<span class="sd">                A photon spectrum function.  The function must accept a list of </span>
+<span class="sd">                function parameters as its first argument and an array of photon </span>
+<span class="sd">                energies as its second argument.  The function must return the </span>
+<span class="sd">                evaluation of the photon model in units of ph/s-cm^2-keV.</span>
+<span class="sd">            params (list of float): A list of parameter values to be passed to</span>
+<span class="sd">                                   the photon spectrum function</span>
+<span class="sd">            index (int, optional): The index of the DRM to be used from the list </span>
+<span class="sd">                                   of DRMs in the response. Default is 0.</span>
+<span class="sd">            atime (float, optional): </span>
+<span class="sd">                A time associated with a DRM in the list of available DRMs.  </span>
+<span class="sd">                The DRM covering the time closest to atime will be used. </span>
+<span class="sd">                If set, this overrides the index argument.</span>
+<span class="sd">            channel_mask (np.array, optional): </span>
+<span class="sd">                A boolean mask where True indicates the channel is to be used </span>
+<span class="sd">                for folding and False indicates the channel is to not be used </span>
+<span class="sd">                for folding.  If omitted, all channels are used.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: The count spectrum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">atime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nearest_drm</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">channel_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="n">drm</span><span class="p">[:,</span> <span class="n">channel_mask</span><span class="p">]</span>
+
+        <span class="c1"># evaluate photon model</span>
+        <span class="n">photon_model</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bin_centroids</span><span class="p">)</span>
+
+        <span class="c1"># fold photon model through DRM</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">drm</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">photon_model</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bin_widths</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">counts</span></div>
+
+<div class="viewcode-block" id="RSP.drm_index"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.drm_index">[docs]</a>    <span class="k">def</span> <span class="nf">drm_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_range</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the indices of the DRMs that cover the requested time range</span>
+<span class="sd">        </span>
+<span class="sd">        If the time range is before (after) the times covered by the DRMs in </span>
+<span class="sd">        the RSP object, then the first (last) index will be returned.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            time_range (float, float): The time range</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: An array of the indices of the DRMs covering the time range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assert_range</span><span class="p">(</span><span class="n">time_range</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span> <span class="o">&gt;</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span> <span class="o">&lt;</span> <span class="n">stop</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">numdrms</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numdrms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">idx</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RSP.nearest_drm"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.nearest_drm">[docs]</a>    <span class="k">def</span> <span class="nf">nearest_drm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the nearest DRM to the requested time</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            atime (float): The requested time</span>
+<span class="sd">        </span>
+<span class="sd">        Returns: </span>
+<span class="sd">            np.array: The nearest DRM</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># only one DRM in the file; return it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numdrms</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm_index</span><span class="p">((</span><span class="n">atime</span><span class="p">,</span> <span class="n">atime</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">drm</span></div>
+
+<div class="viewcode-block" id="RSP.drm"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.drm">[docs]</a>    <span class="k">def</span> <span class="nf">drm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the DRM based on the index into the DRM list</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int): The DRM index</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: The requested DRM</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RSP.photon_effective_area"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.photon_effective_area">[docs]</a>    <span class="k">def</span> <span class="nf">photon_effective_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the effective area as a function of incident photon energy</span>
+<span class="sd">        (integrated over recorded energy channels).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int, optional): The DRM index</span>
+<span class="sd">            atime (float, optional): The time corresponding to a DRM</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`~.primitives.Bins`: A Bins object containing the effective area histogram</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">atime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nearest_drm</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must set either &#39;index&#39; or &#39;atime&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">Bins</span><span class="p">(</span><span class="n">drm</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bins</span></div>
+
+<div class="viewcode-block" id="RSP.channel_effective_area"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.channel_effective_area">[docs]</a>    <span class="k">def</span> <span class="nf">channel_effective_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the effective area as a function of recorded channel energy</span>
+<span class="sd">        (integrated over incident photon bins).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int, optional): The DRM index</span>
+<span class="sd">            atime (float, optional): The time corresponding to a DRM</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~.primitives.Bins`: A Bins object containing the effective area histogram</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">atime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nearest_drm</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must set either &#39;index&#39; or &#39;atime&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">Bins</span><span class="p">(</span><span class="n">drm</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">bins</span></div>
+
+<div class="viewcode-block" id="RSP.weighted"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.weighted">[docs]</a>    <span class="k">def</span> <span class="nf">weighted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bin_centers</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a counts-weighted DRM.</span>
+<span class="sd">        For long spectral accumulations, the time series of responses needs </span>
+<span class="sd">        to be weighted by the counts history</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            weights (np.array): The weights of the counts history. Must sum to 1.0</span>
+<span class="sd">            bin_centers (np.array): The times at the center of the time bins</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: The weighted DRM</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># only one DRM in the file; return it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numdrms</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">num_weights</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">)</span> <span class="o">!=</span> <span class="n">num_weights</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;weights and bin_centers are not equal length&quot;</span><span class="p">)</span>
+        <span class="c1"># weight the matrices by counts</span>
+        <span class="n">weightV</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">weightS</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">weightD</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">currDRM</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_weights</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span> <span class="o">-</span> <span class="n">bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">currDRM</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">currDRM</span> <span class="o">==</span> <span class="n">idx</span><span class="p">):</span>
+                <span class="n">weightS</span> <span class="o">+=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">weightV</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weightS</span><span class="p">)</span>
+                <span class="n">weightS</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">weightD</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">currDRM</span> <span class="o">=</span> <span class="n">idx</span>
+
+        <span class="n">weightV</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weightS</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numebins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">weightD</span><span class="p">,</span> <span class="n">weightV</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">weight</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="RSP.write_weighted"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.write_weighted">[docs]</a>    <span class="k">def</span> <span class="nf">write_weighted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes a counts-weighted DRM to a FITS file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (np.array): The start times of the count history</span>
+<span class="sd">            tstop (np.array): The end times of the count history</span>
+<span class="sd">            weights (np.array): The normalized weights</span>
+<span class="sd">            directory (str): The directory to write the file</span>
+<span class="sd">            filename (str, optional): If set, will override the standardized name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set filename</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Filename not set&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># set dates/times</span>
+        <span class="n">trigtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">startStr</span> <span class="o">=</span> <span class="n">Met</span><span class="p">(</span><span class="n">tstart</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">trigtime</span><span class="p">)</span><span class="o">.</span><span class="n">iso</span><span class="p">()</span>
+        <span class="n">stopStr</span> <span class="o">=</span> <span class="n">Met</span><span class="p">(</span><span class="n">tstop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">trigtime</span><span class="p">)</span><span class="o">.</span><span class="n">iso</span><span class="p">()</span>
+        <span class="n">todaysDate</span> <span class="o">=</span> <span class="n">Met</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">iso</span><span class="p">()</span>
+
+        <span class="c1"># adjust primary header</span>
+        <span class="n">prihdr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span>
+        <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="n">prihdr</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;DRM_NUM&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;TSTART&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstart</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">trigtime</span>
+        <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;TSTOP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">trigtime</span>
+        <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;DATE-OBS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">startStr</span>
+        <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;DATE-END&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stopStr</span>
+        <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;DATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">todaysDate</span>
+        <span class="n">prihdr</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;HISTORY&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;Created by writeResponse() in data.py from GSPEC&quot;</span><span class="p">)</span>
+        <span class="n">prihdr</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;HISTORY&quot;</span><span class="p">,</span> <span class="s2">&quot;from original file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">prihdr</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;COMMENT&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;The matrix has been weighted by the count history&quot;</span><span class="p">)</span>
+
+        <span class="c1"># make ebounds table</span>
+        <span class="n">ebounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span>
+
+        <span class="c1"># make weighted matrix</span>
+        <span class="n">bin_centers</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstart</span> <span class="o">+</span> <span class="n">tstop</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weighted</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">bin_centers</span><span class="p">)</span>
+
+        <span class="n">drm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numebins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;ENERG_LO&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;ENERG_HI&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;N_GRP&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;F_CHAN&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i4&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;N_CHAN&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i4&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;MATRIX&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i4&#39;</span><span class="p">,</span>
+                                                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,))])</span>
+        <span class="n">drm</span><span class="p">[</span><span class="s1">&#39;ENERG_LO&#39;</span><span class="p">],</span> <span class="n">drm</span><span class="p">[</span><span class="s1">&#39;ENERG_HI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span>
+        <span class="n">drm</span><span class="p">[</span><span class="s1">&#39;N_GRP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drm</span><span class="p">[</span><span class="s1">&#39;F_CHAN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drm</span><span class="p">[</span><span class="s1">&#39;N_CHAN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drm</span><span class="p">[</span><span class="s1">&#39;MATRIX&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrix</span>
+
+        <span class="n">drmhdr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECRESP MATRIX1&#39;</span><span class="p">]</span>
+        <span class="n">drmhdr</span><span class="p">[</span><span class="s1">&#39;TSTART&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstart</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">trigtime</span>
+        <span class="n">drmhdr</span><span class="p">[</span><span class="s1">&#39;TSTOP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">trigtime</span>
+        <span class="n">drmhdr</span><span class="p">[</span><span class="s1">&#39;DATE-OBS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">startStr</span>
+        <span class="n">drmhdr</span><span class="p">[</span><span class="s1">&#39;DATE-END&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stopStr</span>
+        <span class="n">drmhdr</span><span class="p">[</span><span class="s1">&#39;DATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">todaysDate</span>
+
+        <span class="c1"># create FITS</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">()</span>
+        <span class="n">primary_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">prihdr</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primary_hdu</span><span class="p">)</span>
+
+        <span class="n">ebounds_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ebounds</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">,</span>
+                                       <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebounds_hdu</span><span class="p">)</span>
+
+        <span class="n">drm_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">drm</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SPECRESP MATRIX&#39;</span><span class="p">,</span>
+                                   <span class="n">header</span><span class="o">=</span><span class="n">drmhdr</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drm_hdu</span><span class="p">)</span>
+
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">checksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSP.write"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes a single-DRM RSP object to a FITS file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): Where to write the file</span>
+<span class="sd">            filename (str, optional): The filename to write to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set filename</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Filename not set&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">()</span>
+        <span class="n">primary_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primary_hdu</span><span class="p">)</span>
+
+        <span class="n">ebounds_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">,</span>
+                                       <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebounds_hdu</span><span class="p">)</span>
+
+        <span class="n">compressed_drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compress_drm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">col0</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ENERG_LO&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;F8&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">col1</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ENERG_HI&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;F8&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">col2</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;N_GRP&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;I2&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">col3</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;F_CHAN&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PI()&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">col4</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;N_CHAN&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PI()&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">col5</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;MATRIX&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PE()&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">compressed_drm</span><span class="p">)</span>
+
+        <span class="n">drm_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">col0</span><span class="p">,</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span><span class="p">,</span> <span class="n">col4</span><span class="p">,</span> <span class="n">col5</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SPECRESP MATRIX&#39;</span><span class="p">,</span>
+            <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;SPECRESP MATRIX&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drm_hdu</span><span class="p">)</span>
+
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">full_path</span><span class="p">,</span> <span class="n">checksum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSP.resample"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_photon_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">photon_bin_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">num_interp_points</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">interp_kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resamples the incident photon axis of a DRM and returns a new </span>
+<span class="sd">        response object.  Resampling can be used to downgrade the photon energy</span>
+<span class="sd">        resolution, upgrade the resolution, and/or redefine the edges of the</span>
+<span class="sd">        incident photon bins.  By definition, the resampling can only be </span>
+<span class="sd">        performed within the photon energy range of the current object.</span>
+<span class="sd">        </span>
+<span class="sd">        The process for resampling is to create a high-resolution grid for each</span>
+<span class="sd">        new photon bin, interpolate the differential effective area onto that</span>
+<span class="sd">        grid (interpolation is performed on log10(effective area)), and then</span>
+<span class="sd">        integrate the differential effective area over the grid points in each</span>
+<span class="sd">        bin.  The final effective area is then scaled by the ratio of the </span>
+<span class="sd">        initial number of photon bins to the requested number of photon bins.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int, optional): The DRM index. Default is 0</span>
+<span class="sd">            num_photon_bins (int, optional): The number of photon bins in the</span>
+<span class="sd">                                             new DRM. The bin edges will be </span>
+<span class="sd">                                             generated logarithmically. Only set</span>
+<span class="sd">                                             this or `photon_bin_edges`.</span>
+<span class="sd">            photon_bin_edges (np.array, optional): The array of photon bin edges.</span>
+<span class="sd">                                                   Only set this or </span>
+<span class="sd">                                                   `num_photon_bins`</span>
+<span class="sd">            num_interp_points (int, optional): The number of interpolation points</span>
+<span class="sd">                                               used to integrate over for each</span>
+<span class="sd">                                               new photon bin. Default is 20.</span>
+<span class="sd">            interp_kind (str, optional): The kind of interpolation to be </span>
+<span class="sd">                                         passed to scipy.interp1d.  Default is</span>
+<span class="sd">                                         &#39;linear&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (:class:`RSP`): A new resampled single-DRM response object</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_photon_bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">photon_bin_edges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either num_photon_bins or photon_bin_edges must&#39;</span> \
+                             <span class="s1">&#39; be set&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">num_photon_bins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">num_photon_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_photon_bins</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;num_photon_bins must be a positive integer&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">num_photon_bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;num_photon_bins must be a positive integer&#39;</span><span class="p">)</span>
+            <span class="n">orig_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span>
+            <span class="n">photon_bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">((</span><span class="n">orig_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> 
+                                                      <span class="n">orig_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])),</span> 
+                                           <span class="n">num_photon_bins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">photon_bin_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">photon_bin_edges</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_bin_edges must be a numpy array&#39;</span><span class="p">)</span>
+            <span class="n">orig_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span>
+            <span class="n">badmask</span> <span class="o">=</span> <span class="p">(</span><span class="n">photon_bin_edges</span> <span class="o">&lt;</span> <span class="n">orig_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> \
+                      <span class="p">(</span><span class="n">photon_bin_edges</span> <span class="o">&gt;</span> <span class="n">orig_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">badmask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;photon_bin_edges are beyond valid range of &#39;</span>\
+                                 <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">-</span><span class="si">{1:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orig_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                                          <span class="n">orig_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">photon_bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">photon_bin_edges</span><span class="p">)</span>
+            <span class="n">num_photon_bins</span> <span class="o">=</span> <span class="n">photon_bin_edges</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span>
+        
+        <span class="c1"># differential effective area</span>
+        <span class="n">diff_effarea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_bin_widths</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        
+        <span class="c1"># create an interpolation array over each new bin</span>
+        <span class="n">photon_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">photon_bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">photon_bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+        <span class="n">interp_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">photon_bounds</span><span class="p">),</span> <span class="n">num_interp_points</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> 
+                                 <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># create the DRM interpolator</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">diff_effarea</span><span class="p">,</span> <span class="n">diff_effarea</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]))</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-10</span>
+        <span class="n">effarea_interpolator</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+                                        <span class="n">kind</span><span class="o">=</span><span class="n">interp_kind</span><span class="p">,</span> 
+                                        <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># interpolate the DRM over the photon interpolation array</span>
+        <span class="n">diff_effarea_interp</span> <span class="o">=</span> <span class="mf">10.</span><span class="o">**</span><span class="n">effarea_interpolator</span><span class="p">(</span><span class="n">interp_arr</span><span class="p">)</span>
+        <span class="n">badmask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">diff_effarea_interp</span><span class="p">)</span>
+        <span class="n">diff_effarea_interp</span><span class="p">[</span><span class="n">badmask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        
+        <span class="c1"># integrate the DRM over the photon interpolation array</span>
+        <span class="n">diff_effarea_new</span> <span class="o">=</span> <span class="n">trapz</span><span class="p">(</span><span class="n">diff_effarea_interp</span><span class="p">,</span> 
+                                 <span class="n">interp_arr</span><span class="p">[:,:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># scale by ratio of photon bins</span>
+        <span class="n">drm</span> <span class="o">=</span> <span class="n">diff_effarea_new</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numebins</span><span class="o">/</span><span class="n">num_photon_bins</span><span class="p">)</span>
+        
+        <span class="c1"># create response object</span>
+        <span class="n">drm_ext</span> <span class="o">=</span> <span class="s1">&#39;SPECRESP MATRIX&#39;</span>
+        <span class="k">if</span> <span class="n">drm_ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">drm_ext</span> <span class="o">=</span> <span class="s1">&#39;SPECRESP MATRIX</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">atscat</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;INFILE04&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">]:</span>
+            <span class="n">atscat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;INFILE04&#39;</span><span class="p">]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">],</span>
+                              <span class="o">*</span><span class="n">photon_bounds</span><span class="p">,</span> <span class="n">drm</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstart</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">detnam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
+                              <span class="nb">object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">],</span>
+                              <span class="n">ra_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">dec_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">infile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                              <span class="n">ch2e_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;CH2E_VER&#39;</span><span class="p">],</span>
+                              <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;GAIN_COR&#39;</span><span class="p">],</span>
+                              <span class="n">mat_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;MAT_TYPE&#39;</span><span class="p">],</span>
+                              <span class="n">src_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">src_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_EL&#39;</span><span class="p">],</span>
+                              <span class="n">geo_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">geo_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_EL&#39;</span><span class="p">],</span>
+                              <span class="n">det_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;DET_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">geo_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">atscat</span><span class="o">=</span><span class="n">atscat</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_fchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_nchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">obj</span>                             </div>
+
+<div class="viewcode-block" id="RSP.rebin"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.RSP.rebin">[docs]</a>    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rebins the channel energy axis of a DRM and returns a new response</span>
+<span class="sd">        object.  Rebinning can only be used to downgrade the channel resolution</span>
+<span class="sd">        and is constrained to the channel edges of the current DRM. </span>
+<span class="sd">        </span>
+<span class="sd">        Rebinning can be performed by either defining an integral factor of the</span>
+<span class="sd">        number of current energy channels to combine (e.g. factor=4 for 128</span>
+<span class="sd">        energy channels would result in 32 energy channels), or by defining an</span>
+<span class="sd">        index array into the current channel edges that will define the new set</span>
+<span class="sd">        of edges.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int, optional): The DRM index. Default is 0</span>
+<span class="sd">            factor (int, optional): The rebinning factor. Must set either this</span>
+<span class="sd">                                    or `edge_indices`</span>
+<span class="sd">            edge_indices (np.array, optional): The index array that represents</span>
+<span class="sd">                                               which energy edges should remain</span>
+<span class="sd">                                               in the rebinned DRM.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (:class:`RSP`): A new rebinned single-DRM response object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">edge_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either factor or edge_indices must be set&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;factor must be a positive integer&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">factor</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;factor must be a positive integer&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span> <span class="o">%</span> <span class="n">factor</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;factor must be factor of numchans: &#39;</span>\
+                                 <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">))</span>
+            <span class="n">emin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">factor</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">emax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">factor</span><span class="p">)[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">edge_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge_indices</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">edge_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">edge_indices</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge_indices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;new_edges must be a list, tuple or array&#39;</span><span class="p">)</span>
+            <span class="n">edge_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edge_indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">edge_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">edge_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;edge_indices outside valid range of &#39;</span> \
+                                 <span class="s1">&#39;0-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            
+            
+            <span class="n">old_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span> 
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="n">edge_indices</span><span class="p">]</span>
+            <span class="n">emin</span> <span class="o">=</span> <span class="n">new_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">emax</span> <span class="o">=</span> <span class="n">new_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        
+        
+        <span class="n">effarea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="c1"># the new effective area matrix will just be summed over the channel</span>
+        <span class="c1"># axis for the bins we are combining</span>
+        <span class="n">new_effarea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numebins</span><span class="p">,</span> <span class="n">emin</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="n">old_emin</span><span class="p">,</span> <span class="n">old_emax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span>
+        <span class="n">sidx</span> <span class="o">=</span> <span class="p">(</span><span class="n">old_emin</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">==</span> <span class="n">emin</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:])</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">eidx</span> <span class="o">=</span> <span class="p">(</span><span class="n">old_emax</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">==</span> <span class="n">emax</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:])</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">emin</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">new_effarea</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">effarea</span><span class="p">[:,</span><span class="n">sidx</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">eidx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># create the new object</span>
+        <span class="n">drm_ext</span> <span class="o">=</span> <span class="s1">&#39;SPECRESP MATRIX&#39;</span>
+        <span class="k">if</span> <span class="n">drm_ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">drm_ext</span> <span class="o">=</span> <span class="s1">&#39;SPECRESP MATRIX</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">atscat</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;INFILE04&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">]:</span>
+            <span class="n">atscat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;INFILE04&#39;</span><span class="p">]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_pbounds</span><span class="p">,</span> <span class="n">new_effarea</span><span class="p">,</span> 
+                              <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstart</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">tstop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span>
+                              <span class="n">detnam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
+                              <span class="nb">object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">],</span>
+                              <span class="n">ra_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">dec_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">],</span>
+                              <span class="n">infile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                              <span class="n">ch2e_ver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;CH2E_VER&#39;</span><span class="p">],</span>
+                              <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">][</span><span class="s1">&#39;GAIN_COR&#39;</span><span class="p">],</span>
+                              <span class="n">mat_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;MAT_TYPE&#39;</span><span class="p">],</span>
+                              <span class="n">src_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">src_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;SRC_EL&#39;</span><span class="p">],</span>
+                              <span class="n">geo_az</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_AZ&#39;</span><span class="p">],</span>
+                              <span class="n">geo_el</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_EL&#39;</span><span class="p">],</span>
+                              <span class="n">det_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;DET_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">geo_ang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">drm_ext</span><span class="p">][</span><span class="s1">&#39;GEO_ANG&#39;</span><span class="p">],</span>
+                              <span class="n">atscat</span><span class="o">=</span><span class="n">atscat</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_fchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_nchan_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">obj</span>        </div>
+        
+    <span class="k">def</span> <span class="nf">_decompress_drm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drm_data</span><span class="p">,</span> <span class="n">spec_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The GBM DRM is not stored as 2D matrix and may be compressed, so this</span>
+<span class="sd">        constructs and decompresses the DRM.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            drm_data (np.recarray): The DRM data</span>
+<span class="sd">            spec_index (int): The index of the DRM in the event of multiple DRMs</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: 2D matrix containing the unpacked DRM</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_photon_bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECRESP MATRIX&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">spec_index</span><span class="p">)][</span>
+            <span class="s1">&#39;NAXIS2&#39;</span><span class="p">]</span>
+        <span class="n">first_chans</span> <span class="o">=</span> <span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;F_CHAN&#39;</span><span class="p">]</span>
+        <span class="n">num_chans</span> <span class="o">=</span> <span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;N_CHAN&#39;</span><span class="p">]</span>
+
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">drm_data</span><span class="p">[</span><span class="s1">&#39;MATRIX&#39;</span><span class="p">]</span>
+        <span class="n">energy_channel_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span>
+        <span class="n">num_channels</span> <span class="o">=</span> <span class="n">energy_channel_max</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="c1"># The format of the compress matrix is a series of groups, for each</span>
+        <span class="c1"># energy bin, of channels with non-zero values.</span>
+        <span class="c1"># fchan stands for the first channel of each of these groups</span>
+        <span class="c1"># and nchan for the number of channels in the group group.</span>
+        <span class="c1"># Each row in the matrix is a 1D list consisting on the contatenated</span>
+        <span class="c1"># values of all groups for a given energy bin </span>
+        <span class="c1"># Note that in FITS the first index is 1</span>
+        <span class="n">drm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_photon_bins</span><span class="p">,</span> <span class="n">num_channels</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">fchans</span><span class="p">,</span><span class="n">nchans</span><span class="p">,</span><span class="n">effective_area</span><span class="p">,</span><span class="n">drm_row</span> \
+            <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">first_chans</span><span class="p">,</span><span class="n">num_chans</span><span class="p">,</span><span class="n">matrix</span><span class="p">,</span><span class="n">drm</span><span class="p">):</span>
+
+            <span class="n">channel_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">fchan</span><span class="p">,</span><span class="n">nchan</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fchans</span><span class="p">,</span><span class="n">nchans</span><span class="p">):</span>
+                
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="n">fchan</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">nchan</span>
+
+                <span class="n">drm_row</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">effective_area</span><span class="p">[</span><span class="n">channel_offset</span><span class="p">:</span><span class="n">channel_offset</span><span class="o">+</span><span class="n">nchan</span><span class="p">]</span>
+                
+                <span class="n">channel_offset</span> <span class="o">+=</span> <span class="n">nchan</span>
+
+        <span class="k">return</span> <span class="n">drm</span>
+
+    <span class="k">def</span> <span class="nf">_compress_drm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compress a DRM by removing all the zeros.  This can result in a </span>
+<span class="sd">        file that is ~50% the size of an uncompressed DRM because the DRM is</span>
+<span class="sd">        largely a triangle matrix.</span>
+<span class="sd">        </span>
+<span class="sd">        Also modifies the helper FITS columns that are used to decompress the</span>
+<span class="sd">        matrix</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            spec_index (int): The index of the DRM in the event of multiple DRMs</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: An array of variable length arrays containing the compressed matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># function to split channels into contiguous groups</span>
+        <span class="k">def</span> <span class="nf">group_consecutive_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+            <span class="c1"># change points where consecutive indices &gt; 1</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">diff_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1"># add first, last indices</span>
+            <span class="n">diff_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">diff_idx</span><span class="p">,</span> <span class="p">[</span><span class="n">idx</span><span class="o">.</span><span class="n">size</span><span class="p">]))</span>
+            <span class="c1"># group into consecutive indices</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">diff_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">diff_idx</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> \
+                      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">diff_idx</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">groups</span>
+
+        <span class="n">drm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm_list</span><span class="p">[</span><span class="n">spec_index</span><span class="p">]</span>
+
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numebins</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">)</span>
+        <span class="n">first_chans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">num_chans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">num_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ibin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numebins</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">drm</span><span class="p">[</span><span class="n">ibin</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># if all zeros</span>
+            <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">num_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">first_chans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">]))</span>
+                <span class="n">num_chans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">ibin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">group_consecutive_indices</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">num_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">))</span>
+                <span class="n">first_chans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">]))</span>
+                <span class="n">num_chans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">]))</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">ibin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">drm</span><span class="p">[</span><span class="n">ibin</span><span class="p">,</span> <span class="n">group</span><span class="p">]</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngrp_list</span><span class="p">[</span><span class="n">spec_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fchan_list</span><span class="p">[</span><span class="n">spec_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">first_chans</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_list</span><span class="p">[</span><span class="n">spec_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_chans</span>
+
+        <span class="k">return</span> <span class="n">matrix</span>
+
+    <span class="k">def</span> <span class="nf">_assert_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valrange</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">valrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">valrange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> \
+            <span class="s1">&#39;Range must be in increasing order: (lo, hi)&#39;</span>
+        <span class="k">return</span> <span class="n">valrange</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

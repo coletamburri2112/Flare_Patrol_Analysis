@@ -1,0 +1,459 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.background.unbinned &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.background.unbinned</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.background.unbinned</h1><div class="highlight"><pre>
+<span></span><span class="c1"># unbinned.py: Module containing background fitting classes for unbinned data</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+
+
+<div class="viewcode-block" id="NaivePoisson"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.unbinned.NaivePoisson">[docs]</a><span class="k">class</span> <span class="nc">NaivePoisson</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; A class to estimate the background of un-binned data using the naive Poisson </span>
+<span class="sd">    maximum likelihood.</span>
+<span class="sd">    </span>
+<span class="sd">    This method is approximately equivalent to sliding a window of fixed length </span>
+<span class="sd">    through un-binned data and calculating the Poisson maximum likelihood for </span>
+<span class="sd">    the rate. The rate estimate is applied to the center of the sliding window, </span>
+<span class="sd">    therefore, the amount of data equivalent to half of the sliding window at </span>
+<span class="sd">    the beginning and half of the window at the end of the data is a constant.</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        This naive approach assumes there is either no &#39;strong&#39; signal in the \</span>
+<span class="sd">         data, or the presence of a &#39;weaker&#39; signal has a duration much less \</span>
+<span class="sd">         than the window width of the sliding window.    </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        counts (list of np.array): A list of length numchans, and each element </span>
+<span class="sd">                                   of the list is an array of event times in </span>
+<span class="sd">                                   that channel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_times</span> <span class="o">=</span> <span class="n">times</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_numchans</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_dt</span> <span class="o">=</span> <span class="mf">2e-6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_width</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actual_widths</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="NaivePoisson.fit"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.unbinned.NaivePoisson.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_width</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the data via Naive Poisson Maximum Likelihood</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            window_width (float): </span>
+<span class="sd">                The width of the sliding window in seconds. </span>
+<span class="sd">                </span>
+<span class="sd">                Note: </span>
+<span class="sd">                    If the range of the data is shorter than ``window_width``,</span>
+<span class="sd">                    the ``window_width`` will automatically be shortened to the </span>
+<span class="sd">                    range of the data.</span>
+<span class="sd">            fast (bool): If True, then will use the fast approximation of the </span>
+<span class="sd">                     algorithm that allows the ``window_width`` to change </span>
+<span class="sd">                     throughout the data (the number of counts in the window </span>
+<span class="sd">                     is constant). If False, uses the exact algorithm with a </span>
+<span class="sd">                     fixed window, but is much slower.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_width</span> <span class="o">=</span> <span class="n">window_width</span>
+        <span class="n">actual_widths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">uncerts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_numchans</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fast</span><span class="p">:</span>
+                <span class="n">r</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_one_fast</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_one_exact</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">uncerts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+            <span class="n">actual_widths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actual_widths</span> <span class="o">=</span> <span class="n">actual_widths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span> <span class="o">=</span> <span class="n">rates</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit_one_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit a single channel of event data.  This is the exact (not</span>
+<span class="sd">        approximate) algorithm that uses a fixed window duration throughout the</span>
+<span class="sd">        data, except where the window must be necessarily truncated at the ends</span>
+<span class="sd">        of the data.  This function is much slower than the approximate version.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int): The energy channel</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            (np.array, np.array, np.array): The background rates, uncertainty, \</span>
+<span class="sd">                                            and actual window width</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_width</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+
+        <span class="n">num_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_events</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span>
+
+        <span class="c1"># get the different parts of the array</span>
+        <span class="c1"># pre: before the full sliding window width</span>
+        <span class="c1"># mid: during the full sliding window width</span>
+        <span class="c1"># post: after the full sliding window width</span>
+        <span class="n">pre_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">events</span> <span class="o">&lt;</span> <span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">window_width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">post_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">events</span> <span class="o">&gt;</span> <span class="n">events</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">window_width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">mid_mask</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">pre_mask</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">post_mask</span><span class="p">)</span>
+
+        <span class="c1"># do the sliding window</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pre_mask</span><span class="p">)</span>
+        <span class="n">mid_bins</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">events</span> <span class="o">-</span> <span class="n">events</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">idx</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">window_width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> \
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mid_mask</span><span class="p">))]</span>
+        <span class="n">mid_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mid_bins</span><span class="p">)</span> <span class="o">/</span> <span class="n">window_width</span>
+        <span class="n">mid_uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mid_rates</span> <span class="o">/</span> <span class="n">window_width</span><span class="p">)</span>
+
+        <span class="c1"># now considering the pre- and post-full-window-width data:</span>
+        <span class="c1"># assume a constant rate at either end, but shorten the window</span>
+        <span class="c1"># appropriately</span>
+
+        <span class="n">pre_events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">pre_mask</span><span class="p">]</span>
+        <span class="n">pre_dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">pre_events</span> <span class="o">-</span> <span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">pre_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pre_mask</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mid_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">pre_uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pre_rates</span> <span class="o">/</span> <span class="n">pre_dt</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">num_events</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">post_mask</span><span class="p">)</span>
+        <span class="n">post_events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">post_mask</span><span class="p">]</span>
+        <span class="n">post_dt</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">post_events</span>
+        <span class="n">post_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">post_mask</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mid_rates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">post_uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">post_rates</span> <span class="o">/</span> <span class="n">post_dt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># put it all together</span>
+        <span class="n">brates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pre_rates</span><span class="p">,</span> <span class="n">mid_rates</span><span class="p">,</span> <span class="n">post_rates</span><span class="p">))</span>
+        <span class="n">uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pre_uncert</span><span class="p">,</span> <span class="n">mid_uncert</span><span class="p">,</span> <span class="n">post_uncert</span><span class="p">))</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pre_dt</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mid_mask</span><span class="p">),</span> <span class="n">window_width</span><span class="p">),</span>
+                        <span class="n">post_dt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">brates</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">dt</span>
+
+    <span class="k">def</span> <span class="nf">_fit_one_fast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit a single channel of event data.  This performs an approximation</span>
+<span class="sd">        to the NaivePoisson algorithm to considerably speed up the computation.</span>
+<span class="sd">        Instead of assuming a fixed window duration throughout the data, the </span>
+<span class="sd">        window is initialized by determining the number of counts in the first</span>
+<span class="sd">        window, and fixing the window width by the total number of counts in</span>
+<span class="sd">        the data.  This allows the window duration to change, and is similar</span>
+<span class="sd">        to smoothing the data.  For slowly varying data, this is a good </span>
+<span class="sd">        approximation. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int): The energy channel</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            (np.array, np.array, np.array): The background rates, uncertainty, \</span>
+<span class="sd">                                            and actual window width</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_width</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+        <span class="n">num_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_events</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span>
+
+        <span class="c1"># get extent of window at the start of the data</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">events</span> <span class="o">&lt;=</span> <span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">window_width</span><span class="p">)</span>
+        <span class="c1"># from the middle of the sliding window</span>
+        <span class="n">mid_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">end_idx</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+
+        <span class="c1"># number of &#39;bins&#39; containing a count (= number of counts in window)</span>
+        <span class="n">full_bins</span> <span class="o">=</span> <span class="n">end_idx</span>
+        <span class="c1"># number of &#39;bins&#39; containing a count not in the window</span>
+        <span class="n">num_back_bins</span> <span class="o">=</span> <span class="n">num_events</span> <span class="o">-</span> <span class="n">end_idx</span>
+        <span class="n">array_back</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_back_bins</span><span class="p">)</span>
+
+        <span class="c1"># actual window widths and the rate</span>
+        <span class="n">dts</span> <span class="o">=</span> <span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="n">end_idx</span> <span class="o">+</span> <span class="n">array_back</span><span class="p">]</span> <span class="o">-</span> <span class="n">events</span><span class="p">[</span><span class="n">array_back</span><span class="p">])</span>
+        <span class="n">back_rates</span> <span class="o">=</span> <span class="n">full_bins</span> <span class="o">/</span> <span class="n">dts</span>
+
+        <span class="c1"># Now we want to estimate the rate at the ends. This means that the </span>
+        <span class="c1"># sliding window will truncate at either end until it&#39;s the width of </span>
+        <span class="c1"># one event.  The main concern is to calculate the width of the </span>
+        <span class="c1"># truncated window correctly so that the uncertainty in the rate will </span>
+        <span class="c1"># properly increase as the window width decreases</span>
+
+        <span class="n">pre_full_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">mid_idx</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">pre_dts</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">pre_full_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">-</span> <span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># pre_back_rates = np.full(mid_idx-1, back_rates[0])</span>
+        <span class="n">pre_back_rates</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">pre_full_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="n">pre_dts</span>
+
+        <span class="n">post_full_bins</span> <span class="o">=</span> <span class="n">pre_full_bins</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">post_dts</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">events</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">post_full_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">post_back_rates</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">post_full_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">post_dts</span>
+        <span class="c1"># post_back_rates = np.full(mid_idx-1, back_rates[-1])</span>
+
+        <span class="c1"># put all of it together</span>
+        <span class="n">brates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pre_back_rates</span><span class="p">,</span> <span class="n">back_rates</span><span class="p">,</span> <span class="n">post_back_rates</span><span class="p">))</span>
+        <span class="n">dts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pre_dts</span><span class="p">,</span> <span class="n">dts</span><span class="p">,</span> <span class="n">post_dts</span><span class="p">))</span>
+
+        <span class="c1"># this is if we ended up with an odd number of events</span>
+        <span class="k">if</span> <span class="n">num_events</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="n">brates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">brates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">brates</span><span class="p">,</span> <span class="n">brates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">dts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dts</span><span class="p">,</span> <span class="n">dts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># now the uncertainty</span>
+        <span class="n">uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">brates</span> <span class="o">/</span> <span class="n">dts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">brates</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">dts</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NaivePoisson.interpolate"><a class="viewcode-back" href="../../../api/api-background.html#gbm.background.unbinned.NaivePoisson.interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate the background at the given times</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tstart (np.array): The start times of the bins to interpolate</span>
+<span class="sd">            tstop (np.array): The end times of the bins to interpolate</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            (np.array, np.array): The interpolated model value and model \</span>
+<span class="sd">                                  uncertainty in each bin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstart</span> <span class="o">+</span> <span class="n">tstop</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">uncert</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_numchans</span><span class="p">):</span>
+            <span class="n">rates_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                    <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
+            <span class="n">width_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_actual_widths</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                    <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;extrapolate&#39;</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">rates_interp</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+            <span class="n">widths</span> <span class="o">=</span> <span class="n">width_interp</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+            <span class="n">uncert</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">widths</span><span class="p">))</span>
+            <span class="n">rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">uncert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uncert</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">rates</span><span class="p">,</span> <span class="n">uncert</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

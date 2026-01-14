@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Analysis Workflow: Reduction and Export &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Analysis Workflow: Spectral Fitting" href="SpectralFitting.html" />
+    <link rel="prev" title="Finding GBM Data" href="DataFinders.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TteData.html">TTE Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Responses.html">Detector Response Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PositionHistory.html">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataFinders.html">Finding GBM Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectralFitting.html">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plugins.html">Plugin-like Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
+        
+      <li>Analysis Workflow: Reduction and Export</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/PhaExport.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Analysis-Workflow:-Reduction-and-Export">
+<h1>Analysis Workflow: Reduction and Export<a class="headerlink" href="#Analysis-Workflow:-Reduction-and-Export" title="Permalink to this headline">¶</a></h1>
+<p>GBM was designed with high temporal and spectral resolution primarily to study GRB spectra and spectral evolution throughout a GRB. So, ideally we would like to reduce the data and model the background so that we can get at the thing we’re really interested in: the source spectrum. The following workflow will show you how you can do this and export the relevant data so that it can be used with <a class="reference external" href="https://heasarc.gsfc.nasa.gov/xanadu/xspec/">XSPEC</a> to fit the source spectrum.</p>
+<p>To start, we need to be able to read in some data. Let’s use TTE. Because we’re using TTE, we’ll need a binning algorithm. And we need some response files. Luckily these are already generated for us if it’s a GRB that was triggered onboard GBM.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm</span> <span class="kn">import</span> <span class="n">test_data_dir</span>
+<span class="kn">from</span> <span class="nn">gbm.data</span> <span class="kn">import</span> <span class="n">TTE</span>
+<span class="kn">from</span> <span class="nn">gbm.binning.unbinned</span> <span class="kn">import</span> <span class="n">bin_by_time</span>
+
+<span class="c1"># open a TTE file</span>
+<span class="n">tte</span> <span class="o">=</span> <span class="n">TTE</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/glg_tte_n9_bn090131090_v00.fit&#39;</span><span class="p">)</span>
+<span class="c1"># bin to 1.024 s resolution, reference time is trigger time</span>
+<span class="n">phaii</span> <span class="o">=</span> <span class="n">tte</span><span class="o">.</span><span class="n">to_phaii</span><span class="p">(</span><span class="n">bin_by_time</span><span class="p">,</span> <span class="mf">1.024</span><span class="p">,</span> <span class="n">time_ref</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Of course we’ll want to visualize what we’re doing, so we need some classes from the <code class="docutils literal notranslate"><span class="pre">gbm.plot</span></code> module. Also, what we’re going to do here is set the energy range we’re interested in. Generally, for the NaIs, you don’t want to go below 8 keV. Yes, GBM data goes below that, but the response is poorly calibrated below 8 keV. And you don’t want to include the overflow channel, so going up to ~900 keV should be sufficient.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">Lightcurve</span><span class="p">,</span> <span class="n">Spectrum</span>
+
+<span class="n">erange</span> <span class="o">=</span> <span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">900.0</span><span class="p">)</span>
+
+<span class="n">lc_data</span> <span class="o">=</span> <span class="n">phaii</span><span class="o">.</span><span class="n">to_lightcurve</span><span class="p">(</span><span class="n">energy_range</span><span class="o">=</span><span class="n">erange</span><span class="p">)</span>
+<span class="n">lcplot</span> <span class="o">=</span> <span class="n">Lightcurve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lc_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PhaExport_3_0.png" src="../_images/notebooks_PhaExport_3_0.png" />
+</div>
+</div>
+<p>Nice looking lightcurve! Next, we’ll want to define regions outside the obvious source region to identify as background. The TTE data early in the mission unfortunately didn’t have very much pre-trigger background, but we’ll try our best. We haven’t actually talked about background modeling yet, but I’ll walk you through it; it’s not very hard.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># we want two background intervals, one before and one after the source.</span>
+<span class="c1"># by eye, let&#39;s try:</span>
+<span class="n">bkgd_times</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">75.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<p>The background module is in <code class="docutils literal notranslate"><span class="pre">gbm.background</span></code>, and similar to the binning algorithms, background modeling algorithms can be divded between binned and unbinned data. Now TTE data <em>is</em> temporally unbinned, but for simplicitly let’s use an algorithm for pre-binned data. In fact we’ll use the same polynomial background algorithm that <a class="reference external" href="https://fermi.gsfc.nasa.gov/ssc/data/analysis/rmfit/">RMfit</a> uses.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the background fitter interface</span>
+<span class="kn">from</span> <span class="nn">gbm.background</span> <span class="kn">import</span> <span class="n">BackgroundFitter</span>
+<span class="c1"># our fitting algorithm</span>
+<span class="kn">from</span> <span class="nn">gbm.background.binned</span> <span class="kn">import</span> <span class="n">Polynomial</span>
+
+<span class="c1"># we initialize our background fitter with the phaii object, the algorithm, and the time ranges to fit.</span>
+<span class="c1"># if we were using an unbinned algorithm, we&#39;d call .from_tte() and give it tte instead of phaii</span>
+<span class="n">backfitter</span> <span class="o">=</span> <span class="n">BackgroundFitter</span><span class="o">.</span><span class="n">from_phaii</span><span class="p">(</span><span class="n">phaii</span><span class="p">,</span> <span class="n">Polynomial</span><span class="p">,</span> <span class="n">time_ranges</span><span class="o">=</span><span class="n">bkgd_times</span><span class="p">)</span>
+
+<span class="c1"># and once initialized, we can run the fit with the fitting parameters appropriate for our algorithm.</span>
+<span class="c1"># here, we&#39;ll do a 1st order polynomial</span>
+<span class="n">backfitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<p>Ok, the fit is done, but how do we know if it is a good fit? You can return the fit statistic and degrees-of-freedom (DoF) for each energy channel fit, and try to figure out if it’s a good fit based on that (Note: not always the best way to go).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">backfitter</span><span class="o">.</span><span class="n">statistic</span><span class="o">/</span><span class="n">backfitter</span><span class="o">.</span><span class="n">dof</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([1.05253464, 0.97225381, 0.91227241, 0.98050048, 0.84681665,
+       1.0109339 , 0.83987198, 0.99393676, 0.93546538, 0.97676709,
+       1.06159651, 1.13014594, 1.02241299, 0.87300405, 0.93111584,
+       0.77749972, 0.88585415, 1.24709709, 1.00078239, 1.18972735,
+       1.08504497, 0.86004   , 1.09627527, 1.26029689, 1.02805267,
+       1.09511262, 1.09453753, 0.84877554, 1.03829697, 1.18797705,
+       1.17876657, 1.0435771 , 0.87277942, 1.1235214 , 0.75154049,
+       1.16525405, 0.96174605, 0.86952962, 1.05345248, 1.06671789,
+       0.98715977, 0.87106808, 0.81729816, 1.01830519, 0.96619755,
+       0.96130275, 1.26006097, 1.10956129, 0.7465444 , 1.14112326,
+       1.17921618, 0.99306683, 0.94085532, 0.75801103, 0.93522882,
+       0.93297998, 1.34048725, 0.97457337, 0.92851687, 1.13544663,
+       1.03582596, 0.86974828, 0.95736557, 0.90115499, 0.97121474,
+       0.99067311, 1.03314964, 1.05197093, 0.67085108, 0.86989996,
+       1.13958071, 0.79637932, 0.83125611, 0.96961894, 0.70648981,
+       1.28318981, 0.96054971, 0.95883523, 0.98814164, 0.79250393,
+       0.98667504, 0.85922942, 1.07602863, 0.89644774, 1.04385212,
+       0.74181608, 0.88999557, 0.89085185, 0.85543955, 0.74622679,
+       0.84810177, 1.00566535, 0.7757027 , 0.77445155, 0.83288842,
+       0.81179572, 1.03735701, 0.78808631, 0.77720697, 0.68643965,
+       0.76911826, 0.82697149, 0.94950339, 0.69566148, 0.84312887,
+       0.83848112, 0.72023423, 0.64302101, 0.87508165, 0.95623795,
+       0.90862106, 0.74499819, 0.85851114, 0.82726985, 1.10998919,
+       1.16072684, 0.85533812, 1.0301769 , 0.55424838, 0.6925533 ,
+       0.73817561, 0.71850524, 0.86838555, 0.62815818, 0.869434  ,
+       0.91485833, 0.93208495, 1.21406148])
+</pre></div></div>
+</div>
+<p>You can also plot it. If you want to plot the background model, it’s a good idea to plot it not just during the background segments you fit, but also during the source interval. This is important because you want to see how well the background is modeled <em>during</em> the source interval. This means that the model needs to be interpolated over the source interval. For simplicity, and to make the background look smooth, we’ll go ahead and interpolate across every time bin in the lightcurve:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">bkgd</span> <span class="o">=</span> <span class="n">backfitter</span><span class="o">.</span><span class="n">interpolate_bins</span><span class="p">(</span><span class="n">phaii</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span> <span class="n">phaii</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+gbm.background.background.BackgroundRates
+</pre></div></div>
+</div>
+<p>So what is <code class="docutils literal notranslate"><span class="pre">bkgd</span></code>? It’s similar to the same data structure that contains the PHAII data: a 2D Time-Energy histogram, but instead of containing observed counts, it contains the modeled background rates for each time bin and energy channel. So if we want to plot the background model on our lightcurve, we need to integrate over energy. Reminder: we don’t want to integrate over <em>all</em> energy channels, only the ones we set in <code class="docutils literal notranslate"><span class="pre">erange</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">lc_bkgd</span> <span class="o">=</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">integrate_energy</span><span class="p">(</span><span class="o">*</span><span class="n">erange</span><span class="p">)</span>
+<span class="n">lcplot</span> <span class="o">=</span> <span class="n">Lightcurve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lc_data</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">lc_bkgd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PhaExport_13_0.png" src="../_images/notebooks_PhaExport_13_0.png" />
+</div>
+</div>
+<p>And look at that! The red line shows our background model interpolated at each lightcurve bin. If you find your fit to be unacceptable, you can try refitting with a different polynomial order like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">backfitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or you can try adjusting the background selection ranges.</p>
+<p>Now, we are currently viewing the full time-extent of the data in the file, but if we want to identify a particular time interval for analysis, it’s kind of hard when we’re zoomed out so far. So you should zoom in appropriately:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">lcplot</span> <span class="o">=</span> <span class="n">Lightcurve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lc_data</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">lc_bkgd</span><span class="p">)</span>
+<span class="c1"># zoom in to 5 seconds before to 20 s after the trigger time</span>
+<span class="n">view_range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
+<span class="n">lcplot</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="n">view_range</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PhaExport_15_0.png" src="../_images/notebooks_PhaExport_15_0.png" />
+</div>
+</div>
+<p>Now, we need to define a time interval of interest. It could be a single bin, or it could be multiple bins. Let’s select the brightest two bins in this view.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># our lightcurve source selection</span>
+<span class="n">src_time</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">)</span>
+<span class="n">src_lc</span> <span class="o">=</span> <span class="n">phaii</span><span class="o">.</span><span class="n">to_lightcurve</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_time</span><span class="p">,</span> <span class="n">energy_range</span><span class="o">=</span><span class="n">erange</span><span class="p">)</span>
+
+<span class="n">lcplot</span> <span class="o">=</span> <span class="n">Lightcurve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lc_data</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">lc_bkgd</span><span class="p">)</span>
+<span class="n">lcplot</span><span class="o">.</span><span class="n">add_selection</span><span class="p">(</span><span class="n">src_lc</span><span class="p">)</span>
+<span class="n">lcplot</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="n">view_range</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PhaExport_17_0.png" src="../_images/notebooks_PhaExport_17_0.png" />
+</div>
+</div>
+<p>The orange shading indicates the time bins you’ve selected as source signal. You can also make a plot of the count spectrum during the selection to see what the background model looks like in comparison to the data:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the observed count spectrum during the source selection</span>
+<span class="n">spec_data</span> <span class="o">=</span> <span class="n">phaii</span><span class="o">.</span><span class="n">to_spectrum</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_time</span><span class="p">)</span>
+<span class="c1"># the background model integrated over the source selection time</span>
+<span class="n">spec_bkgd</span> <span class="o">=</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">integrate_time</span><span class="p">(</span><span class="o">*</span><span class="n">src_time</span><span class="p">)</span>
+<span class="c1"># and the energy range selection that was made</span>
+<span class="n">spec_selection</span> <span class="o">=</span> <span class="n">phaii</span><span class="o">.</span><span class="n">to_spectrum</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_time</span><span class="p">,</span> <span class="n">energy_range</span><span class="o">=</span><span class="n">erange</span><span class="p">)</span>
+
+<span class="n">specplot</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">spec_data</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">spec_bkgd</span><span class="p">)</span>
+<span class="n">specplot</span><span class="o">.</span><span class="n">add_selection</span><span class="p">(</span><span class="n">spec_selection</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PhaExport_19_0.png" src="../_images/notebooks_PhaExport_19_0.png" />
+</div>
+</div>
+<p>And there you have it! The background model, integrated over the source window, as a function of energy is red, while the orange shaded region indicates the part of the spectrum you’re interested in.</p>
+<p>If we are satisifed with everything we’ve done, it’s now time to export our selections. XSPEC uses PHA and BAK files containing a single observed count spectrum and the background model during the exposure of the spectrum, respectively. To get from where we are to where we need to be, it is really just two function calls:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the single-spectrum PHA object over our source time interval and energy range</span>
+<span class="n">pha</span> <span class="o">=</span> <span class="n">phaii</span><span class="o">.</span><span class="n">to_pha</span><span class="p">(</span><span class="n">time_ranges</span><span class="o">=</span><span class="n">src_time</span><span class="p">,</span> <span class="n">energy_range</span><span class="o">=</span><span class="n">erange</span><span class="p">)</span>
+
+<span class="c1"># the background spectrum</span>
+<span class="n">bak</span> <span class="o">=</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">to_bak</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_time</span><span class="p">)</span>
+
+<span class="nb">type</span><span class="p">(</span><span class="n">pha</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">bak</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(gbm.data.pha.PHA, gbm.data.pha.BAK)
+</pre></div></div>
+</div>
+<p>So now you have a PHA and BAK object which can be written as fully-formed FITS files using the <code class="docutils literal notranslate"><span class="pre">.write()</span></code> methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bak</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;my_first_custom.bak&#39;</span><span class="p">)</span>
+<span class="n">pha</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;my_first_custom.pha&#39;</span><span class="p">,</span> <span class="n">backfile</span><span class="o">=</span><span class="s1">&#39;my_first_custom.bak&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can omit the <code class="docutils literal notranslate"><span class="pre">filename</span></code> keywords if the default naming convention is good enough for you (although beware of naming conflicts if you are writing multiple files from one event). The <code class="docutils literal notranslate"><span class="pre">backfile</span></code> keyword is necessary if you want to use the PHA and BAK files in XSPEC.</p>
+<p>Now there is one thing missing; we forgot about the response file! You can’t do any spectral fitting without the response.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.data</span> <span class="kn">import</span> <span class="n">RSP</span>
+<span class="n">rsp</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/glg_cspec_n9_bn090131090_v00.rsp2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This is an RSP2 file, meaning that it is a time sequence of DRMs. We want to choose the DRM that is most appropriate for our time selection. We have a couple of options: we could simply return the DRM that is closest to our interval of interest, or we can interpolate the time series of DRMs to provide a response at the time of our interval (more specifically at the center of our time interval).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the DRM that is nearest to our time of interest</span>
+<span class="n">nearest_drm</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">extract_drm</span><span class="p">(</span><span class="n">atime</span><span class="o">=</span><span class="n">pha</span><span class="o">.</span><span class="n">tcent</span><span class="p">)</span>
+
+<span class="c1"># the interpolated DRM</span>
+<span class="n">interp_drm</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">pha</span><span class="o">.</span><span class="n">tcent</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Choose one, and you can write it to a file just like the PHA and BAK:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interp_drm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;my_first_custom.rsp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We’re done! You have successfully exported your source selection, background model, and an appropriate detector response. Looking back, it may seem like we’ve done a lot, but most of the commands we issued were for the sake of plotting! Once you’re more familiar with the workflow, you don’t have to make quite so many plots along the way.</p>
+<p>In any case, you can now XSPEC to your heart’s content!</p>
+<p>Of course, maybe XSPEC isn’t your thing. That’s alright, too. In fact, the GBM Data Tools have the functionality to perform maximum likelihood fits of the spectra, and if you are interested, <a class="reference internal" href="SpectralFitting.html"><span class="doc">continue on!</span></a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="SpectralFitting.html" class="btn btn-neutral float-right" title="Analysis Workflow: Spectral Fitting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="DataFinders.html" class="btn btn-neutral float-left" title="Finding GBM Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

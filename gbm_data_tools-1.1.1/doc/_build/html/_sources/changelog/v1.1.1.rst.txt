@@ -1,0 +1,77 @@
+.. _v1.1.1:
+
+v1.1.1
+======
+
+Installation
+------------
+
+* Basemap no longer attempts to download and install if not using the [basemap]
+  option.
+
+----
+
+Background Module
+-----------------
+
+* Fixed an issue where background rate data can be inadvertently updated after
+  initialization.
+
+Data Module
+-----------
+
+* Fixed a bug in :meth:`~gbm.data.RSP.rebin` that results in an incorrect 
+  EBOUNDS.
+
+* Fixed the GTI values in :class:`~gbm.data.pha.PHA` and 
+  :class:`~gbm.data.pha.BAK` when a trigger time is set.
+
+* Fixed an import issue by updating to relative import calls.
+    
+----
+
+Simulations Module
+------------------
+
+* Small speed up in :class:`~gbm.simulate.generators.EventSpectrumGenerator` by
+  not sorting TTE arrival time differences.
+
+* Fixed some import issues by updating to relative import calls.
+
+
+----
+
+Spectra Module
+--------------
+
+* Fixed bug in model variance calculation
+
+* Fixed bug in how asymmetric errors are calculated near parameter bounds
+
+* Made asymmetric error calculation more robust
+
+----
+
+Plotting Module
+---------------
+
+* Removed forced plotting of errorbars for selections in 
+  :class:`~gbm.plot.Lightcurve` and :class:`~gbm.plot.Spectrum`
+
+----
+
+Utilities
+----------
+
+* Updated the HEASARC FTP server name since 'legacy.gsfc.nasa.gov' was abruptly
+  terminated without notice.
+  
+* Added :meth:`gbm.finder.TriggerFtp.get_healpix` to only download the 
+  localization HEALPix files.
+
+----
+
+Documentation
+-------------
+
+* Updates to existing API documentation resulting from the above changes

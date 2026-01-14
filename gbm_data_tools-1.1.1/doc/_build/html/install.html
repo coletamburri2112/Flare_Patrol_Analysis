@@ -1,0 +1,426 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Installation &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Jupyter Notebooks" href="notebooks/index.html" />
+    <link rel="prev" title="Welcome to the Fermi GBM Data Tools documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-install">How to Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-uninstall">How to Uninstall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launching-the-notebooks">Launching the Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#known-issues">Known Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="installation">
+<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires: Python &gt;=3.5</p>
+<p>Tested on:</p>
+<ul class="simple">
+<li><p>macOS El Capitan (10.11.6) - Catalina (10.15.3)</p></li>
+<li><p>Ubuntu 16.04 - 18.04</p></li>
+<li><p>Windows 10 Subsystem for Linux</p></li>
+</ul>
+</div>
+<div class="section" id="how-to-install">
+<h2>How to Install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h2>
+<p>The Data Tools can currently be installed from the tar file available at
+the <a class="reference external" href="https://fermi.gsfc.nasa.gov/ssc/data/analysis/gbm/">Fermi Science Support Center</a>.  Download the tar file
+to some place on the machine you want it installed on.</p>
+<p>One of the easiest and suggested methods of install is to create a virtual
+environment, which allows you to install the Data Tools requirements without
+worrying about possible conflicts with other versions of packages you may
+already have installed.  It’s not mandatory to install in a virtual environment,
+but it could make your life much easier.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One of the requirements for the Data Tools is Basemap, which is a part of
+the Matplotlib toolkit.  Basemap requires the installation of the GEOS C
+library.  If you do not have the library already compiled in a standard
+place, the Data Tools installation will attempt to compile it
+for you.  There may be cases where this fails.  If you encounter such a
+case, you should follow the instructions on how to compile the GEOS library
+for basemap <a class="reference external" href="https://matplotlib.org/basemap/users/installing.html#installation">here</a>.</p>
+</div>
+<p>To install via <code class="docutils literal notranslate"><span class="pre">pip</span></code>, navigate to the directory where you want the virtual
+environment to live and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 -m venv gbm
+$ source gbm/bin/activate
+</pre></div>
+</div>
+<p>This will create a new virtual environment called “gbm” and activates the
+environment.</p>
+<p>To install via <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda create --name gbm
+$ source activate gbm
+</pre></div>
+</div>
+<p>This will similarly create a new virtual environment and activates it.</p>
+<p>It’s also good to ensure you have <code class="docutils literal notranslate"><span class="pre">pip</span></code> updated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install --upgrade pip
+</pre></div>
+</div>
+<p>The complete version of the Data Tools requires Matplotlib Basemap, although
+the Data Tools can be installed without Basemap with the loss of only some
+plotting functionality (EarthPlot and some SkyPlot functions). If you wish to
+install the “light” version with Basemap, simply:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install &lt;path_to_tar&gt;/gbm_data_tools-1.1.1.tar.gz
+</pre></div>
+</div>
+<p>If you want the full install, including Basemap, you will need the GEOS C
+library. If it is not already installed in a standard location, set your
+<code class="docutils literal notranslate"><span class="pre">GEOS_DIR</span></code> environment variable to a path where you would like it installed
+(and where you have write privileges).  For example, if you use bash, you can
+do something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export GEOS_DIR=~/.geos_dir
+</pre></div>
+</div>
+<p>If you already have the GEOS C library installed in a <em>non-standard</em> location,
+set <code class="docutils literal notranslate"><span class="pre">GEOS_DIR</span></code> to that path instead. Then you can install the data tools:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install &lt;path_to_tar&gt;/gbm_data_tools-1.1.1.tar.gz[basemap]
+</pre></div>
+</div>
+<p>Finally, if you want to run the Jupyter notebooks provided with the Data Tools
+(trust us, you do):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install ipython
+$ pip3 install notebook
+</pre></div>
+</div>
+<p>If you don’t wish to install via a virtual environment, you are welcome to
+install with your preferred method, but you may encounter more difficulties,
+especially if you have existing package installs that conflict with what is
+required for the Data Tools.  Check the requirements.txt for required packages
+and versions.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="how-to-uninstall">
+<h2>How to Uninstall<a class="headerlink" href="#how-to-uninstall" title="Permalink to this headline">¶</a></h2>
+<p>To uninstall:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 uninstall gbm-data-tools
+</pre></div>
+</div>
+<p>There are also a number of files (documentation, notebooks, etc.) for the tools
+that are copied into your <code class="docutils literal notranslate"><span class="pre">$HOME/.gbm_data_tools</span></code> directory.  You can delete
+thesefiles if you wish.</p>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>On successful installation, you can launch the local HTML documentation by
+calling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ gbm-docs
+</pre></div>
+</div>
+<p>from the command line.</p>
+<hr class="docutils" />
+</div>
+<div class="section" id="launching-the-notebooks">
+<span id="notebook-launch"></span><h2>Launching the Notebooks<a class="headerlink" href="#launching-the-notebooks" title="Permalink to this headline">¶</a></h2>
+<p>If you have installed Jupyter as suggested above, you can run the notebooks
+provided with the Data Tools.  After successful installation, the notebooks
+can be launched by calling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ gbm-demos
+</pre></div>
+</div>
+<p>from the command line.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>To load the Data Tools within your python environment, simply:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gbm</span>
+</pre></div>
+</div>
+<p>The Data Tools has several different modules. For example, the data module
+containing the interfaces to the GBM data files can be loaded by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gbm</span> <span class="kn">import</span> <span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="known-issues">
+<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p><strong>On install, Python complains the tar.gz file is not a valid file.</strong>
+This is a known issue with certain browsers, where they download <em>and</em>
+decompress the file without removing the .gz extension.  The easiest fix is
+to rename the file without the .gz extension and retry the install.</p></li>
+<li><p><strong>When running a notebook in Linux, you observe a similar error</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">notebook</span>
+<span class="ne">Warning</span><span class="p">:</span> <span class="n">Cannot</span> <span class="n">change</span> <span class="n">to</span> <span class="n">a</span> <span class="n">different</span> <span class="n">GUI</span> <span class="n">toolkit</span><span class="p">:</span> <span class="n">notebook</span><span class="o">.</span> <span class="n">Using</span> <span class="n">osx</span> <span class="n">instead</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This is due to some backend plotting issue with Jupyter notebook on Linux.
+Remove the <code class="docutils literal notranslate"><span class="pre">%matplotlib</span> <span class="pre">inline</span></code> in the notebook cell and re-evaluate the
+cell <em>twice</em> to see the plot.</p>
+</li>
+<li><p><strong>The FTP Data Finders fail with a connection error.</strong>  This may be due to the
+underlying OpenSSL library that the Python <code class="docutils literal notranslate"><span class="pre">ftplib</span></code> uses.  You may need to
+update your OpenSSL library to get this to work.  Note that this only appears
+to be an issue with the FTPS protocol, not the normal FTP protocol.
+A potential solution is to try the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>$ pip3 install pyopenssl</p></li>
+<li><p>$ pip3 install requests[security]</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>The virtual environment is using your system ipython (or other package)
+install.</strong>  This can sometimes happen if you didn’t install ipython (or other
+package) in the virtual environment.  Try installing ipython (or other package)
+and restart your virtual environment.</p></li>
+<li><p><strong>You observe the following error</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ImportError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="s1">&#39;_tkinter&#39;</span>
+</pre></div>
+</div>
+<p>This is a situation where Matplotlib is using the <code class="docutils literal notranslate"><span class="pre">tkinter</span></code> backend for
+plotting.  You would see this error if you don’t have <code class="docutils literal notranslate"><span class="pre">tkinter</span></code> installed.
+You don’t need to install <code class="docutils literal notranslate"><span class="pre">tkinter</span></code> if you don’t want to; instead, you can
+create a file named <cite>matplotlibrc</cite> in your working directory that contains the
+following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="p">:</span> <span class="n">Agg</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="notebooks/index.html" class="btn btn-neutral float-right" title="Jupyter Notebooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to the Fermi GBM Data Tools documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,699 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.plot.skyplot &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.plot.skyplot</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.plot.skyplot</h1><div class="highlight"><pre>
+<span></span><span class="c1"># skyplot.py: Plot class for Fermi observing sky maps</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">.gbmplot</span> <span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">from</span> <span class="nn">.gbmplot</span> <span class="kn">import</span> <span class="n">DetectorPointing</span><span class="p">,</span> <span class="n">GalacticPlane</span><span class="p">,</span> <span class="n">SkyHeatmap</span><span class="p">,</span> <span class="n">SkyPolygon</span>
+<span class="kn">from</span> <span class="nn">.gbmplot</span> <span class="kn">import</span> <span class="n">GbmPlot</span><span class="p">,</span> <span class="n">SkyLine</span><span class="p">,</span> <span class="n">SkyCircle</span><span class="p">,</span> <span class="n">Sun</span>
+<span class="kn">from</span> <span class="nn">.lib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">..coords</span> <span class="kn">import</span> <span class="n">get_sun_loc</span>
+
+
+<div class="viewcode-block" id="SkyPlot"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot">[docs]</a><span class="k">class</span> <span class="nc">SkyPlot</span><span class="p">(</span><span class="n">GbmPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting on the sky in equatorial coordinates</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        projection (str, optional): The projection of the map. </span>
+<span class="sd">                                    Default is &#39;mollweide&#39;</span>
+<span class="sd">        flipped (bool, optional): </span>
+<span class="sd">            If True, the RA axis is flipped, following astronomical convention. \</span>
+<span class="sd">            Default is True.</span>
+<span class="sd">        **kwargs: Options to pass to :class:`~.gbmplot.GbmPlot`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ax (:class:`matplotlib.axes`): The matplotlib axes object for the plot</span>
+<span class="sd">        background_color (str): The color of the plot background. This attribute</span>
+<span class="sd">                                can be set.</span>
+<span class="sd">        canvas (Canvas Backend object): The plotting canvas, if set upon </span>
+<span class="sd">                                        initialization.</span>
+<span class="sd">        canvas_color (str): The color of the plotting canvas. This attribute </span>
+<span class="sd">                            can be set.</span>
+<span class="sd">        detectors (:class:`~.gbmplot.Collection` of :class:`~.gbmplot.DetectorPointing`):</span>
+<span class="sd">            The collection of detector plot elements</span>
+<span class="sd">        earth (:class:`~.gbmplot.SkyCircle`): The Earth plot element</span>
+<span class="sd">        fig (:class:`matplotlib.figure`): The matplotlib figure object</span>
+<span class="sd">        fontsize (int): The font size of the text labels. This attribute can be set.</span>
+<span class="sd">        gc (:class:`~.gbmplot.GalacticPlane`):</span>
+<span class="sd">            The reference to the galactic plane plot element</span>
+<span class="sd">        loc_contours: (:class:`~.gbmplot.Collection` of :class:`~.gbmplot.SkyLine` \</span>
+<span class="sd">                                                     or :class:`~.gbplot.SkyPolygon`):</span>
+<span class="sd">            The localization contour plot elements</span>
+<span class="sd">        loc_posterior (:class:`~.gbmplot.SkyHeatmap`):</span>
+<span class="sd">            The localization gradient plot element</span>
+<span class="sd">        sun (:class:`~.gbmplot.Sun`): The Sun plot element</span>
+<span class="sd">        text_color (str): The color of the text labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_background</span> <span class="o">=</span> <span class="s1">&#39;antiquewhite&#39;</span>
+    <span class="n">_textcolor</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>
+    <span class="n">_canvascolor</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span>
+    <span class="n">_x_origin</span> <span class="o">=</span> <span class="mi">180</span>
+    <span class="n">_y_origin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_fontsize</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;mollweide&#39;</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># set up the plot background color and the sky grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvascolor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_background</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># create the axes tick labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_longitude_axis</span><span class="p">(</span><span class="n">flipped</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latitude_axis</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span> <span class="o">=</span> <span class="n">flipped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sun</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_earth</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_galactic_plane</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_posterior</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clevels</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">earth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_galactic_plane</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">loc_posterior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posterior</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">loc_contours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clevels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">canvas_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvascolor</span>
+
+    <span class="nd">@canvas_color</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">canvas_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvascolor</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_background</span>
+
+    <span class="nd">@background_color</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_background</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">text_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_textcolor</span>
+
+    <span class="nd">@text_color</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">text_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ytick_labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fontsize</span><span class="p">,</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xtick_labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fontsize</span><span class="p">,</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_textcolor</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fontsize</span>
+
+    <span class="nd">@fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ytick_labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_textcolor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xtick_labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_textcolor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fontsize</span> <span class="o">=</span> <span class="n">size</span>
+
+<div class="viewcode-block" id="SkyPlot.add_poshist"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.add_poshist">[docs]</a>    <span class="k">def</span> <span class="nf">add_poshist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detectors</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">geo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">sun</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">galactic_plane</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a Position History or Trigdat object to plot the location of the</span>
+<span class="sd">        Earth, Sun, and detector pointings</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (:class:`~gbm.data.PosHist` or :class:`~gbm.data.Trigdat`)</span>
+<span class="sd">                A Position History or Trigdat object</span>
+<span class="sd">            trigtime (float, optional): If data is PosHist, set trigtime to a </span>
+<span class="sd">                                        particular time of interest.</span>
+<span class="sd">                                        The Trigdat trigger time overrides this</span>
+<span class="sd">            detectors (&#39;all&#39; or list): A list of detectors or &quot;all&quot; to plot the </span>
+<span class="sd">                                   pointings on the sky</span>
+<span class="sd">            geo (bool, optional): If True, plot the Earth. Default is True.</span>
+<span class="sd">            sun (bool, optional): If True, plot the Sun. Default is True.</span>
+<span class="sd">            galactic_plane (bool, optional):</span>
+<span class="sd">                If True, plot the Galactic plane. Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;trigtime&#39;</span><span class="p">):</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">trigtime</span>
+
+        <span class="k">if</span> <span class="n">detectors</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n0&#39;</span><span class="p">,</span> <span class="s1">&#39;n1&#39;</span><span class="p">,</span> <span class="s1">&#39;n2&#39;</span><span class="p">,</span> <span class="s1">&#39;n3&#39;</span><span class="p">,</span> <span class="s1">&#39;n4&#39;</span><span class="p">,</span> <span class="s1">&#39;n5&#39;</span><span class="p">,</span> <span class="s1">&#39;n6&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;n7&#39;</span><span class="p">,</span> <span class="s1">&#39;n8&#39;</span><span class="p">,</span> <span class="s1">&#39;n9&#39;</span><span class="p">,</span> <span class="s1">&#39;na&#39;</span><span class="p">,</span> <span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="s1">&#39;b0&#39;</span><span class="p">,</span> <span class="s1">&#39;b1&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dets</span> <span class="o">=</span> <span class="n">detectors</span>
+
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sun</span><span class="p">:</span>
+                <span class="n">sun_loc</span> <span class="o">=</span> <span class="n">get_sun_loc</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_sun</span><span class="p">(</span><span class="o">*</span><span class="n">sun_loc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">geo</span><span class="p">:</span>
+                <span class="n">geo_ra</span><span class="p">,</span> <span class="n">geo_dec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_geocenter_radec</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="n">radius</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_earth_radius</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_earth</span><span class="p">(</span><span class="n">geo_ra</span><span class="p">,</span> <span class="n">geo_dec</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">dets</span><span class="p">:</span>
+                <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">detector_pointing</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">trigtime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">det</span><span class="p">)</span>
+
+        <span class="c1"># testing</span>
+        <span class="c1"># lon = data.get_longitude(trigtime)</span>
+        <span class="c1"># lat = data.get_latitude(trigtime)</span>
+        <span class="c1"># alt = data.get_altitude(trigtime)</span>
+        <span class="c1"># test_footprint(self.ax, self._earth._artists[0], lon, lat, alt,</span>
+        <span class="c1">#               geo_ra, geo_dec, radius)</span>
+
+        <span class="k">if</span> <span class="n">galactic_plane</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_galactic_plane</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SkyPlot.add_healpix"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.add_healpix">[docs]</a>    <span class="k">def</span> <span class="nf">add_healpix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hpx</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sun</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">earth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">detectors</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">galactic_plane</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add HealPix object to plot a localization and optionally the location </span>
+<span class="sd">        of the Earth, Sun, and detector pointings</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hpx (:class:`~gbm.data.HealPix`): The HealPix object</span>
+<span class="sd">            gradient (bool, optional): </span>
+<span class="sd">                If True, plots the posterior as a color gradient. If False, </span>
+<span class="sd">                plot the posterior as color-filled confidence regions.</span>
+<span class="sd">            clevels (list of float, optional):</span>
+<span class="sd">                The confidence levels to plot contours. By default plots at</span>
+<span class="sd">                the 1, 2, and 3 sigma level.</span>
+<span class="sd">            detectors (&#39;all&#39; or list):</span>
+<span class="sd">                A list of detectors or &quot;all&quot; to plot the pointings on the sky</span>
+<span class="sd">            earth (bool, optional): If True, plot the Earth. Default is True.</span>
+<span class="sd">            sun (bool, optional): If True, plot the Sun. Default is True.</span>
+<span class="sd">            galactic_plane (bool, optional):</span>
+<span class="sd">                If True, plot the Galactic plane. Default is True.</span>
+<span class="sd">        </span>
+<span class="sd">        Note:</span>
+<span class="sd">            Setting `gradient=False` when plotting an annulus may produce </span>
+<span class="sd">            unexpected results at this time.  It is suggested to use </span>
+<span class="sd">            `gradient=True` for plotting annuli maps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">clevels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">clevels</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.997</span><span class="p">,</span> <span class="mf">0.955</span><span class="p">,</span> <span class="mf">0.687</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">detectors</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n0&#39;</span><span class="p">,</span> <span class="s1">&#39;n1&#39;</span><span class="p">,</span> <span class="s1">&#39;n2&#39;</span><span class="p">,</span> <span class="s1">&#39;n3&#39;</span><span class="p">,</span> <span class="s1">&#39;n4&#39;</span><span class="p">,</span> <span class="s1">&#39;n5&#39;</span><span class="p">,</span> <span class="s1">&#39;n6&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;n7&#39;</span><span class="p">,</span> <span class="s1">&#39;n8&#39;</span><span class="p">,</span> <span class="s1">&#39;n9&#39;</span><span class="p">,</span> <span class="s1">&#39;na&#39;</span><span class="p">,</span> <span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="s1">&#39;b0&#39;</span><span class="p">,</span> <span class="s1">&#39;b1&#39;</span><span class="p">]</span>
+        
+        <span class="c1"># determine what the resolution of the sky grid should be based on the</span>
+        <span class="c1"># resolution of the healpix</span>
+        <span class="n">approx_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">hpx</span><span class="o">.</span><span class="n">pixel_area</span><span class="p">)</span>
+        <span class="n">numpts_ra</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="mf">360.0</span><span class="o">/</span><span class="n">approx_res</span><span class="p">))</span>
+        <span class="n">numpts_dec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">approx_res</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="n">gradient</span><span class="p">:</span>
+            <span class="n">prob_arr</span><span class="p">,</span> <span class="n">ra_arr</span><span class="p">,</span> <span class="n">dec_arr</span> <span class="o">=</span> <span class="n">hpx</span><span class="o">.</span><span class="n">prob_array</span><span class="p">(</span><span class="n">numpts_ra</span><span class="o">=</span><span class="n">numpts_ra</span><span class="p">,</span>
+                                                       <span class="n">numpts_dec</span><span class="o">=</span><span class="n">numpts_dec</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_posterior</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">prob_arr</span><span class="p">,</span> <span class="n">ra_arr</span><span class="p">,</span> <span class="n">dec_arr</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">clevel</span> <span class="ow">in</span> <span class="n">clevels</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">hpx</span><span class="o">.</span><span class="n">confidence_region_path</span><span class="p">(</span><span class="n">clevel</span><span class="p">,</span> <span class="n">numpts_ra</span><span class="o">=</span><span class="n">numpts_ra</span><span class="p">,</span> 
+                                               <span class="n">numpts_dec</span><span class="o">=</span><span class="n">numpts_dec</span><span class="p">)</span>
+            <span class="n">numpaths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gradient</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpaths</span><span class="p">):</span>
+                    <span class="n">contour</span> <span class="o">=</span> <span class="n">SkyLine</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span>
+                                      <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                                      <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                      <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_clevels</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">clevel</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">contour</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpaths</span><span class="p">):</span>
+                    <span class="n">contour</span> <span class="o">=</span> <span class="n">SkyPolygon</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span>
+                                         <span class="n">face_alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_clevels</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">clevel</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">contour</span><span class="p">)</span>
+
+        <span class="c1"># plot sun</span>
+        <span class="k">if</span> <span class="n">sun</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_sun</span><span class="p">(</span><span class="o">*</span><span class="n">hpx</span><span class="o">.</span><span class="n">sun_location</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        
+        <span class="c1"># plot earth</span>
+        <span class="k">if</span> <span class="n">earth</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">geo_rad</span> <span class="o">=</span> <span class="mf">67.0</span> <span class="k">if</span> <span class="n">hpx</span><span class="o">.</span><span class="n">geo_radius</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hpx</span><span class="o">.</span><span class="n">geo_radius</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_earth</span><span class="p">(</span><span class="o">*</span><span class="n">hpx</span><span class="o">.</span><span class="n">geo_location</span><span class="p">,</span> <span class="n">geo_rad</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        
+        <span class="c1"># plot detector pointings</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="o">*</span><span class="nb">getattr</span><span class="p">(</span><span class="n">hpx</span><span class="p">,</span> <span class="n">det</span> <span class="o">+</span> <span class="s1">&#39;_pointing&#39;</span><span class="p">),</span> <span class="n">det</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="c1"># plot galactic plane</span>
+        <span class="k">if</span> <span class="n">galactic_plane</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_galactic_plane</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SkyPlot.plot_sun"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.plot_sun">[docs]</a>    <span class="k">def</span> <span class="nf">plot_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the sun</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (float): The RA of the Sun</span>
+<span class="sd">            y (float): The Dec of the Sun</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~.gbmplot.Sun`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sun</span> <span class="o">=</span> <span class="n">Sun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SkyPlot.plot_earth"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.plot_earth">[docs]</a>    <span class="k">def</span> <span class="nf">plot_earth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the Earth</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (float): The RA of the geocenter</span>
+<span class="sd">            y (float): The Dec of the geocenter</span>
+<span class="sd">            radius (float): The radius of the Earth, in degrees</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~.gbmplot.SkyCircle`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_earth</span> <span class="o">=</span> <span class="n">SkyCircle</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;deepskyblue&#39;</span><span class="p">,</span> <span class="n">face_alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+                                <span class="n">edge_alpha</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SkyPlot.plot_detector"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.plot_detector">[docs]</a>    <span class="k">def</span> <span class="nf">plot_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot a detector pointing</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (float): The RA of the detector normal</span>
+<span class="sd">            y (float): The Dec of the detector normal</span>
+<span class="sd">            det (str): The detector name</span>
+<span class="sd">            radius (float, optional): The radius of pointing, in degrees. </span>
+<span class="sd">                                      Default is 10.0</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~.gbmplot.SkyCircle`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pointing</span> <span class="o">=</span> <span class="n">DetectorPointing</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span>
+                                    <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">pointing</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SkyPlot.plot_galactic_plane"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.plot_galactic_plane">[docs]</a>    <span class="k">def</span> <span class="nf">plot_galactic_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the Galactic plane</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_galactic_plane</span> <span class="o">=</span> <span class="n">GalacticPlane</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SkyPlot.plot_heatmap"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.SkyPlot.plot_heatmap">[docs]</a>    <span class="k">def</span> <span class="nf">plot_heatmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heatmap</span><span class="p">,</span> <span class="n">ra_array</span><span class="p">,</span> <span class="n">dec_array</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot a heatmap on the sky</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            heatmap (np.array): A 2D array of values</span>
+<span class="sd">            ra_array (np.array): The array of RA gridpoints</span>
+<span class="sd">            dec_array (np.array): The array of Dec gridpoints</span>
+<span class="sd">            radius (float): The radius of pointing, in degrees</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~.gbmplot.SkyHeatmap`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">heatmap</span> <span class="o">=</span> <span class="n">SkyHeatmap</span><span class="p">(</span><span class="n">ra_array</span><span class="p">,</span> <span class="n">dec_array</span><span class="p">,</span> <span class="n">heatmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span>
+                             <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">heatmap</span></div>
+
+    <span class="k">def</span> <span class="nf">_longitude_axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flipped</span><span class="p">):</span>
+        <span class="c1"># longitude labels</span>
+        <span class="c1"># these have to be shifted on the plot because matplotlib natively</span>
+        <span class="c1"># goes from -180 to +180</span>
+        <span class="n">tick_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="mi">210</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">270</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">330</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">150</span><span class="p">])</span>
+        <span class="n">tick_labels</span> <span class="o">=</span> <span class="n">tick_labels</span> <span class="o">-</span> <span class="mi">360</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x_origin</span><span class="p">)</span>
+        <span class="c1"># flip coordinates</span>
+        <span class="k">if</span> <span class="n">flipped</span><span class="p">:</span>
+            <span class="n">tick_labels</span> <span class="o">=</span> <span class="o">-</span><span class="n">tick_labels</span>
+        <span class="n">tick_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">tick_labels</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+
+        <span class="c1"># format the tick labels with degrees</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xtick_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;$^\circ$&#39;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tick_labels</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xtick_labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fontsize</span><span class="p">,</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_textcolor</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_latitude_axis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># latitude labels</span>
+        <span class="c1"># matplotlib natively plots from -90 to +90 from bottom to top. </span>
+        <span class="c1"># this is fine for equatorial coordinates, but we have to shift if </span>
+        <span class="c1"># we are plotting in spacecraft coordinates</span>
+        <span class="n">tick_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">,</span> <span class="o">-</span><span class="mi">75</span><span class="p">])</span>
+        <span class="n">tick_labels</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_origin</span> <span class="o">-</span> <span class="n">tick_labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_origin</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">tick_labels</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ytick_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;$^\circ$&#39;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tick_labels</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ytick_labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fontsize</span><span class="p">,</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_textcolor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FermiSkyPlot"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot">[docs]</a><span class="k">class</span> <span class="nc">FermiSkyPlot</span><span class="p">(</span><span class="n">SkyPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting in Fermi spacecraft coordinates.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        projection (str, optional): The projection of the map. </span>
+<span class="sd">                                    Default is &#39;mollweide&#39;</span>
+<span class="sd">        **kwargs: Options to pass to :class:`~.gbmplot.GbmPlot`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ax (:class:`matplotlib.axes`): The matplotlib axes object for the plot</span>
+<span class="sd">        background_color (str): The color of the plot background. This attribute</span>
+<span class="sd">                                can be set.</span>
+<span class="sd">        canvas (Canvas Backend object): The plotting canvas, if set upon </span>
+<span class="sd">                                        initialization.</span>
+<span class="sd">        canvas_color (str): The color of the plotting canvas. This attribute </span>
+<span class="sd">                            can be set.</span>
+<span class="sd">        detectors (:class:`~.gbmplot.Collection` of :class:`~.gbmplot.SkyCircle`):</span>
+<span class="sd">            The collection of detector plot elements</span>
+<span class="sd">        earth (:class:`~.gbmplot.SkyCircle`): The Earth plot element</span>
+<span class="sd">        fig (:class:`matplotlib.figure`): The matplotlib figure object</span>
+<span class="sd">        fontsize (int): The font size of the text labels. This attribute can be set.</span>
+<span class="sd">        gc (:class:`~.gbmplot.GalacticPlane`):</span>
+<span class="sd">            The reference to the galactic plane plot element</span>
+<span class="sd">        loc_contours: (:class:`~.gbmplot.Collection` of :class:`~.gbmplot.SkyLine` \</span>
+<span class="sd">                                                     or :class:`~.gbplot.SkyPolygon`):</span>
+<span class="sd">            The localization contour plot elements</span>
+<span class="sd">        loc_posterior (:class:`~.gbmplot.SkyHeatmap`):</span>
+<span class="sd">            The localization gradient plot element</span>
+<span class="sd">        sun (:class:`~.gbmplot.Sun`): The Sun plot element</span>
+<span class="sd">        text_color (str): The color of the text labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_y_origin</span> <span class="o">=</span> <span class="o">-</span><span class="mi">90</span>
+    <span class="n">_x_origin</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;mollweide&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FermiSkyPlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                           <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FermiSkyPlot.add_poshist"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot.add_poshist">[docs]</a>    <span class="k">def</span> <span class="nf">add_poshist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detectors</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">geo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">sun</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">galactic_plane</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;trigtime&#39;</span><span class="p">):</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">trigtime</span>
+
+        <span class="k">if</span> <span class="n">detectors</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n0&#39;</span><span class="p">,</span> <span class="s1">&#39;n1&#39;</span><span class="p">,</span> <span class="s1">&#39;n2&#39;</span><span class="p">,</span> <span class="s1">&#39;n3&#39;</span><span class="p">,</span> <span class="s1">&#39;n4&#39;</span><span class="p">,</span> <span class="s1">&#39;n5&#39;</span><span class="p">,</span> <span class="s1">&#39;n6&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;n7&#39;</span><span class="p">,</span> <span class="s1">&#39;n8&#39;</span><span class="p">,</span> <span class="s1">&#39;n9&#39;</span><span class="p">,</span> <span class="s1">&#39;na&#39;</span><span class="p">,</span> <span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="s1">&#39;b0&#39;</span><span class="p">,</span> <span class="s1">&#39;b1&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sun</span><span class="p">:</span>
+                <span class="n">sun_loc</span> <span class="o">=</span> <span class="n">get_sun_loc</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="n">sun_loc</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_fermi_frame</span><span class="p">(</span><span class="o">*</span><span class="n">sun_loc</span><span class="p">,</span> <span class="n">trigtime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_sun</span><span class="p">(</span><span class="o">*</span><span class="n">sun_loc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">geo</span><span class="p">:</span>
+                <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_geocenter_radec</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="n">az</span><span class="p">,</span> <span class="n">zen</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_fermi_frame</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">trigtime</span><span class="p">)</span>
+                <span class="n">radius</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_earth_radius</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_earth</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">zen</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">dets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">galactic_plane</span><span class="p">:</span>
+                <span class="n">quat</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_quaternions</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_galactic_plane</span><span class="p">(</span><span class="n">quat</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FermiSkyPlot.plot_detector"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot.plot_detector">[docs]</a>    <span class="k">def</span> <span class="nf">plot_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot a detector pointing</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            det (str): The detector name</span>
+<span class="sd">            radius (float, optional): The radius of pointing, in degrees. </span>
+<span class="sd">                                      Default is 10.0</span>
+<span class="sd">            **kwargs: Options to pass to :class:`~.gbmplot.SkyCircle`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FermiSkyPlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                                                <span class="n">fermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FermiSkyPlot.plot_earth"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot.plot_earth">[docs]</a>    <span class="k">def</span> <span class="nf">plot_earth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FermiSkyPlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">plot_earth</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">fermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FermiSkyPlot.plot_sun"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot.plot_sun">[docs]</a>    <span class="k">def</span> <span class="nf">plot_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FermiSkyPlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">plot_sun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+        <span class="c1"># mark TODO: enable loc plotting</span>
+
+    <span class="c1"># will need the quaternion</span>
+<div class="viewcode-block" id="FermiSkyPlot.add_healpix"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot.add_healpix">[docs]</a>    <span class="k">def</span> <span class="nf">add_healpix</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not yet implemented&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Not yet implemented for the Fermi frame&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FermiSkyPlot.plot_galactic_plane"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.FermiSkyPlot.plot_galactic_plane">[docs]</a>    <span class="k">def</span> <span class="nf">plot_galactic_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quat</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the Galactic plane</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            quat (np.array): The Fermi attitude quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_galactic_plane</span> <span class="o">=</span> <span class="n">GalacticPlane</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">flipped</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flipped</span><span class="p">,</span>
+                                             <span class="n">fermi_quat</span><span class="o">=</span><span class="n">quat</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,959 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Analysis Workflow: Spectral Fitting &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GBM Spectral Catalog Files" href="ScatFiles.html" />
+    <link rel="prev" title="Analysis Workflow: Reduction and Export" href="PhaExport.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TteData.html">TTE Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Responses.html">Detector Response Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PositionHistory.html">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataFinders.html">Finding GBM Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaExport.html">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plugins.html">Plugin-like Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
+        
+      <li>Analysis Workflow: Spectral Fitting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/SpectralFitting.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Analysis-Workflow:-Spectral-Fitting">
+<h1>Analysis Workflow: Spectral Fitting<a class="headerlink" href="#Analysis-Workflow:-Spectral-Fitting" title="Permalink to this headline">¶</a></h1>
+<p>The GBM Data Tools has a module designed for spectral fitting. As discussed, GBM data can be prepared and exported for use in XSPEC and other fitting packages. To provide a full experience with GBM data, we also provide a way to fit GBM data by extending and wrapping standard optimizers provided in <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html">scipy</a>. In fact, we can pretty easily leverage complicated optimization algorithms that can use imposed bounds and constraints on
+parameters, and we allow the user to decide if they want to use a more or less complex fitting procedure (of course we have suggestions!). The spectral fitting class can be extended to use various likelihoods, and can even be extended to perform a Bayesian analysis and posterior sampling (although we haven’t directly implemented it yet). We don’t want to get too much into the weeds here, but we’ll briefly mention areas of note as we go along.</p>
+<p>The previous section on export for use in XSPEC was a bit simplified in that we only looked at a single detector for analysis, and typically we’ll want to jointly fit multiple detectors that have good viewing of the source. This means that for each detector you’re using, you need to multiply all your steps in the previous section by the number of detectors. What a slog! So to help reduce the amount of repetitive work we have to do, we can use the <code class="docutils literal notranslate"><span class="pre">GbmDetectorCollection</span></code> class. If we add our
+data to this “collection,” then we can easily perform operations on all items in the collection. There are great benefits to doing this as we will find out shortly.</p>
+<p>Let’s look at CSPEC data this time:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm</span> <span class="kn">import</span> <span class="n">test_data_dir</span>
+<span class="kn">from</span> <span class="nn">gbm.data</span> <span class="kn">import</span> <span class="n">Cspec</span><span class="p">,</span> <span class="n">GbmDetectorCollection</span>
+
+<span class="c1"># Load some CSPEC files for a GRB</span>
+<span class="n">n0</span> <span class="o">=</span> <span class="n">Cspec</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/160509374/glg_cspec_n0_bn160509374_v01.pha&#39;</span><span class="p">)</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="n">Cspec</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/160509374/glg_cspec_n1_bn160509374_v01.pha&#39;</span><span class="p">)</span>
+<span class="n">b0</span> <span class="o">=</span> <span class="n">Cspec</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/160509374/glg_cspec_b0_bn160509374_v01.pha&#39;</span><span class="p">)</span>
+
+<span class="c1"># create a collection from the list of our files</span>
+<span class="n">cspecs</span> <span class="o">=</span> <span class="n">GbmDetectorCollection</span><span class="o">.</span><span class="n">from_list</span><span class="p">([</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">b0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Now that you know the general process of fitting the background, selecting the time and energy ranges, and plotting, we’ll go ahead and define these ranges here. One thing to note is that we are using both NaI and BGO detectors. That means we need to be using the appropriate energy ranges for the detectors.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># define some time and energy ranges</span>
+<span class="n">view_range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">33.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">)</span> <span class="c1"># zoom in to this time range</span>
+<span class="n">bkgd_range</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mf">550.</span><span class="p">,</span> <span class="o">-</span><span class="mf">300.</span><span class="p">),</span> <span class="p">(</span><span class="mf">675.</span><span class="p">,</span> <span class="mf">1000.</span><span class="p">)]</span> <span class="c1"># the background fit ranges</span>
+<span class="n">src_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">14.0</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">)</span>    <span class="c1"># our time selection</span>
+<span class="n">erange_nai</span> <span class="o">=</span> <span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">900.0</span><span class="p">)</span> <span class="c1"># in keV</span>
+<span class="n">erange_bgo</span> <span class="o">=</span> <span class="p">(</span><span class="mi">325</span><span class="p">,</span> <span class="mf">35000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s perform our background fits. Second-order polynomials for all of them, unless we decide they need to be adjusted:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.background</span> <span class="kn">import</span> <span class="n">BackgroundFitter</span>
+<span class="kn">from</span> <span class="nn">gbm.background.binned</span> <span class="kn">import</span> <span class="n">Polynomial</span>
+
+<span class="c1"># initialize the fitters and add to collection, making sure the collection knows which background</span>
+<span class="c1"># goes with which detector</span>
+<span class="n">backfitters</span> <span class="o">=</span> <span class="p">[</span><span class="n">BackgroundFitter</span><span class="o">.</span><span class="n">from_phaii</span><span class="p">(</span><span class="n">cspec</span><span class="p">,</span> <span class="n">Polynomial</span><span class="p">,</span> <span class="n">time_ranges</span><span class="o">=</span><span class="n">bkgd_range</span><span class="p">)</span> <span class="k">for</span> <span class="n">cspec</span> <span class="ow">in</span> <span class="n">cspecs</span><span class="p">]</span>
+<span class="n">backfitters</span> <span class="o">=</span> <span class="n">GbmDetectorCollection</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">backfitters</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">cspecs</span><span class="o">.</span><span class="n">detector</span><span class="p">())</span>
+
+<span class="c1"># do the fit</span>
+<span class="n">backfitters</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># interpolate/extrapolate and store in a collection</span>
+<span class="n">bkgds</span> <span class="o">=</span> <span class="n">backfitters</span><span class="o">.</span><span class="n">interpolate_bins</span><span class="p">(</span><span class="n">cspecs</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span> <span class="n">cspecs</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span>
+<span class="n">bkgds</span> <span class="o">=</span> <span class="n">GbmDetectorCollection</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">bkgds</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">cspecs</span><span class="o">.</span><span class="n">detector</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>Ok, we actually just did a lot on a few lines, so let’s recap and explain. We created a background fitter for each detector’s data and added the fitters to their own collection. We also made sure that we tagged the background fitters to correspond to the correct detectors. This will be vitally important in a minute. So, instead of having to call <code class="docutils literal notranslate"><span class="pre">backfitter.fit()</span></code> for each backfitter, we can call that method on the collection, and it performs the operation on <em>every item in the collection</em>.
+Cool. This works if you have the same arguments to be applied to each item. What if for one detector, you want to fit a 1st-order polynomial? We’d suggest a list comprehension, similar to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">backfitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">poly_order</span><span class="p">)</span> <span class="k">for</span> <span class="n">backfitter</span><span class="p">,</span> <span class="n">poly_order</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">backfitters</span><span class="p">,</span> <span class="n">poly_orders</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>So you can definitely iterate over the collection like a list, but there is a lot of convenience for easily performing the same operation on a collection of data objects.</p>
+<p>After performing the fit, we interpolate each backfitter over an array of times. The array of times we use is actually just the bin times from the first CSPEC file we added to the collection. This is fine because all our data are binned to the same bin edges. Then we add these interpolated backgrounds to their own collection.</p>
+<p>Now we need to apply our selections, especially if we want to make a few plots and not go blindly into dark:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the lightcurves</span>
+<span class="n">data_lcs</span> <span class="o">=</span> <span class="n">cspecs</span><span class="o">.</span><span class="n">to_lightcurve</span><span class="p">(</span><span class="n">nai_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_nai</span><span class="p">},</span> <span class="n">bgo_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_bgo</span><span class="p">})</span>
+<span class="c1"># the energy-integrated background</span>
+<span class="n">bkgd_lcs</span> <span class="o">=</span> <span class="n">bkgds</span><span class="o">.</span><span class="n">integrate_energy</span><span class="p">(</span><span class="n">nai_args</span><span class="o">=</span><span class="n">erange_nai</span><span class="p">,</span> <span class="n">bgo_args</span><span class="o">=</span><span class="n">erange_bgo</span><span class="p">)</span>
+<span class="c1"># the source time selection</span>
+<span class="n">src_lcs</span> <span class="o">=</span> <span class="n">cspecs</span><span class="o">.</span><span class="n">to_lightcurve</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_range</span><span class="p">,</span> <span class="n">nai_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_nai</span><span class="p">},</span> <span class="n">bgo_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_bgo</span><span class="p">})</span>
+
+<span class="c1"># the count spectrum</span>
+<span class="n">data_specs</span> <span class="o">=</span> <span class="n">cspecs</span><span class="o">.</span><span class="n">to_spectrum</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_range</span><span class="p">)</span>
+<span class="c1"># the time-integrated background</span>
+<span class="n">bkgd_specs</span> <span class="o">=</span> <span class="n">bkgds</span><span class="o">.</span><span class="n">integrate_time</span><span class="p">(</span><span class="o">*</span><span class="n">src_range</span><span class="p">)</span>
+<span class="c1"># the energy selection</span>
+<span class="n">src_specs</span> <span class="o">=</span> <span class="n">cspecs</span><span class="o">.</span><span class="n">to_spectrum</span><span class="p">(</span><span class="n">time_range</span><span class="o">=</span><span class="n">src_range</span><span class="p">,</span> <span class="n">nai_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_nai</span><span class="p">},</span> <span class="n">bgo_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_bgo</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<p>We just massively leveraged the collections to avoid having to write loops or list comprehensions. <strong>And</strong> we were able to treat the NaI and BGO energy selections <em>all in one line</em> for each set of lightcurves or spectra. Notice the <code class="docutils literal notranslate"><span class="pre">nai_args</span></code>, <code class="docutils literal notranslate"><span class="pre">nai_kwargs</span></code>, and the corresponding bgo arguments? Those allow us to specify arguments and keywords to be passed to either NaI or BGO detectors. Something like the <code class="docutils literal notranslate"><span class="pre">time_range</span></code> is the same for both detector types, so we pass it like a normal keyword
+as the object method expects, but <code class="docutils literal notranslate"><span class="pre">energy_range</span></code> is detector-type-dependent, since we usually want different energy ranges for the different types of detectors. Can you implement this in a loop over the separate objects instead? Sure, but your code will be at least 2x as long and harder to follow.</p>
+<p>Whew. Now time to plot:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">Lightcurve</span><span class="p">,</span> <span class="n">Spectrum</span>
+
+<span class="c1"># Plot the lightcurves with the selections and background fit</span>
+<span class="n">lcplots</span> <span class="o">=</span> <span class="p">[</span><span class="n">Lightcurve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_lc</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">bkgd_lc</span><span class="p">)</span> <span class="k">for</span> <span class="n">data_lc</span><span class="p">,</span> <span class="n">bkgd_lc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_lcs</span><span class="p">,</span> <span class="n">bkgd_lcs</span><span class="p">)]</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">lcplot</span><span class="o">.</span><span class="n">add_selection</span><span class="p">(</span><span class="n">src_lc</span><span class="p">)</span> <span class="k">for</span> <span class="n">lcplot</span><span class="p">,</span> <span class="n">src_lc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lcplots</span><span class="p">,</span> <span class="n">src_lcs</span><span class="p">)]</span>
+<span class="c1"># zoom in</span>
+<span class="k">for</span> <span class="n">lcplot</span> <span class="ow">in</span> <span class="n">lcplots</span><span class="p">:</span>
+    <span class="n">lcplot</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="n">view_range</span>
+
+<span class="c1"># Plot the spectra with the selections and background fit</span>
+<span class="n">specplots</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spectrum</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_spec</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">bkgd_spec</span><span class="p">)</span> <span class="k">for</span> <span class="n">data_spec</span><span class="p">,</span> <span class="n">bkgd_spec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_specs</span><span class="p">,</span> <span class="n">bkgd_specs</span><span class="p">)]</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">specplot</span><span class="o">.</span><span class="n">add_selection</span><span class="p">(</span><span class="n">src_spec</span><span class="p">)</span> <span class="k">for</span> <span class="n">specplot</span><span class="p">,</span> <span class="n">src_spec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">specplots</span><span class="p">,</span> <span class="n">src_specs</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_9_0.png" src="../_images/notebooks_SpectralFitting_9_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_9_1.png" src="../_images/notebooks_SpectralFitting_9_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_9_2.png" src="../_images/notebooks_SpectralFitting_9_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_9_3.png" src="../_images/notebooks_SpectralFitting_9_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_9_4.png" src="../_images/notebooks_SpectralFitting_9_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_9_5.png" src="../_images/notebooks_SpectralFitting_9_5.png" />
+</div>
+</div>
+<p>What you see are the three lightcurves of the three data files, and the three corresponding count spectra. We need to create PHAs and responses similar to the previous workflow. Let’s choose to interpolate the responses.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.data</span> <span class="kn">import</span> <span class="n">RSP</span>
+<span class="n">phas</span> <span class="o">=</span> <span class="n">cspecs</span><span class="o">.</span><span class="n">to_pha</span><span class="p">(</span><span class="n">time_ranges</span><span class="o">=</span><span class="n">src_range</span><span class="p">,</span> <span class="n">nai_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_nai</span><span class="p">},</span> <span class="n">bgo_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;energy_range&#39;</span><span class="p">:</span><span class="n">erange_bgo</span><span class="p">})</span>
+
+<span class="c1"># open responses</span>
+<span class="n">rsp1</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/160509374/glg_cspec_n0_bn160509374_v00.rsp2&#39;</span><span class="p">)</span>
+<span class="n">rsp2</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/160509374/glg_cspec_n1_bn160509374_v00.rsp2&#39;</span><span class="p">)</span>
+<span class="n">rsp3</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/160509374/glg_cspec_b0_bn160509374_v00.rsp2&#39;</span><span class="p">)</span>
+<span class="n">rsps</span> <span class="o">=</span> <span class="n">GbmDetectorCollection</span><span class="o">.</span><span class="n">from_list</span><span class="p">([</span><span class="n">rsp1</span><span class="p">,</span> <span class="n">rsp2</span><span class="p">,</span> <span class="n">rsp3</span><span class="p">])</span>
+
+<span class="c1"># and interpolate response files to get DRMs at center of the source window</span>
+<span class="n">rsps_interp</span> <span class="o">=</span> <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">pha</span><span class="o">.</span><span class="n">tcent</span><span class="p">)</span> <span class="k">for</span> <span class="n">rsp</span><span class="p">,</span> <span class="n">pha</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rsps</span><span class="p">,</span> <span class="n">phas</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<p>Everything we’ve done so far is only slightly more complicated than the previous workflow, but we got the chance to demo working with collections of detectors. If you haven’t had fun yet, you will now.</p>
+<p>As mentioned, the spectral fitting class (<code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code>) is built on top of scipy’s optimization algorithms, and therefore you can directly specify which algorithm you want to use and the various arguments/settings that go along with it. Additionally, there are various derived classes of <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code> that implement a specific likelihood function. For GBM data, you will most likely want to use pgstat (Profile-Gaussian likelihood), and therefore you would use the
+<code class="docutils literal notranslate"><span class="pre">SpectralFitterPgstat</span></code> fitter. There are other likelihoods avaliable, like chi-squared, and of course you can make your own.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.spectra.fitting</span> <span class="kn">import</span> <span class="n">SpectralFitterPgstat</span>
+
+<span class="c1"># we initialize with our PHAs, backgrounds, and responses:</span>
+<span class="n">specfitter</span> <span class="o">=</span> <span class="n">SpectralFitterPgstat</span><span class="p">(</span><span class="n">phas</span><span class="p">,</span> <span class="n">bkgds</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="n">rsps</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;TNC&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>You’ll notice the ‘TNC’ method defined. This is the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/optimize.minimize-tnc.html#optimize-minimize-tnc">Truncated Newton algorithm</a>, which performs optimization considering the boundaries and constraints on your parameters.</p>
+<p>Now you need to select a function to fit. A whole tutorial could probably be devoted to the functionality of the functions, but let’s make this as simple as possible. The <code class="docutils literal notranslate"><span class="pre">gbm.spectra.functions</span></code> module contains a listing of functions with a variety of metadata attached to them. Essentially for each parameter of a function, you can set basic defaults (like in XSPEC), such as the starting guess values for parameters, their min/max bounds, and if they are fixed or free to be fit. This allows them
+to be used with the more complex algorithms like TNC. What’s cool is that you can easily make one of your own functions that inherit all this functionality (pun intended). But let’s worry about that later, and import a few standard functions:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># a power law, cut-off power law, and a Band function</span>
+<span class="kn">from</span> <span class="nn">gbm.spectra.functions</span> <span class="kn">import</span> <span class="n">PowerLaw</span><span class="p">,</span> <span class="n">Comptonized</span><span class="p">,</span> <span class="n">Band</span>
+
+<span class="c1"># instantiate a Band function</span>
+<span class="n">band</span> <span class="o">=</span> <span class="n">Band</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>You can easily see what the parameter listing is for your function:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">band</span><span class="o">.</span><span class="n">param_list</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[(&#39;A&#39;, &#39;ph/s/cm^2/keV&#39;, &#39;Amplitude&#39;),
+ (&#39;Epeak&#39;, &#39;keV&#39;, &#39;SED Peak&#39;),
+ (&#39;alpha&#39;, &#39;&#39;, &#39;Low-Energy Photon index&#39;),
+ (&#39;beta&#39;, &#39;&#39;, &#39;High-Energy Photon index&#39;),
+ (&#39;Epiv&#39;, &#39;keV&#39;, &#39;Pivot energy&#39;)]
+</pre></div></div>
+</div>
+<p>And similarly, the default values, minimum/maximum allowable values, etc.:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">default_values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">min_values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">max_values</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0.01, 500.0, -0.5, -2.5, 100.0]
+[1e-10, 0.01, -1.9, -10.0, 0.01]
+[inf, inf, 20.0, -2.0001, inf]
+</pre></div></div>
+</div>
+<p>That was painless. Now let’s fit it. Remember that you can use any of the options and settings for the scipy optimizer you chose. We can also print out some relevant info to make sure the fit succeeded, and if it did, we can quickly access things like the best-fit parameters and parameter uncertainties at the xx% confidence level.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Band Fit:&#39;</span><span class="p">)</span>
+<span class="n">specfitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">})</span>
+
+<span class="c1"># After the fit has converged, we can query the fitter for lots of info, including the parameters that</span>
+<span class="c1"># satisfy the maximum likelihood as well as the parameter uncertainties resulting from -2(Delta)LogLike</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parameters: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">parameters</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;90% Asymm. Errors:</span><span class="se">\n</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">asymmetric_errors</span><span class="p">(</span><span class="n">cl</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Pgstat/DoF: </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="n">specfitter</span><span class="o">.</span><span class="n">dof</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Band Fit:
+Converged (|f_n-f_(n-1)| ~= 0)
+Parameters: [ 3.06953043e-01  3.13978720e+02 -7.60642875e-01 -2.19161093e+00]
+90% Asymm. Errors:
+ [[3.71213297e-03 3.74687465e-03]
+ [5.52273992e+00 5.66382428e+00]
+ [1.53509429e-02 1.57720638e-02]
+ [5.00633717e-02 4.59141731e-02]]
+Pgstat/DoF: 277.3252207934582/358
+</pre></div></div>
+</div>
+<p><a class="reference external" href="https://youtu.be/m7p3kqpiTts?t=1">Hey hey!</a> We’ve successfully completed our first fit! It converged, and we printed out (in ugly print) the maximum likelihood parameter values and 90% confidence uncertainties, which are calculated from the shape of the likelihood surface. We also output the fit statistic and the fit degrees of freedom.</p>
+<p>This is nice, but as always, a plot is worth a 1000 words. We can use the <code class="docutils literal notranslate"><span class="pre">ModelFit</span></code> class from the <code class="docutils literal notranslate"><span class="pre">gbm.plot</span></code> module to view the fit:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">ModelFit</span>
+
+<span class="c1"># initialize with your spectral fitter once the fit is done</span>
+<span class="n">modelplot</span> <span class="o">=</span> <span class="n">ModelFit</span><span class="p">(</span><span class="n">fitter</span><span class="o">=</span><span class="n">specfitter</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_23_0.png" src="../_images/notebooks_SpectralFitting_23_0.png" />
+</div>
+</div>
+<p>The default view of the model plot shows the fit of the Band function to the count spectrum. The data are converted to upper limits based on the model variances, and that seems to largely happen above a few hundred keV. The residual plot shows significant deviation around the <a class="reference external" href="https://en.wikipedia.org/wiki/K-edge">Iodine K-edge</a>, which usually only rears its ugly head for very bright spectra. If you’re concerned about how the K-edge affects the fit, you can always select energy ranges that
+omit ~30-40 keV.</p>
+<p>If you’re feeling good about your fit, you can also switch views to plot the resulting photon, energy, or <span class="math notranslate nohighlight">\(\nu F_\nu\)</span> spectrum:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">modelplot</span> <span class="o">=</span> <span class="n">ModelFit</span><span class="p">(</span><span class="n">fitter</span><span class="o">=</span><span class="n">specfitter</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="s1">&#39;nufnu&#39;</span><span class="p">)</span>
+<span class="n">modelplot</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/amgoldst/Desktop/gbm-data-tools/gbm/spectra/fitting.py:601: RuntimeWarning: covariance is not positive-semidefinite.
+  **kwargs)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_25_1.png" src="../_images/notebooks_SpectralFitting_25_1.png" />
+</div>
+</div>
+<p>The model plot samples from the covariance matrix to produce a density plot of the spectrum. A word of caution here: you don’t always have a valid covariance matrix that is symmetric and positive semi-definite (and will be alerted if this is the case), so you should investigate the parameter posteriors further, perhaps with MCMC or nested sampling.</p>
+<p>You can quickly get the flux for the best-fit parameters using <code class="docutils literal notranslate"><span class="pre">band.integrate()</span></code> or produce samples (again using the covariance matrix) using <code class="docutils literal notranslate"><span class="pre">specfitter.sample_flux()</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># flux over 10-1000 keV</span>
+<span class="n">photon_flux</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">))</span> <span class="c1"># photons/s/cm^2</span>
+<span class="n">energy_flux</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span> <span class="n">energy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># erg/s/cm^2</span>
+<span class="n">photon_flux</span><span class="p">,</span> <span class="n">energy_flux</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(73.03416490430172, 1.4720268196516327e-05)
+</pre></div></div>
+</div>
+<p>You can always rerun the fit with a different function if you want. Let’s have a little fun and perform a multi-component fit. Another feature of the functions are that you can elegantly add or multiply components into a single model.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># we&#39;ve defined a new model that is the sum of a Comptonized function and a power law</span>
+<span class="n">comp_pl</span> <span class="o">=</span> <span class="n">Comptonized</span><span class="p">()</span> <span class="o">+</span> <span class="n">PowerLaw</span><span class="p">()</span>
+
+<span class="c1"># rerun the fit</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Comp+PL Fit:&#39;</span><span class="p">)</span>
+<span class="n">specfitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">comp_pl</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span> <span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parameters: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">parameters</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Pgstat/DoF: </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specfitter</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="n">specfitter</span><span class="o">.</span><span class="n">dof</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Comp+PL Fit:
+Converged (|f_n-f_(n-1)| ~= 0)
+Parameters: [ 2.54578195e-01  3.79044937e+02 -8.10083989e-01  1.30777519e-02
+ -1.36467487e+00]
+Pgstat/DoF: 352.50370024792556/357
+</pre></div></div>
+</div>
+<p>Cool, that fit converged as well. What does the fit look like?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">modelplot</span> <span class="o">=</span> <span class="n">ModelFit</span><span class="p">(</span><span class="n">fitter</span><span class="o">=</span><span class="n">specfitter</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_31_0.png" src="../_images/notebooks_SpectralFitting_31_0.png" />
+</div>
+</div>
+<p>You can tell the residuals at &lt; 30 keV are a little worse than for the Band function (and the PG-stat is higher), but at least it let us demo the multi-component functionality. To round it out, let’s just take a look at the <span class="math notranslate nohighlight">\(\nu F_\nu\)</span> spectrum.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">modelplot</span> <span class="o">=</span> <span class="n">ModelFit</span><span class="p">(</span><span class="n">fitter</span><span class="o">=</span><span class="n">specfitter</span><span class="p">)</span>
+<span class="c1"># plot 1000 samples instead of the default 100</span>
+<span class="n">modelplot</span><span class="o">.</span><span class="n">nufnu_spectrum</span><span class="p">(</span><span class="n">num_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">modelplot</span><span class="o">.</span><span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">)</span>
+<span class="n">modelplot</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/amgoldst/Desktop/gbm-data-tools/gbm/spectra/fitting.py:601: RuntimeWarning: covariance is not positive-semidefinite.
+  **kwargs)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_SpectralFitting_33_1.png" src="../_images/notebooks_SpectralFitting_33_1.png" />
+</div>
+</div>
+<p>And finally, to finish up the workflow, we can save the entire state of the fitter and fit results for later:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">specfitter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;./my_second_fit.npz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will save everything to a compressed numpy file, which can be loaded at any time with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">restored_specfitter</span> <span class="o">=</span> <span class="n">SpectralFitterPgstat</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;./my_second_fit.npz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This concludes the workflow example for spectral fitting. Continue on for a brief tutorial on the interface to the GBM <a class="reference internal" href="ScatFiles.html"><span class="doc">Spectral Catalog files</span></a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="ScatFiles.html" class="btn btn-neutral float-right" title="GBM Spectral Catalog Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PhaExport.html" class="btn btn-neutral float-left" title="Analysis Workflow: Reduction and Export" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

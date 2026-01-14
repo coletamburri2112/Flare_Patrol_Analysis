@@ -1,0 +1,854 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Detector Response Files &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Position History Data" href="PositionHistory.html" />
+    <link rel="prev" title="TTE Data" href="TteData.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TteData.html">TTE Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Detector Response Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PositionHistory.html">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataFinders.html">Finding GBM Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaExport.html">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectralFitting.html">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plugins.html">Plugin-like Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
+        
+      <li>Detector Response Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/Responses.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Detector-Response-Files">
+<h1>Detector Response Files<a class="headerlink" href="#Detector-Response-Files" title="Permalink to this headline">¶</a></h1>
+<p>The GBM detector response files allow you to compare a theoretical photon spectrum to an observed count spectrum. In short, a single detector response file is only useful for its corresponding detector, for a given source position on the sky, and a given time (or relatively short time span). Essentially one file contains one or more detector response matrices (DRMs) encoding the energy dispersion and calibration of incoming photons at different energies to recorded energy channels. The matrix
+also encodes the effective area of the detector as a function of energy for a given source position relative to the detector pointing. This effective area can change dramatically as there is a strong angular-dependence of the response (and the angular-dependence changes with energy!). A file that contains a single DRM will be named with a ‘.rsp’ extension, and a file containing more than one DRM will be named with a ‘.rsp2’ extension. The rsp2 files typically have a DRM generated for every <em>x</em>
+degrees of spacecraft slew relative to the source, useful for studying the spectrum of transients that may be several tens or hundreds of seconds long (and therefore the detector pointing is changing singificantly relative to the source).</p>
+<p>Similar to the science data, we can open/read a response file in the following way:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm</span> <span class="kn">import</span> <span class="n">test_data_dir</span>
+<span class="kn">from</span> <span class="nn">gbm.data</span> <span class="kn">import</span> <span class="n">RSP</span>
+<span class="n">rsp</span> <span class="o">=</span> <span class="n">RSP</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/glg_cspec_n4_bn120415958_v00.rsp2&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">rsp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+glg_cspec_n4_bn120415958_v00.rsp2
+</pre></div></div>
+</div>
+<p>You can see all the metadata in the FITS headers:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">rsp</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+odict_keys([&#39;PRIMARY&#39;, &#39;EBOUNDS&#39;, &#39;SPECRESP MATRIX1&#39;, &#39;SPECRESP MATRIX2&#39;, &#39;SPECRESP MATRIX3&#39;, &#39;SPECRESP MATRIX4&#39;, &#39;SPECRESP MATRIX5&#39;, &#39;SPECRESP MATRIX6&#39;, &#39;SPECRESP MATRIX7&#39;, &#39;SPECRESP MATRIX8&#39;, &#39;SPECRESP MATRIX9&#39;, &#39;SPECRESP MATRIX10&#39;, &#39;SPECRESP MATRIX11&#39;, &#39;SPECRESP MATRIX12&#39;])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">rsp</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+SIMPLE  =                    T / file does conform to FITS standard
+BITPIX  =                    8 / number of bits per data pixel
+NAXIS   =                    0 / number of data axes
+EXTEND  =                    T / FITS dataset may contain extensions
+COMMENT   FITS (Flexible Image Transport System) format is defined in &#39;Astronomy
+COMMENT   and Astrophysics&#39;, volume 376, page 359; bibcode: 2001A&amp;A...376..359H
+CREATOR = &#39;./SA_GBM_RSP_Gen.pl-1.11  GBMRSP V1.9&#39; / Program creating this file
+FILETYPE= &#39;GBM DRM &#39;
+FILE-VER= &#39;1.0.0   &#39;           / Version of FITS file format
+DATE    = &#39;2012-04-16T02:43:57&#39; / file creation date (YYYY-MM-DDThh:mm:ss UT)
+FILENAME= &#39;glg_cspec_n4_bn120415958_v00.rsp2&#39; / Name of FITS file
+DATE-OBS= &#39;2012-04-15T22:57:12&#39; / YYYY.DDD at start of data
+DATE-END= &#39;2012-04-15T23:07:18&#39; / YYYY.DDD at end of data
+MJDREFI =                51910 / MJD date of reference epoch, integer part
+MJDREFF = 7.428703703703703E-04 / MJD date of reference epoch, fractional part
+TSTART  =   3.562234321073E+08 / Observation start time relative to MJDREF
+TSTOP   =   3.562240383246E+08 / Observation stop time relative to MJDREF
+TRIGTIME=     356223561.133346 / Trigger time (s) relative to MJDREF
+TIMESYS = &#39;TT      &#39;           / Time system used in time keywords
+TIMEUNIT= &#39;s       &#39;           / Time unit used in TSTART, TSTOP
+TELESCOP= &#39;GLAST   &#39;           / Name of mission / spacecraft
+INSTRUME= &#39;GBM     &#39;           / Name of instrument generating data
+DETNAM  = &#39;NAI_04  &#39;           / Individual detector name
+OBSERVER= &#39;Meegan  &#39;           / Principal investigator for GBM
+ORIGIN  = &#39;GIOC    &#39;           / Name of organization making file
+OBJECT  = &#39;GRB     &#39;           / Object Designation (GRB for bursts, etc.)
+RADECSYS= &#39;FK5     &#39;           / Stellar reference frame
+EQUINOX =               2000.0 / Equinox for RA and Dec
+RA_OBJ  =                150.5 / J2000 RA of source, degrees
+DEC_OBJ =                 61.3 / J2000 DEC of source, degrees
+DRM_NUM =                   12 / Number of DRMs stored in this file
+DRM_TYPE= &#39;CSPEC   &#39;           / Data type for which DRM is intended
+DIRDRMDB= &#39;/Response_Generator//GBMDRMdb002/&#39; / Path to direct detector response
+DIRSCTDB= &#39;/Response_Generator//software//inputs/&#39; / Path to atmospheric scatter
+COMMENT This file contains GBM time-sequenced detector response matrices
+CHECKSUM= &#39;ZfkGedkDZdkDbdkD&#39;   / HDU checksum updated 2012-04-16T02:45:34
+DATASUM = &#39;         0&#39;         / data unit checksum updated 2012-04-16T02:43:57
+</pre></div></div>
+</div>
+<p>You probably noticed all the “SPECRESP MATRIXn” headers in the header listing. This is an rsp2 file, so there are multiple DRMs contained. We can easily determine how many matrices are contained (without having to count the header extensions):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">rsp</span><span class="o">.</span><span class="n">numdrms</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+12
+</pre></div></div>
+</div>
+<p>Other important attributes that we might need to know are the number of photon bins (the energy of the incoming photons) and the number of energy channels:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of energy channels: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rsp</span><span class="o">.</span><span class="n">numchans</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of photon bins: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rsp</span><span class="o">.</span><span class="n">numebins</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of energy channels: 128
+Number of photon bins: 140
+</pre></div></div>
+</div>
+<p>An rsp2 file containing multiple DRMs indicates there is a DRM that is most appropriate to use for a given time. You can find the DRM that is closest to your time of interest:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># return the DRM closest to trigger time</span>
+<span class="n">drm</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">nearest_drm</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Or maybe you are interested in which DRMs cover a time range of interest and retrieve those DRMs:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># which drms cover the time range</span>
+<span class="n">drm_indices</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">drm_index</span><span class="p">((</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">))</span>
+<span class="n">drms</span> <span class="o">=</span> <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="n">drm_index</span><span class="p">)</span> <span class="k">for</span> <span class="n">drm_index</span> <span class="ow">in</span> <span class="n">drm_indices</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>What does a DRM actually look like, btw? You can make a plot of one using the <code class="docutils literal notranslate"><span class="pre">ResponseMatrix</span></code> class in the <code class="docutils literal notranslate"><span class="pre">gbm.plot</span></code> module:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">ResponseMatrix</span>
+
+<span class="n">rsp_plot</span> <span class="o">=</span> <span class="n">ResponseMatrix</span><span class="p">()</span>
+<span class="n">rsp_plot</span><span class="o">.</span><span class="n">set_response</span><span class="p">(</span><span class="n">rsp</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">)</span> <span class="c1"># a pretty color gradient</span>
+<span class="n">rsp_plot</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+<span class="n">rsp_plot</span><span class="o">.</span><span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Responses_14_0.png" src="../_images/notebooks_Responses_14_0.png" />
+</div>
+</div>
+<p>What you see in the plot is a diagonal edge that contains a majority of the effective area. This approximately linear mapping of photon energy to energy channel is called the <strong>photopeak</strong>. You also see a bunch of off-diagonal contribution from photons deposited into energy channels lower than the original photon energy. This presence of non-negligible off-diagonal response is one of the reasons that the DRM is <em>not</em> invertible (our lives would be so much easier if was, though). This particular
+DRM contains a lot of off-diagonal effective area, in part because this example was made for a very large source angle from the detector normal.</p>
+<p>You can also make a plot of the effective area integrated over photon energies or over energy channels:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">PhotonEffectiveArea</span><span class="p">,</span> <span class="n">ChannelEffectiveArea</span>
+
+<span class="c1"># plot the effective area of incident photons...</span>
+<span class="n">effarea_plot1</span> <span class="o">=</span> <span class="n">PhotonEffectiveArea</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">rsp</span><span class="p">)</span>
+
+<span class="c1"># ...and of the recorded counts</span>
+<span class="n">effarea_plot2</span> <span class="o">=</span> <span class="n">ChannelEffectiveArea</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">rsp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Responses_16_0.png" src="../_images/notebooks_Responses_16_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Responses_16_1.png" src="../_images/notebooks_Responses_16_1.png" />
+</div>
+</div>
+<p>Alternatively, if you’re interested in effective area at a particular energy (as long as it’s within the bounds of the DRM), you can simply do the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the effective area at 50 and 300 keV, respectively for the first DRM</span>
+<span class="n">rsp</span><span class="o">.</span><span class="n">effective_area</span><span class="p">((</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([11.89553229, 32.67522618])
+</pre></div></div>
+</div>
+<p>The thing we actually use the DRMs for is to fold a model photon spectrum through the response to get out a count spectrum. That model count spectrum can then be compared to the observed count spectrum. Here’s a little example how you can fold a model (power law) through the response:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># a power-law function.</span>
+<span class="c1"># params is a list of parameters: (amplitude, index)</span>
+<span class="k">def</span> <span class="nf">powerlaw</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">energies</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">energies</span><span class="o">/</span><span class="mf">100.0</span><span class="p">)</span><span class="o">**</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># fold a power law with amplitude 0.1 and index -2.0 through the DRM at trigger time</span>
+<span class="n">rsp</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="n">powerlaw</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">atime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([ 2.04555274,  2.41331594,  2.0801156 ,  1.56281085,  1.57124845,
+        1.95612002,  2.18619054,  2.68707728,  3.09026986,  3.87129313,
+        4.53683755,  5.03903868,  5.73969901,  6.52557411,  8.28145565,
+        8.7270274 ,  9.29967452,  9.82871379, 10.27252461, 10.64788631,
+       12.61452885, 13.15436336, 14.44362474, 11.80630877,  9.50993977,
+       10.43132101, 10.1795827 , 10.10485369, 10.03455281, 11.04248059,
+       10.96586462, 10.81956114, 10.62896509, 11.44405505, 11.17678178,
+       10.83984442, 10.62419227, 11.19721732, 10.7731077 , 10.3303892 ,
+       10.66799448, 10.10228782,  9.49523992,  9.61971953,  8.985341  ,
+        8.39447276,  8.44452405,  7.92898771,  7.45480185,  7.48758995,
+        7.10000065,  6.68551051,  6.72736702,  6.35803467,  6.3318537 ,
+        5.9776809 ,  5.95175188,  5.5961889 ,  5.57163798,  5.23856799,
+        4.92137297,  4.89368401,  4.59042939,  4.4728742 ,  4.40192887,
+        4.11651911,  3.98410912,  3.73872024,  3.63021577,  3.34054809,
+        3.21592318,  3.07689076,  2.82446368,  2.71296244,  2.61110073,
+        2.38557173,  2.27647432,  2.16743026,  2.03623423,  1.86168341,
+        1.76441772,  1.65721932,  1.56229095,  1.45225463,  1.3737663 ,
+        1.29037066,  1.22153168,  1.15569386,  1.07228395,  1.01031758,
+        0.95551291,  0.88760431,  0.83015333,  0.78748049,  0.73714694,
+        0.69388623,  0.65621887,  0.62736442,  0.58949532,  0.56963218,
+        0.54683331,  0.51787483,  0.50880081,  0.4861937 ,  0.45117135,
+        0.42141958,  0.39239844,  0.3690452 ,  0.34557582,  0.33174466,
+        0.31283045,  0.30107629,  0.29238409,  0.28008149,  0.26755747,
+        0.25455926,  0.24674896,  0.23332222,  0.21775094,  0.20979986,
+        0.20290683,  0.19464098,  0.18785906,  0.18420528,  0.17841344,
+        0.24683905,  0.23043465,  2.68910855])
+</pre></div></div>
+</div>
+<p>And there you go, you have an array for the counts spectrum for a -2 power law folded through this detector!</p>
+<p>You can also perform operations to modify the DRM. Specifically, you can change the resolution of the photon energy axis of the DRM or adjust the photon bin edges:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># increase the number of photon bins to 300 (instead of the nominal 140)</span>
+<span class="n">rsp_hires</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">num_photon_bins</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">rsp_plot_hires</span> <span class="o">=</span> <span class="n">ResponseMatrix</span><span class="p">(</span><span class="n">rsp_hires</span><span class="p">,</span> <span class="n">num_contours</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">rsp_plot_hires</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+<span class="n">rsp_plot_hires</span><span class="o">.</span><span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+
+<span class="c1"># decrease the number of photon bins to 30</span>
+<span class="n">rsp_lores</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">num_photon_bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">rsp_plot_lores</span> <span class="o">=</span> <span class="n">ResponseMatrix</span><span class="p">(</span><span class="n">rsp_lores</span><span class="p">,</span> <span class="n">num_contours</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">rsp_plot_lores</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+<span class="n">rsp_plot_lores</span><span class="o">.</span><span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Responses_22_0.png" src="../_images/notebooks_Responses_22_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Responses_22_1.png" src="../_images/notebooks_Responses_22_1.png" />
+</div>
+</div>
+<p>While you cannot increase the resolution of the energy channel axis of the DRM, you can rebin that axis to a lower resolution:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># rebin the energy channel axis by a factor of 4</span>
+<span class="n">rsp_rebinned</span> <span class="o">=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">rebin</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">rsp_plot_rebinned</span> <span class="o">=</span> <span class="n">ResponseMatrix</span><span class="p">(</span><span class="n">rsp_rebinned</span><span class="p">,</span> <span class="n">num_contours</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">rsp_plot_rebinned</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+<span class="n">rsp_plot_rebinned</span><span class="o">.</span><span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Responses_24_0.png" src="../_images/notebooks_Responses_24_0.png" />
+</div>
+</div>
+<p>If you’ve followed along so far, you now have the ability to read the GBM primary science data and even apply the detector response for a source (albeit rudimentarily). <a class="reference internal" href="PositionHistory.html"><span class="doc">Continue</span></a> to learn about the most important GBM auxiliary data</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="PositionHistory.html" class="btn btn-neutral float-right" title="The Position History Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="TteData.html" class="btn btn-neutral float-left" title="TTE Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

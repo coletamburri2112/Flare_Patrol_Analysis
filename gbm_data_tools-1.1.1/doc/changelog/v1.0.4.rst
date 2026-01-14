@@ -1,0 +1,101 @@
+.. _v1.0.4:
+
+v1.0.4
+======
+
+Data Module
+-----------
+
+* Spatial association calculations fixed in :class:`~gbm.data.GbmHealPix`
+  for partial-sky occultation observations  (credit: J. Wood)
+
+* Spatial association prior probability keyword option added to 
+  :meth:`GbmHealPix.source_probability() <gbm.data.GbmHealPix.source_probability>`,
+  :meth:`GbmHealPix.region_probability() <gbm.data.GbmHealPix.region_probability>`,
+  :meth:`HealPix.source_probability() <gbm.data.HealPix.source_probability>`, and
+  :meth:`HealPix.region_probability() <gbm.data.HealPix.region_probability>`
+  
+* Fix for overwriting of GTIs during a time slice operation on 
+  :class:`~gbm.data.phaii.PHAII` and :class:`~gbm.data.TTE`  
+  (credit: J. Wood)
+  
+* Access of :class:`PosHist.time_range <gbm.data.PosHist>` is now 
+  more efficient
+
+* Fixed bug that caused the ``tcent`` attribute in :class:`~gbm.data.PHA`
+  and :class:`~gbm.data.BAK` to change after the :class:`~gbm.data.PHA.write` 
+  method was called
+
+* :class:`~gbm.data.RSP`:
+    
+    * Now supports reading response with ``N_GRP`` > 1 (credit: I. Martinez-Castellanos)
+    
+    * Keyword argument bug fixes for :meth:`~gbm.data.RSP.from_arrays` 
+      (credit: I. Martinez-Castellanos)
+    
+    * Fixed crash on writing to disk after creation with :meth:`~gbm.data.RSP.from_arrays`
+      (credit: I. Martinez-Castellanos)
+    
+    * Fixed consistency in processing and store ``tstart``/``tstop`` keywords in
+      :meth:`~gbm.data.RSP.from_arrays` 
+    
+    * Added options to :meth:`~gbm.data.RSP.write`
+    
+    * Fixed incorrect element accessor in :meth:`~gbm.data.RSP.interpolate`
+    
+    * Fixed interpolation bounds to be within the time period covered by the RSP
+    
+
+----
+
+Background Estimation Module
+----------------------------
+
+* Fixed incorrect shape of ``counts`` property after calling 
+  :meth:`BackgroundRates.integrate_energy() <gbm.background.BackgroundRates.integrate_energy>`
+
+* Fixed incorrect initialization after slicing :class:`~gbm.background.BackgroundSpectrum`
+
+* Bug fix for uncertainty calculation in the fast approximation of 
+  :class:`~gbm.background.unbinned.NaivePoisson` (credit: J. Wood)
+
+----
+
+Simulations Module
+------------------
+
+* Added keyword for user-defined deadtime in 
+  :class:`~gbm.simulate.TteSourceSimulator` and 
+  :class:`~gbm.simulate.TteBackgroundSimulator`
+
+* Fixed bug in time arrival simulation in 
+  :class:`~gbm.simulate.generators.EventSpectrumGenerator`
+
+----
+
+Plotting Module
+---------------
+
+* Added missing standard properties to :class:`~gbm.plot.ResponseMatrix`,
+  :class:`~gbm.plot.ChannelEffectiveArea`, and :class:`~gbm.plot.PhotonEffectiveArea`
+
+* Fix treatment of null ``detectors`` argument in 
+  :meth:`SkyPlot.add_poshist() <gbm.plot.SkyPlot.add_poshist>`
+
+----
+
+Utilities
+----------
+
+* Proper MJD conversion scaling to UTC in :class:`~gbm.time.Met`
+
+* Enforced consistent behavior for ``deg`` option in the relevant 
+  :mod:`gbm.coords` coordinate conversions (credit: I. Martinez-Castellanos)
+
+----
+
+Documentation
+-------------
+  
+* Minor updates to existing Notebooks and API documentation resulting from the
+  above changes

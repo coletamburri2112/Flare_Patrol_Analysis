@@ -1,0 +1,1366 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.data.scat &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.data.scat</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.data.scat</h1><div class="highlight"><pre>
+<span></span><span class="c1"># scat.py: GBM SCAT file class</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">headers</span> <span class="k">as</span> <span class="n">hdr</span>
+<span class="kn">from</span> <span class="nn">gbm.time</span> <span class="kn">import</span> <span class="n">Met</span>
+<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DataFile</span>
+
+
+<div class="viewcode-block" id="Parameter"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Parameter">[docs]</a><span class="k">class</span> <span class="nc">Parameter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A fit parameter class</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        value (float): The central fit value</span>
+<span class="sd">        uncert (float or 2-tuple): The 1-sigma uncertainty. If a 2-tuple, then </span>
+<span class="sd">                                   is of the form (low, high)</span>
+<span class="sd">        name (str, optional): The name of the parameter</span>
+<span class="sd">        units (str, optional): The units of the parameter</span>
+<span class="sd">        support (2-tuple, optional): The valid support of the parameter</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): The name of the parameter</span>
+<span class="sd">        support (2-tuple): The valid support of the parameter</span>
+<span class="sd">        uncertainty (2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        units (str): The units of the parameter</span>
+<span class="sd">        value (float): The central fit value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">support</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uncert</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">uncert</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">uncert</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">uncert</span> <span class="o">=</span> <span class="p">(</span><span class="n">uncert</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uncert</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;uncertainty must be a 1- or 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uncert</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">uncert</span> <span class="o">=</span> <span class="p">(</span><span class="n">uncert</span><span class="p">,</span> <span class="n">uncert</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;uncertainty must be a float or 1- or 2-tuple&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_uncert</span> <span class="o">=</span> <span class="n">uncert</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">support</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uncert</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+    
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str_format</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">uncertainty</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">uncertainty</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;+/- </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uncertainty</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;+</span><span class="si">{0}</span><span class="s1">/-</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uncertainty</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uncertainty</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1"> </span><span class="si">{3}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_str_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.005</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.005</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">uncertainty</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="p">[</span><span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:.2e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">val_coeff</span><span class="p">,</span> <span class="n">val_exp</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">)</span>
+            <span class="n">val_exp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val_exp</span><span class="p">)</span>
+            <span class="n">uncertainty</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{0:.2e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">]</span>
+            <span class="n">uncert_coeff</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">uncert_exp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">uncert</span> <span class="ow">in</span> <span class="n">uncertainty</span><span class="p">:</span>
+                <span class="n">uncert_coeff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uncert</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">uncert_exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">uncert</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Parameter.valid_value"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Parameter.valid_value">[docs]</a>    <span class="k">def</span> <span class="nf">valid_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the parameter value is within the allowed parameter range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">support</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">support</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Parameter.one_sigma_range"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Parameter.one_sigma_range">[docs]</a>    <span class="k">def</span> <span class="nf">one_sigma_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the 1 sigma range of the parameter fit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Parameter.to_fits_value"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Parameter.to_fits_value">[docs]</a>    <span class="k">def</span> <span class="nf">to_fits_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return as a tuple to be used for a FITS file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): 2-value tuple (value, uncertainty) or 3-value tuple </span>
+<span class="sd">                     (value, +uncertainty, -uncertainty)   </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div></div>
+
+<span class="k">class</span> <span class="nc">PhotonFlux</span><span class="p">(</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A photon flux. Inherits from :class:`Parameter`.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        value (float): The central flux value</span>
+<span class="sd">        uncert (float or 2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        energy_range (tuple): A 2-tuple (low, high) for the energy range</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        energy_range (tuple): The enery range (low, high)</span>
+<span class="sd">        name (str): &#39;Photon Flux&#39;</span>
+<span class="sd">        support (2-tuple): (0.0, np.inf)</span>
+<span class="sd">        uncertainty (2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        units (str): &#39;ph/cm^2/s&#39;</span>
+<span class="sd">        value (float): The central flux value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">energy_range</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Photon Flux&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;ph/cm^2/s&#39;</span><span class="p">,</span>
+                         <span class="n">support</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span> <span class="o">=</span> <span class="n">energy_range</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span>
+
+<span class="k">class</span> <span class="nc">PhotonFluence</span><span class="p">(</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A photon fluence. Inherits from :class:`Parameter`.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        value (float): The central fluence value</span>
+<span class="sd">        uncert (float or 2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        energy_range (tuple): A 2-tuple (low, high) for the energy range</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        energy_range (tuple): The enery range (low, high)</span>
+<span class="sd">        name (str): &#39;Photon Fluence&#39;</span>
+<span class="sd">        support (2-tuple): (0.0, np.inf)</span>
+<span class="sd">        uncertainty (2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        units (str): &#39;ph/cm^2&#39;</span>
+<span class="sd">        value (float): The central fluence value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">energy_range</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Photon Fluence&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;ph/cm^2&#39;</span><span class="p">,</span>
+                         <span class="n">support</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span> <span class="o">=</span> <span class="n">energy_range</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span>
+
+<span class="k">class</span> <span class="nc">EnergyFlux</span><span class="p">(</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An energy flux. Inherits from :class:`Parameter`.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        value (float): The central flux value</span>
+<span class="sd">        uncert (float or 2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        energy_range (tuple): A 2-tuple (low, high) for the energy range</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        energy_range (tuple): The enery range (low, high)</span>
+<span class="sd">        name (str): &#39;Energy Flux&#39;</span>
+<span class="sd">        support (2-tuple): (0.0, np.inf)</span>
+<span class="sd">        uncertainty (2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        units (str): &#39;erg/cm^2/s&#39;</span>
+<span class="sd">        value (float): The central flux value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">energy_range</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Energy Flux&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;erg/cm^2/s&#39;</span><span class="p">,</span>
+                         <span class="n">support</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span> <span class="o">=</span> <span class="n">energy_range</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span>
+
+<span class="k">class</span> <span class="nc">EnergyFluence</span><span class="p">(</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An energy fluence. Inherits from :class:`Parameter`.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        value (float): The central fluence value</span>
+<span class="sd">        uncert (float or 2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        energy_range (tuple): A 2-tuple (low, high) for the energy range</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        energy_range (tuple): The enery range (low, high)</span>
+<span class="sd">        name (str): &#39;Energy Fluence&#39;</span>
+<span class="sd">        support (2-tuple): (0.0, np.inf)</span>
+<span class="sd">        uncertainty (2-tuple): The 1-sigma uncertainty</span>
+<span class="sd">        units (str): &#39;erg/cm^2&#39;</span>
+<span class="sd">        value (float): The central fluence value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">energy_range</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Energy Fluence&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;erg/cm^2&#39;</span><span class="p">,</span>
+                         <span class="n">support</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span> <span class="o">=</span> <span class="n">energy_range</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span>
+
+
+<span class="k">class</span> <span class="nc">ModelFit</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A container for the info from a model fit</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        name (str): The name of the model</span>
+<span class="sd">        time_range (float, float): The time range of the model fit, (low, high)</span>
+<span class="sd">        parameters (list, optional): A list of model parameters</span>
+<span class="sd">        photon_flux (:class:`PhotonFlux`, optional): The photon flux</span>
+<span class="sd">        energy_flux (:class:`EnergyFlux`, optional): The energy flux</span>
+<span class="sd">        photon_fluence (:class:`PhotonFluence`, optional): The photon fluence</span>
+<span class="sd">        energy_fluence (:class:`EnergyFluence`, optional): The energy fluence</span>
+<span class="sd">        flux_energy_range (tuple, optional): The energy range of the flux</span>
+<span class="sd">                                             and fluence, (low, high)</span>
+<span class="sd">        stat_name (str, optional): The name of the fit statistic</span>
+<span class="sd">        stat_value (float, optional): The fit statistic value</span>
+<span class="sd">        dof (int, optional): The degrees-of-freedom of the fit</span>
+<span class="sd">        covariance (np.array, optional): The covariance matrix of the fit</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fit</span>
+<span class="sd">        dof (int): The degrees-of-freedom of the fit</span>
+<span class="sd">        energy_fluence (:class:`EnergyFluence`): The energy fluence</span>
+<span class="sd">        energy_flux (:class:`EnergyFlux``): The energy flux</span>
+<span class="sd">        flux_energy_range (tuple): The energy range of the flux and fluence, </span>
+<span class="sd">                                   (low, high)</span>
+<span class="sd">        name (str): The name of the model</span>
+<span class="sd">        parameters (list): A list of model parameters</span>
+<span class="sd">        photon_fluence (:class:`PhotonFluence`): The photon fluence</span>
+<span class="sd">        photon_flux (:class:`PhotonFlux`): The photon flux</span>
+<span class="sd">        stat_name (str): The name of the fit statistic</span>
+<span class="sd">        stat_value (float): The fit statistic value</span>
+<span class="sd">        time_range (float, float): The time range of the model fit, (low, high)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_range</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;time_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;time_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span> <span class="o">=</span> <span class="n">time_range</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_flux</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_flux</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_fluence</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_fluence</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flux_energy_range</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stat_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stat_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dof</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_covariance</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_by_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">param_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">   &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="se">\n</span><span class="s1">   </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">param_str</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span>
+    <span class="nd">@parameters</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;parameters must be a list of parameters&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;parameters must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="n">val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photon_flux</span>
+    <span class="nd">@photon_flux</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">photon_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_flux must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_flux</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_flux</span>
+    <span class="nd">@energy_flux</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">energy_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;energy_flux must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_flux</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_fluence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photon_fluence</span>
+    <span class="nd">@photon_fluence</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">photon_fluence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_fluence must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_fluence</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_fluence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_fluence</span>
+    <span class="nd">@energy_fluence</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">energy_fluence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;energy_fluence must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_fluence</span> <span class="o">=</span> <span class="n">val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">flux_energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flux_energy_range</span>
+    <span class="nd">@flux_energy_range</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">flux_energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;flux_energy_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;flux_energy_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flux_energy_range</span> <span class="o">=</span> <span class="n">val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stat_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat_name</span>
+    <span class="nd">@stat_name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stat_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stat_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stat_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat_value</span>
+    <span class="nd">@stat_value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stat_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">float_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;stat_value must be a float&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stat_value</span> <span class="o">=</span> <span class="n">float_val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dof</span>
+    <span class="nd">@dof</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">int_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;dof must be an integer&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dof</span> <span class="o">=</span> <span class="n">int_val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_covariance</span>
+    <span class="nd">@covariance</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;covariance must an array&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;covariance must be a n x n array&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;covariance must be a n x n array&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_covariance</span> <span class="o">=</span> <span class="n">val</span>
+    
+    <span class="k">def</span> <span class="nf">parameter_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of parameter names</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (list): The parameter names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">to_fits_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the contained data as a FITS table row</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (astropy.io.fits.BinTableHDU): The FITS table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numparams</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;TIMEBIN&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;2D&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">]))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PARAM</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                              <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()])</span>
+            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTFLUX&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_flux</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTFLNC&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_fluence</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;NRGFLUX&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_flux</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;NRGFLNC&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_fluence</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;REDCHSQ&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;2E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stat_value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;CHSQDOF&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;1I&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;COVARMAT&#39;</span><span class="p">,</span>
+                                <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">E&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numparams</span> <span class="o">*</span> <span class="n">numparams</span><span class="p">),</span>
+                                <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;(</span><span class="si">{0}</span><span class="s1">,</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numparams</span><span class="p">),</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">covariance</span><span class="p">]))</span>
+
+        <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FIT PARAMS&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hdu</span>
+    
+    <span class="k">def</span> <span class="nf">_init_by_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">property</span><span class="p">):</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not a valid attribute&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+<div class="viewcode-block" id="GbmModelFit"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmModelFit">[docs]</a><span class="k">class</span> <span class="nc">GbmModelFit</span><span class="p">(</span><span class="n">ModelFit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for the info from a model fit, with values used in the </span>
+<span class="sd">    GBM SCAT files. Inherits from :class:`ModelFit`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fit</span>
+<span class="sd">        dof (int): The degrees-of-freedom of the fit</span>
+<span class="sd">        duration_fluence (:class:`EnergyFluence`): The energy fluence over the</span>
+<span class="sd">                                                   duration energy range, </span>
+<span class="sd">                                                   nominally 50-300 keV</span>
+<span class="sd">        energy_fluence (:class:`EnergyFluence`): The energy fluence, nominally </span>
+<span class="sd">                                                 over 10-1000 keV</span>
+<span class="sd">        energy_fluence_50_300 (:class:`EnergyFluence`): The energy fluence over</span>
+<span class="sd">                                                        50-300 keV</span>
+<span class="sd">        energy_flux (:class:`EnergyFlux`): The energy flux, nominally over </span>
+<span class="sd">                                           10-1000 keV</span>
+<span class="sd">        flux_energy_range (tuple): The energy range of the flux and fluence, </span>
+<span class="sd">                                   (low, high)</span>
+<span class="sd">        name (str): The name of the model</span>
+<span class="sd">        parameters (list): A list of model parameters</span>
+<span class="sd">        photon_fluence (:class:`PhotonFluence`): The photon fluence, nominally </span>
+<span class="sd">                                                 over 10-1000 keV</span>
+<span class="sd">        photon_flux (:class:`PhotonFlux`): The photon flux, nominally over </span>
+<span class="sd">                                           10-1000 keV</span>
+<span class="sd">        photon_flux_50_300 (:class:`PhotonFlux`): The photon flux over 50-300 keV</span>
+<span class="sd">        stat_name (str): The name of the fit statistic</span>
+<span class="sd">        stat_value (float): The fit statistic value</span>
+<span class="sd">        time_range (float, float): The time range of the model fit, (low, high)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_flux_50_300</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_fluence_50_300</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_duration_fluence</span> <span class="o">=</span> <span class="kc">None</span>
+    
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_flux_50_300</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photon_flux_50_300</span>
+    <span class="nd">@photon_flux_50_300</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">photon_flux_50_300</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_flux_50_300 must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_flux_50_300</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_fluence_50_300</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_fluence_50_300</span>
+    <span class="nd">@energy_fluence_50_300</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">energy_fluence_50_300</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;energy_fluence_50_300 must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_fluence_50_300</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">duration_fluence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration_fluence</span>
+    <span class="nd">@duration_fluence</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">duration_fluence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;duration_fluence must be of Parameter type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_duration_fluence</span> <span class="o">=</span> <span class="n">val</span>
+
+<div class="viewcode-block" id="GbmModelFit.to_fits_row"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmModelFit.to_fits_row">[docs]</a>    <span class="k">def</span> <span class="nf">to_fits_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the contained data as a FITS table row</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (astropy.io.fits.BinTableHDU): The FITS table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numparams</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;TIMEBIN&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;2D&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">]))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PARAM</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                              <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()])</span>
+            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTFLUX&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_flux</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTFLNC&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_fluence</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;NRGFLUX&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_flux</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;NRGFLNC&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_fluence</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTFLUXB&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">photon_flux_50_300</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;NRGFLNCB&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">energy_fluence_50_300</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DURFLNC&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;3E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">duration_fluence</span><span class="o">.</span><span class="n">to_fits_value</span><span class="p">()]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;REDCHSQ&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;2E&#39;</span><span class="p">,</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">stat_value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;CHSQDOF&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;1I&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">]))</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;COVARMAT&#39;</span><span class="p">,</span>
+                                <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">E&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numparams</span> <span class="o">*</span> <span class="n">numparams</span><span class="p">),</span>
+                                <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;(</span><span class="si">{0}</span><span class="s1">,</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numparams</span><span class="p">),</span>
+                                <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">covariance</span><span class="p">]))</span>
+
+        <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FIT PARAMS&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hdu</span></div>
+
+<div class="viewcode-block" id="GbmModelFit.from_fits_row"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmModelFit.from_fits_row">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_fits_row</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fits_row</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">flux_range</span><span class="o">=</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span> <span class="n">dur_range</span><span class="o">=</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;Read a FITS row and return a :class:`GbmModelFit` object</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (:class:`GbmModelFit`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time_range</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;TIMEBIN&#39;</span><span class="p">])</span>
+        <span class="n">nparams</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fits_row</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span> \
+                       <span class="k">if</span> <span class="s1">&#39;PARAM&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">param_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">nparams</span>
+        
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nparams</span><span class="p">):</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PARAM&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> 
+                          <span class="n">name</span><span class="o">=</span><span class="n">param_names</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        
+        <span class="n">pflux</span> <span class="o">=</span> <span class="n">PhotonFlux</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTFLUX&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> 
+                           <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTFLUX&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">flux_range</span><span class="p">)</span>
+        <span class="n">pflnc</span> <span class="o">=</span> <span class="n">PhotonFluence</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTFLNC&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTFLNC&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">flux_range</span><span class="p">)</span>
+        <span class="n">eflux</span> <span class="o">=</span> <span class="n">EnergyFlux</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;NRGFLUX&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                           <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;NRGFLUX&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">flux_range</span><span class="p">)</span>
+        <span class="n">eflnc</span> <span class="o">=</span> <span class="n">EnergyFluence</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;NRGFLNC&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;NRGFLNC&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">flux_range</span><span class="p">)</span>
+        <span class="n">pfluxb</span> <span class="o">=</span> <span class="n">PhotonFlux</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTFLUXB&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> 
+                            <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTFLUXB&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+        <span class="n">eflncb</span> <span class="o">=</span> <span class="n">EnergyFluence</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;NRGFLNCB&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> 
+                               <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;NRGFLNCB&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+        <span class="n">durflnc</span> <span class="o">=</span> <span class="n">PhotonFluence</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;DURFLNC&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="nb">tuple</span><span class="p">(</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;DURFLNC&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">dur_range</span><span class="p">)</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;CHSQDOF&#39;</span><span class="p">]</span>
+        <span class="c1"># scat provides the [fit stat, chisq], while bcat is only the fit stat</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stat_val</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;REDCHSQ&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">dof</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">stat_val</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;REDCHSQ&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">dof</span>
+        <span class="n">covar</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;COVARMAT&#39;</span><span class="p">]</span>
+                             
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">photon_flux</span><span class="o">=</span><span class="n">pflux</span><span class="p">,</span>
+                  <span class="n">photon_fluence</span><span class="o">=</span><span class="n">pflnc</span><span class="p">,</span> <span class="n">energy_flux</span><span class="o">=</span><span class="n">eflux</span><span class="p">,</span> <span class="n">energy_fluence</span><span class="o">=</span><span class="n">eflnc</span><span class="p">,</span>
+                  <span class="n">flux_energy_range</span><span class="o">=</span><span class="n">flux_range</span><span class="p">,</span> <span class="n">stat_value</span><span class="o">=</span><span class="n">stat_val</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span>
+                  <span class="n">covariance</span><span class="o">=</span><span class="n">covar</span><span class="p">,</span> <span class="n">photon_flux_50_300</span><span class="o">=</span><span class="n">pfluxb</span><span class="p">,</span> 
+                  <span class="n">energy_fluence_50_300</span><span class="o">=</span><span class="n">eflncb</span><span class="p">,</span> <span class="n">duration_fluence</span><span class="o">=</span><span class="n">durflnc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div></div>
+        
+
+<div class="viewcode-block" id="DetectorData"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DetectorData">[docs]</a><span class="k">class</span> <span class="nc">DetectorData</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;A container for detector info used in a fit</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        instrument (str): The name of the instrument</span>
+<span class="sd">        detector (str): The name of the detector</span>
+<span class="sd">        datatype (str): The name of the datatype</span>
+<span class="sd">        filename (str): The filename of the data file</span>
+<span class="sd">        numchans (int): Number of energy channels used</span>
+<span class="sd">        active (bool, optional): True if the detector is used in the fit</span>
+<span class="sd">        response (str, optional): The filename of the detector response</span>
+<span class="sd">        time_range (tuple, optional): The time range of the data used</span>
+<span class="sd">        energy_range (tuple, optional): The energy range of the data used</span>
+<span class="sd">        channel_range (tuple, optional): The energy channel range of the data</span>
+<span class="sd">        energy_edges (np.array, optional): The edges of the energy channels</span>
+<span class="sd">        photon_counts (np.array, optional): The deconvolved photon counts for </span>
+<span class="sd">                                            the detector</span>
+<span class="sd">        photon_model (np.array, optional): The photon model for the detector</span>
+<span class="sd">        photon_errors (np.array, optional): The deconvolved photon count errors </span>
+<span class="sd">                                            for the detector</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        active (bool, optional): True if the detector is used in the fit</span>
+<span class="sd">        channel_range = (int, int): The energy channel range of the data</span>
+<span class="sd">        datatype (str): The name of the datatype</span>
+<span class="sd">        detector (str): The name of the detector</span>
+<span class="sd">        energy_edges (np.array): The edges of the energy channels</span>
+<span class="sd">        energy_range (float, float): The energy range of the data used</span>
+<span class="sd">        filename (str): The filename of the data file</span>
+<span class="sd">        instrument (str): The name of the instrument</span>
+<span class="sd">        numchans (int): Number of energy channels used</span>
+<span class="sd">        photon_counts (np.array): The deconvolved photon counts for the detector</span>
+<span class="sd">        photon_errors (np.array): The deconvolved photon count errors for the </span>
+<span class="sd">                                  detector</span>
+<span class="sd">        photon_model (np.array): The photon model for the detector</span>
+<span class="sd">        response (str): The filename of the detector response</span>
+<span class="sd">        time_range (float, float): The time range of the data used</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">detector</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">numchans</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span> <span class="o">=</span> <span class="n">instrument</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detector</span> <span class="o">=</span> <span class="n">detector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span> <span class="o">=</span> <span class="n">datatype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_numchans</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numchans</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_response</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_range</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_edges</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_counts</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_errors</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_by_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            
+    <span class="c1"># read-only</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instrument</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">detector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detector</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numchans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numchans</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
+    <span class="nd">@active</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bool_val</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;active must be Boolean&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">bool_val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_response</span>
+    <span class="nd">@response</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;response filename must be a string&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_response</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span>
+    <span class="nd">@time_range</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;time_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;time_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;time_range must be of form (low, high)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span>
+    <span class="nd">@energy_range</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;energy_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;energy_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;energy_range must be of form (low, high)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_range</span> <span class="o">=</span> <span class="n">val</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">channel_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_range</span>
+    <span class="nd">@channel_range</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">channel_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;channel_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;channel_range must be a 2-tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;channel_range must be of form (low, high)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_range</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">channel_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span>
+    <span class="nd">@channel_mask</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">channel_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;channel_mask must be an array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_edges</span>
+    <span class="nd">@energy_edges</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">energy_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;energy_edges must be an array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_edges</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photon_counts</span>
+    <span class="nd">@photon_counts</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">photon_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_counts must be an array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_counts</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photon_model</span>
+    <span class="nd">@photon_model</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">photon_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_model must be an array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_model</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photon_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photon_errors</span>
+    <span class="nd">@photon_errors</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">photon_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;photon_errors must be an array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photon_errors</span> <span class="o">=</span> <span class="n">val</span>
+
+<div class="viewcode-block" id="DetectorData.to_fits_row"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DetectorData.to_fits_row">[docs]</a>    <span class="k">def</span> <span class="nf">to_fits_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the contained data as a FITS table row</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (astropy.io.fits.BinTableHDU): The FITS row</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numchans</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_edges</span><span class="p">)</span>
+        <span class="n">e_dim</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">numchans</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;E&#39;</span>
+        <span class="n">p_dim</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">numchans</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;E&#39;</span>
+        <span class="n">p_unit</span> <span class="o">=</span> <span class="s1">&#39;Photon cm^-2 s^-1 keV^-1&#39;</span>
+        <span class="n">fit_int</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> s, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">fit_int</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> keV, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">energy_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">fit_int</span> <span class="o">+=</span> <span class="s1">&#39;channels </span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">channel_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">col1</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;INSTRUME&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;20A&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument</span><span class="p">])</span>
+        <span class="n">col2</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DETNAM&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;20A&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">])</span>
+        <span class="n">col3</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DATATYPE&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;20A&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">])</span>
+        <span class="n">col4</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DETSTAT&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;20A&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;INCLUDED&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="k">else</span> <span class="s1">&#39;OMITTED&#39;</span><span class="p">])</span>
+        <span class="n">col5</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DATAFILE&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;60A&#39;</span><span class="p">,</span>
+                           <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">])</span>
+        <span class="n">col6</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;RSPFILE&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;60A&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">])</span>
+        <span class="n">col7</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;FIT_INT&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;60A&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="n">fit_int</span><span class="p">])</span>
+        <span class="n">col8</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;CHANNUM&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;1J&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="n">numchans</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">col9</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;FITCHAN&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">J&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numchans</span><span class="p">),</span>
+                           <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_mask</span><span class="p">])</span>
+        <span class="n">col10</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;E_EDGES&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">e_dim</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;keV&#39;</span><span class="p">,</span>
+                            <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_edges</span><span class="p">])</span>
+        <span class="n">col11</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTCNTS&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">p_dim</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">p_unit</span><span class="p">,</span>
+                            <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_counts</span><span class="p">])</span>
+        <span class="n">col12</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTMODL&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">p_dim</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">p_unit</span><span class="p">,</span>
+                            <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_model</span><span class="p">])</span>
+        <span class="n">col13</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PHTERRS&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">p_dim</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">p_unit</span><span class="p">,</span>
+                            <span class="n">array</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_errors</span><span class="p">])</span>
+        <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span><span class="p">,</span> <span class="n">col4</span><span class="p">,</span> <span class="n">col5</span><span class="p">,</span> <span class="n">col6</span><span class="p">,</span>
+             <span class="n">col7</span><span class="p">,</span> <span class="n">col8</span><span class="p">,</span> <span class="n">col9</span><span class="p">,</span> <span class="n">col10</span><span class="p">,</span> <span class="n">col11</span><span class="p">,</span>
+             <span class="n">col12</span><span class="p">,</span> <span class="n">col13</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;DETECTOR DATA&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hdu</span></div>
+
+<div class="viewcode-block" id="DetectorData.from_fits_row"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DetectorData.from_fits_row">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_fits_row</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fits_row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read a FITS row and return a DetectorData object</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (:class:`DetectorData`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instrument</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;INSTRUME&#39;</span><span class="p">]</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;DETNAM&#39;</span><span class="p">]</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;DATATYPE&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;DETSTAT&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;INCLUDED&#39;</span><span class="p">:</span>
+            <span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">datafile</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;DATAFILE&#39;</span><span class="p">]</span>
+        <span class="n">rspfile</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;RSPFILE&#39;</span><span class="p">]</span>
+        <span class="n">fit_ints</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;FIT_INT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">time_range</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">fit_ints</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">fit_ints</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">energy_range</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">fit_ints</span><span class="p">[</span><span class="mi">3</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">fit_ints</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+        <span class="n">channel_range</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fit_ints</span><span class="p">[</span><span class="mi">8</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">fit_ints</span><span class="p">[</span><span class="mi">9</span><span class="p">]))</span>
+        <span class="n">numchans</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;CHANNUM&#39;</span><span class="p">]</span>
+        <span class="n">channel_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">channel_mask</span><span class="p">[</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;FITCHAN&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span><span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;FITCHAN&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">energy_edges</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;E_EDGES&#39;</span><span class="p">]</span>
+        <span class="n">photon_counts</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTCNTS&#39;</span><span class="p">]</span>
+        <span class="n">photon_model</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTMODL&#39;</span><span class="p">]</span>
+        <span class="n">photon_errors</span> <span class="o">=</span> <span class="n">fits_row</span><span class="p">[</span><span class="s1">&#39;PHTERRS&#39;</span><span class="p">]</span>             
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">datafile</span><span class="p">,</span> <span class="n">numchans</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">active</span><span class="p">,</span>
+                  <span class="n">response</span><span class="o">=</span><span class="n">rspfile</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="n">time_range</span><span class="p">,</span> 
+                  <span class="n">energy_range</span><span class="o">=</span><span class="n">energy_range</span><span class="p">,</span> <span class="n">channel_range</span><span class="o">=</span><span class="n">channel_range</span><span class="p">,</span> 
+                  <span class="n">channel_mask</span><span class="o">=</span><span class="n">channel_mask</span><span class="p">,</span> <span class="n">energy_edges</span><span class="o">=</span><span class="n">energy_edges</span><span class="p">,</span> 
+                  <span class="n">photon_counts</span><span class="o">=</span><span class="n">photon_counts</span><span class="p">,</span> <span class="n">photon_model</span><span class="o">=</span><span class="n">photon_model</span><span class="p">,</span> 
+                  <span class="n">photon_errors</span><span class="o">=</span><span class="n">photon_errors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+    <span class="k">def</span> <span class="nf">_init_by_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">property</span><span class="p">):</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not a valid attribute&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="Scat"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Scat">[docs]</a><span class="k">class</span> <span class="nc">Scat</span><span class="p">(</span><span class="n">DataFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container class for the spectral fit data in an SCAT file</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        detectors (list): The :class:`DetectorData` objects used in the analysis</span>
+<span class="sd">        headers (dict): The SCAT file headers</span>
+<span class="sd">        model_fits (list): The :class:`GbmModelFit` objects, one for each model </span>
+<span class="sd">                           fit</span>
+<span class="sd">        num_detectors (int): The number of detectors in the SCAT file</span>
+<span class="sd">        num_fits (int): The number of model fits</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_fits</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Scat.add_detector_data"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Scat.add_detector_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_detector_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detector_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new detector to the Scat</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            detector_data (:class:`DetectorData`): The detector data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">detector_data</span><span class="p">,</span> <span class="n">DetectorData</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Can only add DetectorData objects&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detector_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scat.add_model_fit"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Scat.add_model_fit">[docs]</a>    <span class="k">def</span> <span class="nf">add_model_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_fit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new model fit to the Scat</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            model_fit (:class:`GbmModelFit`): The model fit data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_fit</span><span class="p">,</span> <span class="n">GbmModelFit</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Can only add GbmModelFit objects&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_fit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scat.open"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Scat.open">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a SCAT FITS file and create a Scat object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The file to open</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (:class:`Scat`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_file_properties</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="c1"># open FITS file</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">hdulist</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">hdu</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">})</span>
+
+            <span class="c1"># read the detector data HDU</span>
+            <span class="n">det_data</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;DETECTOR DATA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">det_data</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">add_detector_data</span><span class="p">(</span><span class="n">DetectorData</span><span class="o">.</span><span class="n">from_fits_row</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+
+            <span class="c1"># read the fit params HDU</span>
+            <span class="n">fit_hdu</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;FIT PARAMS&#39;</span><span class="p">]</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_from_fitparam_hdu</span><span class="p">(</span><span class="n">fit_hdu</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="Scat.write"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.Scat.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write a Scat object to a FITS file</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): The directory where the file is to be written</span>
+<span class="sd">            filename (str, optional): The filename.  If not set, a default </span>
+<span class="sd">                                      filename will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Filename not set&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_obj</span><span class="o">.</span><span class="n">basename</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">)</span>
+
+        <span class="c1"># initialize the FITS file</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">()</span>
+        <span class="n">prihdr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_header</span><span class="p">()</span>
+        <span class="n">primary_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">prihdr</span><span class="p">)</span>
+        <span class="n">primary_hdu</span><span class="o">.</span><span class="n">add_checksum</span><span class="p">()</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primary_hdu</span><span class="p">)</span>
+
+        <span class="c1"># construct the detector data extension</span>
+        <span class="n">det_hdu</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detectors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">det_hdu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">det_hdu</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">to_fits_row</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">det_hdu</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">det_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">detector</span><span class="o">.</span><span class="n">to_fits_row</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">det_hdu</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_detector_hdr</span><span class="p">(</span><span class="n">det_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">det_hdu</span><span class="o">.</span><span class="n">add_checksum</span><span class="p">()</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det_hdu</span><span class="p">)</span>
+
+        <span class="c1"># construct the fit extension</span>
+        <span class="n">fit_hdu</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">fit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fit_hdu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fit_hdu</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">to_fits_row</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fit_hdu</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">fit_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">to_fits_row</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">fit_hdu</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_fitparam_hdr</span><span class="p">(</span><span class="n">fit_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">fit_hdu</span><span class="o">.</span><span class="n">add_checksum</span><span class="p">()</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fit_hdu</span><span class="p">)</span>
+
+        <span class="c1"># write out the file</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">+</span> <span class="n">filename</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">checksum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_from_fitparam_hdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fit_hdu</span><span class="p">):</span>
+
+        <span class="n">fit_data</span> <span class="o">=</span> <span class="n">fit_hdu</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">fit_hdr</span> <span class="o">=</span> <span class="n">fit_hdu</span><span class="o">.</span><span class="n">header</span>
+        <span class="n">nparams</span> <span class="o">=</span> <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;N_PARAM&#39;</span><span class="p">]</span>
+        
+        <span class="c1"># find unique models in the event there are multiple components</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nparams</span><span class="p">)]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">models</span><span class="p">)))</span>
+
+        <span class="c1"># the parameter names</span>
+        <span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nparams</span><span class="p">)]</span>
+        
+        <span class="c1"># populate each model fit</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fit_data</span><span class="p">:</span>
+            <span class="n">modelfit</span> <span class="o">=</span> <span class="n">GbmModelFit</span><span class="o">.</span><span class="n">from_fits_row</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span>
+                                                 <span class="n">param_names</span><span class="o">=</span><span class="n">param_names</span><span class="p">)</span>
+            <span class="n">modelfit</span><span class="o">.</span><span class="n">stat_name</span> <span class="o">=</span> <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;STATISTC&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_model_fit</span><span class="p">(</span><span class="n">modelfit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_detector_hdr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">det_hdr</span><span class="p">):</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Instrument name for this detector&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="s1">&#39;TTYPE2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Detector number; if one of several available&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Data type used for this analysis&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Was this detector INCLUDED or OMITTED&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Data file name for this dataset&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE6&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Response file name for this dataset&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE7&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Fit intervals&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="s1">&#39;TTYPE8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Total number of energy channels for this detector&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="s1">&#39;TTYPE9&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Channels selected in fitting this detector&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE10&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Energy edges for each selected detector&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE11&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Array of photon counts data&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE12&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Array of photon model data&#39;</span>
+        <span class="n">det_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE13&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Array of errors in photon counts data&#39;</span>
+        <span class="n">det_hdr</span><span class="p">[</span><span class="s1">&#39;NUMFITS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">),</span> <span class="s1">&#39;Number of spectral fits in the data&#39;</span><span class="p">)</span>
+        <span class="n">prihdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_header</span><span class="p">()</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ORIGIN&#39;</span><span class="p">,</span> <span class="s1">&#39;TELESCOP&#39;</span><span class="p">,</span> <span class="s1">&#39;INSTRUME&#39;</span><span class="p">,</span> <span class="s1">&#39;OBSERVER&#39;</span><span class="p">,</span> <span class="s1">&#39;MJDREFI&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;MJDREFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;TIMESYS&#39;</span><span class="p">,</span> <span class="s1">&#39;TIMEUNIT&#39;</span><span class="p">,</span> <span class="s1">&#39;DATE-OBS&#39;</span><span class="p">,</span> <span class="s1">&#39;DATE-END&#39;</span><span class="p">,</span> <span class="s1">&#39;TSTART&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;TSTOP&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">det_hdr</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">prihdu</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">prihdu</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">det_hdr</span>
+
+    <span class="k">def</span> <span class="nf">_update_fitparam_hdr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fit_hdr</span><span class="p">):</span>
+        <span class="n">e_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flux_energy_range</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">param_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameter_list</span><span class="p">()</span>
+        <span class="n">numparams</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_names</span><span class="p">)</span>
+        <span class="n">statistic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stat_name</span>
+
+        <span class="n">g_range</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1"> keV)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">b_range</span> <span class="o">=</span> <span class="s1">&#39;(50-300 keV)&#39;</span>
+
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s1">&#39;TTYPE1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Start and stop times relative to trigger&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numparams</span><span class="p">):</span>
+            <span class="n">colname</span> <span class="o">=</span> <span class="s1">&#39;TTYPE</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span>
+                                                          <span class="n">param_names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ttypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;TTYPE&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">numparams</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Photon Flux (ph/s-cm^2) std energy &#39;</span> <span class="o">+</span> <span class="n">g_range</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Photon Fluence (ph/cm^2) std energy &#39;</span> <span class="o">+</span> <span class="n">g_range</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Energy Flux (erg/s-cm^2) std energy &#39;</span> <span class="o">+</span> <span class="n">g_range</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Energy Fluence (erg/cm^2) std energy &#39;</span> <span class="o">+</span> <span class="n">g_range</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Reduced Chi^2 (1) and fitting statistic (2)&#39;</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="n">ttypes</span><span class="p">[</span><span class="mi">5</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Degrees of Freedom&#39;</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">6</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Photon Flux (ph/s-cm^2) BATSE energy &#39;</span> <span class="o">+</span> <span class="n">b_range</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">7</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Photon Fluence (ph/cm^2) for durations (user)&#39;</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">8</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Energy Fluence (erg/cm^2) BATSE energy &#39;</span> <span class="o">+</span> <span class="n">b_range</span>
+        <span class="n">fit_hdr</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span>
+            <span class="n">ttypes</span><span class="p">[</span><span class="mi">9</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;Covariance matrix for the fir (N_PARAM^2)&#39;</span>
+        <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;N_PARAM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">numparams</span><span class="p">,</span> <span class="s1">&#39;Total number of fit parameters (PARAMn)&#39;</span><span class="p">)</span>
+        <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;FLU_LOW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">e_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;Lower limit of flux/fluence integration (keV)&#39;</span><span class="p">)</span>
+        <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;FLU_HIGH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">e_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;Upeer limit of flux/fluence integration (keV)&#39;</span><span class="p">)</span>
+        <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;STATISTC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">statistic</span><span class="p">,</span> <span class="s1">&#39;Indicates merit function used for fitting&#39;</span><span class="p">)</span>
+        <span class="n">fit_hdr</span><span class="p">[</span><span class="s1">&#39;NUMFITS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_fits</span><span class="p">),</span> <span class="s1">&#39;Number of spectral fits in the data&#39;</span><span class="p">)</span>
+
+        <span class="n">prihdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_header</span><span class="p">()</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ORIGIN&#39;</span><span class="p">,</span> <span class="s1">&#39;TELESCOP&#39;</span><span class="p">,</span> <span class="s1">&#39;INSTRUME&#39;</span><span class="p">,</span> <span class="s1">&#39;OBSERVER&#39;</span><span class="p">,</span> <span class="s1">&#39;MJDREFI&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;MJDREFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;TIMESYS&#39;</span><span class="p">,</span> <span class="s1">&#39;TIMEUNIT&#39;</span><span class="p">,</span> <span class="s1">&#39;DATE-OBS&#39;</span><span class="p">,</span> <span class="s1">&#39;DATE-END&#39;</span><span class="p">,</span> <span class="s1">&#39;TSTART&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;TSTOP&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">fit_hdr</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">prihdu</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">prihdu</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">fit_hdr</span>
+
+    <span class="k">def</span> <span class="nf">_primary_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># create standard GBM primary header</span>
+        <span class="n">filetype</span> <span class="o">=</span> <span class="s1">&#39;SPECTRAL FITS&#39;</span>
+        <span class="n">prihdr</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">primary</span><span class="p">(</span><span class="n">filetype</span><span class="o">=</span><span class="n">filetype</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span>
+                             <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_obj</span><span class="o">.</span><span class="n">basename</span><span class="p">(),</span>
+                             <span class="n">tstop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">)</span>
+        <span class="c1"># remove the keywords we don&#39;t need</span>
+        <span class="k">del</span> <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;DETNAM&#39;</span><span class="p">],</span> <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">],</span> <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">],</span> \
+            <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">],</span> <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;ERR_RAD&#39;</span><span class="p">],</span> <span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;INFILE01&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">prihdr</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

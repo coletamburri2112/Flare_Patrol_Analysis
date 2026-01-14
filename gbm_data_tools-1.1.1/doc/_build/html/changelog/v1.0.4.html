@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>v1.0.4 &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="v1.0.3" href="v1.0.3.html" />
+    <link rel="prev" title="v1.1.0" href="v1.1.0.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Change Logs</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="v1.1.1.html">v1.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v1.1.0.html">v1.1.0</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">v1.0.4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-module">Data Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#background-estimation-module">Background Estimation Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulations-module">Simulations Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting-module">Plotting Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilities">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="v1.0.3.html">v1.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v1.0.2.html">v1.0.2</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Change Logs</a> &raquo;</li>
+        
+      <li>v1.0.4</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/changelog/v1.0.4.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="v1-0-4">
+<span id="id1"></span><h1>v1.0.4<a class="headerlink" href="#v1-0-4" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-module">
+<h2>Data Module<a class="headerlink" href="#data-module" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Spatial association calculations fixed in <a class="reference internal" href="../api/api-data.html#gbm.data.GbmHealPix" title="gbm.data.GbmHealPix"><code class="xref py py-class docutils literal notranslate"><span class="pre">GbmHealPix</span></code></a>
+for partial-sky occultation observations  (credit: J. Wood)</p></li>
+<li><p>Spatial association prior probability keyword option added to
+<a class="reference internal" href="../api/api-data.html#gbm.data.GbmHealPix.source_probability" title="gbm.data.GbmHealPix.source_probability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GbmHealPix.source_probability()</span></code></a>,
+<a class="reference internal" href="../api/api-data.html#gbm.data.GbmHealPix.region_probability" title="gbm.data.GbmHealPix.region_probability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GbmHealPix.region_probability()</span></code></a>,
+<a class="reference internal" href="../api/api-data.html#gbm.data.HealPix.source_probability" title="gbm.data.HealPix.source_probability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HealPix.source_probability()</span></code></a>, and
+<a class="reference internal" href="../api/api-data.html#gbm.data.HealPix.region_probability" title="gbm.data.HealPix.region_probability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HealPix.region_probability()</span></code></a></p></li>
+<li><p>Fix for overwriting of GTIs during a time slice operation on
+<a class="reference internal" href="../api/api-data.html#gbm.data.phaii.PHAII" title="gbm.data.phaii.PHAII"><code class="xref py py-class docutils literal notranslate"><span class="pre">PHAII</span></code></a> and <a class="reference internal" href="../api/api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a>
+(credit: J. Wood)</p></li>
+<li><p>Access of <a class="reference internal" href="../api/api-data.html#gbm.data.PosHist" title="gbm.data.PosHist"><code class="xref py py-class docutils literal notranslate"><span class="pre">PosHist.time_range</span></code></a> is now
+more efficient</p></li>
+<li><p>Fixed bug that caused the <code class="docutils literal notranslate"><span class="pre">tcent</span></code> attribute in <a class="reference internal" href="../api/api-data.html#gbm.data.PHA" title="gbm.data.PHA"><code class="xref py py-class docutils literal notranslate"><span class="pre">PHA</span></code></a>
+and <a class="reference internal" href="../api/api-data.html#gbm.data.BAK" title="gbm.data.BAK"><code class="xref py py-class docutils literal notranslate"><span class="pre">BAK</span></code></a> to change after the <a class="reference internal" href="../api/api-data.html#gbm.data.PHA.write" title="gbm.data.PHA.write"><code class="xref py py-class docutils literal notranslate"><span class="pre">write</span></code></a>
+method was called</p></li>
+<li><p><a class="reference internal" href="../api/api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Now supports reading response with <code class="docutils literal notranslate"><span class="pre">N_GRP</span></code> &gt; 1 (credit: I. Martinez-Castellanos)</p></li>
+<li><p>Keyword argument bug fixes for <a class="reference internal" href="../api/api-data.html#gbm.data.RSP.from_arrays" title="gbm.data.RSP.from_arrays"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_arrays()</span></code></a>
+(credit: I. Martinez-Castellanos)</p></li>
+<li><p>Fixed crash on writing to disk after creation with <a class="reference internal" href="../api/api-data.html#gbm.data.RSP.from_arrays" title="gbm.data.RSP.from_arrays"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_arrays()</span></code></a>
+(credit: I. Martinez-Castellanos)</p></li>
+<li><p>Fixed consistency in processing and store <code class="docutils literal notranslate"><span class="pre">tstart</span></code>/<code class="docutils literal notranslate"><span class="pre">tstop</span></code> keywords in
+<a class="reference internal" href="../api/api-data.html#gbm.data.RSP.from_arrays" title="gbm.data.RSP.from_arrays"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_arrays()</span></code></a></p></li>
+<li><p>Added options to <a class="reference internal" href="../api/api-data.html#gbm.data.RSP.write" title="gbm.data.RSP.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code></a></p></li>
+<li><p>Fixed incorrect element accessor in <a class="reference internal" href="../api/api-data.html#gbm.data.RSP.interpolate" title="gbm.data.RSP.interpolate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate()</span></code></a></p></li>
+<li><p>Fixed interpolation bounds to be within the time period covered by the RSP</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="background-estimation-module">
+<h2>Background Estimation Module<a class="headerlink" href="#background-estimation-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed incorrect shape of <code class="docutils literal notranslate"><span class="pre">counts</span></code> property after calling
+<a class="reference internal" href="../api/api-background.html#gbm.background.BackgroundRates.integrate_energy" title="gbm.background.BackgroundRates.integrate_energy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BackgroundRates.integrate_energy()</span></code></a></p></li>
+<li><p>Fixed incorrect initialization after slicing <a class="reference internal" href="../api/api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a></p></li>
+<li><p>Bug fix for uncertainty calculation in the fast approximation of
+<a class="reference internal" href="../api/api-background.html#gbm.background.unbinned.NaivePoisson" title="gbm.background.unbinned.NaivePoisson"><code class="xref py py-class docutils literal notranslate"><span class="pre">NaivePoisson</span></code></a> (credit: J. Wood)</p></li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="simulations-module">
+<h2>Simulations Module<a class="headerlink" href="#simulations-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Added keyword for user-defined deadtime in
+<a class="reference internal" href="../api/api-sims.html#gbm.simulate.TteSourceSimulator" title="gbm.simulate.TteSourceSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">TteSourceSimulator</span></code></a> and
+<a class="reference internal" href="../api/api-sims.html#gbm.simulate.TteBackgroundSimulator" title="gbm.simulate.TteBackgroundSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">TteBackgroundSimulator</span></code></a></p></li>
+<li><p>Fixed bug in time arrival simulation in
+<a class="reference internal" href="../api/api-sims.html#gbm.simulate.generators.EventSpectrumGenerator" title="gbm.simulate.generators.EventSpectrumGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventSpectrumGenerator</span></code></a></p></li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="plotting-module">
+<h2>Plotting Module<a class="headerlink" href="#plotting-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Added missing standard properties to <a class="reference internal" href="../api/api-plot.html#gbm.plot.ResponseMatrix" title="gbm.plot.ResponseMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseMatrix</span></code></a>,
+<a class="reference internal" href="../api/api-plot.html#gbm.plot.ChannelEffectiveArea" title="gbm.plot.ChannelEffectiveArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelEffectiveArea</span></code></a>, and <a class="reference internal" href="../api/api-plot.html#gbm.plot.PhotonEffectiveArea" title="gbm.plot.PhotonEffectiveArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhotonEffectiveArea</span></code></a></p></li>
+<li><p>Fix treatment of null <code class="docutils literal notranslate"><span class="pre">detectors</span></code> argument in
+<a class="reference internal" href="../api/api-plot.html#gbm.plot.SkyPlot.add_poshist" title="gbm.plot.SkyPlot.add_poshist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SkyPlot.add_poshist()</span></code></a></p></li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Proper MJD conversion scaling to UTC in <a class="reference internal" href="../api/api-utils.html#gbm.time.Met" title="gbm.time.Met"><code class="xref py py-class docutils literal notranslate"><span class="pre">Met</span></code></a></p></li>
+<li><p>Enforced consistent behavior for <code class="docutils literal notranslate"><span class="pre">deg</span></code> option in the relevant
+<a class="reference internal" href="../api/api-utils.html#module-gbm.coords" title="gbm.coords"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gbm.coords</span></code></a> coordinate conversions (credit: I. Martinez-Castellanos)</p></li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Minor updates to existing Notebooks and API documentation resulting from the
+above changes</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="v1.0.3.html" class="btn btn-neutral float-right" title="v1.0.3" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="v1.1.0.html" class="btn btn-neutral float-left" title="v1.1.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

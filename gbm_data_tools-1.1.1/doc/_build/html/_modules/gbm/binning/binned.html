@@ -1,0 +1,456 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.binning.binned &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.binning.binned</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.binning.binned</h1><div class="highlight"><pre>
+<span></span><span class="c1"># binned.py: Module containing data binning functions for pre-binned data</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<div class="viewcode-block" id="combine_by_factor"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.binned.combine_by_factor">[docs]</a><span class="k">def</span> <span class="nf">combine_by_factor</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="n">bin_factor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rebins binned data to a multiple factor</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        old_edges (np.array): The time edges of each bin</span>
+<span class="sd">        bin_factor (int): The number of consecutive bins to be combined</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): The counts and exposure in each bin \</span>
+<span class="sd">                                        and the new bin edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">bin_factor</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bin_factor must be a positive integer&quot;</span>
+    <span class="n">bin_factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bin_factor</span><span class="p">)</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[::</span><span class="n">bin_factor</span><span class="p">]</span>
+    <span class="c1"># make sure the number of bins is a multiple of the bin_factor</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">bin_factor</span>
+    <span class="c1"># if the number of bins is not a multiple of the bin_factor, </span>
+    <span class="c1"># then remove the modulo bins</span>
+    <span class="k">if</span> <span class="n">mod</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[:</span><span class="o">-</span><span class="n">mod</span><span class="p">]</span>
+        <span class="n">exposure</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[:</span><span class="o">-</span><span class="n">mod</span><span class="p">]</span>
+    <span class="c1"># reshape and combine counts and exposure</span>
+    <span class="n">new_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_factor</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_factor</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_counts</span><span class="p">,</span> <span class="n">new_exposure</span><span class="p">,</span> <span class="n">new_edges</span></div>
+
+
+<div class="viewcode-block" id="rebin_by_time"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.binned.rebin_by_time">[docs]</a><span class="k">def</span> <span class="nf">rebin_by_time</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rebins binned data to a specified temporal bin width.</span>
+<span class="sd">    </span>
+<span class="sd">    If the requested bin width is smaller than some of the original bin widths, </span>
+<span class="sd">    those bins will be left as is.</span>
+<span class="sd">    </span>
+<span class="sd">    If the requested bin width is an exact factor of all the current bin widths, </span>
+<span class="sd">    the resulting bin width will be exactly as requested.  If the requested bin </span>
+<span class="sd">    width is not an exact factor, then the resulting bin width will be </span>
+<span class="sd">    approximately the requested bin width without exceeding the requested bin </span>
+<span class="sd">    width.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        old_edges (np.array): The time edges of each bin</span>
+<span class="sd">        dt (float): The requested temporal bin width in seconds</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): The counts and exposure in each bin \</span>
+<span class="sd">                                        and the new bin edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;Requested bin width must be &gt; 0.0 s&quot;</span>
+
+    <span class="n">num_old_bins</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">dts</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">old_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># if the the requested bin width is a factor of the current bin width for all bins, </span>
+    <span class="c1"># call combine_by_factor.  this is an easier task</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">dt</span> <span class="o">%</span> <span class="n">dts</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_old_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">combine_by_factor</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span> <span class="o">/</span> <span class="n">dts</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="c1"># print(&#39;Temporal factor for rebinning is not a perfect multiple of all bin widths.&#39;)</span>
+    <span class="c1"># print(&#39;Bin widths will be approximate to and will not exceed the temporal factor.&#39;)</span>
+    <span class="c1"># cycle through current bins and add up bins until we have approximately reached,</span>
+    <span class="c1"># but not exceeded, the requested binwidth</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">istart</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">dtscum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dts</span><span class="p">[</span><span class="n">istart</span><span class="p">:])</span>
+        <span class="n">iend</span> <span class="o">=</span> <span class="n">istart</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtscum</span> <span class="o">&lt;=</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">iend</span> <span class="o">&lt;</span> <span class="n">istart</span><span class="p">:</span>
+            <span class="n">iend</span> <span class="o">=</span> <span class="n">istart</span>
+        <span class="n">new_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">iend</span> <span class="o">&gt;=</span> <span class="n">num_old_bins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">istart</span> <span class="o">=</span> <span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># create the new rebinned arrays</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_edges</span><span class="p">)</span>
+    <span class="n">bounds_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">new_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">new_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">new_exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bounds_idx</span><span class="p">])</span>
+    <span class="n">new_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bounds_idx</span><span class="p">])</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="n">new_edges</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">new_counts</span><span class="p">,</span> <span class="n">new_exposure</span><span class="p">,</span> <span class="n">new_edges</span></div>
+
+
+<div class="viewcode-block" id="combine_into_one"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.binned.combine_into_one">[docs]</a><span class="k">def</span> <span class="nf">combine_into_one</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Combines binned data into a single bin</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        old_edges (np.array): The time edges of each bin</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): The counts and exposure in each bin \</span>
+<span class="sd">                                        and the new bin edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">)])</span>
+    <span class="n">new_exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exposure</span><span class="p">)])</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">new_counts</span><span class="p">,</span> <span class="n">new_exposure</span><span class="p">,</span> <span class="n">new_edges</span></div>
+
+
+<div class="viewcode-block" id="rebin_by_snr"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.binned.rebin_by_snr">[docs]</a><span class="k">def</span> <span class="nf">rebin_by_snr</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="n">background_counts</span><span class="p">,</span> <span class="n">snr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rebins binned data such that each bin is above a minimum signal-to-noise ratio</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        old_edges (np.array): The time edges of each bin</span>
+<span class="sd">        background_counts (np.array): The background counts in each bin</span>
+<span class="sd">        snr (float): The minimum signal-to-ratio threshold</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): The counts and exposure in each bin \</span>
+<span class="sd">                                        and the new bin edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_old_bins</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">size</span>
+    <span class="c1"># make sure there is a non-zero background</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">background_counts</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;Background counts are all non-positive.  Cannot bin by SNR.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># cycle through current bins and combine bins until we have exceeded the requested snr</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">istart</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">countscum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">istart</span><span class="p">:])</span>
+        <span class="n">backgroundscum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">background_counts</span><span class="p">[</span><span class="n">istart</span><span class="p">:])</span>
+        <span class="n">snrcum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">countscum</span> <span class="o">-</span> <span class="n">backgroundscum</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">backgroundscum</span><span class="p">))</span>
+        <span class="n">iend</span> <span class="o">=</span> <span class="n">istart</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">snrcum</span> <span class="o">&lt;</span> <span class="n">snr</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">iend</span> <span class="o">&lt;</span> <span class="n">istart</span><span class="p">:</span>
+            <span class="n">iend</span> <span class="o">=</span> <span class="n">istart</span>
+        <span class="n">new_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">iend</span> <span class="o">&gt;=</span> <span class="n">num_old_bins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">istart</span> <span class="o">=</span> <span class="n">iend</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_edges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_edges</span><span class="p">:</span>
+        <span class="n">new_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">old_edges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># create the new rebinned arrays</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_edges</span><span class="p">)</span>
+    <span class="n">numbins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_edges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">new_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">new_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">new_edges</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                  <span class="nb">range</span><span class="p">(</span><span class="n">numbins</span><span class="p">)]</span>
+    <span class="n">new_exposure</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="n">new_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">new_edges</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                    <span class="nb">range</span><span class="p">(</span><span class="n">numbins</span><span class="p">)]</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="n">new_edges</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_counts</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_exposure</span><span class="p">),</span> <span class="n">new_edges</span></div>
+
+
+<div class="viewcode-block" id="rebin_by_edge_index"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.binned.rebin_by_edge_index">[docs]</a><span class="k">def</span> <span class="nf">rebin_by_edge_index</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="n">new_edge_index</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rebins binned data based on an array of bin edge indices</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        old_edges (np.array): The time edges of each bin</span>
+<span class="sd">        new_edge_index (np.array): The edge indices for the new binned data</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): The counts and exposure in each bin \</span>
+<span class="sd">                                        and the new bin edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># new edges</span>
+    <span class="n">num_bins</span> <span class="o">=</span> <span class="n">new_edge_index</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">nei</span> <span class="o">=</span> <span class="n">new_edge_index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="n">nei</span><span class="p">]</span>
+
+    <span class="c1"># combine the counts and exposure</span>
+    <span class="n">new_exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">new_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bins</span><span class="p">):</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">new_edge_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="n">new_edge_index</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">new_counts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">])</span>
+        <span class="n">new_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">new_counts</span><span class="p">,</span> <span class="n">new_exposure</span><span class="p">,</span> <span class="n">new_edges</span></div>
+
+
+<div class="viewcode-block" id="rebin_by_edge"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.binned.rebin_by_edge">[docs]</a><span class="k">def</span> <span class="nf">rebin_by_edge</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="n">new_edges</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rebins binned data based on an array of bin edge indices</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        counts (np.array): The counts in each bin</span>
+<span class="sd">        exposure (np.array): The exposure of each bin</span>
+<span class="sd">        old_edges (np.array): The time edges of each bin</span>
+<span class="sd">        new_edges (np.array): The new edges of the binned data</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): The counts and exposure in each bin \</span>
+<span class="sd">                                        and the new bin edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># new edges</span>
+    <span class="n">num_bins</span> <span class="o">=</span> <span class="n">new_edges</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># combine the counts and exposure</span>
+    <span class="n">old_edges_list</span> <span class="o">=</span> <span class="n">old_edges</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">new_exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">new_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bins</span><span class="p">):</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">old_edges_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">new_edges</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="n">old_edges_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">new_edges</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">new_counts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">])</span>
+        <span class="n">new_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">new_counts</span><span class="p">,</span> <span class="n">new_exposure</span><span class="p">,</span> <span class="n">new_edges</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

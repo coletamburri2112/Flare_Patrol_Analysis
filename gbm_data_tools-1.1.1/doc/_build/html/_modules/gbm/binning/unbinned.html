@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.binning.unbinned &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.binning.unbinned</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.binning.unbinned</h1><div class="highlight"><pre>
+<span></span><span class="c1"># unbinned.py: Module containing data binning functions for unbinned data</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="bin_by_time"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.unbinned.bin_by_time">[docs]</a><span class="k">def</span> <span class="nf">bin_by_time</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bins unbinned data to a specified temporal bin width.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        times (np.array): The time of each event</span>
+<span class="sd">        dt (float): The requested temporal bin width in seconds</span>
+<span class="sd">        tstart (float, optional): The first bin edge time. Will use the first </span>
+<span class="sd">                                  event time if omitted.</span>
+<span class="sd">        tstop: (float, optional): The last bin edge time. Will use the last </span>
+<span class="sd">                                  event time if omitted.</span>
+<span class="sd">        time_ref (float, optional): </span>
+<span class="sd">            The reference time at which the binning will be based. If the set, </span>
+<span class="sd">            the binning will proceed starting at ``time_ref`` and moving forward </span>
+<span class="sd">            in time as well as starting at ``time_ref`` and moving backward in </span>
+<span class="sd">            time.  If not set, the binning will start at the beginning of the data.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: The edges of the binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;Requested bin width must be &gt; 0.0 s&quot;</span>
+    <span class="k">if</span> <span class="n">time_ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">time_ref</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">time_ref</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tstart</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+
+    <span class="c1"># if we are using a reference time</span>
+    <span class="k">if</span> <span class="n">time_ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pre_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_ref</span><span class="p">,</span> <span class="n">tstart</span> <span class="o">-</span> <span class="n">dt</span><span class="p">,</span> <span class="o">-</span><span class="n">dt</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">post_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_ref</span><span class="p">,</span> <span class="n">tstop</span> <span class="o">+</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pre_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">post_edges</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span> <span class="o">+</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">edges</span></div>
+
+
+<div class="viewcode-block" id="combine_into_one"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.unbinned.combine_into_one">[docs]</a><span class="k">def</span> <span class="nf">combine_into_one</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bins unbinned data to a single bin.</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        times (np.array): The time of each event</span>
+<span class="sd">        tstart (float): The first bin edge time. Will use the first </span>
+<span class="sd">                                  event time if omitted.</span>
+<span class="sd">        tstop: (float): The last bin edge time. Will use the last </span>
+<span class="sd">                                  event time if omitted.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: The edges of the binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">tstart</span> <span class="o">&lt;</span> <span class="n">tstop</span><span class="p">,</span> <span class="s2">&quot;The time range must be set in &quot;</span> \
+                           <span class="s2">&quot;ascending order&quot;</span>
+
+    <span class="c1"># if no events, then the we have no counts</span>
+    <span class="k">if</span> <span class="n">times</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tstop</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tstart</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Requested time range is outside data range&quot;</span><span class="p">)</span>
+
+    <span class="n">time_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">time_range</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="combine_by_factor"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.unbinned.combine_by_factor">[docs]</a><span class="k">def</span> <span class="nf">combine_by_factor</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="n">bin_factor</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bins individual events to a multiple factor of bins given a </span>
+<span class="sd">    set of bin edges</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        times (np.array): The time of each event</span>
+<span class="sd">        old_edges (np.array): The edges to be combined</span>
+<span class="sd">        bin_factor (int): The number of bins to be combined</span>
+<span class="sd">        tstart (float, optional): The first bin edge time. Will use the first </span>
+<span class="sd">                                  event time if omitted.</span>
+<span class="sd">        tstop: (float, optional): The last bin edge time. Will use the last </span>
+<span class="sd">                                  event time if omitted.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: The edges of the binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">bin_factor</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bin_factor must be a positive integer&quot;</span>
+    <span class="n">bin_factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bin_factor</span><span class="p">)</span>
+
+    <span class="c1"># mask the old edges for the desired data range</span>
+    <span class="k">if</span> <span class="n">tstart</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tstart</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">tstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tstop</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">old_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="n">old_edges</span> <span class="o">&gt;=</span> <span class="n">tstart</span><span class="p">]</span>
+    <span class="n">old_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[</span><span class="n">old_edges</span> <span class="o">&lt;=</span> <span class="n">tstop</span><span class="p">]</span>
+
+    <span class="c1"># create the new edges</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="n">old_edges</span><span class="p">[::</span><span class="n">bin_factor</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">new_edges</span></div>
+
+
+<div class="viewcode-block" id="bin_by_snr"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.unbinned.bin_by_snr">[docs]</a><span class="k">def</span> <span class="nf">bin_by_snr</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">back_rates</span><span class="p">,</span> <span class="n">snr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bins unbinned data by SNR</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        times (np.array): The time of each event</span>
+<span class="sd">        back_rates (np.array): The background rate at the time of each event</span>
+<span class="sd">        snr (float): The signal-to-noise ratio</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: The edges of the binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get the background rates and differential counts at each event time</span>
+    <span class="n">back_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">back_rates</span><span class="p">)</span>
+    <span class="n">back_counts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">back_rates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">times</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">back_counts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">back_counts</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">num_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="n">istart</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># cumulative sum of the counts, background counts, and snr</span>
+        <span class="n">countscum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_events</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">istart</span><span class="p">)</span>
+        <span class="n">backgroundscum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">back_counts</span><span class="p">[</span><span class="n">istart</span><span class="p">:])</span>
+        <span class="n">snrcum</span> <span class="o">=</span> <span class="p">(</span><span class="n">countscum</span> <span class="o">-</span> <span class="n">backgroundscum</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">backgroundscum</span><span class="p">)</span>
+        <span class="c1"># determine where to make the cut</span>
+        <span class="n">below_thresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">snrcum</span> <span class="o">&lt;=</span> <span class="n">snr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">below_thresh</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">iend</span> <span class="o">=</span> <span class="n">istart</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">iend</span> <span class="o">=</span> <span class="n">istart</span> <span class="o">+</span> <span class="n">below_thresh</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">iend</span> <span class="o">&gt;=</span> <span class="n">num_events</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">istart</span> <span class="o">=</span> <span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># get the finalized edges</span>
+    <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_events</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num_events</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">edges</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">edges</span></div>
+
+
+<div class="viewcode-block" id="time_to_spill"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.unbinned.time_to_spill">[docs]</a><span class="k">def</span> <span class="nf">time_to_spill</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Time-to-Spill Binning for an event list</span>
+<span class="sd">    Bins an event list by accumulating counts until the set threshold is reached, </span>
+<span class="sd">    and then creating a new bin.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        times (np.array): The time of each event</span>
+<span class="sd">        threshold (int): The count threshold for the histogram</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: The edges of the binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Threshold must be positive&quot;</span>
+    <span class="c1"># this is easy: take only the nth time (set by threshold) as the bin edge</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">times</span><span class="p">[::</span><span class="n">threshold</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">edges</span></div>
+
+
+<div class="viewcode-block" id="bin_by_edges"><a class="viewcode-back" href="../../../api/api-binning.html#gbm.binning.unbinned.bin_by_edges">[docs]</a><span class="k">def</span> <span class="nf">bin_by_edges</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">time_edges</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bins unbinned data by pre-defined edges. A rather trivial function :)</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        times (np.array): The time of each event</span>
+<span class="sd">        time_edges (np.array): The pre-defined time edges</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: The edges of the binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">time_edges</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

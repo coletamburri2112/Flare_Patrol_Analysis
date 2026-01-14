@@ -1,0 +1,87 @@
+.. _v1.0.3:
+
+v1.0.3
+======
+
+Data Module
+-----------
+
+* TZERO keyword properly updated to TTE/CTIME/CSPEC file headers
+
+* Fixed GBM detector naming in FITS headers
+
+* Fixed automatic naming of GBM files
+
+* Fixed incorrect header keywords in :class:`~gbm.data.RSP` files written 
+  to disk
+
+* PHA files :meth:`written <gbm.data.PHA.write>` to disk now include option to 
+  add BAK filename for use with XSPEC
+
+* Fixed HEALPix ``nside`` update during map :meth:`~gbm.data.HealPix.multiply()`
+
+* Stability and efficiency improvements in :meth:`HealPix.from_annulus() 
+  <gbm.data.HealPix.from_annulus>`
+
+* Auto-scale HealPix resolution based on input sigma for 
+  :meth:`HealPix.from_gaussian() <gbm.data.HealPix.from_gaussian>` and 
+  :meth:`HealPix.from_annulus() <gbm.data.HealPix.from_annulus>`. 
+  Can be over-ridden.
+
+* :meth:`GbmHealPix.remove_earth() <gbm.data.GbmHealPix.remove_earth>` is now 
+  properly treated as a class method
+
+* :meth:`GbmHealPix.multiply() <gbm.data.GbmHealPix.multiply>` populates the 
+  ``.<detector>_pointing`` attributes
+
+----
+
+Background Estimation Module
+----------------------------
+
+* Fixed summation over multiple :class:`~gbm.background.BackgroundSpectrum`
+
+* Fixed incorrect ``counts`` and ``count_uncertainty`` array shapes for 
+  :class:`~gbm.background.BackgroundRates` when integrating over energy
+
+----
+
+Spectra Module
+--------------
+
+* Stability improvements to :class:`~gbm.spectra.fitting.SpectralFitterPgstat`
+
+* Added :class:`~gbm.spectra.fitting.SpectralFitterCstat` and 
+  :class:`~gbm.spectra.fitting.SpectralFitterPstat`
+
+----
+
+Simulations Module
+------------------
+
+* Fix for possible negative amplitude in 
+  :class:`~gbm.simulate.generators.VariableSourceSpectrumGenerator`
+
+----
+
+Plotting Module
+---------------
+
+* :class:`~gbm.plot.SkyPlot` HEALpix grid resolution updates based on input 
+  :class:`~gbm.data.HealPix` resolution
+
+----
+
+Data Finders
+------------
+
+* :class:`~gbm.finder.TriggerFtp` and :class:`~gbm.finder.ContinuousFtp` will 
+  reconnect on broken connection instead of raising an unhelpful exception
+
+----
+
+Documentation
+-------------
+  
+* Minor updates to existing Notebooks and API documentation resulting from the
+  above changes

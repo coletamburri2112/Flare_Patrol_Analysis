@@ -1,0 +1,1370 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.finder &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.finder</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.finder</h1><div class="highlight"><pre>
+<span></span><span class="c1"># finder.py: Module containing data finder and data catalog classes</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">ftplib</span> <span class="kn">import</span> <span class="n">FTP_TLS</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy</span> <span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">astro_units</span>
+<span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="kn">import</span> <span class="n">SkyCoord</span>
+
+<span class="kn">from</span> <span class="nn">gbm.time</span> <span class="kn">import</span> <span class="n">Met</span>
+
+
+<div class="viewcode-block" id="FtpFinder"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.FtpFinder">[docs]</a><span class="k">class</span> <span class="nc">FtpFinder</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A base class for the interface to the HEASARC FTP archive of GBM data.</span>
+<span class="sd">    Specifically, it creates a connection to legacy.gsfc.nasa.gov</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_files (int): Number of files in the current directory</span>
+<span class="sd">        files (list of str): The list of files in the current directory</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        This class should not be directly instantiated, but rather inherited.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ftp</span> <span class="o">=</span> <span class="n">FTP_TLS</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;heasarc.gsfc.nasa.gov&#39;</span><span class="p">)</span>
+    <span class="n">_ftp</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="n">_ftp</span><span class="o">.</span><span class="n">prot_p</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_download_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attempt a reconnect in case connection was lost</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span> <span class="o">=</span> <span class="n">FTP_TLS</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;heasarc.gsfc.nasa.gov&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">prot_p</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_ftp_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;FTP GET callback function that downloads and reports the percent </span>
+<span class="sd">        progress of the download.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            chunk (str): The byte data to be written</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># append to file</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_download_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transferred_bytes</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="n">percent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transferred_bytes</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_total_bytes</span><span class="p">)</span>
+
+        <span class="c1"># download bar</span>
+        <span class="n">bar</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">percent</span> <span class="o">*</span> <span class="mi">30</span><span class="p">))</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+        <span class="c1"># format percent and print along with download bar</span>
+        <span class="n">percent</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">percent</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">] </span><span class="si">%s%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">percent</span><span class="p">))</span>
+        <span class="c1"># file download is finished</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transferred_bytes</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_bytes</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_ftp_silent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;FTP GET callback function that silently downloads a file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            chunk (str): The byte data to be written</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># append to file</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_download_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_construct_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_list</span><span class="p">,</span> <span class="n">filetype</span><span class="p">,</span> <span class="n">extension</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Filters the directory for the requested filetype, extension, and </span>
+<span class="sd">        detectors</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filetype (str): The type of file, e.g. &#39;cspec&#39;</span>
+<span class="sd">            extension (str): The file extension, e.g. &#39;.pha&#39;</span>
+<span class="sd">            dets (list, optional): The detectors. If omitted, then files for </span>
+<span class="sd">                                   all detectors are returned</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The filtered file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="k">if</span>
+                 <span class="p">(</span><span class="n">filetype</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">extension</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="n">dets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dets</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="n">dets</span><span class="p">]</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span>
+                     <span class="nb">any</span><span class="p">(</span><span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">det</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="ow">in</span> <span class="n">f</span> <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">dets</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">files</span>
+
+    <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Downloads a list of files from FTP</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory location</span>
+<span class="sd">            files (list of str): The list of files to download</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.        </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The full paths to the downloaded files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_status</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_silent</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">download_dir</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">download_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_download_dir</span> <span class="o">=</span> <span class="n">download_dir</span>
+
+        <span class="c1"># download each file</span>
+        <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="c1"># have to save in self because this can&#39;t be passed as an argument</span>
+            <span class="c1"># in the callback</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span> <span class="o">=</span> <span class="n">file</span>
+
+            <span class="c1"># download file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">voidcmd</span><span class="p">(</span><span class="s1">&#39;TYPE I&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_total_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transferred_bytes</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">retrbinary</span><span class="p">(</span><span class="s1">&#39;RETR &#39;</span> <span class="o">+</span> <span class="n">file</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+
+            <span class="n">filepaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">filepaths</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span>
+
+<div class="viewcode-block" id="FtpFinder.ls"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.FtpFinder.ls">[docs]</a>    <span class="k">def</span> <span class="nf">ls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List the directory contents of an FTP directory associated with</span>
+<span class="sd">        a trigger or data set.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): The id associated with a trigger or data set</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: Alphabetically ordered file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_path</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">nlst</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Connection appears to have failed.  Attempting to reconnect...&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reconnected.&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Failed to reconnect.&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">files</span></div></div>
+
+
+<div class="viewcode-block" id="TriggerFtp"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp">[docs]</a><span class="k">class</span> <span class="nc">TriggerFtp</span><span class="p">(</span><span class="n">FtpFinder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class that interfaces with the HEASARC FTP trigger directories.</span>
+<span class="sd">    An instance of this class will represent the available files associated</span>
+<span class="sd">    with a single trigger.</span>
+<span class="sd">    </span>
+<span class="sd">    An instance can be created without a trigger number, however a trigger</span>
+<span class="sd">    number will need to be set by set_trigger(tnum) to query and download files.</span>
+<span class="sd">    An instance can also be changed from one trigger number to another without</span>
+<span class="sd">    having to create a new instance.  If multiple instances are created and</span>
+<span class="sd">    exist simultaneously, they will all use a single FTP connection.</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Since HEASARC transitioned to FTPS, some have had issues with </span>
+<span class="sd">        connecting to the HEASARC FTP site via Python&#39;s ftplib for no obvious</span>
+<span class="sd">        reason while it works flawlessy for others (even on the same platform).</span>
+<span class="sd">        Currently the thought is that this may be related to the underlying</span>
+<span class="sd">        OpenSSL version that is installed.  If you have connection problems</span>
+<span class="sd">        using this, you may consider upgrading you OpenSSL and see if that</span>
+<span class="sd">        solves your problem. A potential solution is to do the following:</span>
+<span class="sd">        </span>
+<span class="sd">        * $ pip3 install pyopenssl</span>
+<span class="sd">        * $ pip3 install requests[security]</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        tnum (str, optional): A valid trigger number</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_files (int): Number of files in the current directory</span>
+<span class="sd">        files (list of str): The list of files in the current directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_root</span> <span class="o">=</span> <span class="s1">&#39;/fermi/data/gbm/triggers&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_download_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tnum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">tnum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">tnum</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">cwd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_construct_path</span><span class="p">(</span><span class="n">tnum</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tnum</span> <span class="o">=</span> <span class="n">tnum</span>
+            <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid trigger number&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tnum</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TriggerFtp.set_trigger"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.set_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the trigger number. If the object was previously associated</span>
+<span class="sd">        with a trigger number, this will effectively change the working</span>
+<span class="sd">        directory to that of the new trigger number. If the trigger number is</span>
+<span class="sd">        invalid, an exception will be raised, and no directory change will be </span>
+<span class="sd">        made.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tnum (str): A valid trigger number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">tnum</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">cwd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_construct_path</span><span class="p">(</span><span class="n">tnum</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tnum</span> <span class="o">=</span> <span class="n">tnum</span>
+        <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tnum</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid trigger number&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tnum</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_ctime"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_ctime">[docs]</a>    <span class="k">def</span> <span class="nf">ls_ctime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all ctime files for the trigger </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_cspec"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_cspec">[docs]</a>    <span class="k">def</span> <span class="nf">ls_cspec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all cspec files for the trigger </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_tte"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_tte">[docs]</a>    <span class="k">def</span> <span class="nf">ls_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all tte files for the trigger </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tte&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_rsp"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_rsp">[docs]</a>    <span class="k">def</span> <span class="nf">ls_rsp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cspec</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all response Type-I files for the trigger</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ctime (bool, optional): If True, list the ctime responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">            cspec (bool, optional): If True, list the cspec responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">cspec</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ctime</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_rsp2"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_rsp2">[docs]</a>    <span class="k">def</span> <span class="nf">ls_rsp2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cspec</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all response Type-II files for the trigger </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ctime (bool, optional): If True, list the ctime responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">            cspec (bool, optional): If True, list the cspec responses. </span>
+<span class="sd">                                    Default is True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">cspec</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp2&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ctime</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp2&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_lightcurve"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_lightcurve">[docs]</a>    <span class="k">def</span> <span class="nf">ls_lightcurve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all lightcurve plots for the trigger </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;lc&#39;</span><span class="p">,</span> <span class="s1">&#39;pdf&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_cat_files"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_cat_files">[docs]</a>    <span class="k">def</span> <span class="nf">ls_cat_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all catalog files for the trigger  </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;bcat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;scat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tcat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_trigdat"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_trigdat">[docs]</a>    <span class="k">def</span> <span class="nf">ls_trigdat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List the trigger data (trigdat) file for the trigger </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;trigdat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.ls_localization"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.ls_localization">[docs]</a>    <span class="k">def</span> <span class="nf">ls_localization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all localization files for the trigger </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;healpix&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;skymap&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;loclist&#39;</span><span class="p">,</span> <span class="s1">&#39;txt&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;locprob&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;locplot&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_ctime"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_ctime">[docs]</a>    <span class="k">def</span> <span class="nf">get_ctime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the ctime files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_cspec"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_cspec">[docs]</a>    <span class="k">def</span> <span class="nf">get_cspec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the cspec files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_tte"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_tte">[docs]</a>    <span class="k">def</span> <span class="nf">get_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the TTE files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tte&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_rsp"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_rsp">[docs]</a>    <span class="k">def</span> <span class="nf">get_rsp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">ctime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cspec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the response Type-I files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            ctime (bool, optional): If True, download the ctime responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">            cspec (bool, optional): If True, download the cspec responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">cspec</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ctime</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_rsp2"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_rsp2">[docs]</a>    <span class="k">def</span> <span class="nf">get_rsp2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">ctime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cspec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the response Type-I files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            ctime (bool, optional): If True, download the ctime responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">            cspec (bool, optional): If True, download the cspec responses. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">cspec</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp2&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ctime</span><span class="p">:</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;rsp2&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_lightcurve"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_lightcurve">[docs]</a>    <span class="k">def</span> <span class="nf">get_lightcurve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the lightcurve plots for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;lc&#39;</span><span class="p">,</span> <span class="s1">&#39;pdf&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_cat_files"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_cat_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_cat_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download all catalog files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;bcat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;scat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tcat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_trigdat"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_trigdat">[docs]</a>    <span class="k">def</span> <span class="nf">get_trigdat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the trigger data (trigdat) file for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;trigdat&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_localization"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_localization">[docs]</a>    <span class="k">def</span> <span class="nf">get_localization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download all localization files for the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;healpix&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;skymap&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;loclist&#39;</span><span class="p">,</span> <span class="s1">&#39;txt&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;locprob&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;locplot&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_healpix"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_healpix">[docs]</a>    <span class="k">def</span> <span class="nf">get_healpix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the healpix localization file for the trigger.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;healpix&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TriggerFtp.get_all"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerFtp.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download all files associated with the trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_construct_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_trigger_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructs the FTP path for a trigger</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            str_trigger_num (str): The trigger number</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The path of the FTP directory for the trigger</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="s1">&#39;20&#39;</span> <span class="o">+</span> <span class="n">str_trigger_num</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="s1">&#39;bn&#39;</span> <span class="o">+</span> <span class="n">str_trigger_num</span><span class="p">,</span>
+                            <span class="s1">&#39;current&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+
+<span class="c1"># mark: TODO: Need date range functionality</span>
+<div class="viewcode-block" id="ContinuousFtp"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp">[docs]</a><span class="k">class</span> <span class="nc">ContinuousFtp</span><span class="p">(</span><span class="n">FtpFinder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class that interfaces with the HEASARC FTP continuous daily data</span>
+<span class="sd">    directories. An instance of this class will represent the available files </span>
+<span class="sd">    associated with a single day.</span>
+<span class="sd">    </span>
+<span class="sd">    An instance can be created without a time, however a time will need to be </span>
+<span class="sd">    set by set_time() to query and download files. An instance can also be </span>
+<span class="sd">    changed from one time to another without having to create a new instance.  </span>
+<span class="sd">    If multiple instances are created and exist simultaneously, they will all </span>
+<span class="sd">    use a single FTP connection.</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Since HEASARC transitioned to FTPS, some have had issues with </span>
+<span class="sd">        connecting to the HEASARC FTP site via Python&#39;s ftplib for no obvious</span>
+<span class="sd">        reason while it works flawlessy for others (even on the same platform).</span>
+<span class="sd">        Currently the thought is that this may be related to the underlying</span>
+<span class="sd">        OpenSSL version that is installed.  If you have connection problems</span>
+<span class="sd">        using this, you may consider upgrading you OpenSSL and see if that</span>
+<span class="sd">        solves your problem. A potential solution is to do the following:</span>
+<span class="sd">        </span>
+<span class="sd">        * $ pip3 install pyopenssl</span>
+<span class="sd">        * $ pip3 install requests[security]</span>
+<span class="sd"> </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        met (float, optional): A time in MET. Either met, utc, or gps must be set.</span>
+<span class="sd">        utc (str, optional): A UTC time in ISO format: YYYY-MM-DDTHH:MM:SS</span>
+<span class="sd">        gps (float, optional): A GPS time</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_files (int): Number of files in the current directory</span>
+<span class="sd">        files (list of str): The list of files in the current directory    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_root</span> <span class="o">=</span> <span class="s1">&#39;/fermi/data/gbm/daily&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">utc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_downloading_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_download_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">met</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="n">Met</span><span class="p">(</span><span class="n">met</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">utc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="n">Met</span><span class="o">.</span><span class="n">from_iso</span><span class="p">(</span><span class="n">utc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="n">Met</span><span class="o">.</span><span class="n">from_gps</span><span class="p">(</span><span class="n">gps</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_met</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">cwd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_construct_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_met</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid MET&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_met</span><span class="p">))</span>
+
+<div class="viewcode-block" id="ContinuousFtp.set_time"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.set_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">utc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the time. If the object was previously associated with a </span>
+<span class="sd">        different time, this will effectively change the working directory to </span>
+<span class="sd">        that of the new time. If the time is invalid, an exception will be </span>
+<span class="sd">        raised, and no directory change will be made.</span>
+<span class="sd">        </span>
+<span class="sd">        Only one of met, utc, or gps should be defined.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            met (float, optional): A time in MET.</span>
+<span class="sd">            utc (str, optional): A UTC time in ISO format: YYYY-MM-DDTHH:MM:SS</span>
+<span class="sd">            gps (float, optional): A GPS time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">met</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="n">Met</span><span class="p">(</span><span class="n">met</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">utc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="n">Met</span><span class="o">.</span><span class="n">from_iso</span><span class="p">(</span><span class="n">utc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="n">Met</span><span class="o">.</span><span class="n">from_gps</span><span class="p">(</span><span class="n">gps</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either met, utc, or gps must be specified&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_met</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ftp</span><span class="o">.</span><span class="n">cwd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_construct_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_met</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+            <span class="n">badtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_met</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid MET&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">badtime</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.ls_ctime"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.ls_ctime">[docs]</a>    <span class="k">def</span> <span class="nf">ls_ctime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all ctime files</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.ls_cspec"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.ls_cspec">[docs]</a>    <span class="k">def</span> <span class="nf">ls_cspec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all cspec files</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.ls_poshist"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.ls_poshist">[docs]</a>    <span class="k">def</span> <span class="nf">ls_poshist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List the poshist file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;poshist&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.ls_spechist"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.ls_spechist">[docs]</a>    <span class="k">def</span> <span class="nf">ls_spechist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all spechist files</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;spechist&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.ls_tte"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.ls_tte">[docs]</a>    <span class="k">def</span> <span class="nf">ls_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_day</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all TTE files</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            full_day (bool, optional):</span>
+<span class="sd">                If True, will return the TTE files for the full day.  If False,</span>
+<span class="sd">                will return the TTE files for the hour covering the specified </span>
+<span class="sd">                time. Default is False.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The file list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tte&#39;</span><span class="p">,</span> <span class="s1">&#39;fit.gz&#39;</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tte&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">full_day</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_tte</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.get_ctime"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.get_ctime">[docs]</a>    <span class="k">def</span> <span class="nf">get_ctime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the ctime files</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;ctime&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.get_cspec"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.get_cspec">[docs]</a>    <span class="k">def</span> <span class="nf">get_cspec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the cspec files</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;cspec&#39;</span><span class="p">,</span> <span class="s1">&#39;pha&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.get_poshist"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.get_poshist">[docs]</a>    <span class="k">def</span> <span class="nf">get_poshist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the poshist file</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;poshist&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.get_spechist"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.get_spechist">[docs]</a>    <span class="k">def</span> <span class="nf">get_spechist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the spechist files</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;spechist&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.get_tte"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.get_tte">[docs]</a>    <span class="k">def</span> <span class="nf">get_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_day</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download all TTE files associated with a time.</span>
+<span class="sd">        </span>
+<span class="sd">        Note:</span>
+<span class="sd">            Unless you have a high-bandwidth connection and can handle</span>
+<span class="sd">            downloading several GBs, it is not recommended to download the </span>
+<span class="sd">            full day of TTE data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            dets (list, optional): The detectors&#39; data to download. </span>
+<span class="sd">                                   If omitted, will download all.</span>
+<span class="sd">            full_day (bool, optional): </span>
+<span class="sd">                If True, will download the TTE files for the full day.  If False,</span>
+<span class="sd">                will return the TTE files for the covering the specified time.</span>
+<span class="sd">                Default is False.</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tte&#39;</span><span class="p">,</span> <span class="s1">&#39;fit.gz&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">))</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;tte&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="n">dets</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">full_day</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_tte</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContinuousFtp.get_all"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.ContinuousFtp.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download all files within a daily directory.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Use at your own risk. Unless you have a high-bandwidth connection </span>
+<span class="sd">            and can handle downloading several GBs, this function is not</span>
+<span class="sd">            recommended for use.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            download_dir (str): The download directory</span>
+<span class="sd">            verbose (bool, optional): If True, will output the download status. </span>
+<span class="sd">                                      Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">download_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_construct_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">met_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructs the FTP path for antime</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            met_obj (:class:`.time.Met`): The MET time object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The path of the FTP directory for the time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span> <span class="n">met_obj</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
+                            <span class="s1">&#39;current&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">def</span> <span class="nf">_filter_tte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Filters a list of TTE files for only the files that contain the</span>
+<span class="sd">        desired time</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            files (list of str): The list of TTE files</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of str: The filtered list of files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_met</span><span class="o">.</span><span class="n">ymd_h</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+
+<div class="viewcode-block" id="HeasarcBrowse"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.HeasarcBrowse">[docs]</a><span class="k">class</span> <span class="nc">HeasarcBrowse</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;A class that interfaces with the HEASARC Browse API.  This can be</span>
+<span class="sd">    called directly, but primarily intended as a base class.</span>
+<span class="sd">    </span>
+<span class="sd">    The class makes a query to HEASARC&#39;s w3query.pl perl script in </span>
+<span class="sd">    BATCHRETRIEVALCATALOG mode.  All fields and rows are retrieved so that</span>
+<span class="sd">    this class, on instantiation, contains the full set of catalog data.  </span>
+<span class="sd">    Any queries based on row or columns selections/slices are then done locally,</span>
+<span class="sd">    instead of making repeated requests to the HEASARC.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        table (str, optional): The name of the table to be passed to the </span>
+<span class="sd">                               w3query.pl script.</span>
+<span class="sd">        verbose (bool, optional): Default is True</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        columns (np.array): The names of the columns available in the table</span>
+<span class="sd">        num_cols (int): The total number of columns (fields) in the data table</span>
+<span class="sd">        num_rows: (int): The total number of rows in the data table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;https://heasarc.gsfc.nasa.gov&#39;</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="s1">&#39;cgi-bin/W3Browse/w3query.pl&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;tablehead=name=BATCHRETRIEVALCATALOG_2.0+</span><span class="si">{}</span><span class="s1">&amp;Fields=All&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">table</span><span class="p">)</span>
+        <span class="c1"># have to add this because HEASARC changed the default behavior without</span>
+        <span class="c1"># telling anyone</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s1">&#39;&amp;ResultMax=0&#39;</span>
+        <span class="k">if</span> <span class="n">table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_table</span><span class="p">(</span>
+                <span class="n">host</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">script</span> <span class="o">+</span> <span class="s1">&#39;?&#39;</span> <span class="o">+</span> <span class="n">query</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_typedefs</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_cols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span>
+
+    <span class="k">def</span> <span class="nf">_is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># connect to the host -- tells us if the host is actually</span>
+            <span class="c1"># reachable</span>
+            <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">((</span><span class="n">host</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">80</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Either you are not connected to the internet or &quot;</span>
+                          <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is down.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_read_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the table from HEASARC</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            url (str): The URL including the query to the HEASARC perl script</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            header (np.array): The column names of the table</span>
+<span class="sd">            table (np.array): The complete data table, unformatted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># secure connection</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span><span class="p">()</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Downloading Catalog from HEASARC via w3query.pl...&#39;</span><span class="p">)</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># get content, decode to ascii, and split into lines</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Finished in </span><span class="si">{}</span><span class="s1"> s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)))</span>
+
+        <span class="c1"># now we have to do the following because HEASARC changed the behavior</span>
+        <span class="c1"># of their public script without telling anyone</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># table header</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">col</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)])</span>
+        <span class="c1"># the table data</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="s1">&#39;|&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)])</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">header</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="c1"># another undocumented and unannounced change to HEASARC browse:</span>
+        <span class="c1"># they added an additional &#39;|&#39; delimiter at the beginning and end of</span>
+        <span class="c1"># each line</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># clean nulls from table</span>
+        <span class="n">table</span><span class="p">[(</span><span class="n">table</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">table</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="s1">&#39;nan&#39;</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_auto_typedefs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Auto-detect the datatype for each column of the table.  The HEASARC</span>
+<span class="sd">        tables are returned as strings, with no definition of datatypes, so</span>
+<span class="sd">        we have to do a little work to guess what the proper types are.  This</span>
+<span class="sd">        usually works pretty well.  Can be overridden in a derived class after</span>
+<span class="sd">        the base class __init__ has been called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typedefs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># cycle through each column</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span><span class="p">):</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="c1"># cycle to the first non-null entry</span>
+                <span class="k">if</span> <span class="n">col</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;nan&#39;</span><span class="p">:</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+                <span class="c1"># if an entry is a digit, set as integer</span>
+                <span class="k">if</span> <span class="n">col</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="n">typedefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># otherwise try applying float</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                        <span class="n">typedefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="c1"># if float fails, then must be a string, try datetime</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">Met</span><span class="o">.</span><span class="n">from_iso</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                            <span class="n">typedefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;datetime&#39;</span><span class="p">)</span>
+                        <span class="c1"># all else fails, this is definitely a string</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                            <span class="n">typedefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">typedefs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_apply_typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typedef</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply the type definition to a column of data.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            typedef (str): The type definition</span>
+<span class="sd">            column (np.array): A column of data</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: The column of data converted to the requested type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">typedef</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">newcol</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># nan doesn&#39;t work for ints, for now.  Not the best solution...</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">column</span> <span class="o">==</span> <span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+                <span class="n">newcol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+                <span class="n">newcol</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;-99999&#39;</span>
+                <span class="n">newcol</span> <span class="o">=</span> <span class="n">newcol</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">typedef</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+            <span class="n">newcol</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">typedef</span> <span class="o">==</span> <span class="s1">&#39;datetime&#39;</span><span class="p">:</span>
+            <span class="n">newcol</span> <span class="o">=</span> <span class="n">column</span>
+            <span class="c1"># newcol = np.array([Met.from_iso(item).datetime for item in column])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newcol</span> <span class="o">=</span> <span class="n">column</span>
+        <span class="k">return</span> <span class="n">newcol</span>
+
+    <span class="k">def</span> <span class="nf">_colname_to_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a column name to the index into the table array</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            colname (str): The column name</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The index into the table array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> not a valid column name&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">colname</span><span class="p">))</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">==</span> <span class="n">colname</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">idx</span>
+
+<div class="viewcode-block" id="HeasarcBrowse.get_table"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.HeasarcBrowse.get_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the table data as a record array with proper type conversions.</span>
+<span class="sd">        Missing values are treated as type-converted ``np.nan``.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            columns (list of str, optional): The columns to return. If omitted, </span>
+<span class="sd">                                             returns all columns.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.recarray: A record array containing the requested data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_apply_typedef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span>
+                <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromarrays</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+<div class="viewcode-block" id="HeasarcBrowse.column_range"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.HeasarcBrowse.column_range">[docs]</a>    <span class="k">def</span> <span class="nf">column_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the data range for a given column</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            column (str): The column name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: The (lo, hi) range of the data column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_typedef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">col</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="HeasarcBrowse.slice"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.HeasarcBrowse.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform row slices of the data table based on a conditional of a</span>
+<span class="sd">        single column</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            column (str): The column name</span>
+<span class="sd">            lo (optional): The minimum (inclusive) value of the slice. If not </span>
+<span class="sd">                           set, uses the lowest range of the data in the column.</span>
+<span class="sd">            hi (optional): The maximum (inclusive) value of the slice. If not </span>
+<span class="sd">                           set, uses the highest range of the data in the column.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`HeasarcBrowse`: Returns a new catalog with the sliced rows</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># have to apply the types and create a mask</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_typedef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_range</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_range</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">&gt;=</span> <span class="n">lo</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">col</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="p">)</span>
+
+        <span class="c1"># create a new object and fill it with the sliced data</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">HeasarcBrowse</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_typedefs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="HeasarcBrowse.slices"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.HeasarcBrowse.slices">[docs]</a>    <span class="k">def</span> <span class="nf">slices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform row slices of the data table based on a conditional of </span>
+<span class="sd">        multiple columns</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            columns (list of tuples):</span>
+<span class="sd">                A list of tuples, where each tuple is (column, lo, hi).  The </span>
+<span class="sd">                &#39;column&#39; is the column name, &#39;lo&#39; is the lowest bounding value, </span>
+<span class="sd">                and &#39;hi&#39; is the highest bouding value.  If no low or high </span>
+<span class="sd">                bounding is desired, set to None. See :meth:`slice()` for more </span>
+<span class="sd">                info.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`HeasarcBrowse`: Returns a new catalog with the sliced rows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numcols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numcols</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">lo</span><span class="o">=</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">hi</span><span class="o">=</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">obj</span></div></div>
+
+
+<div class="viewcode-block" id="TriggerCatalog"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.TriggerCatalog">[docs]</a><span class="k">class</span> <span class="nc">TriggerCatalog</span><span class="p">(</span><span class="n">HeasarcBrowse</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class that interfaces with the GBM Trigger Catalog via HEASARC Browse.</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Because this calls HEASARC&#39;s w3query.pl script on initialization,</span>
+<span class="sd">        it may take several seconds for the object to load.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        coord_units_deg (bool, optional):</span>
+<span class="sd">            If True, converts the hms sexigesimal format output by HEASARC to</span>
+<span class="sd">            decimal degree. Default is True.</span>
+<span class="sd">        verbose (bool, optional): Default is True</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        columns (np.array): The names of the columns available in the table</span>
+<span class="sd">        num_cols (int): The total number of columns (fields) in the data table</span>
+<span class="sd">        num_rows: (int): The total number of rows in the data table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coord_units_deg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="s1">&#39;fermigtrig&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># override detector mask typedef</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="s1">&#39;detector_mask&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;str&#39;</span>
+
+        <span class="c1"># heasarc only provides these coordinates in hms. if we want </span>
+        <span class="c1"># decimal degrees, do the conversion and update the table and typedefs</span>
+        <span class="k">if</span> <span class="n">coord_units_deg</span><span class="p">:</span>
+            <span class="n">idx1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="s1">&#39;ra&#39;</span><span class="p">)</span>
+            <span class="n">idx2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="s1">&#39;dec&#39;</span><span class="p">)</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx2</span><span class="p">],</span>
+                              <span class="n">unit</span><span class="o">=</span><span class="p">(</span><span class="n">astro_units</span><span class="o">.</span><span class="n">hourangle</span><span class="p">,</span> <span class="n">astro_units</span><span class="o">.</span><span class="n">deg</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">degree</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx2</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">degree</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span></div>
+
+
+<div class="viewcode-block" id="BurstCatalog"><a class="viewcode-back" href="../../api/api-finders.html#gbm.finder.BurstCatalog">[docs]</a><span class="k">class</span> <span class="nc">BurstCatalog</span><span class="p">(</span><span class="n">HeasarcBrowse</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class that interfaces with the GBM Burst Catalog via HEASARC Browse.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Because this calls HEASARC&#39;s w3query.pl script on initialization,</span>
+<span class="sd">        it may take several seconds up to a couple of minutes for the object </span>
+<span class="sd">        to load.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        coord_units_deg (bool, optional):</span>
+<span class="sd">            If True, converts the hms sexigesimal format output by HEASARC to</span>
+<span class="sd">            decimal degree. Default is True.</span>
+<span class="sd">        verbose (bool, optional): Default is True</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        columns (np.array): The names of the columns available in the table</span>
+<span class="sd">        num_cols (int): The total number of columns (fields) in the data table</span>
+<span class="sd">        num_rows: (int): The total number of rows in the data table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coord_units_deg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="s1">&#39;fermigbrst&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># override detector mask typedef</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="s1">&#39;bcat_detector_mask&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;str&#39;</span>
+
+        <span class="c1"># heasarc only provides these coordinates in hms. if we want </span>
+        <span class="c1"># decimal degrees, do the conversion and update the table and typedefs</span>
+        <span class="k">if</span> <span class="n">coord_units_deg</span><span class="p">:</span>
+            <span class="n">idx1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="s1">&#39;ra&#39;</span><span class="p">)</span>
+            <span class="n">idx2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colname_to_idx</span><span class="p">(</span><span class="s1">&#39;dec&#39;</span><span class="p">)</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx2</span><span class="p">],</span>
+                              <span class="n">unit</span><span class="o">=</span><span class="p">(</span><span class="n">astro_units</span><span class="o">.</span><span class="n">hourangle</span><span class="p">,</span> <span class="n">astro_units</span><span class="o">.</span><span class="n">deg</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">degree</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">[:,</span> <span class="n">idx2</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">degree</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typedefs</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1042 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Background Estimation Module &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spectra Module" href="api-spectra.html" />
+    <link rel="prev" title="Data Binning Module" href="api-binning.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">GBM Data Tools API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api-data.html">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-binning.html">Data Binning Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Background Estimation Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fitter-interface">Fitter Interface</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#backgroundfitter">BackgroundFitter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backgroundrates">BackgroundRates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backgroundspectrum">BackgroundSpectrum</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#for-pre-binned-data">For Pre-Binned Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#polynomial">Polynomial</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#for-unbinned-data">For Unbinned Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#naivepoisson">NaivePoisson</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-spectra.html">Spectra Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-sims.html">Simulate Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-plot.html">Plotting Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-finders.html">Data Finders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-utils.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">GBM Data Tools API</a> &raquo;</li>
+        
+      <li>Background Estimation Module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/api-background.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="background-estimation-module">
+<span id="api-background"></span><h1>Background Estimation Module<a class="headerlink" href="#background-estimation-module" title="Permalink to this headline">¶</a></h1>
+<p>The classes in <cite>gbm.background</cite> are standard background estimation classes
+available to fit time history background for pre-binned and unbinned data.</p>
+<div class="section" id="fitter-interface">
+<h2>Fitter Interface<a class="headerlink" href="#fitter-interface" title="Permalink to this headline">¶</a></h2>
+<p>These fitting classes are plugins for <a class="reference internal" href="#gbm.background.BackgroundFitter" title="gbm.background.BackgroundFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundFitter</span></code></a>,
+which outputs a <a class="reference internal" href="#gbm.background.BackgroundRates" title="gbm.background.BackgroundRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundRates</span></code></a> object that can be
+integrated in time to produce a <a class="reference internal" href="#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>,
+which is a background spectrum.</p>
+<div class="section" id="backgroundfitter">
+<h3>BackgroundFitter<a class="headerlink" href="#backgroundfitter" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.background.BackgroundFitter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.background.</span></span><span class="sig-name descname"><span class="pre">BackgroundFitter</span></span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundFitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for fitting a background, given a fitting algorithm,
+to time-energy data (e.g. <a class="reference internal" href="api-data.html#gbm.data.phaii.PHAII" title="gbm.data.phaii.PHAII"><code class="xref py py-class docutils literal notranslate"><span class="pre">PHAII</span></code></a>,
+<a class="reference internal" href="api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a>).</p>
+<p>When a BackgroundFitter is created, an algorithm must be specified.  In
+particular, the algorithm must be a class that has two public methods:
+<code class="docutils literal notranslate"><span class="pre">fit()</span></code> and <code class="docutils literal notranslate"><span class="pre">interpolate()</span></code>.</p>
+<p>For PHAII data, the class, upon initialization, must take the following as
+arguments:</p>
+<ol class="arabic simple">
+<li><p>a 2D array of counts with shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>, <code class="docutils literal notranslate"><span class="pre">numchans</span></code>);</p></li>
+<li><p>a 1D array of time bin start times, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,);</p></li>
+<li><p>a 1D array of time bin end times, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,);</p></li>
+<li><p>a 1D array of exposures for each time bin, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,).</p></li>
+</ol>
+<p>While for TTE data, the class, upon initialization, must take the following
+as an argument:</p>
+<ol class="arabic simple">
+<li><p>a list, of length <code class="docutils literal notranslate"><span class="pre">numchans</span></code>, where each item is a np.array
+of event times.</p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">fit()</span></code> method takes no arguments, hoewever, parameters that are
+required for the algorithm may be specified as keywords.</p>
+<p>The interpolate() method must take in the following as arguments:</p>
+<ol class="arabic simple">
+<li><p>a 1D array of time bin start times, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,);</p></li>
+<li><p>a 1D array of time bin end times, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,).</p></li>
+</ol>
+<p>Any additional parameters required can be specified as keywords.
+The <code class="docutils literal notranslate"><span class="pre">interpolate()</span></code> method must return:</p>
+<ol class="arabic simple">
+<li><p>a 2D rates array, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>, <code class="docutils literal notranslate"><span class="pre">numchans</span></code>);</p></li>
+<li><p>a 2D rate uncertainty array, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>, <code class="docutils literal notranslate"><span class="pre">numchans</span></code>).</p></li>
+</ol>
+<p>Additionally, the class can provide the following public attributes that
+will be exposed by BackgroundFitter:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dof</span></code>: The degrees of freedom of the fits, array shape (<code class="docutils literal notranslate"><span class="pre">numchans</span></code>,)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">statistic</span></code>: The fit statistic for each fit, array shape (<code class="docutils literal notranslate"><span class="pre">numchans</span></code>,)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">statistic_name</span></code>: A string of the fit statistic used</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dof</strong> (<em>np.array</em>) – If available, the degrees-of-freedom of the fit for
+each energy channel</p></li>
+<li><p><strong>livetime</strong> (<em>float</em>) – The total livetime of the data used for the background</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – The name of the fitting algorithm class</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em>) – All parameters passed to the fitting algorithm</p></li>
+<li><p><strong>statistic</strong> (<em>np.array</em>) – If available, the fit statistic for each energy
+channel</p></li>
+<li><p><strong>statistic_name</strong> (<em>str</em>) – If available, the name of the fit statistic</p></li>
+<li><p><strong>type</strong> (<em>str</em>) – The type of background algorithm, either ‘binned’ or ‘unbinned’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundFitter.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundFitter.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundFitter.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a background fit of the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Options to be passed as parameters to the fitting class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundFitter.from_phaii">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_phaii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phaii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_ranges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundFitter.from_phaii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundFitter.from_phaii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a background fitter from a PHAII object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phaii</strong> (<a class="reference internal" href="api-data.html#gbm.data.phaii.PHAII" title="gbm.data.phaii.PHAII"><code class="xref py py-class docutils literal notranslate"><span class="pre">PHAII</span></code></a>) – A PHAII data object</p></li>
+<li><p><strong>method</strong> (<em>&lt;class&gt;</em>) – A background fitting/estimation class for binned data</p></li>
+<li><p><strong>time_ranges</strong> (<em>[</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>...</em><em>]</em>) – The time range or time ranges over which to fit the background.
+If omitted, uses the full time range of the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundFitter" title="gbm.background.BackgroundFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundFitter</span></code></a> – The initialized background fitting object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundFitter.from_tte">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_tte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tte</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_ranges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundFitter.from_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundFitter.from_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a background fitter from a TTE object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tte</strong> (<a class="reference internal" href="api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a>) – A TTE data object</p></li>
+<li><p><strong>method</strong> (<em>&lt;class&gt;</em>) – A background fitting/estimation class for unbinned data</p></li>
+<li><p><strong>time_ranges</strong> (<em>[</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>...</em><em>]</em>) – The time range or time ranges over which to fit the background.
+If omitted, uses the full time range of the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundFitter" title="gbm.background.BackgroundFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundFitter</span></code></a> – The initialized background fitting object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundFitter.interpolate_bins">
+<span class="sig-name descname"><span class="pre">interpolate_bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundFitter.interpolate_bins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundFitter.interpolate_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the fitted background model over a set of bins.
+The exposure is calculated for each bin of the background model
+in case the background model counts is needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>np.array</em>) – The starting times</p></li>
+<li><p><strong>tstop</strong> (<em>np.array</em>) – The ending times</p></li>
+<li><p><strong>**kwargs</strong> – Options to be passed as parameters to the interpolation method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundRates" title="gbm.background.BackgroundRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundRates</span></code></a> – The background rates/uncertainty object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundFitter.interpolate_times">
+<span class="sig-name descname"><span class="pre">interpolate_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundFitter.interpolate_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundFitter.interpolate_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the fitted background model over a set of times.
+Does not calculate an exposure since this returns a set of point
+estimates of the background rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>np.array</em>) – The sampling times</p></li>
+<li><p><strong>**kwargs</strong> – Options to be passed as parameters to the interpolation method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundRates" title="gbm.background.BackgroundRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundRates</span></code></a> – The background rates/uncertainty object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="backgroundrates">
+<h3>BackgroundRates<a class="headerlink" href="#backgroundrates" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.background.</span></span><span class="sig-name descname"><span class="pre">BackgroundRates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_uncertainty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="api-data.html#gbm.data.primitives.TimeEnergyBins" title="gbm.data.primitives.TimeEnergyBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.data.primitives.TimeEnergyBins</span></code></a></p>
+<p>Class containing the background rate data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rates</strong> (<em>np.array</em>) – The array of background rates in each bin</p></li>
+<li><p><strong>rate_uncertainty</strong> (<em>np.array</em>) – The array of background rate uncertainties
+in each bin</p></li>
+<li><p><strong>tstart</strong> (<em>np.array</em>) – The low-value edges of the time bins</p></li>
+<li><p><strong>tstop</strong> (<em>np.array</em>) – The high-value edges of the time bins</p></li>
+<li><p><strong>emin</strong> (<em>np.array</em>) – The low-value edges of the energy bins</p></li>
+<li><p><strong>emax</strong> (<em>np.array</em>) – The high-value edges of the energy bins</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em><em>, </em><em>optional</em>) – The exposure of each bin</p></li>
+<li><p><strong>detector</strong> (<em>str</em><em>, </em><em>optional</em>) – The associated detector</p></li>
+<li><p><strong>datatype</strong> (<em>str</em><em>, </em><em>optional</em>) – The datatype associated with the background</p></li>
+<li><p><strong>trigtime</strong> (<em>float</em><em>, </em><em>optional</em>) – The trigger time</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>chanwidths</strong> (<em>np.array</em>) – The bin widths along the energy axis</p></li>
+<li><p><strong>count_uncertainty</strong> (<em>np.array</em>) – The counts uncertainty in each bin</p></li>
+<li><p><strong>energy_centroids</strong> (<em>np.array</em>) – The bin centroids along the energy axis</p></li>
+<li><p><strong>energy_range</strong> (<em>float, float</em>) – The range of the data along the energy axis</p></li>
+<li><p><strong>numchans</strong> (<em>int</em>) – The number of energy channels along the energy axis</p></li>
+<li><p><strong>numtimes</strong> (<em>int</em>) – The number of bins along the time axis</p></li>
+<li><p><strong>rates</strong> (<em>np.array</em>) – The rates in each Time-Energy Bin</p></li>
+<li><p><strong>rates_per_kev</strong> (<em>np.array</em>) – The differential rates in units of counts/s/keV</p></li>
+<li><p><strong>rate_uncertainty</strong> (<em>np.array</em>) – The rate uncertainty in each bin</p></li>
+<li><p><strong>rate_uncertainty_per_kev</strong> (<em>np.array</em>) – The differential rate uncertainty in units of counts/s/keV</p></li>
+<li><p><strong>size</strong> (<em>int, int</em>) – The number of bins along both axes (numtimes, numchans)</p></li>
+<li><p><strong>time_centroids</strong> (<em>np.array</em>) – The bin centroids along the time axis</p></li>
+<li><p><strong>time_range</strong> (<em>float, float</em>) – The range of the data along the time axis</p></li>
+<li><p><strong>time_widths</strong> (<em>np.array</em>) – The bin widths along the time axis</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.closest_energy_edge">
+<span class="sig-name descname"><span class="pre">closest_energy_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'either'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.closest_energy_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the closest energy bin edge</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>float</em>) – Input value</p></li>
+<li><p><strong>which</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Options are:</p>
+<ul>
+<li><p>’either’ - closest edge to val;</p></li>
+<li><p>’low’ - closest edge lower than val;</p></li>
+<li><p>’high’ - closest edge higher than val. Default is ‘either’</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – The closest energy bin edge to the input value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.closest_time_edge">
+<span class="sig-name descname"><span class="pre">closest_time_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'either'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.closest_time_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the closest time bin edge</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>float</em>) – Input value</p></li>
+<li><p><strong>which</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Options are:</p>
+<ul>
+<li><p>’either’ - closest edge to val;</p></li>
+<li><p>’low’ - closest edge lower than val;</p></li>
+<li><p>’high’ - closest edge higher than val. Default is ‘either’</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – The closest time bin edge to the input value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.contiguous_energy_bins">
+<span class="sig-name descname"><span class="pre">contiguous_energy_bins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.contiguous_energy_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of TimeEnergyBins, each one containing a contiguous
+energy segment of data.  This is done by comparing the edges of each
+energy bin, and if thereis a gap between edges, the data is split into
+separate TimeEnergyBin objects, each containing an energy-contiguous set
+of data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code> – A list of TimeEnergyBins</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.contiguous_time_bins">
+<span class="sig-name descname"><span class="pre">contiguous_time_bins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.contiguous_time_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of TimeEnergyBins, each one containing a contiguous
+time segment of data.  This is done by comparing the edges of each time
+bin, and if thereis a gap between edges, the data is split into
+separate TimeEnergyBin objects, each containing a time-contiguous set
+of data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code> – A list of TimeEnergyBins</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.get_exposure">
+<span class="sig-name descname"><span class="pre">get_exposure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_ranges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.get_exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the total exposure of a time range or time ranges of data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_ranges</strong> (<em>[</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The time range or time ranges over which to calculate the
+exposure. If omitted, calculates the total exposure of the data</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True and the time ranges don’t match up with the data binning,
+will scale the exposure based on the requested time range.
+Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – The exposure of the time selections</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.integrate_energy">
+<span class="sig-name descname"><span class="pre">integrate_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.integrate_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.integrate_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrate the over the energy axis.
+Limits on the integration smaller than the full range can be set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>emin</strong> (<em>float</em><em>, </em><em>optional</em>) – The low end of the integration range. If not
+set, uses the lowest energy edge of the histogram</p></li>
+<li><p><strong>emax</strong> (<em>float</em><em>, </em><em>optional</em>) – The high end of the integration range. If not
+set, uses the highest energy edge of the histogram</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.primitives.TimeBins" title="gbm.data.primitives.TimeBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.data.primitives.TimeBins</span></code></a> – A TimeBins object containing                                                    the lightcurve histogram</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.integrate_time">
+<span class="sig-name descname"><span class="pre">integrate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.integrate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.integrate_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrate the background over the time axis (producing a count rate
+spectrum). Limits on the integration smaller than the full range can
+be set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>float</em><em>, </em><em>optional</em>) – The low end of the integration range.
+If not set, uses the lowest time edge of the histogram</p></li>
+<li><p><strong>tstop</strong> (<em>float</em><em>, </em><em>optional</em>) – The high end of the integration range.
+If not set, uses the highest time edge of the histogram</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> – A BackgroundSpectrum object containing                                          the count rate spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.merge_energy">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">histos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.merge_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge multiple TimeEnergyBins together along the energy axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>histos</strong> (list of <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code>) – A list containing the TimeEnergyBins to be merged</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code> – A new TimEnergyBins object containing                                      the merged TimeEnergyBins</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.merge_time">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">histos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.merge_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.merge_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge multiple BackroundRates together along the time axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>histos</strong> (list of <a class="reference internal" href="#gbm.background.BackgroundRates" title="gbm.background.BackgroundRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundRates</span></code></a>) – A list containing the BackgroundRates to be merged</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundRates" title="gbm.background.BackgroundRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundRates</span></code></a> – A new BackgroundRates object containing                                       the merged BackgroundRates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.rebin_energy">
+<span class="sig-name descname"><span class="pre">rebin_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.rebin_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.rebin_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.rebin_time">
+<span class="sig-name descname"><span class="pre">rebin_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.rebin_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.rebin_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.slice_energy">
+<span class="sig-name descname"><span class="pre">slice_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.slice_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a slice over an energy range and return a new TimeEnergyBins
+object. Note that emin and emax values that fall inside a bin will
+result in that bin being included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>emin</strong> (<em>float</em>) – The start of the slice</p></li>
+<li><p><strong>emax</strong> (<em>float</em>) – The end of the slice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code> – A new TimeEnergyBins object containing                                     the energy slice</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.slice_time">
+<span class="sig-name descname"><span class="pre">slice_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundRates.slice_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a slice over a time range and return a new TimeEnergyBins
+object. Note that tstart and tstop values that fall inside a bin will
+result in that bin being included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>float</em>) – The start of the slice</p></li>
+<li><p><strong>tstop</strong> (<em>float</em>) – The end of the slice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code> – A new TimeEnergyBins object containing                                      the time slice</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.sum_time">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sum_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.sum_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.sum_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum multiple TimeBins together if they have the same time range.
+Example use would be summing two backgrounds from two detectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>of</strong> (<em>bkgds</em><em> (</em><em>list</em>) – class:<a href="#id1"><span class="problematic" id="id2">`</span></a>BackgroundRates):
+A list containing the BackgroundRates to be summed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundRates" title="gbm.background.BackgroundRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundRates</span></code></a> – A new BackgroundRates object containing                                       the summed BackgroundRates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundRates.to_bak">
+<span class="sig-name descname"><span class="pre">to_bak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundRates.to_bak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundRates.to_bak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrate over the time axis and produce a BAK object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_range</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>optional</em>) – The time range to integrate over</p></li>
+<li><p><strong>**kwargs</strong> – Options to pass to BAK.from_data()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.BAK" title="gbm.data.BAK"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.data.BAK</span></code></a> – The background BAK object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="backgroundspectrum">
+<h3>BackgroundSpectrum<a class="headerlink" href="#backgroundspectrum" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.background.</span></span><span class="sig-name descname"><span class="pre">BackgroundSpectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_uncertainty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundSpectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="api-data.html#gbm.data.primitives.EnergyBins" title="gbm.data.primitives.EnergyBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.data.primitives.EnergyBins</span></code></a></p>
+<p>A class defining a Background Spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rates</strong> (<em>np.array</em>) – The array of background rates in each bin</p></li>
+<li><p><strong>rate_uncertainty</strong> (<em>np.array</em>) – The array of background rate uncertainties
+in each bin</p></li>
+<li><p><strong>lo_edges</strong> (<em>np.array</em>) – The low-value edges of the bins</p></li>
+<li><p><strong>hi_edges</strong> (<em>np.array</em>) – The high-value edges of the bins</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>centroids</strong> (<em>np.array</em>) – The geometric centroids of the bins</p></li>
+<li><p><strong>counts</strong> (<em>np.array</em>) – The counts in each bin</p></li>
+<li><p><strong>count_uncertainty</strong> (<em>np.array</em>) – The count uncertainty in each bin</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin</p></li>
+<li><p><strong>hi_edges</strong> (<em>np.array</em>) – The high-value edges of the bins</p></li>
+<li><p><strong>lo_edges</strong> (<em>np.array</em>) – The low-value edges of the bins</p></li>
+<li><p><strong>range</strong> (<em>float, float</em>) – The range of the bin edges</p></li>
+<li><p><strong>rates</strong> (<em>np.array</em>) – count rate of each bin</p></li>
+<li><p><strong>rate_uncertainty</strong> (<em>np.array</em>) – The count rate uncertainty of each bin</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – Number of bins</p></li>
+<li><p><strong>widths</strong> (<em>np.array</em>) – The widths of the bins</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.closest_edge">
+<span class="sig-name descname"><span class="pre">closest_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'either'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundSpectrum.closest_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the closest bin edge</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>float</em>) – Input value</p></li>
+<li><p><strong>which</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Options are:</p>
+<ul>
+<li><p>’either’ - closest edge to val;</p></li>
+<li><p>’low’ - closest edge lower than val; or</p></li>
+<li><p>’high’ - closest edge higher than val. Default is ‘either’</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – The closest bin edge to the input value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.contiguous_bins">
+<span class="sig-name descname"><span class="pre">contiguous_bins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundSpectrum.contiguous_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of Bins, each one containing a continuous segment of
+data.  This is done by comparing the edges of each bin, and if there
+is a gap between edges, the data is split into separate Bin objects,
+each containing a contiguous set of data.</p>
+<dl class="simple">
+<dt>Returns</dt><dd><p>list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Bins</span></code>: A list of Bins</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.from_fits_array">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_fits_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ebounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundSpectrum.from_fits_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an EnergyBins object from a FITS counts array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<em>np.recarray</em><em> or </em><em>astropy.io.fits.fitsrec.FITS_rec</em>) – The FITS counts array</p></li>
+<li><p><strong>ebounds</strong> (<em>np.recarray</em><em> or </em><em>astropy.io.fits.fitsrec.FITS_rec</em>) – The ebounds array, mapping channel numbers to energy bins</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyBins</span></code> – The new EnergyBins object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.merge">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">histos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundSpectrum.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge multiple TimeBins together.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>histos</strong> (list of <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeBins</span></code>) – A list containing the TimeBins to be merged</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeBins</span></code> – A new TimeBins object containing the merged TimeBins</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.rebin">
+<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.background.BackgroundSpectrum.rebin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebin the EnergyBins object in given a binning function and return a
+a new EnergyBins object</p>
+<p>The binning function should take as input an array of counts,
+array of exposures, and an array of bin edges. Additional arguments
+specific to the function are allowed. The function should return an
+array of the new counts, new exposure, and new edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>&lt;function&gt;</em>) – A binning function</p></li>
+<li><p><strong>*args</strong> – Arguments to be passed to the binning function</p></li>
+<li><p><strong>emin</strong> (<em>float</em><em>, </em><em>optional</em>) – If set, defines the starting energy of the EnergyBins to be
+binned, otherwise binning will begin at the first bin edge.</p></li>
+<li><p><strong>emax</strong> (<em>float</em><em>, </em><em>optional</em>) – If set, defines the ending energy of the EnergyBins to be binned,
+otherwise binning will end at the last bin edge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyBins</span></code> – The rebinned EnergyBins object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.slice">
+<span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundSpectrum.slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundSpectrum.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a slice over an energy range and return a new
+BackgroundSpectrum object. Note that the emin and emax values that fall
+inside a bin will result in that bin being included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>emin</strong> (<em>float</em>) – The low energy edge of the slice</p></li>
+<li><p><strong>emax</strong> (<em>float</em>) – The high energy of the slice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> – A new object containing the energy slice</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.BackgroundSpectrum.sum">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">histos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/background.html#BackgroundSpectrum.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.BackgroundSpectrum.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum multiple BackgroundSpectrums together if they have the same
+energy range (support).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>histos</strong> (list of <a class="reference internal" href="#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A list containing the background spectra to be summed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> – A new object containing the                                          summed BackgroundSpectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="for-pre-binned-data">
+<h2>For Pre-Binned Data<a class="headerlink" href="#for-pre-binned-data" title="Permalink to this headline">¶</a></h2>
+<p>To be used for fitting the background of pre-binned data.</p>
+<div class="section" id="polynomial">
+<h3>Polynomial<a class="headerlink" href="#polynomial" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.background.binned.Polynomial">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.background.binned.</span></span><span class="sig-name descname"><span class="pre">Polynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/binned.html#Polynomial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.binned.Polynomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for performing a polynomial fit on Time-Energy data.
+The fit is performed over the time axis, treating each energy channel
+separately, although performing the fits simultaneously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>np.array</em>) – The array of counts in each bin, shape
+(<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>, <code class="docutils literal notranslate"><span class="pre">numchans</span></code>)</p></li>
+<li><p><strong>tstart</strong> (<em>np.array</em>) – The low-value edges of the time bins, shape
+(<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,)</p></li>
+<li><p><strong>tstop</strong> (<em>np.array</em>) – The high-value edges of the time bins, shape
+(<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,)</p></li>
+<li><p><strong>exposure</strong> (<em>np.array</em>) – The exposure of each bin, shape (<code class="docutils literal notranslate"><span class="pre">numtimes</span></code>,)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>dof</strong> (<em>np.array</em>) – The degrees-of-freedom for each channel</p></li>
+<li><p><strong>statistic</strong> (<em>np.array</em>) – The fit chi-squared statistic for each channel</p></li>
+<li><p><strong>statistic_name</strong> (<em>str</em>) – ‘chisq’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.binned.Polynomial.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/binned.html#Polynomial.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.binned.Polynomial.fit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Fit the data with a polynomial.  Model variances are used for</dt><dd><p>chi-squared via two fitting passes. Adapted from RMfit polynomial
+fitter.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>order</strong> (<em>int</em>) – The order of the polynomial</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – The fitted model value and model uncertainty                                   at each input bin</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.binned.Polynomial.interpolate">
+<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/binned.html#Polynomial.interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.binned.Polynomial.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation of the fitted polynomial</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>np.array</em>) – The starting edge of each bin</p></li>
+<li><p><strong>tstop</strong> (<em>np.array</em>) – The ending edge of each bin</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – The interpolated model value and model                                   uncertainty in each bin</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="for-unbinned-data">
+<h2>For Unbinned Data<a class="headerlink" href="#for-unbinned-data" title="Permalink to this headline">¶</a></h2>
+<p>To be used for fitting the background of unbinned data.</p>
+<div class="section" id="naivepoisson">
+<h3>NaivePoisson<a class="headerlink" href="#naivepoisson" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.background.unbinned.NaivePoisson">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.background.unbinned.</span></span><span class="sig-name descname"><span class="pre">NaivePoisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/unbinned.html#NaivePoisson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.unbinned.NaivePoisson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to estimate the background of un-binned data using the naive Poisson
+maximum likelihood.</p>
+<p>This method is approximately equivalent to sliding a window of fixed length
+through un-binned data and calculating the Poisson maximum likelihood for
+the rate. The rate estimate is applied to the center of the sliding window,
+therefore, the amount of data equivalent to half of the sliding window at
+the beginning and half of the window at the end of the data is a constant.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This naive approach assumes there is either no ‘strong’ signal in the          data, or the presence of a ‘weaker’ signal has a duration much less          than the window width of the sliding window.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>counts</strong> (<em>list of np.array</em>) – A list of length numchans, and each element
+of the list is an array of event times in
+that channel.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.unbinned.NaivePoisson.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/unbinned.html#NaivePoisson.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.unbinned.NaivePoisson.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the data via Naive Poisson Maximum Likelihood</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window_width</strong> (<em>float</em>) – <p>The width of the sliding window in seconds.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the range of the data is shorter than <code class="docutils literal notranslate"><span class="pre">window_width</span></code>,
+the <code class="docutils literal notranslate"><span class="pre">window_width</span></code> will automatically be shortened to the
+range of the data.</p>
+</div>
+</p></li>
+<li><p><strong>fast</strong> (<em>bool</em>) – If True, then will use the fast approximation of the
+algorithm that allows the <code class="docutils literal notranslate"><span class="pre">window_width</span></code> to change
+throughout the data (the number of counts in the window
+is constant). If False, uses the exact algorithm with a
+fixed window, but is much slower.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.background.unbinned.NaivePoisson.interpolate">
+<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/background/unbinned.html#NaivePoisson.interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.background.unbinned.NaivePoisson.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the background at the given times</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>np.array</em>) – The start times of the bins to interpolate</p></li>
+<li><p><strong>tstop</strong> (<em>np.array</em>) – The end times of the bins to interpolate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em> – The interpolated model value and model                                   uncertainty in each bin</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api-spectra.html" class="btn btn-neutral float-right" title="Spectra Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api-binning.html" class="btn btn-neutral float-left" title="Data Binning Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

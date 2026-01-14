@@ -20,28 +20,35 @@ import nltk
 
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
+line = 0 #  0 for caii/hepsilon, 1 for hbeta
+
 
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_caII_hep.npz'
 #filename = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
 #filename = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
-filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
-coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
-#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/11aug24_Cclass_Hbeta.npz'
+#filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
+#coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
+if line ==1:
+    filename = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
+if line ==0:
+    filename = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
 res = np.load(filename)
 
-coordres = np.load(coord_filename)
+# coordres = np.load(coord_filename)
 
-vispx = coordres['arr_0']
-vispy = coordres['arr_1']
+# #only for ca II 
+# vispx = coordres['arr_0']
+# vispy = coordres['arr_1']
 
 flare_arr = res['flare']
 wave = res['wl']
 #times = res['arr_1']
 
 
-hbeta_low =500
-hbeta_high = 660
+
+hbeta_low =443
+hbeta_high = 730
 
 caII_low = 570
 caII_high = 775
@@ -49,27 +56,57 @@ caII_high = 775
 hepsilon_low = 775
 hepsilon_high = 900
 
-#cutoff0 = 1.5 # for more than one frame
-#cutoff0 = 1.5 # for h-beta
-#cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
-cutoff0=2.6 # for hepsilon
+dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords.npz'
+dkist_coords = np.load(dkist_coord_file)
 
-n_clusters0 = 10 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+xarr_caII = dkist_coords['xarr_caII']
+yarr_caII = dkist_coords['yarr_caII']
+
+xarr_hbeta = dkist_coords['xarr_hbeta']
+yarr_hbeta = dkist_coords['yarr_hbeta']
+
+#cutoff0 = 1.5 # for more than one frame
+if line == 1:
+    cutoff0=2.5  # for h-beta
+if line == 0:
+    cutoff0=2
+#cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
+#cutoff0=2.6 # for hepsilon
+
+if line == 1:
+    n_clusters0 = 35 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+if line == 0:
+    n_clusters0 = 35
 
 nframes = 1
-startspace = 0 # 500 for ca ii
-endspace = -1 # 1500 for ca ii
+
+if line == 1:
+    startspace = 300 # 500 for ca ii
+    endspace = 1800 # 1500 for ca ii
+if line == 0:
+    startspace = 300 # 500 for ca ii
+    endspace = 1700 # 1500 for ca ii
 nsteps = 91
-start = 148 #148 for saved Ca II H/Hepsilon files
+#start = 148 #148 for saved Ca II H/Hepsilon files
+start = 148 #143 for saved Hbeta spectra
 
 #cent = 396.85
-cent=397.01
+#cent=397.01
+
+if line == 1:
+    cent=486.1375
+if line == 0:
+    cent = 396.847
 
 # change based on line
 
-linelow = hepsilon_low
-linehigh = hepsilon_high
-
+if line == 1:
+    linelow = hbeta_low
+    linehigh = hbeta_high
+if line == 0:
+    linelow = caII_low
+    linehigh = caII_high
+    
 obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,startspace:endspace],1)
 flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
 
@@ -142,11 +179,12 @@ aa_arr = [[1836.46057348, 2326.73014872],
        [1836.46057348, 1492.19051546],
        [  11.84946237,  850.67365452]]
 
-for i in range(len(x_mask0)):
-    x_mask0[i] = 91-x_mask0[i]
+
+## for transformation to vbi only
+#x_mask0[i] = 91-x_mask0[i]
 
 #transformation - variation on the function in dkistpkg_ct, without plotting
-x_mask_t,y_mask_t = DKISTanalysis.vbi_visp_transformation(aa_arr,x_mask0,y_mask0,matplotlib,d1=1)
+#x_mask_t,y_mask_t = DKISTanalysis.vbi_visp_transformation(aa_arr,x_mask0,y_mask0,matplotlib,d1=1)
 
 # order by width of curves
 
@@ -182,6 +220,17 @@ def find_weightmean(curve,find_nearest):
     weighted_mean = np.average(values, weights=weights)
     return weighted_mean
 
+def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=566,red=580):
+    values = np.linspace(0,len(curve),len(curve))
+    
+    # Corresponding weights for each data point
+    # These weights could represent the importance or frequency of each point
+    blue_intensity = curve[blue-hbeta_low]
+    core_intensity = curve[core-hbeta_low]
+    red_intensity = curve[red-hbeta_low]
+    ratio = (core_intensity/blue_intensity)+(red_intensity/core_intensity)
+    return ratio
+
 dists=[]
 for i in range(len(km0.means())):
     dists.append(find_30p_height(km0.means()[i],find_nearest))
@@ -193,14 +242,20 @@ for i in range(len(km0.means())):
 wm=[]
 for i in range(len(km0.means())):
     wm.append(find_weightmean(km0.means()[i],find_nearest))
+    
+bc_int=[]
+for i in range(len(km0.means())):
+    bc_int.append(blue_to_core(km0.means()[i]))
 
 inds = np.arange(len(km0.means()))
 
 #df = pd.DataFrame({'x':inds,'y':dists}) # by distance
 #df = pd.DataFrame({'x':inds,'y':relint}) # by relint
-df = pd.DataFrame({'x':inds,'y':wm}) # by relint
 
-
+if line == 0:
+    df = pd.DataFrame({'x':inds,'y':wm}) # by relint
+if line == 1:
+    df = pd.DataFrame({'x':inds,'y':bc_int}) # by blue wing to core - 480 to 600
 
 df.sort_values(by=['y'])
 
@@ -214,19 +269,43 @@ for i in range(len(groups0)):
     
 colors = plt.cm.turbo(np.linspace(0,1,n_clusters0))
 
-fig,ax=plt.subplots(figsize=(3,10),dpi=100)
-ax.pcolormesh(vispx,vispy,np.transpose(frame_line[:-2,:]),cmap='grey',alpha=1)
-ax.scatter(x_mask_t,y_mask_t,5,color=colors[distlocs],alpha=.6,marker='s')
-ax.invert_yaxis()
-ax.set_ylim([2800,800])
-ax.set_xlim([1750,2100])
-ax.tick_params(axis='y', labelrotation=90)
+fig,ax=plt.subplots(figsize=(1.5,4),dpi=200)
 
+if line == 1:
+    xarr_ch = xarr_hbeta
+    yarr_ch = yarr_hbeta[startspace:endspace+1]
+if line==0:
+    xarr_ch = xarr_caII
+    yarr_ch = yarr_caII[startspace:endspace+1]
+
+
+ax.pcolormesh(xarr_ch,yarr_ch,np.transpose(frame_line[:,:]),cmap='grey',alpha=1)
+ax.scatter(xarr_ch[x_mask0],yarr_ch[y_mask0],2,color=colors[distlocs],alpha=.6,marker='s')
+ax.invert_xaxis()
+ax.invert_yaxis()
+
+##for transformation only
+# else:
+#     ax.pcolormesh(vispx,vispy,np.transpose(frame_line[:-2,:]),cmap='grey',alpha=1)
+#     ax.scatter(x_mask_t,y_mask_t,5,color=colors[distlocs],alpha=.6,marker='s')
+#     ax.invert_yaxis()
+ax.set_ylim([-251,-218])
+ax.set_xlim([759,766])
+# # for tranformation
+# ax.set_ylim([2800,800])
+# ax.set_xlim([1750,2100])
+ax.tick_params(axis='y', labelrotation=90)
+ax.set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
+ax.set_xlabel('DKIST HPC-x [arcsec]',fontsize=6)
+ax.tick_params(axis='x',labelsize=6)
+ax.tick_params(axis='y',labelsize=6)
+
+fig.tight_layout()
 fig.show()
 
 #fig,ax=plt.subplots(3,4,figsize=(5,4),dpi=200)
 #fig,ax=plt.subplots(2,3,figsize=(5,4),dpi=200) #if hep
-fig,ax=plt.subplots(2,5,figsize=(5,4),dpi=200) #if hep and caii
+fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
 arr_normprofs0 = normprofiles_line
 
     
@@ -236,6 +315,7 @@ for i in range(len(arr_normprofs0)):
     ind = np.where(sortedinds==group)[0][0]
     ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
     ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
+
     
 for i in range(n_clusters0):
     ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
@@ -252,6 +332,11 @@ for i in range(n_clusters0):
     left=False,      # ticks along the bottom edge are off
     right=False,         # ticks along the top edge are off
     labelleft=False)# labels along the bottom edge are off
+    ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
+         ha='right', va='top', fontsize=8, fontweight='bold')
+    ax.flatten()[i].set_ylim([-0.2,1.2])
+    ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+
 
 
 fig.show()

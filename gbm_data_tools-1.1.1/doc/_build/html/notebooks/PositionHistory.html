@@ -1,0 +1,891 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>The Position History Data &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quicklook Trigger Data" href="Trigdat.html" />
+    <link rel="prev" title="Detector Response Files" href="Responses.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TteData.html">TTE Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Responses.html">Detector Response Files</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataFinders.html">Finding GBM Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaExport.html">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectralFitting.html">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plugins.html">Plugin-like Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
+        
+      <li>The Position History Data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/PositionHistory.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="The-Position-History-Data">
+<h1>The Position History Data<a class="headerlink" href="#The-Position-History-Data" title="Permalink to this headline">¶</a></h1>
+<p>Probably the most critical auxiliary file GBM produces is the position history (POSHIST) file. The POSHIST contains, for an entire day, the spacecraft location in orbit and pointing information, sampled on a 1 second timescale. If you are just interested in triggered GRB analysis where all of the response files are already made for you, then POSHIST may not be of much interest. But if you are using the continuous data in any way, the POSHIST is your dearest friend. You may want to know if a
+source is visible at a particular time (i.e. not behind the Earth), and if it is, what is the closest detector to the source. You may want to know if there are specific contributions to the background during a time interval, such as sun visibility or high geomagnetic latitude in orbit. You may want to rotate something from the equatorial frame to the Fermi inertial frame, or vice versa. Or you may want to make a <a class="reference external" href="https://fermi.gsfc.nasa.gov/fermi10/fridays/04132018.html">pretty gif</a> of the
+detector pointings over time.</p>
+<p>To read a POSHIST file:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm</span> <span class="kn">import</span> <span class="n">test_data_dir</span>
+<span class="kn">from</span> <span class="nn">gbm.data</span> <span class="kn">import</span> <span class="n">PosHist</span>
+
+<span class="c1"># open a poshist file</span>
+<span class="n">poshist</span> <span class="o">=</span> <span class="n">PosHist</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">test_data_dir</span><span class="o">+</span><span class="s1">&#39;/glg_poshist_all_170101_v00.fit&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">poshist</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+glg_poshist_all_170101_v00.fit
+</pre></div></div>
+</div>
+<p>An important thing you should check is the time coverage of the POSHIST to ensure it is the file you need. The times are listed in Fermi Mission Elapsed Time (MET).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">time_range</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(504921540.740104, 505008061.340078)
+</pre></div></div>
+</div>
+<p>This seems like a good <em>time</em> for a brief aside about MET and time conversions. Sometimes you don’t know the MET corresponding to the time you’re interested in, or you’re not sure what a given MET really means. There is a nice utility class in <code class="docutils literal notranslate"><span class="pre">gbm.time</span></code> that will allow you to do various time coversions to/from MET. Let’s see what poshist <code class="docutils literal notranslate"><span class="pre">time_range</span></code> is in UTC:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.time</span> <span class="kn">import</span> <span class="n">Met</span>
+<span class="p">[</span><span class="n">Met</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">iso</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">poshist</span><span class="o">.</span><span class="n">time_range</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;2016-12-31T23:58:56&#39;, &#39;2017-01-02T00:00:56&#39;]
+</pre></div></div>
+</div>
+<p>Similarly, you can use the <code class="docutils literal notranslate"><span class="pre">Met</span></code> class to go <em>from</em> some time convention or epoch <em>to</em> MET. This is useful because many of the functions and classes in the Data Tools use the MET:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">met</span> <span class="o">=</span> <span class="n">Met</span><span class="o">.</span><span class="n">from_iso</span><span class="p">(</span><span class="s1">&#39;2017-01-01T14:58:15&#39;</span><span class="p">)</span>
+<span class="n">met</span><span class="o">.</span><span class="n">met</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+504975500.0
+</pre></div></div>
+</div>
+<p>Ok, back to the position history!</p>
+<p>The POSHIST also contains information about good time intervals (GTI). GTIs are intervals when the GBM detectors were operational and observing. Mostly non-operational times are when Fermi is passing through the South Atlantic Anomaly (SAA). The listing of GTIs in the POSHIST is an attribute:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">gti</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[(504921540.740104, 504924818.340072),
+ (504925227.340079, 504962247.340076),
+ (504963081.340078, 504967992.340078),
+ (504969383.340077, 504973833.340077),
+ (504975419.340078, 504979728.340076),
+ (504981395.340078, 504985767.340077),
+ (504987345.340078, 504991938.340124),
+ (504993281.340069, 504998034.340079),
+ (504999211.340076, 505004088.340077),
+ (505005126.34007, 505008061.340078)]
+</pre></div></div>
+</div>
+<p>Let’s say we are interested in data around a specific time, for example MET=504975500. We can query the <code class="docutils literal notranslate"><span class="pre">PosHist</span></code> object for various things, such as where Fermi was in orbit at that particular time:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">t0</span> <span class="o">=</span> <span class="mf">504975500.0</span>
+
+<span class="n">lat</span> <span class="o">=</span> <span class="n">poshist</span><span class="o">.</span><span class="n">get_latitude</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="n">poshist</span><span class="o">.</span><span class="n">get_longitude</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span> <span class="c1"># note: East longitude</span>
+<span class="n">alt</span> <span class="o">=</span> <span class="n">poshist</span><span class="o">.</span><span class="n">get_altitude</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span> <span class="c1"># in meters</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Latitude: </span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Longitude: </span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lon</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Altitude: </span><span class="si">{:.2f}</span><span class="s1"> m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alt</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Latitude: -23.43
+Longitude: 26.52
+Altitude: 544568.92 m
+</pre></div></div>
+</div>
+<p>You can check to see if Fermi was in the SAA at that time:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">get_saa_passage</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array(False)
+</pre></div></div>
+</div>
+<p>You might be interested to know where the Earth is (and its apparent radius) relative to Fermi:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">geocenter</span> <span class="o">=</span> <span class="n">poshist</span><span class="o">.</span><span class="n">get_geocenter_radec</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+<span class="n">georadius</span> <span class="o">=</span> <span class="n">poshist</span><span class="o">.</span><span class="n">get_earth_radius</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Geocenter RA, Dec = </span><span class="si">{0:.2f}</span><span class="s2">, </span><span class="si">{1:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">geocenter</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Earth radius: </span><span class="si">{:.2f}</span><span class="s1"> deg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">georadius</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Geocenter RA, Dec = 172.53, 23.43
+Earth radius: 67.11 deg
+</pre></div></div>
+</div>
+<p>It might be useful to know if the sun is visible. Perhaps you’re interested in looking for solar emission or you’re worried about noise contributions from the sun:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">get_sun_visibility</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array(True)
+</pre></div></div>
+</div>
+<p>For that matter, you could be interested in a particular known source, and it would be pretty helpful to know if it is even visible to Fermi at the time of interest:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the position of our source</span>
+<span class="n">ra</span> <span class="o">=</span> <span class="mf">324.3</span>
+<span class="n">dec</span> <span class="o">=</span> <span class="o">-</span><span class="mf">20.8</span>
+<span class="n">poshist</span><span class="o">.</span><span class="n">location_visible</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([ True])
+</pre></div></div>
+</div>
+<p>Well, that’s good to know. But we want to look at the data for the closest detector to that position. We can figure that out. Where is detector ‘n0’ pointing?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">detector_pointing</span><span class="p">(</span><span class="s1">&#39;n0&#39;</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(array(327.88023524), array(-18.18014898))
+</pre></div></div>
+</div>
+<p>Ooh, we got lucky; that’s pretty close to our source position! What’s the detector-source angle?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">detector_angle</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="s1">&#39;n0&#39;</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+4.2721980564266975
+</pre></div></div>
+</div>
+<p>Sometimes it’s useful to transform a source location of interest in equatorial coordinates to the Fermi inertial frame. You can do that by</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">poshist</span><span class="o">.</span><span class="n">to_fermi_frame</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(array(39.67934005), array(24.14464044))
+</pre></div></div>
+</div>
+<p>It’s important to note that the Fermi inertial frame is defined by azimuth (0-360 deg) and zenith (0-180 deg). Here, azimuth=0 is approximately the pointing of detector NaI 5, and increases counter-clockwise when looking down the LAT boresight. Zenith=0 is defined as the LAT boresight, and zenith=180 is directly below the spacecraft.</p>
+<p>You can also go from Fermi (azimuth, zenith) coordinates to equatorial coordinates:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># and where is the Fermi zenith (LAT boresight) in equatorial coordinates?</span>
+<span class="n">poshist</span><span class="o">.</span><span class="n">to_equatorial</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(array(333.15399016), array(1.73430464))
+</pre></div></div>
+</div>
+<p>You probably noticed that many of the outputs to these functions are returned as arrays. That is because instead of just defining a single time of interest, you can provide an array of times, and easily calculate any of these properties.</p>
+<p>Now all of this great, but can we make a pretty plot? Yep. Use the <code class="docutils literal notranslate"><span class="pre">SkyPlot</span></code> (Equatorial Coordinates) or <code class="docutils literal notranslate"><span class="pre">FermiSkyPlot</span></code> (Fermi Inertial Coordinates) class in the <code class="docutils literal notranslate"><span class="pre">gbm.plot</span></code> module:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">SkyPlot</span><span class="p">,</span> <span class="n">FermiSkyPlot</span>
+
+<span class="c1"># initialize plot</span>
+<span class="n">skyplot</span> <span class="o">=</span> <span class="n">SkyPlot</span><span class="p">()</span>
+<span class="c1"># plot the orientation of the detectors and Earth blockage at our time of interest</span>
+<span class="n">skyplot</span><span class="o">.</span><span class="n">add_poshist</span><span class="p">(</span><span class="n">poshist</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PositionHistory_29_0.png" src="../_images/notebooks_PositionHistory_29_0.png" />
+</div>
+</div>
+<p>Woah! So there’s a lot going on here. First of all, there is a big blue blob in the middle of the plot; that’s the Earth as observed by Fermi. So nothing behind that is visible. The curved gray line going through the plot demarcates the Galactic Plane, and the dot is the Galactic Center. All of the gray labeled circles are the GBM detector pointings. Note these are <strong>not</strong> representative of the field-of-view (FoV) of the detectors (their FoV is virtually the whole sky). But they do allow you to
+visualize where the effective area of each detector is near its maximum. Finally, the yellow smiley-face is the sun.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">FermiSkyPlot</span></code> class does the plot in Fermi inertial coordinates:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fermiplot</span> <span class="o">=</span> <span class="n">FermiSkyPlot</span><span class="p">()</span>
+<span class="n">fermiplot</span><span class="o">.</span><span class="n">add_poshist</span><span class="p">(</span><span class="n">poshist</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PositionHistory_31_0.png" src="../_images/notebooks_PositionHistory_31_0.png" />
+</div>
+</div>
+<p>And to finish off our plotting fun, we can plot where Fermi is in orbit during our time of interest using the <code class="docutils literal notranslate"><span class="pre">EarthPlot</span></code> class:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.plot</span> <span class="kn">import</span> <span class="n">EarthPlot</span>
+
+<span class="c1"># initialize plot</span>
+<span class="n">earthplot</span> <span class="o">=</span> <span class="n">EarthPlot</span><span class="p">()</span>
+
+<span class="c1"># let&#39;s show the orbital path for +/-1000 s around our t0</span>
+<span class="n">earthplot</span><span class="o">.</span><span class="n">add_poshist</span><span class="p">(</span><span class="n">poshist</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="p">(</span><span class="n">t0</span><span class="o">-</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">t0</span><span class="o">+</span><span class="mf">1000.0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_PositionHistory_33_0.png" src="../_images/notebooks_PositionHistory_33_0.png" />
+</div>
+</div>
+<p>Whew, our time of interest was just <em>after</em> Fermi exited the SAA (red shaded region). You can see the Fermi orbital path in gray, and the colored contours represent the McIlwain L (proxy for geomagnetic latitude). Fermi’s location relative to the McIlwain L contours is important, because higher backgrounds and local particle flux trapped in the geomagnetic field are more likely an issue towards the higher end of this scale.</p>
+<p>Finally, you could be interested in some long period of time, or a period that crosses the day boundary, and therefore you need to use more than one POSHIST file. The <code class="docutils literal notranslate"><span class="pre">PosHist</span></code> class has a method specifically for this case. You can <em>merge</em> multiple <code class="docutils literal notranslate"><span class="pre">PosHist</span></code> objects into one object following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">merged_poshists</span> <span class="o">=</span> <span class="n">PosHist</span><span class="o">.</span><span class="n">merge</span><span class="p">([</span><span class="n">poshist1</span><span class="p">,</span> <span class="n">poshist2</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>And then you can easily use all of the functionality we’ve discussed here.</p>
+<p>That’s it for the position history data, so if you’re interested in understanding the trigger quicklook data, <a class="reference internal" href="Trigdat.html"><span class="doc">continue</span></a> on!</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="Trigdat.html" class="btn btn-neutral float-right" title="Quicklook Trigger Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Responses.html" class="btn btn-neutral float-left" title="Detector Response Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

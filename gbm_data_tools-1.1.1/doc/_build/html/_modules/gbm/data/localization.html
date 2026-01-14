@@ -1,0 +1,1658 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.data.localization &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.data.localization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.data.localization</h1><div class="highlight"><pre>
+<span></span><span class="c1"># localization.py: HEALPix and associated localization classes</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">chi2</span><span class="p">,</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">healpy</span> <span class="k">as</span> <span class="nn">hp</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">contour</span> <span class="k">as</span> <span class="n">Contour</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<span class="kn">from</span> <span class="nn">..plot.lal_post_subs</span> <span class="kn">import</span> <span class="n">make_circle_poly</span>
+<span class="kn">from</span> <span class="nn">..coords</span> <span class="kn">import</span> <span class="n">get_sun_loc</span><span class="p">,</span> <span class="n">geocenter_in_radec</span><span class="p">,</span> <span class="n">spacecraft_to_radec</span>
+<span class="kn">from</span> <span class="nn">..coords</span> <span class="kn">import</span> <span class="n">latitude_from_geocentric_coords_complex</span><span class="p">,</span> <span class="n">haversine</span>
+<span class="kn">from</span> <span class="nn">..coords</span> <span class="kn">import</span> <span class="n">latitude_from_geocentric_coords_simple</span>
+<span class="kn">from</span> <span class="nn">..detectors</span> <span class="kn">import</span> <span class="n">Detector</span>
+<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DataFile</span>
+<span class="kn">from</span> <span class="nn">.headers</span> <span class="kn">import</span> <span class="n">healpix_primary</span><span class="p">,</span> <span class="n">healpix_image</span>
+
+
+<div class="viewcode-block" id="HealPix"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix">[docs]</a><span class="k">class</span> <span class="nc">HealPix</span><span class="p">(</span><span class="n">DataFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for HEALPix localization files.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        centroid (float, float): The RA and Dec of the highest probability pixel</span>
+<span class="sd">        datatype (str): The datatype of the file</span>
+<span class="sd">        detector (str): The GBM detector the file is associated with</span>
+<span class="sd">        directory (str): The directory the file is located in</span>
+<span class="sd">        filename (str): The filename</span>
+<span class="sd">        full_path (str): The full path+filename</span>
+<span class="sd">        headers (dict): The headers for each extension</span>
+<span class="sd">        id (str): The GBM file ID</span>
+<span class="sd">        is_gbm_file (bool): True if the file is a valid GBM standard file, </span>
+<span class="sd">                            False if it is not.</span>
+<span class="sd">        is_trigger (bool): True if the file is a GBM trigger file, False if not</span>
+<span class="sd">        npix (int): Number of pixels in the HEALPix map</span>
+<span class="sd">        nside (int): The HEALPix resolution</span>
+<span class="sd">        pixel_area (float): The area of each pixel in square degrees</span>
+<span class="sd">        trigtime (float): The time corresponding to the localization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">npix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nside</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">hp</span><span class="o">.</span><span class="n">npix2nside</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npix</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pixel_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="mf">180.0</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">npix</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">pix2ang</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">,</span> <span class="n">pix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+
+<div class="viewcode-block" id="HealPix.from_data"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prob_arr</span><span class="p">,</span> <span class="n">sig_arr</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a HealPix object from healpix arrays</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            prob_arr (np.array): The HEALPix array containing the probability/pixel</span>
+<span class="sd">            sig_arr (np.array): The HEALPix array containing the signficance</span>
+<span class="sd">            trigtime (float, optional): The time corresponding to the localization</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`HealPix`: The HEALPix localization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_prob</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">prob_arr</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_sig</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_sig</span><span class="p">(</span><span class="n">sig_arr</span><span class="p">)</span>
+
+        <span class="c1"># set file properties</span>
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;healpix&#39;</span><span class="p">,</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="HealPix.from_annulus"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.from_annulus">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_annulus</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">center_ra</span><span class="p">,</span> <span class="n">center_dec</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">nside</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a HealPix object of a Gaussian-width annulus</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            center_ra (float): The RA of the center of the annulus</span>
+<span class="sd">            center_dec (float): The Dec of the center of the annulus</span>
+<span class="sd">            radius (float): The radius of the annulus, in degrees, measured to </span>
+<span class="sd">                            the center of the of the annulus</span>
+<span class="sd">            sigma (float): The Gaussian standard deviation width of the annulus, </span>
+<span class="sd">                           in degrees</span>
+<span class="sd">            nside (int, optional): The nside of the HEALPix to make. By default,</span>
+<span class="sd">                                   the nside is automatically determined by the </span>
+<span class="sd">                                   `sigma` width.  Set this argument to </span>
+<span class="sd">                                   override the default. </span>
+<span class="sd">            </span>
+<span class="sd">            **kwargs: Options to pass to :meth:`from_data`</span>
+<span class="sd">        </span>
+<span class="sd">        Return:</span>
+<span class="sd">            :class:`HealPix`: The HEALPix annulus</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c1"># Automatically calculate appropriate nside by taking the closest nside</span>
+        <span class="c1"># with an average resolution that matches 0.2*sigma</span>
+        <span class="k">if</span> <span class="n">nside</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nsides</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+            <span class="n">pix_res</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="n">nsides</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">/</span><span class="mf">60.0</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pix_res</span><span class="o">-</span><span class="n">sigma</span><span class="o">/</span><span class="mf">5.0</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+            <span class="n">nside</span> <span class="o">=</span> <span class="n">nsides</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        
+        <span class="c1"># get everything in the right units</span>
+        <span class="n">center_phi</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ra_to_phi</span><span class="p">(</span><span class="n">center_ra</span><span class="p">)</span>
+        <span class="n">center_theta</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dec_to_theta</span><span class="p">(</span><span class="n">center_dec</span><span class="p">)</span>
+        <span class="n">radius_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+        <span class="n">sigma_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+
+        <span class="c1"># number of points in the circle based on the approximate arclength </span>
+        <span class="c1"># and resolution</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="n">nside</span><span class="p">)</span>
+        
+        <span class="c1"># calculate normal distribution about annulus radius with sigma width</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">10.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">res</span><span class="p">))</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">radius_rad</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sigma_rad</span><span class="p">)</span>
+
+        <span class="c1"># cycle through annuli of radii from 0 to 180 degree with the </span>
+        <span class="c1"># appropriate amplitude and fill the probability map</span>
+        <span class="n">probmap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">nside2npix</span><span class="p">(</span><span class="n">nside</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="c1"># no need to waste time on pixels that will have ~0 probability...</span>
+            <span class="k">if</span> <span class="n">pdf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">pdf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+                <span class="k">continue</span>
+            
+            <span class="c1"># approximate arclength determines number of points in each annulus</span>
+            <span class="n">arclength</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">numpts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">arclength</span><span class="o">/</span><span class="n">res</span><span class="p">))</span><span class="o">*</span><span class="mi">10</span>
+            <span class="n">circ</span> <span class="o">=</span> <span class="n">make_circle_poly</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">center_theta</span><span class="p">,</span> <span class="n">center_phi</span><span class="p">,</span> <span class="n">numpts</span><span class="p">)</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="n">circ</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">circ</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            
+            <span class="c1"># convert to pixel indixes and fill the map</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ang2pix</span><span class="p">(</span><span class="n">nside</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+            <span class="n">probmap</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">pdf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">probmap</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">probmap</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pdf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">probmap</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">mask</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">probmap</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">mask</span><span class="p">]]</span> <span class="o">+</span> <span class="n">pdf</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span>
+        <span class="n">probmap</span> <span class="o">/=</span> <span class="n">probmap</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># signficance map</span>
+        <span class="n">sigmap</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">find_greedy_credible_levels</span><span class="p">(</span><span class="n">probmap</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">probmap</span><span class="p">,</span> <span class="n">sigmap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="HealPix.from_gaussian"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.from_gaussian">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_gaussian</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">center_ra</span><span class="p">,</span> <span class="n">center_dec</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">nside</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a HealPix object of a Gaussian</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            center_ra (float): The RA of the center of the Gaussian</span>
+<span class="sd">            center_dec (float): The Dec of the center of the Gaussian</span>
+<span class="sd">            sigma (float): The Gaussian standard deviation, in degrees</span>
+<span class="sd">            nside (int, optional): The nside of the HEALPix to make. By default,</span>
+<span class="sd">                                   the nside is automatically determined by the </span>
+<span class="sd">                                   `sigma` of the Gaussian.  Set this argument </span>
+<span class="sd">                                   to override the default. </span>
+<span class="sd">            **kwargs: Options to pass to :meth:`from_data`</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`HealPix`: The HEALPix Gaussian</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Automatically calculate appropriate nside by taking the closest nside</span>
+        <span class="c1"># with an average resolution that matches 0.2*sigma</span>
+        <span class="k">if</span> <span class="n">nside</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nsides</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+            <span class="n">pix_res</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="n">nsides</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">/</span><span class="mf">60.0</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pix_res</span><span class="o">-</span><span class="n">sigma</span><span class="o">/</span><span class="mf">10.0</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+            <span class="n">nside</span> <span class="o">=</span> <span class="n">nsides</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        
+        <span class="c1"># get everything in the right units</span>
+        <span class="n">center_phi</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ra_to_phi</span><span class="p">(</span><span class="n">center_ra</span><span class="p">)</span>
+        <span class="n">center_theta</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dec_to_theta</span><span class="p">(</span><span class="n">center_dec</span><span class="p">)</span>
+        <span class="n">sigma_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+
+        <span class="c1"># point probability</span>
+        <span class="n">npix</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2npix</span><span class="p">(</span><span class="n">nside</span><span class="p">)</span>
+        <span class="n">probmap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npix</span><span class="p">)</span>
+        <span class="n">probmap</span><span class="p">[</span><span class="n">hp</span><span class="o">.</span><span class="n">ang2pix</span><span class="p">(</span><span class="n">nside</span><span class="p">,</span> <span class="n">center_theta</span><span class="p">,</span> <span class="n">center_phi</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># then smooth out using appropriate gaussian kernel</span>
+        <span class="n">probmap</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">smoothing</span><span class="p">(</span><span class="n">probmap</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_rad</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># significance map</span>
+        <span class="n">sigmap</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">find_greedy_credible_levels</span><span class="p">(</span><span class="n">probmap</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">probmap</span><span class="p">,</span> <span class="n">sigmap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="HealPix.from_vertices"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.from_vertices">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_vertices</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ra_pts</span><span class="p">,</span> <span class="n">dec_pts</span><span class="p">,</span> <span class="n">nside</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a HealPix object from a list of RA, Dec vertices.</span>
+<span class="sd">        The probability within the vertices will be distributed uniformly and</span>
+<span class="sd">        zero probability outside the vertices.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            ra_pts (np.array): The array of RA coordinates</span>
+<span class="sd">            dec_pts (np.array): The array of Dec coordinates</span>
+<span class="sd">            nside (int, optional): The nside of the HEALPix to make. Default is 64.</span>
+<span class="sd">            **kwargs: Options to pass to :meth:`from_data`</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`HealPix`: The HEALPix object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">poly</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ra_pts</span><span class="p">,</span> <span class="n">dec_pts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">npix</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2npix</span><span class="p">(</span><span class="n">nside</span><span class="p">)</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">pix2ang</span><span class="p">(</span><span class="n">nside</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npix</span><span class="p">))</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">contains_points</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">probmap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npix</span><span class="p">)</span>
+        <span class="n">probmap</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">probmap</span> <span class="o">/=</span> <span class="n">probmap</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># significance map</span>
+        <span class="n">sigmap</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">find_greedy_credible_levels</span><span class="p">(</span><span class="n">probmap</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">probmap</span><span class="p">,</span> <span class="n">sigmap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="HealPix.multiply"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.multiply">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">healpix1</span><span class="p">,</span> <span class="n">healpix2</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output_nside</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Multiply two HealPix maps and return a new HealPix object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            healpix1 (:class:`HealPix`): One of the HEALPix maps to multiply</span>
+<span class="sd">            healpix2 (:class:`HealPix`): The other HEALPix map to multiply</span>
+<span class="sd">            primary (int, optional): If 1, use the first map header information, </span>
+<span class="sd">                                     or if 2, use the second map header </span>
+<span class="sd">                                     information. Default is 1.</span>
+<span class="sd">            output_nside (int, optional): The nside of the multiplied map. </span>
+<span class="sd">                                          Default is 128.</span>
+<span class="sd">        Returns</span>
+<span class="sd">            :class:`HealPix`: The multiplied map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if different resolutions, upgrade the lower res, then multiply</span>
+        <span class="k">if</span> <span class="n">healpix1</span><span class="o">.</span><span class="n">nside</span> <span class="o">&gt;</span> <span class="n">healpix2</span><span class="o">.</span><span class="n">nside</span><span class="p">:</span>
+            <span class="n">prob</span> <span class="o">=</span> <span class="n">healpix1</span><span class="o">.</span><span class="n">_prob</span> <span class="o">*</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">healpix2</span><span class="o">.</span><span class="n">_prob</span><span class="p">,</span>
+                                                <span class="n">nside_out</span><span class="o">=</span><span class="n">healpix1</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">healpix1</span><span class="o">.</span><span class="n">nside</span> <span class="o">&lt;</span> <span class="n">healpix2</span><span class="o">.</span><span class="n">nside</span><span class="p">:</span>
+            <span class="n">prob</span> <span class="o">=</span> <span class="n">healpix2</span><span class="o">.</span><span class="n">_prob</span> <span class="o">*</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">healpix1</span><span class="o">.</span><span class="n">_prob</span><span class="p">,</span>
+                                                <span class="n">nside_out</span><span class="o">=</span><span class="n">healpix2</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prob</span> <span class="o">=</span> <span class="n">healpix1</span><span class="o">.</span><span class="n">_prob</span> <span class="o">*</span> <span class="n">healpix2</span><span class="o">.</span><span class="n">_prob</span>
+
+        <span class="c1"># output resolution and normalize</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">output_nside</span><span class="p">)</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">find_greedy_credible_levels</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
+
+        <span class="c1"># copy header info</span>
+        <span class="k">if</span> <span class="n">primary</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">healpix1</span><span class="o">.</span><span class="n">headers</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">healpix1</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">healpix2</span><span class="o">.</span><span class="n">headers</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">healpix2</span><span class="o">.</span><span class="n">trigtime</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;HEALPIX&#39;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;NSIDE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_nside</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="HealPix.probability"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.probability">[docs]</a>    <span class="k">def</span> <span class="nf">probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">per_pixel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the localization probability at a given point.  This</span>
+<span class="sd">        function interpolates the map at the requested point rather than</span>
+<span class="sd">        providing the vale at the nearest pixel center.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            ra (float): The RA</span>
+<span class="sd">            dec (float): The Dec</span>
+<span class="sd">            per_pixel (bool, optional): </span>
+<span class="sd">                If True, return probability per pixel, otherwise return </span>
+<span class="sd">                probability per square degree. Default is False.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The localization probability</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ra_to_phi</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dec_to_theta</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">get_interp_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">per_pixel</span><span class="p">:</span>
+            <span class="n">prob</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_area</span>
+        <span class="k">return</span> <span class="n">prob</span></div>
+
+<div class="viewcode-block" id="HealPix.confidence"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.confidence">[docs]</a>    <span class="k">def</span> <span class="nf">confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the localization confidence level for a given point. </span>
+<span class="sd">        This function interpolates the map at the requested point rather than</span>
+<span class="sd">        providing the value at the nearest pixel center.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            ra (float): The RA</span>
+<span class="sd">            dec (float): The Dec</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The localization confidence level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ra_to_phi</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dec_to_theta</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">hp</span><span class="o">.</span><span class="n">get_interp_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sig</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HealPix.area"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clevel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the sky area contained within a given confidence region</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            clevel (float): The localization confidence level (valid range 0-1)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The area contained in square degrees</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numpix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sig</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">clevel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpix</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_area</span></div>
+
+<div class="viewcode-block" id="HealPix.prob_array"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.prob_array">[docs]</a>    <span class="k">def</span> <span class="nf">prob_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numpts_ra</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span> <span class="n">numpts_dec</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">sqdegrees</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">sig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the localization probability mapped to a grid on the sky</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            numpts_ra (int, optional): The number of grid points along the RA </span>
+<span class="sd">                                       axis. Default is 360.</span>
+<span class="sd">            numpts_dec (int, optional): The number of grid points along the Dec </span>
+<span class="sd">                                        axis. Default is 180.</span>
+<span class="sd">            sqdegrees (bool, optional): </span>
+<span class="sd">                If True, the prob_array is in units of probability per square </span>
+<span class="sd">                degrees, otherwise in units of probability per pixel. </span>
+<span class="sd">                Default is True</span>
+<span class="sd">            sig (bool, optional): Set True to retun the significance map on a </span>
+<span class="sd">                                  grid instead of the probability. Default is False.</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            3-tuple containing:</span>
+<span class="sd">            </span>
+<span class="sd">            - *np.array*: The probability (or significance) array with shape \</span>
+<span class="sd">                      (``numpts_dec``, ``numpts_ra``)</span>
+<span class="sd">            - *np.array*: The RA grid points</span>
+<span class="sd">            - *np.array*: The Dec grid points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">grid_pix</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh_grid</span><span class="p">(</span><span class="n">numpts_ra</span><span class="p">,</span> <span class="n">numpts_dec</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sig</span><span class="p">:</span>
+            <span class="n">sqdegrees</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">prob_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sig</span><span class="p">[</span><span class="n">grid_pix</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prob_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">[</span><span class="n">grid_pix</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sqdegrees</span><span class="p">:</span>
+            <span class="n">prob_arr</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_area</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">prob_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="HealPix.confidence_region_path"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.confidence_region_path">[docs]</a>    <span class="k">def</span> <span class="nf">confidence_region_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clevel</span><span class="p">,</span> <span class="n">numpts_ra</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span> <span class="n">numpts_dec</span><span class="o">=</span><span class="mi">180</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the bounding path for a given confidence region</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            clevel (float): The localization confidence level (valid range 0-1)</span>
+<span class="sd">            numpts_ra (int, optional): The number of grid points along the RA </span>
+<span class="sd">                                       axis. Default is 360.</span>
+<span class="sd">            numpts_dec (int, optional): The number of grid points along the Dec </span>
+<span class="sd">                                        axis. Default is 180.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [(np.array, np.array), ...]: A list of RA, Dec points, where each \</span>
+<span class="sd">                item in the list is a continuous closed path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create the grid and integrated probability array</span>
+        <span class="n">grid_pix</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh_grid</span><span class="p">(</span><span class="n">numpts_ra</span><span class="p">,</span> <span class="n">numpts_dec</span><span class="p">)</span>
+        <span class="n">sig_arr</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sig</span><span class="p">[</span><span class="n">grid_pix</span><span class="p">]</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+        <span class="c1"># use matplotlib contour to produce a path object</span>
+        <span class="n">contour</span> <span class="o">=</span> <span class="n">Contour</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">sig_arr</span><span class="p">,</span> <span class="p">[</span><span class="n">clevel</span><span class="p">])</span>
+
+        <span class="c1"># get the contour path, which is made up of segments</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">contour</span><span class="o">.</span><span class="n">collections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()</span>
+
+        <span class="c1"># extract all the vertices</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">vertices</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+
+        <span class="c1"># unfortunately matplotlib will plot this, so we need to remove</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contour</span><span class="o">.</span><span class="n">collections</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">pts</span></div>
+
+<div class="viewcode-block" id="HealPix.source_probability"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.source_probability">[docs]</a>    <span class="k">def</span> <span class="nf">source_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The probability that the HealPix localization is associated with</span>
+<span class="sd">        a known point location.  This is calculated against the null hypothesis</span>
+<span class="sd">        that the HealPix localization originates from an unassociated random</span>
+<span class="sd">        source that has equal probability of origination anywhere in the sky:</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`P(A | \mathcal{I}) = </span>
+<span class="sd">        \frac{P(\mathcal{I} | A) \ P(A)}</span>
+<span class="sd">        {P(\mathcal{I} | A) \ P(A) + P(\mathcal{I} | \neg A) \ P(\neg A)}`</span>
+<span class="sd">        </span>
+<span class="sd">        where</span>
+<span class="sd">        </span>
+<span class="sd">        * :math:`P(\mathcal{I} | A)` is the probability of the localization at</span>
+<span class="sd">          the point source once</span>
+<span class="sd">        * :math:`P(\mathcal{I} | \neg A)` is the probability per pixel assuming </span>
+<span class="sd">          a uniform distribution on the sky (i.e. the probability the </span>
+<span class="sd">          localization is associated with a random point on the sky)</span>
+<span class="sd">        * :math:`P(A)` is the prior probability that the localization is </span>
+<span class="sd">          associated with the point source</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            ra (float): The RA of the known source location</span>
+<span class="sd">            dec (float): The Dec of the known source location</span>
+<span class="sd">            prior (float, optional): The prior probability that the localization</span>
+<span class="sd">                                     is associated with the source. </span>
+<span class="sd">                                     Default is 0.5</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            float: The probability that the HealPix localization is spatially \</span>
+<span class="sd">            associated with the point source</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Prior probability must be within 0-1, inclusive&#39;</span><span class="p">)</span>
+        <span class="c1"># convert uniform prob/sr to prob/pixel</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="c1"># the pixel probability of the skymap at the location of the point source</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">probability</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">per_pixel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># null hypothesis is that they are not associated, therefore the sky map</span>
+        <span class="c1"># is result of some source that has uniform probability on the sky</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">p</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">prior</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">prob</span></div>
+
+<div class="viewcode-block" id="HealPix.region_probability"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.region_probability">[docs]</a>    <span class="k">def</span> <span class="nf">region_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healpix</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The probability that the HealPix localization is associated with</span>
+<span class="sd">        another HealPix map.  This is calculated against the null hypothesis</span>
+<span class="sd">        that the two HealPix maps are unassociated:</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`P(A | \mathcal{I}) = </span>
+<span class="sd">        \frac{P(\mathcal{I} | A) \ P(A)}</span>
+<span class="sd">        {P(\mathcal{I} | A) \ P(A) + P(\mathcal{I} | \neg A) \ P(\neg A)}`</span>
+<span class="sd">        </span>
+<span class="sd">        where</span>
+<span class="sd">        </span>
+<span class="sd">        * :math:`P(\mathcal{I} | A)` is the integral over the overlap of the two </span>
+<span class="sd">          maps once the Earth occultation has been removed for *this* map.</span>
+<span class="sd">        * :math:`P(\mathcal{I} | \neg A)` is the integral over the overlap of</span>
+<span class="sd">          *this* map with a uniform distribution on the sky (i.e. the probability </span>
+<span class="sd">          the localization is associated with a random point on the sky)</span>
+<span class="sd">        * :math:`P(A)` is the prior probability that *this* localization is </span>
+<span class="sd">          associated with the *other* HEALPix map.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            healpix (:class:`HealPix`): The healpix map for which to calculate </span>
+<span class="sd">                                        the spatial association</span>
+<span class="sd">            prior (float, optional): The prior probability that the localization</span>
+<span class="sd">                                     is associated with the source. </span>
+<span class="sd">                                     Default is 0.5</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:  </span>
+<span class="sd">            float: The probability that this HealPix localization is</span>
+<span class="sd">            associated with the input HealPix map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Prior probability must be within 0-1, inclusive&#39;</span><span class="p">)</span>
+        <span class="c1"># convert uniform prob/sr to prob/pixel</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="c1"># ensure maps are the same resolution</span>
+        <span class="n">probmap1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prob</span>
+        <span class="n">probmap2</span> <span class="o">=</span> <span class="n">healpix</span><span class="o">.</span><span class="n">_prob</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nside</span> <span class="o">&gt;</span> <span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">:</span>
+            <span class="n">probmap2</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">probmap2</span><span class="p">,</span> <span class="n">nside_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span>
+            <span class="n">probmap2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">probmap2</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nside</span> <span class="o">&lt;</span> <span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">:</span>
+            <span class="n">probmap1</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">probmap1</span><span class="p">,</span> <span class="n">nside_out</span><span class="o">=</span><span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span>
+            <span class="n">probmap1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">probmap1</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="c1"># alternative hypothesis: they are related</span>
+        <span class="n">alt_hyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">probmap1</span> <span class="o">*</span> <span class="n">probmap2</span><span class="p">)</span>
+        <span class="c1"># null hypothesis: one of the maps is from an unassociated source</span>
+        <span class="c1"># (uniform spatial probability)</span>
+        <span class="n">null_hyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">probmap1</span> <span class="o">*</span> <span class="n">u</span><span class="p">)</span>
+
+        <span class="c1"># since we have an exhaustive and complete list of possibilities, we can</span>
+        <span class="c1"># easily calculate the probability</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">alt_hyp</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">alt_hyp</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">null_hyp</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">prior</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">prob</span></div>
+
+<div class="viewcode-block" id="HealPix.convolve"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.HealPix.convolve">[docs]</a>    <span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convolve the map with a model kernel.  The model can be a Gaussian</span>
+<span class="sd">        kernel or any mixture of Gaussian kernels. Uses `healpy.smoothing </span>
+<span class="sd">        &lt;https://healpy.readthedocs.io/en/latest/generated/healpy.sphtfunc.smoothing.html&gt;`_.</span>
+
+<span class="sd">        An example of a model kernel with a 50%/50% mixture of two Gaussians,</span>
+<span class="sd">        one with a 1-deg width, and the other with a 3-deg width::</span>
+<span class="sd">            def gauss_mix_example():</span>
+<span class="sd">                sigma1 = np.deg2rad(1.0)</span>
+<span class="sd">                sigma2 = np.deg2rad(3.0)</span>
+<span class="sd">                frac1 = 0.50</span>
+<span class="sd">                return ([sigma1, sigma2], [frac1])</span>
+<span class="sd">        </span>
+<span class="sd">        Args: </span>
+<span class="sd">            model (&lt;function&gt;): The function representing the model kernel</span>
+<span class="sd">            *args: Arguments to be passed to the model kernel function</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`HealPix`: A new HealPix object that is a result of the \</span>
+<span class="sd">                              convolution with the model kernel</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># evaluate model</span>
+        <span class="n">sigmas</span><span class="p">,</span> <span class="n">fracs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># determine number of gaussians, and ensure that they match the </span>
+        <span class="c1"># number of fractional weights</span>
+        <span class="n">num_sigmas</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigmas</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fracs</span><span class="p">)</span> <span class="o">!=</span> <span class="n">num_sigmas</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fracs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="n">num_sigmas</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;Number of mixture fraction parameters is incorrect&#39;</span><span class="p">)</span>
+            <span class="n">fracs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">fracs</span><span class="p">))</span>
+
+        <span class="c1"># for each gaussian, apply the smoothing at the prescribed weight</span>
+        <span class="n">new_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_sigmas</span><span class="p">):</span>
+            <span class="n">new_prob</span> <span class="o">+=</span> <span class="n">fracs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">hp</span><span class="o">.</span><span class="n">smoothing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigmas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># make the object</span>
+        <span class="n">new_sig</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">find_greedy_credible_levels</span><span class="p">(</span><span class="n">new_prob</span><span class="p">)</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">_prob</span> <span class="o">=</span> <span class="n">new_obj</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">new_prob</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">_sig</span> <span class="o">=</span> <span class="n">new_obj</span><span class="o">.</span><span class="n">_assert_sig</span><span class="p">(</span><span class="n">new_sig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_obj</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_ra_to_phi</span><span class="p">(</span><span class="n">ra</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_dec_to_theta</span><span class="p">(</span><span class="n">dec</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">-</span> <span class="n">dec</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_ang_to_pix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
+        <span class="c1"># convert RA/Dec to healpixels</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dec_to_theta</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ra_to_phi</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ang2pix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pix</span>
+
+    <span class="k">def</span> <span class="nf">_mesh_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_phi</span><span class="p">,</span> <span class="n">num_theta</span><span class="p">):</span>
+        <span class="c1"># create the mesh grid in phi and theta</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">num_theta</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num_phi</span><span class="p">)</span>
+        <span class="n">phi_grid</span><span class="p">,</span> <span class="n">theta_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="n">grid_pix</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ang2pix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">,</span> <span class="n">theta_grid</span><span class="p">,</span> <span class="n">phi_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">grid_pix</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_assert_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prob</span><span class="p">):</span>
+        <span class="c1"># ensure that the pixels have valid probability:</span>
+        <span class="c1"># each pixel must be &gt; 0 and sum == 1.</span>
+        <span class="n">prob</span><span class="p">[</span><span class="n">prob</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">prob</span> <span class="o">/=</span> <span class="n">prob</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">prob</span>
+
+    <span class="k">def</span> <span class="nf">_assert_sig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+        <span class="c1"># ensure that the pixels have valid significance:</span>
+        <span class="c1"># each pixel must have significance [0, 1]</span>
+        <span class="k">if</span> <span class="n">sig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sig</span><span class="p">[</span><span class="n">sig</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">sig</span><span class="p">[</span><span class="n">sig</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">return</span> <span class="n">sig</span></div>
+
+
+<div class="viewcode-block" id="GbmHealPix"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix">[docs]</a><span class="k">class</span> <span class="nc">GbmHealPix</span><span class="p">(</span><span class="n">HealPix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for GBM HEALPix localization files.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        &lt;detector_name&gt;_pointing (float, float):</span>
+<span class="sd">            The RA, Dec of the detector pointing (e.g. ``GbmHealPix.n0_pointing``)    </span>
+<span class="sd">        centroid (float, float): The RA and Dec of the highest probability pixel</span>
+<span class="sd">        datatype (str): The datatype of the file</span>
+<span class="sd">        detector (str): The GBM detector the file is associated with</span>
+<span class="sd">        directory (str): The directory the file is located in</span>
+<span class="sd">        filename (str): The filename</span>
+<span class="sd">        full_path (str): The full path+filename</span>
+<span class="sd">        geo_location (float, float): The geocenter RA, Dec at trigtime</span>
+<span class="sd">        geo_probability (float): The amount of localization probability on the Earth</span>
+<span class="sd">        geo_radius (float): The apparent Earth radius as observed by Fermi</span>
+<span class="sd">        headers (dict): The headers for each extension</span>
+<span class="sd">        id (str): The GBM file ID</span>
+<span class="sd">        is_gbm_file (bool): True if the file is a valid GBM standard file, </span>
+<span class="sd">                            False if it is not.</span>
+<span class="sd">        is_trigger (bool): True if the file is a GBM trigger file, False if not</span>
+<span class="sd">        npix (int): Number of pixels in the HEALPix map</span>
+<span class="sd">        nside (int): The HEALPix resolution</span>
+<span class="sd">        quaternion (np.array): The spacecraft attitude quaternion</span>
+<span class="sd">        pixel_area (float): The area of each pixel in square degrees</span>
+<span class="sd">        scpos (np.array): The spacecraft position in Earth inertial coordinates</span>
+<span class="sd">        sun_location (float, float): The Sun RA, Dec at trigtime</span>
+<span class="sd">        trigtime (float): The time corresponding to the localization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;SUN_RA&#39;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;SUN_DEC&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">geo_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;GEO_RA&#39;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;GEO_DEC&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">geo_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># if the radius isn&#39;t known, use the average 67.5 deg radius</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;GEO_RAD&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">67.5</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scpos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;COMMENT&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">scpos</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;SCPOS&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scpos</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scpos</span> <span class="o">=</span> <span class="n">scpos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">scpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">scpos</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
+        <span class="k">return</span> <span class="n">scpos</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">quaternion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;COMMENT&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">quat</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;QUAT&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">quat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quat</span> <span class="o">=</span> <span class="n">quat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">quat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">quat</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
+        <span class="k">return</span> <span class="n">quat</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">geo_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">prob_mask</span><span class="p">,</span> <span class="n">geo_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_mask</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">[</span><span class="n">prob_mask</span><span class="p">][</span><span class="n">geo_mask</span><span class="p">])</span>
+
+<div class="viewcode-block" id="GbmHealPix.open"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.open">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a GBM HEALPix FITS file and return the GbmHealPix object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The filename of the FITS file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`GbmHealPix`: The GBM HEALPix localization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+        
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_file_properties</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># open FITS file</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mmap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">hdulist</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">hdu</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">})</span>
+        <span class="c1"># the healpix arrays</span>
+        <span class="n">prob</span><span class="p">,</span> <span class="n">sig</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">read_map</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">memmap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_prob</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_sig</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+        <span class="c1"># set the detector pointing attributes</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_set_det_attr</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="GbmHealPix.from_data"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prob_arr</span><span class="p">,</span> <span class="n">sig_arr</span><span class="p">,</span> <span class="n">tcat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">quaternion</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scpos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a HealPix object from healpix arrays and optional metadata</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prob_arr (np.array): The HEALPix array containing the probability/pixel</span>
+<span class="sd">            sig_arr (np.array): The HEALPix array containing the signficance</span>
+<span class="sd">            tcat (:class:`.Tcat`, optional): The associated Tcat to fill out </span>
+<span class="sd">                                             the primary header info</span>
+<span class="sd">            trigtime (float, optional): The time corresponding to the localization</span>
+<span class="sd">            quaternion (np.array, optional): </span>
+<span class="sd">                The associated spacecraft quaternion used to determine the </span>
+<span class="sd">                detector pointings in equatorial coordinates</span>
+<span class="sd">            scpos (np.array, optional): </span>
+<span class="sd">                The associated spacecraft position in Earth inertial coordinates </span>
+<span class="sd">                used to determine the geocenter location in equatorial coordinates</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`GbmHealPix`: The HEALPix localization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_prob</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">prob_arr</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_sig</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_sig</span><span class="p">(</span><span class="n">sig_arr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tcat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">tcat</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">comments</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># if we have a trigtime, calculate sun position</span>
+        <span class="n">sun_key</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sun_loc</span> <span class="o">=</span> <span class="n">get_sun_loc</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+            <span class="n">sun_key</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;SUN_RA&#39;</span><span class="p">,</span> <span class="n">sun_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;RA of Sun&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s1">&#39;SUN_DEC&#39;</span><span class="p">,</span> <span class="n">sun_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;Dec of Sun&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># if we have a scpos, calculate geocenter position, radius</span>
+        <span class="n">geo_key</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">scpos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">,</span> <span class="s1">&#39;SCPOS: &#39;</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">scpos</span><span class="p">)))</span>
+            <span class="n">geo</span> <span class="o">=</span> <span class="n">geocenter_in_radec</span><span class="p">(</span><span class="n">scpos</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">alt</span> <span class="o">=</span> <span class="n">latitude_from_geocentric_coords_complex</span><span class="p">(</span><span class="n">scpos</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Using simple spheroidal Earth approximation&#39;</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">alt</span> <span class="o">=</span> <span class="n">latitude_from_geocentric_coords_simple</span><span class="p">(</span><span class="n">scpos</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="mf">6371.0</span> <span class="o">*</span> <span class="mf">1000.0</span>
+            <span class="n">geo_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">alt</span><span class="p">)))</span>
+            <span class="n">geo_key</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s1">&#39;GEO_RA&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">geo</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;RA of Geocenter relative to Fermi&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;GEO_DEC&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">geo</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                 <span class="s1">&#39;Dec of Geocenter relative to Fermi&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;GEO_RAD&#39;</span><span class="p">,</span> <span class="n">geo_radius</span><span class="p">,</span> <span class="s1">&#39;Radius of the Earth&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># if we have a quaternion, calculate detector pointings</span>
+        <span class="n">det_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">quaternion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">,</span> <span class="s1">&#39;QUAT: &#39;</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">quaternion</span><span class="p">)))</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">Detector</span><span class="p">:</span>
+                <span class="n">detname</span> <span class="o">=</span> <span class="n">det</span><span class="o">.</span><span class="n">short_name</span>
+                <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="n">spacecraft_to_radec</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">azimuth</span><span class="p">,</span> <span class="n">det</span><span class="o">.</span><span class="n">zenith</span><span class="p">,</span>
+                                              <span class="n">quaternion</span><span class="p">)</span>
+                <span class="n">ra_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">detname</span> <span class="o">+</span> <span class="s1">&#39;_RA&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">ra</span><span class="p">),</span>
+                          <span class="s1">&#39;RA pointing for detector &#39;</span> <span class="o">+</span> <span class="n">detname</span><span class="p">)</span>
+                <span class="n">dec_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">detname</span> <span class="o">+</span> <span class="s1">&#39;_DEC&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dec</span><span class="p">),</span>
+                           <span class="s1">&#39;Dec pointing for detector &#39;</span> <span class="o">+</span> <span class="n">detname</span><span class="p">)</span>
+                <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ra_key</span><span class="p">,</span> <span class="n">dec_key</span><span class="p">])</span>
+            <span class="n">det_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">det</span><span class="p">]</span>
+
+        <span class="c1"># put the additional keys together, and create the headers</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">sun_key</span>
+        <span class="n">keys</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">geo_key</span><span class="p">)</span>
+        <span class="n">keys</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">det_keys</span><span class="p">)</span>
+        <span class="n">keys</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">comments</span><span class="p">)</span>
+        <span class="n">prihdr</span> <span class="o">=</span> <span class="n">healpix_primary</span><span class="p">(</span><span class="n">tcat</span><span class="o">=</span><span class="n">tcat</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prihdr</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">healpix_image</span><span class="p">(</span><span class="n">nside</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">nside</span><span class="p">,</span>
+                                                <span class="n">extra_keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span>
+                                                <span class="nb">object</span><span class="o">=</span><span class="n">prihdr</span><span class="p">[</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">])</span>
+
+        <span class="c1"># set the detector pointing attributes</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_set_det_attr</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># set file properties</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="n">trigtime</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;healpix&#39;</span><span class="p">,</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="GbmHealPix.from_chi2grid"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.from_chi2grid">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_chi2grid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chi2grid</span><span class="p">,</span> <span class="n">nside</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">tcat</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a GbmHealPix object from a chi2grid object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            chi2grid (class:`Chi2Grid`): The chi2grid object containing the </span>
+<span class="sd">                                         chi-squared/log-likelihood info</span>
+<span class="sd">            nside (int, optional): The nside resolution to use. Default is 128</span>
+<span class="sd">            tcat (:class:`.Tcat`, optional): The associated Tcat to fill out </span>
+<span class="sd">                                             the primary header info</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`GbmHealPix`: The GBM HEALPix localization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># fill up a low-resolution healpix map with significance</span>
+        <span class="n">lores_nside</span> <span class="o">=</span> <span class="mi">64</span>
+        <span class="n">lores_npix</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2npix</span><span class="p">(</span><span class="n">lores_nside</span><span class="p">)</span>
+        <span class="n">lores_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lores_npix</span><span class="p">))</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dec_to_theta</span><span class="p">(</span><span class="n">chi2grid</span><span class="o">.</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ra_to_phi</span><span class="p">(</span><span class="n">chi2grid</span><span class="o">.</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ang2pix</span><span class="p">(</span><span class="n">lores_nside</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+        <span class="n">lores_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi2grid</span><span class="o">.</span><span class="n">significance</span>
+
+        <span class="c1"># upscale to high-resolution</span>
+        <span class="n">hires_nside</span> <span class="o">=</span> <span class="n">nside</span>
+        <span class="n">hires_npix</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2npix</span><span class="p">(</span><span class="n">hires_nside</span><span class="p">)</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">pix2ang</span><span class="p">(</span><span class="n">hires_nside</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">hires_npix</span><span class="p">))</span>
+        <span class="n">sig_array</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">get_interp_val</span><span class="p">(</span><span class="n">lores_array</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+        <span class="n">sig_array</span><span class="p">[</span><span class="n">sig_array</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># convert chisq map to probability map</span>
+        <span class="n">loglike</span> <span class="o">=</span> <span class="o">-</span><span class="n">chi2grid</span><span class="o">.</span><span class="n">chisq</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loglike</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">loglike</span><span class="p">))</span>
+        <span class="n">lores_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">lores_npix</span><span class="p">)</span>
+        <span class="n">lores_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">probs</span>
+        <span class="n">prob_array</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">get_interp_val</span><span class="p">(</span><span class="n">lores_array</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+        <span class="n">prob_array</span><span class="p">[</span><span class="n">prob_array</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">prob_array</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">prob_array</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">prob_array</span><span class="p">,</span> <span class="n">sig_array</span><span class="p">,</span> <span class="n">tcat</span><span class="o">=</span><span class="n">tcat</span><span class="p">,</span>
+                            <span class="n">trigtime</span><span class="o">=</span><span class="n">chi2grid</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">scpos</span><span class="o">=</span><span class="n">chi2grid</span><span class="o">.</span><span class="n">scpos</span><span class="p">,</span>
+                            <span class="n">quaternion</span><span class="o">=</span><span class="n">chi2grid</span><span class="o">.</span><span class="n">quaternion</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="GbmHealPix.multiply"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.multiply">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">healpix1</span><span class="p">,</span> <span class="n">healpix2</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output_nside</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Multiply two GbmHealPix maps and return a new GbmHealPix object</span>
+<span class="sd">        </span>
+<span class="sd">        Note:</span>
+<span class="sd">            Either `healpix1` *or* healpix2 can be a non-GbmHealPix object, </span>
+<span class="sd">            however at least one of them must be a GbmHealPix object **and**</span>
+<span class="sd">            the `primary` argument must be set to the appropriate GbmHealPix</span>
+<span class="sd">            object otherwise a TypeError will be raised.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            healpix1 (:class:`HealPix` or :class:`GbmHealPix`): </span>
+<span class="sd">                One of the HEALPix maps to multiply</span>
+<span class="sd">            healpix2 (:class:`HealPix` or :class:`GbmHealPix`): </span>
+<span class="sd">                The other HEALPix map to multiply</span>
+<span class="sd">            primary (int, optional): If 1, use the first map header information, </span>
+<span class="sd">                                     or if 2, use the second map header </span>
+<span class="sd">                                     information. Default is 1.</span>
+<span class="sd">            output_nside (int, optional): The nside of the multiplied map. </span>
+<span class="sd">                                          Default is 128.</span>
+<span class="sd">        Returns</span>
+<span class="sd">            :class:`GbmHealPix`: The multiplied map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">primary</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">healpix1</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Primary HealPix (healpix1) is not of class </span><span class="si">{}</span><span class="s1">. &#39;</span>
+                <span class="s1">&#39;Perhaps try setting healpix2 as the primary&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">healpix2</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Primary HealPix (healpix2) is not of class </span><span class="si">{}</span><span class="s1">. &#39;</span>
+                <span class="s1">&#39;Perhaps try setting healpix1 as the primary&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">healpix1</span><span class="p">,</span> <span class="n">healpix2</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="n">primary</span><span class="p">,</span> 
+                               <span class="n">output_nside</span><span class="o">=</span><span class="n">output_nside</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_set_det_attr</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">obj</span> </div>
+    
+<div class="viewcode-block" id="GbmHealPix.write"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the GbmHealPix object to a FITS file</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): The directory to write to</span>
+<span class="sd">            filename (str, optional): The filename of the FITS file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># get arrays in proper order, and write the healpix data to disk</span>
+        <span class="n">prob_arr</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">,</span> <span class="n">r2n</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sig_arr</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sig</span><span class="p">,</span> <span class="n">r2n</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PROBABILITY&#39;</span><span class="p">,</span> <span class="s1">&#39;SIGNIFICANCE&#39;</span><span class="p">]</span>
+        <span class="n">hp</span><span class="o">.</span><span class="n">write_map</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="p">(</span><span class="n">prob_arr</span><span class="p">,</span> <span class="n">sig_arr</span><span class="p">),</span> <span class="n">nest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">coord</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
+                     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
+                     <span class="n">column_names</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+                     <span class="n">extra_header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+
+        <span class="c1"># healpy doesn&#39;t allow direct input into the primary header on writing,</span>
+        <span class="c1"># so we have to open the written file, add the primary header, rename</span>
+        <span class="c1"># the tables in the HEALPIX extension and write a new file</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;HEALPIX&#39;</span>
+        <span class="n">hdulist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;TTYPE1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;PROBABILITY&#39;</span><span class="p">,</span> <span class="s1">&#39;Differential probability per pixel&#39;</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;TTYPE2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;SIGNIFICANCE&#39;</span><span class="p">,</span> <span class="s1">&#39;Integrated probability&#39;</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="GbmHealPix.remove_earth"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.remove_earth">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">remove_earth</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">healpix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new GbmHealPix with the probability on the Earth masked out.</span>
+<span class="sd">        The remaining probability on the sky is renormalized.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The :attr:`geo_location` attribute must be available to use this function</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            healpix (:class:`GbmHealPix`): The map for which the Earth will be </span>
+<span class="sd">                                           removed        </span>
+<span class="sd">        </span>
+<span class="sd">        Returns: </span>
+<span class="sd">            :class:`GbmHealPix`: GBM HEALPix localization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">healpix</span><span class="o">.</span><span class="n">geo_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Location of geocenter is not known&#39;</span><span class="p">)</span>
+
+        <span class="c1"># get the non-zero probability and earth masks</span>
+        <span class="n">prob_mask</span><span class="p">,</span> <span class="n">geo_mask</span> <span class="o">=</span> <span class="n">healpix</span><span class="o">.</span><span class="n">_earth_mask</span><span class="p">()</span>
+
+        <span class="c1"># zero out the probabilities behind the earth</span>
+        <span class="n">new_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">new_prob</span><span class="p">[</span><span class="n">prob_mask</span><span class="p">]</span>
+        <span class="n">temp</span><span class="p">[</span><span class="n">geo_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">new_prob</span><span class="p">[</span><span class="n">prob_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+        <span class="c1"># renormalize</span>
+        <span class="n">new_prob</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_prob</span><span class="p">)</span>
+        <span class="c1"># have to redo the significance</span>
+        <span class="n">new_sig</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">find_greedy_credible_levels</span><span class="p">(</span><span class="n">new_prob</span><span class="p">)</span>
+
+        <span class="c1"># return a new object</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_prob</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">new_prob</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_sig</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_assert_sig</span><span class="p">(</span><span class="n">new_sig</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">healpix</span><span class="o">.</span><span class="n">headers</span>
+        <span class="c1"># set the detector pointing attributes</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_set_det_attr</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># set file properties</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="n">trigtime</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;healpix&#39;</span><span class="p">,</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="GbmHealPix.source_probability"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.source_probability">[docs]</a>    <span class="k">def</span> <span class="nf">source_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The probability that the GbmHealPix localization is associated with</span>
+<span class="sd">        a known point location.  This is calculated against the null hypothesis</span>
+<span class="sd">        that the localization originates from an unassociated random source </span>
+<span class="sd">        that has equal probability of origination anywhere in the sky: </span>
+<span class="sd">        </span>
+<span class="sd">        :math:`P(A | \mathcal{I}) = </span>
+<span class="sd">        \frac{P(\mathcal{I} | A) \ P(A)}</span>
+<span class="sd">        {P(\mathcal{I} | A) \ P(A) + P(\mathcal{I} | \neg A) \ P(\neg A)}`</span>
+<span class="sd">        </span>
+<span class="sd">        where</span>
+<span class="sd">        </span>
+<span class="sd">        * :math:`P(\mathcal{I} | A)` is the probability of the localization at</span>
+<span class="sd">          the point source once the Earth occultation has been removed</span>
+<span class="sd">        * :math:`P(\mathcal{I} | \neg A)` is the probability per pixel assuming </span>
+<span class="sd">          a uniform distribution on the sky (i.e. the probability the </span>
+<span class="sd">          localization is associated with a random point on the sky)</span>
+<span class="sd">        * :math:`P(A)` is the prior probability that the localization is </span>
+<span class="sd">          associated with the point source</span>
+<span class="sd">        </span>
+<span class="sd">        Note: </span>
+<span class="sd">            If the point source is behind the Earth, then it is assumed that</span>
+<span class="sd">            GBM could not observe it, therefore the probability will be zero. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            ra (float): The RA of the known source location</span>
+<span class="sd">            dec (float): The Dec of the known source location</span>
+<span class="sd">            prior (float, optional): The prior probability that the localization</span>
+<span class="sd">                                     is associated with the source. </span>
+<span class="sd">                                     Default is 0.5</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            float: The probability that the localization is spatially</span>
+<span class="sd">            associated with the point source</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Prior probability must be within 0-1, inclusive&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># convert uniform prob/sr to prob/pixel</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="c1"># the pixel probability of the skymap at the location of the point source</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">remove_earth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">probability</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">per_pixel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># if we know the location of the earth and it&#39;s behind the earth,</span>
+        <span class="c1"># then we obviously couldn&#39;t have seen it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ang</span> <span class="o">=</span> <span class="n">haversine</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_location</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ang</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_radius</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># null hypothesis is that they are not associated, therefore the sky map</span>
+        <span class="c1"># is result of some source that has uniform probability on the sky</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">p</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">prior</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">prob</span></div>
+
+<div class="viewcode-block" id="GbmHealPix.region_probability"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.region_probability">[docs]</a>    <span class="k">def</span> <span class="nf">region_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healpix</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The probability that the localization is associated with</span>
+<span class="sd">        the localization region from another map.  This is calculated </span>
+<span class="sd">        against the null hypothesis that the two maps represent </span>
+<span class="sd">        unassociated sources:</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`P(A | \mathcal{I}) = </span>
+<span class="sd">        \frac{P(\mathcal{I} | A) \ P(A)}</span>
+<span class="sd">        {P(\mathcal{I} | A) \ P(A) + P(\mathcal{I} | \neg A) \ P(\neg A)}`</span>
+<span class="sd">        </span>
+<span class="sd">        where</span>
+<span class="sd">        </span>
+<span class="sd">        * :math:`P(\mathcal{I} | A)` is the integral over the overlap of the two </span>
+<span class="sd">          maps once the Earth occultation has been removed for *this* map.</span>
+<span class="sd">        * :math:`P(\mathcal{I} | \neg A)` is the integral over the overlap of</span>
+<span class="sd">          *this* map with a uniform distribution on the sky (i.e. the probability </span>
+<span class="sd">          the localization is associated with a random point on the sky)</span>
+<span class="sd">        * :math:`P(A)` is the prior probability that *this* localization is </span>
+<span class="sd">          associated with the *other* HEALPix map.</span>
+
+<span class="sd">        Note: </span>
+<span class="sd">            The localization region of *this* map overlapping the Earth will be</span>
+<span class="sd">            removed and the remaining unocculted region is used for the</span>
+<span class="sd">            calculation.  The *other* map is assumed to have no exclusionary</span>
+<span class="sd">            region.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            healpix (:class:`HealPix`): The healpix map for which to calculate </span>
+<span class="sd">                                        the spatial association</span>
+<span class="sd">            prior (float, optional): The prior probability that the localization</span>
+<span class="sd">                                     is associated with the source. </span>
+<span class="sd">                                     Default is 0.5</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:  </span>
+<span class="sd">            float: The probability that the two HEALPix maps are associated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">prior</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Prior probability must be within 0-1, inclusive&#39;</span><span class="p">)</span>
+
+        <span class="c1"># convert uniform prob/sr to prob/pixel</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="c1"># get the non-zero probability and earth masks</span>
+        <span class="n">prob_mask</span><span class="p">,</span> <span class="n">geo_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_mask</span><span class="p">()</span>
+        <span class="n">probmap1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">probmap1</span><span class="p">[</span><span class="n">prob_mask</span><span class="p">]</span>
+        <span class="n">temp</span><span class="p">[</span><span class="n">geo_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">probmap1</span><span class="p">[</span><span class="n">prob_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+        <span class="n">probmap1</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">probmap1</span><span class="p">)</span>
+
+        <span class="c1"># ensure maps are the same resolution and convert uniform prob/sr to </span>
+        <span class="c1"># prob/pixel</span>
+        <span class="n">probmap2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nside</span> <span class="o">&gt;</span> <span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">:</span>
+            <span class="n">probmap2</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">probmap2</span><span class="p">,</span> <span class="n">nside_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span>
+            <span class="n">probmap2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">probmap2</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nside</span> <span class="o">&lt;</span> <span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">:</span>
+            <span class="n">probmap1</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">ud_grade</span><span class="p">(</span><span class="n">probmap1</span><span class="p">,</span> <span class="n">nside_out</span><span class="o">=</span><span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span>
+            <span class="n">probmap1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assert_prob</span><span class="p">(</span><span class="n">probmap1</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">*=</span> <span class="n">hp</span><span class="o">.</span><span class="n">nside2resol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="c1"># alternative hypothesis: they are related</span>
+        <span class="n">alt_hyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">probmap1</span> <span class="o">*</span> <span class="n">probmap2</span><span class="p">)</span>
+        <span class="c1"># null hypothesis: one of the maps is from an unassociated source</span>
+        <span class="c1"># (uniform spatial probability)</span>
+        <span class="n">null_hyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">probmap1</span> <span class="o">*</span> <span class="n">u</span><span class="p">)</span>
+
+        <span class="c1"># since we have an exhaustive and complete list of possibilities, we can</span>
+        <span class="c1"># easily calculate the probability</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">alt_hyp</span> <span class="o">*</span> <span class="n">prior</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">alt_hyp</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">null_hyp</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">prior</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">prob</span></div>
+
+<div class="viewcode-block" id="GbmHealPix.observable_fraction"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmHealPix.observable_fraction">[docs]</a>    <span class="k">def</span> <span class="nf">observable_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healpix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The observable fraction of a healpix probability region on the sky. </span>
+<span class="sd">        Non-observable regions are ones that are behind the Earth.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            healpix (:class:`HealPix`): The healpix region for which to </span>
+<span class="sd">                                        calculate the observable fraction.</span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            float: The fraction of the map (based on probability) that is observable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># speed things up a bit by only considering pixels with non-zero prob</span>
+        <span class="n">prob_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">_prob</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="c1"># get ra, dec coords for pixels and calculate angle from geocenter</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">pix2ang</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">nside</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">npix</span><span class="p">))</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">)[</span><span class="n">prob_mask</span><span class="p">]</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">)[</span><span class="n">prob_mask</span><span class="p">]</span>
+        <span class="c1"># the mask of everything with prob &gt; 0.0 and is visible</span>
+        <span class="n">ang</span> <span class="o">=</span> <span class="n">haversine</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_location</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+        <span class="n">geo_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">ang</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_radius</span><span class="p">)</span>
+
+        <span class="c1"># sum it up and divide by total prob (should be 1, but good to be sure)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">prob_mask</span><span class="p">]</span>
+        <span class="n">frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="n">geo_mask</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">healpix</span><span class="o">.</span><span class="n">_prob</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frac</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_det_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># set the detector pointing attributes</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;N._RA|B._RA&#39;</span><span class="p">)</span>
+        <span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">key</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">dets</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">det</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_pointing&#39;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="n">det</span> <span class="o">+</span> <span class="s1">&#39;_RA&#39;</span><span class="p">],</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;HEALPIX&#39;</span><span class="p">][</span><span class="n">det</span> <span class="o">+</span> <span class="s1">&#39;_DEC&#39;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">_earth_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># speed things up a bit by only considering pixels with non-zero prob</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prob</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="c1"># get ra, dec coords for pixels and calculate angle from geocenter</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">pix2ang</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nside</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npix</span><span class="p">))</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phi_to_ra</span><span class="p">(</span><span class="n">phi</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theta_to_dec</span><span class="p">(</span><span class="n">theta</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">ang</span> <span class="o">=</span> <span class="n">haversine</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_location</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+
+        <span class="n">geo_radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_radius</span>
+        <span class="c1"># the mask of the non-zero probability pixels that are behind the earth</span>
+        <span class="n">geo_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">ang</span> <span class="o">&lt;=</span> <span class="n">geo_radius</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mask</span><span class="p">,</span> <span class="n">geo_mask</span></div>
+
+
+<span class="k">class</span> <span class="nc">Chi2Grid</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Class for the Chi2Grid localization files/objects</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        azimuth (np.array): The spacecraft azimuth grid points</span>
+<span class="sd">        chisq (np.array): The chi-squared value at each grid point</span>
+<span class="sd">        dec (np.array): The Dec grid points</span>
+<span class="sd">        numpts (int): Number of sky points in the Chi2Grid</span>
+<span class="sd">        quaternion (np.array): The spacecraft attitude quaternion</span>
+<span class="sd">        ra (np.array): The RA grid points</span>
+<span class="sd">        scpos (np.array): The spacecraft position in Earth inertial coordinates</span>
+<span class="sd">        significance (np.array): The significance value at each point</span>
+<span class="sd">        trigtime (float): The trigger time</span>
+<span class="sd">        zenith (np.array): The spacecraft zenith grid points</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chisq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scpos</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">quaternion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span>
+
+    <span class="nd">@quaternion</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">quaternion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;quaternion must be a 4-element array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scpos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scpos</span>
+
+    <span class="nd">@scpos</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">scpos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;scpos must be a 3-element array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span>
+
+    <span class="nd">@trigtime</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">trigtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;trigtime must be a float&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numpts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_az</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">azimuth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_az</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zenith</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ra</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dec</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chisq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chisq</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">significance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">min_chisq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chisq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">chi2</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chisq</span> <span class="o">-</span> <span class="n">min_chisq</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read a chi2grid file and create a Chi2Grid object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The filename of the chi2grid file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">           :class:`Chi2Grid`: The Chi2Grid object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="n">numpts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">txt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">txt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numpts</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numpts</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numpts</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numpts</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_chisq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numpts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpts</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">txt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_az</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_zen</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_chisq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_ra</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_dec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">zen</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">chisq</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Chi2Grid object from arrays</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            az (np.array): The azimuth grid points</span>
+<span class="sd">            zen (np.array): The zenith grid points</span>
+<span class="sd">            ra (np.array): The RA grid points</span>
+<span class="sd">            dec (np.array): The Dec grid points</span>
+<span class="sd">            chisq (np.array): The chi-squared values at each grid point</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`Chi2Grid`: The Chi2Grid object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="n">az</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="n">zen</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_ra</span> <span class="o">=</span> <span class="n">ra</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_dec</span> <span class="o">=</span> <span class="n">dec</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_chisq</span> <span class="o">=</span> <span class="n">chisq</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+
+<span class="k">def</span> <span class="nf">find_greedy_credible_levels</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the credible values of a probability array using a greedy</span>
+<span class="sd">    algorithm.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        p (np.array): The probability array</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:    </span>
+<span class="sd">         np.array: The credible values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">pflat</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">pflat</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">pflat</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">pflat</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cs</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+
+<span class="c1"># Systematic Model definitions using healpy.smoothing</span>
+<span class="c1"># --------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">GBUTS_Model_O3</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;The localization systematic model for the targeted search during O3:</span>
+<span class="sd">    a 2.7 deg Gaussian.</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        arXiv:1903.12597</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">2.7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">([</span><span class="n">sigma</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">HitL_Model</span><span class="p">(</span><span class="n">az</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The localization systematic model for the human-in-the loop localization:</span>
+<span class="sd">    A mixture of a 4.17 deg Gaussian (91.8% weight) and a 15.3 deg Gaussian</span>
+<span class="sd">    for a centroid between azimuth 292.5 - 67.5 or azimuth 112.5 - 247.5, </span>
+<span class="sd">    otherwise a mixture of a 2.31 deg Gaussian (88.4% weight) and a </span>
+<span class="sd">    13.2 deg Gaussian.</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        arXiv:1411.2685</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        az (float): The localization centroid in spacecraft azimuth</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">az</span> <span class="o">&gt;</span> <span class="mf">292.5</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">az</span> <span class="o">&lt;=</span> <span class="mf">67.5</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">az</span> <span class="o">&gt;</span> <span class="mf">112.5</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">az</span> <span class="o">&lt;</span> <span class="mf">247.5</span><span class="p">)):</span>
+        <span class="n">sigma1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">4.17</span><span class="p">)</span>
+        <span class="n">sigma2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">15.3</span><span class="p">)</span>
+        <span class="n">frac1</span> <span class="o">=</span> <span class="mf">0.918</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sigma1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">2.31</span><span class="p">)</span>
+        <span class="n">sigma2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">13.2</span><span class="p">)</span>
+        <span class="n">frac1</span> <span class="o">=</span> <span class="mf">0.884</span>
+    <span class="k">return</span> <span class="p">([</span><span class="n">sigma1</span><span class="p">,</span> <span class="n">sigma2</span><span class="p">],</span> <span class="p">[</span><span class="n">frac1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">GA_Model</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;The localization systematic model for the Ground-Automated localization:</span>
+<span class="sd">    A mixture of a 3.72 deg Gaussian (80.4% weight) and a 13.7 deg Gaussian.</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        arXiv:1411.2685</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sigma1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">3.72</span><span class="p">)</span>
+    <span class="n">sigma2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">13.7</span><span class="p">)</span>
+    <span class="n">frac1</span> <span class="o">=</span> <span class="mf">0.804</span>
+    <span class="k">return</span> <span class="p">([</span><span class="n">sigma1</span><span class="p">,</span> <span class="n">sigma2</span><span class="p">],</span> <span class="p">[</span><span class="n">frac1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">RoboBA_Function</span><span class="p">(</span><span class="n">grb_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The localization systematic model for the RoboBA localization:</span>
+<span class="sd">    A mixture of a 1.86 deg Gaussian (57.9% weight) and a 4.14 deg Gaussian</span>
+<span class="sd">    for a &quot;long&quot; GRB, and a mixture of a 2.55 deg Gaussian (39.0% weight) and a </span>
+<span class="sd">    4.43 deg Gaussian for a &quot;short&quot; GRB.</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        arXiv:1909.03006)</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        grb_type (str): The type of GRB, either &#39;long&#39; or &#39;short&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">grb_type</span> <span class="o">==</span> <span class="s1">&#39;long&#39;</span><span class="p">:</span>
+        <span class="n">sigma1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">1.86</span><span class="p">)</span>
+        <span class="n">sigma2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">4.14</span><span class="p">)</span>
+        <span class="n">frac1</span> <span class="o">=</span> <span class="mf">0.579</span>
+    <span class="k">elif</span> <span class="n">grb_type</span> <span class="o">==</span> <span class="s1">&#39;short&#39;</span><span class="p">:</span>
+        <span class="n">sigma1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">2.55</span><span class="p">)</span>
+        <span class="n">sigma2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">4.43</span><span class="p">)</span>
+        <span class="n">frac1</span> <span class="o">=</span> <span class="mf">0.39</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;grb_type must either be &#39;long&#39; or &#39;short&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">([</span><span class="n">sigma1</span><span class="p">,</span> <span class="n">sigma2</span><span class="p">],</span> <span class="p">[</span><span class="n">frac1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">Untargeted_Search_Model</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;The localization systematic model for the Untargeted Search:</span>
+<span class="sd">    A 5.53 deg Gaussian</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">5.53</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">([</span><span class="n">sigma</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

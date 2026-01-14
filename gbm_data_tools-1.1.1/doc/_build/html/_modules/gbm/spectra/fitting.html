@@ -1,0 +1,1509 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.spectra.fitting &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.spectra.fitting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.spectra.fitting</h1><div class="highlight"><pre>
+<span></span><span class="c1"># fitting: Classes and functions for MLE of count spectra</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">multivariate_normal</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">inv</span>
+<span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">derivative</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span><span class="p">,</span> <span class="n">brentq</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">chi2</span>
+
+<span class="kn">from</span> <span class="nn">..background</span> <span class="kn">import</span> <span class="n">BackgroundRates</span><span class="p">,</span> <span class="n">BackgroundSpectrum</span>
+<span class="kn">from</span> <span class="nn">..data.primitives</span> <span class="kn">import</span> <span class="n">EnergyBins</span>
+
+
+<div class="viewcode-block" id="SpectralFitter"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter">[docs]</a><span class="k">class</span> <span class="nc">SpectralFitter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base class for jointly-fitting spectra from multiple detectors. </span>
+<span class="sd">    This is a (large) wrapper around `scipy.optimize.minimize</span>
+<span class="sd">    &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html&gt;`_. </span>
+<span class="sd">    This class should not be instantiated by the user, but instead a child class </span>
+<span class="sd">    for a specific fit statistic should be instantiated. </span>
+<span class="sd">    </span>
+<span class="sd">    Child classes should be designed with the following requirements:</span>
+<span class="sd">    </span>
+<span class="sd">    1. An ``__init__`` method that takes in the inputs in the Parent ``__init__`` </span>
+<span class="sd">       method. Can have additional arguments/keywords.</span>
+<span class="sd">    2. A ``_fold_model`` method that accepts the model function and the list of </span>
+<span class="sd">       parameters. It must return a single number that represents the likelihood</span>
+<span class="sd">       for a single detector/dataset.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        pha_list (list of :class:`~gbm.data.PHA`): </span>
+<span class="sd">            The PHA objects containg the count spectrum for each detector</span>
+<span class="sd">        bkgd_list (list of :class:`~gbm.background.BackgroundRates` or \</span>
+<span class="sd">                   list of :class:`~gbm.background.BackgroundSpectrum`): </span>
+<span class="sd">            The background rates object for each detector or background spectrum</span>
+<span class="sd">            for each detector.  If given the background rates object, the times</span>
+<span class="sd">            in the corresponding PHA object will be used for the limits of</span>
+<span class="sd">            integration.</span>
+<span class="sd">        rsp_list (list of :class:`~gbm.data.RSP`): </span>
+<span class="sd">            The response object for each detector</span>
+<span class="sd">        statistic (&lt;function&gt;): The function to be used as a fit statistic</span>
+<span class="sd">        channel_masks (list of np.array(dtype=bool), optional): </span>
+<span class="sd">            A boolean mask for each detector that indicates which energy </span>
+<span class="sd">            channels are to be fit.</span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The channel_mask will typically be set by the </span>
+<span class="sd">                :attr:`valid_channels` attribute in the PHA object.  You can</span>
+<span class="sd">                set channel_masks to override the PHA :attr:`valid_channels`,</span>
+<span class="sd">                but this is usually unnecessary.</span>
+<span class="sd">        method (str, optional): </span>
+<span class="sd">            The fitting algorithm, which should be one of the options for </span>
+<span class="sd">            scipy.optimize.minimize. Note that &#39;TNC&#39; and &#39;SLSQP&#39; are the two </span>
+<span class="sd">            algorithms that provide support for fitting with bounds and </span>
+<span class="sd">            constraints.  Other algorithms will ignore bounds and constraints.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fitted parameters.  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the covariance matrix </span>
+<span class="sd">                may not be valid.</span>
+<span class="sd">        detectors (list of str): The detectors used in the fit</span>
+<span class="sd">        dof (int): The number of degrees of freedom</span>
+<span class="sd">        energy_range (float, float): The full energy range of the fit</span>
+<span class="sd">        function_components (list of str): The names of the individual model </span>
+<span class="sd">                                           components, if appropriate</span>
+<span class="sd">        function_name (str): The name of the model function being fit</span>
+<span class="sd">        hessian (np.array): </span>
+<span class="sd">            The Hessian matrix of the fitted parameters, for which the </span>
+<span class="sd">            covariance matrix is -inverse(Hessian).  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the Hessian matrix may </span>
+<span class="sd">                not be valid.</span>
+<span class="sd">        jacobian (np.array): The Jacobian vector of the likelihood as a </span>
+<span class="sd">                             function of the parameters.</span>
+<span class="sd">        message (str): The message from the fitter on convergence/non-convergence</span>
+<span class="sd">        num_components (int): Number of function components</span>
+<span class="sd">        num_sets (int): Number of datasets/detectors being fit</span>
+<span class="sd">        parameters (np.array): The parameter values at the maximum likelihood</span>
+<span class="sd">        statistic (float): The fit statistic (likelihood)</span>
+<span class="sd">        success (bool): True if the fit was successful, False otherwise.</span>
+<span class="sd">        symmetric_errors (np.array): </span>
+<span class="sd">            The 1-sigma uncertainty on the parameters assuming higher-order terms</span>
+<span class="sd">            of the Taylor expansion of the likelihood about the maximum </span>
+<span class="sd">            likelihood solution is negligible. If those terms are not negligible, </span>
+<span class="sd">            errors could be very incorrect or event NaN.  </span>
+<span class="sd">            See attributes :attr:`covariance` and :attr:`hessian`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span>
+                 <span class="n">channel_masks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">):</span>
+
+        <span class="c1"># check that we have the right numbers of data, backgrounds, responses,</span>
+        <span class="c1"># and fit masks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_sets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pha_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bkgd_list</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_sets</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">rsp_list</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_sets</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of datasets, backgrounds, and responses &#39;</span> \
+                             <span class="s1">&#39;must be the same&#39;</span><span class="p">)</span>
+
+        <span class="c1"># set the energy channel masks</span>
+        <span class="k">if</span> <span class="n">channel_masks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel_masks</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_sets</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;If channel_masks is set, must be equal to the </span><span class="se">\</span>
+<span class="s1">                                 number of datasets&#39;</span><span class="p">)</span>
+
+        <span class="c1"># store response, exposure, and channel masks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span> <span class="o">=</span> <span class="n">rsp_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pha</span><span class="o">.</span><span class="n">exposure</span> <span class="k">for</span> <span class="n">pha</span> <span class="ow">in</span> <span class="n">pha_list</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">channel_masks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel_masks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">pha</span> <span class="ow">in</span> <span class="n">pha_list</span><span class="p">:</span>
+                <span class="n">chan_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pha</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+                <span class="n">chan_mask</span><span class="p">[</span><span class="n">pha</span><span class="o">.</span><span class="n">valid_channels</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">channel_masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan_mask</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span> <span class="o">=</span> <span class="n">channel_masks</span>
+
+        <span class="c1"># extract observed counts and apply channel mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">([</span><span class="n">pha</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">counts</span> <span class="k">for</span> <span class="n">pha</span> <span class="ow">in</span> <span class="n">pha_list</span><span class="p">])</span>
+
+        <span class="c1"># extract background rates and variances and apply channel masks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">pha</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bkgd_list</span><span class="p">,</span> <span class="n">pha_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bkgd</span><span class="p">,</span> <span class="n">BackgroundRates</span><span class="p">):</span>
+                <span class="n">bkgd_spec</span> <span class="o">=</span> <span class="n">bkgd</span><span class="o">.</span><span class="n">integrate_time</span><span class="p">(</span><span class="o">*</span><span class="n">pha</span><span class="o">.</span><span class="n">time_range</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bkgd</span><span class="p">,</span> <span class="n">BackgroundSpectrum</span><span class="p">):</span>
+                <span class="n">bkgd_spec</span> <span class="o">=</span> <span class="n">bkgd</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown Background object&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bkgd_spec</span><span class="o">.</span><span class="n">rates</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bkgd_spec</span><span class="o">.</span><span class="n">rate_uncertainty</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span><span class="p">)</span>
+
+        <span class="c1"># fitter/function info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span> <span class="o">=</span> <span class="n">statistic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span><span class="o">.</span><span class="n">fun</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">free_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
+        <span class="n">datapts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">chan_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">chan_mask</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">datapts</span> <span class="o">-</span> <span class="n">free_params</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">function_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">function_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">names</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">num_components</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">detector</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">emin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">([</span><span class="n">rsp</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">]))</span>
+        <span class="n">emax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">([</span><span class="n">rsp</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">emin</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">emax</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_sets</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span><span class="o">.</span><span class="n">success</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span><span class="o">.</span><span class="n">message</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span><span class="o">.</span><span class="n">x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span><span class="o">.</span><span class="n">jac</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cov</span> <span class="o">=</span> <span class="n">inv</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">hessian</span><span class="p">)</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cov</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">symmetric_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">covariance</span><span class="p">[</span><span class="nb">id</span><span class="p">]))</span>
+
+<div class="viewcode-block" id="SpectralFitter.load"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads a fitter object that has been saved to disk in a compressed</span>
+<span class="sd">        numpy file.  Thanks to the cool properties of the numpy format, this</span>
+<span class="sd">        method will load the complete state of the fitter when it was saved.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The complete filename of the saved file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loaded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">loaded</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fit loaded from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loaded</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.save"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the fitter object to a compressed binary numpy file. The full</span>
+<span class="sd">        state of the fitter is serialized and saved, and it can be restored </span>
+<span class="sd">        using the :meth:`load` method.  </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The complete filename to save the fitter object to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">now</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.fit"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the given the function to the data</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            function (:class:`~.functions.Function`): The function object to use</span>
+<span class="sd">            **kwargs: Keyword arguments passed to the fitter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="o">=</span> <span class="n">function</span>
+
+        <span class="c1"># treat the fixed parameters</span>
+        <span class="n">init_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">default_values</span><span class="p">)[</span><span class="n">function</span><span class="o">.</span><span class="n">free</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># do the fit, also returns the jacobian</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval_stat</span><span class="p">,</span> <span class="n">init_params</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">function</span><span class="p">,),</span>
+                       <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">parameter_bounds</span><span class="p">(),</span>
+                       <span class="n">jac</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="o">=</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.asymmetric_errors"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.asymmetric_errors">[docs]</a>    <span class="k">def</span> <span class="nf">asymmetric_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cl</span><span class="o">=</span><span class="mf">0.683</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the asymmetric uncertainty on each fitted parameter.</span>
+<span class="sd">        This function uses `scipy.optimize.brentq</span>
+<span class="sd">        &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html&gt;`_</span>
+<span class="sd">         to find the root of:</span>
+<span class="sd">        </span>
+<span class="sd">        crit = -2(LL_max-LL),</span>
+<span class="sd">        </span>
+<span class="sd">        where *crit* is the chi-square critical value defined by the number of</span>
+<span class="sd">        free parameters and the confidence level, and *LL_max* is the maximum </span>
+<span class="sd">        log-likelihood.  The brentq function uses a bracketing range to find the</span>
+<span class="sd">        roots, and this function uses the best-fit values of the parameters for</span>
+<span class="sd">        one side of the bracket and the min/max values defined in the fitted</span>
+<span class="sd">        function for the other side of the bracket.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            cl (float, optional): The confidence level of the uncertainties. </span>
+<span class="sd">                                  Default is 0.683 (1 sigma).</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            np.array: A (``nparams``, 2) array where each row reprensents the \</span>
+<span class="sd">                  (negative, positive) uncertainty on each parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># must have a fit</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Fit has not been performed&#39;</span><span class="p">)</span>
+
+        <span class="c1"># calculate the critical value</span>
+        <span class="n">nparams</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">crit</span> <span class="o">=</span> <span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="n">nparams</span><span class="p">)</span>
+
+        <span class="c1"># this is the objective function for which we are finding the root</span>
+        <span class="k">def</span> <span class="nf">the_func</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+            <span class="n">test_like</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fold_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_res</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">test_like</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">delta</span> <span class="o">-</span> <span class="n">crit</span>
+
+        
+        <span class="c1"># Find the lower and upper bound of the uncertainty.  Here, we use</span>
+        <span class="c1"># Brent&#39;s Method to determine the bounds, which requires a bracketing</span>
+        <span class="c1"># range of the solution.  One side of the bracket is the maximum </span>
+        <span class="c1"># likelihood value.  If the function parameter has a finite support,</span>
+        <span class="c1"># the corresponding end of the support is used for the other side of the</span>
+        <span class="c1"># bracket, otherwise, the other side of the bracket is iteratively</span>
+        <span class="c1"># decreased (increased) until the lower (upper) bound is constrained</span>
+        <span class="c1"># by Brent&#39;s Method.  This has to be done because we don&#39;t know a priori</span>
+        <span class="c1"># how far away from maximum likelihood the bound is.</span>
+        
+        <span class="c1"># lower bound</span>
+        <span class="n">root1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nparams</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nparams</span><span class="p">):</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">while</span> <span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">min_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">param</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                        <span class="n">minval</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">param</span>
+                    <span class="k">elif</span> <span class="n">param</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+                        <span class="n">minval</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">param</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">minval</span> <span class="o">=</span> <span class="n">param</span> <span class="o">-</span> <span class="mf">1.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">minval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">min_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                
+                <span class="c1"># if we&#39;re at the bounds, we can&#39;t bracket the peak</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">r</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">the_func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">minval</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,),</span>
+                                  <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">minval</span> <span class="o">==</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">min_values</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Parameter exists at its lower bound&quot;</span><span class="p">)</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">minval</span>
+                        <span class="k">break</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">minval</span>
+
+            <span class="n">root1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+        <span class="c1"># upper bound</span>
+        <span class="n">root2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nparams</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nparams</span><span class="p">):</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">while</span> <span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">max_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">param</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">:</span>
+                        <span class="n">maxval</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">param</span>
+                    <span class="k">elif</span> <span class="n">param</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                        <span class="n">maxval</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">param</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">maxval</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">param</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">maxval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">max_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">r</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">the_func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,),</span>
+                                  <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># if we&#39;re at the bounds, we can&#39;t bracket the peak</span>
+                    <span class="k">if</span> <span class="n">maxval</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">max_values</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Parameter exists at its upper bound&quot;</span><span class="p">)</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">maxval</span>
+                        <span class="k">break</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">maxval</span>
+
+            <span class="n">root2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+        <span class="c1"># convert the bounds to -/+ uncertainties</span>
+        <span class="n">errs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nparams</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">errs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">-</span> <span class="n">root1</span><span class="p">)</span>
+        <span class="n">errs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">-</span> <span class="n">root2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">errs</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.residuals"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.residuals">[docs]</a>    <span class="k">def</span> <span class="nf">residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The fit residuals for each dataset in units of differential </span>
+<span class="sd">        counts or model sigma</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            sigma (bool, optional): If True, return in units of model sigma, </span>
+<span class="sd">                otherwise return in units of differential counts. Default is True.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A 4-tuple containing:</span>
+<span class="sd">            </span>
+<span class="sd">            - *list of np.array*: Energy centroids     </span>
+<span class="sd">            - *list of np.array*: Energy channel widths</span>
+<span class="sd">            - *list of np.array*: Fit residuals</span>
+<span class="sd">            - *list of np.array*: Residual uncertainties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chanwidths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">channel_widths</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">])</span>
+        <span class="c1"># calculate the count spectrum model</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_count_spectrum</span><span class="p">()</span>
+
+        <span class="c1"># residuals are the differential model counts subtracted from the</span>
+        <span class="c1"># differential source counts above background</span>
+        <span class="n">resid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="n">back_rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">chanwidths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">chanwidths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">resid</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rates</span> <span class="o">-</span> <span class="n">back_rates</span><span class="p">)</span> <span class="o">-</span> <span class="n">model</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">rates</span><span class="p">)</span>
+
+        <span class="c1"># can calculate the residuals as a function of the model uncertainty</span>
+        <span class="n">model_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_variance</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sigma</span><span class="p">:</span>
+            <span class="n">resid</span> <span class="o">=</span> <span class="p">[</span><span class="n">resid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model_var</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                     <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">)]</span>
+            <span class="n">resid_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">resid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resid_err</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">model_var</span><span class="p">]</span>
+
+        <span class="c1"># the energy centroids and widths</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">channel_centroids</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">])</span>
+        <span class="n">ewidths</span> <span class="o">=</span> <span class="p">[</span><span class="n">chanwidth</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="k">for</span> <span class="n">chanwidth</span> <span class="ow">in</span> <span class="n">chanwidths</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">ewidths</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">resid_err</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.model_variance"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.model_variance">[docs]</a>    <span class="k">def</span> <span class="nf">model_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The differential source model variance, accounting for the data variance </span>
+<span class="sd">        and background model variance.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of np.array: The model variance for each dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chanwidths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">channel_widths</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">])</span>
+
+        <span class="c1"># model variance: need positive data counts, background rate and </span>
+        <span class="c1"># variance and exposure</span>
+        <span class="n">mvar</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="n">model_rate</span> <span class="o">=</span> <span class="n">counts</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">model_rate</span><span class="p">[</span><span class="n">counts</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">mvar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> \
+                        <span class="p">(</span><span class="n">model_rate</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> \
+                        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">chanwidths</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">mvar</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.model_count_spectrum"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.model_count_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">model_count_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The fitted model count spectrum</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of :class:`~gbm.data.primitives.EnergyBins`: An EnergyBins \</span>
+<span class="sd">                                                         object for each dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Fit has not been performed&#39;</span><span class="p">)</span>
+
+
+        <span class="n">ebins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="n">rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">rates</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ebin</span> <span class="o">=</span> <span class="n">EnergyBins</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">][</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">][</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                              <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+            <span class="n">ebins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebin</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ebins</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.data_count_spectrum"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.data_count_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">data_count_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upper_limits_sigma</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The observed source count spectrum, which is (total-background).</span>
+<span class="sd">        Data bins with source counts less than the model variance are converted</span>
+<span class="sd">        to upper limits.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            upper_limits_sigma (float, optional): The upper limits sigma. </span>
+<span class="sd">                                                  Default is 2. </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A 5-tuple containing:</span>
+<span class="sd">            </span>
+<span class="sd">            - *list of np.array*: Energy centroids</span>
+<span class="sd">            - *list of np.array*: Energy channel widths</span>
+<span class="sd">            - *list of np.array*: differential count spectrum</span>
+<span class="sd">            - *list of np.array*: 1-sigma count spectrum errors</span>
+<span class="sd">            - *list of np.array*: Upper limits boolean mask</span>
+<span class="sd">            </span>
+<span class="sd">            for each dataset. The upper limits mask is a boolean mask where </span>
+<span class="sd">            True indicates the element is an upper limit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chanwidths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">channel_widths</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">])</span>
+        <span class="n">mvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_variance</span><span class="p">()</span>
+
+        <span class="c1"># calculate the differential count spectrum and upper limit masks</span>
+        <span class="n">src_spectra</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ulmasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="n">src_counts</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> \
+                          <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> \
+                                                <span class="n">chanwidths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="n">ulmask</span> <span class="o">=</span> <span class="n">src_counts</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mvar</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">src_counts</span><span class="p">[</span><span class="n">ulmask</span><span class="p">]</span> <span class="o">=</span> <span class="n">upper_limits_sigma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mvar</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="n">ulmask</span><span class="p">]</span>
+            <span class="n">src_spectra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_counts</span><span class="p">)</span>
+            <span class="n">ulmasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ulmask</span><span class="p">)</span>
+
+        <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_masks</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">rsp</span><span class="o">.</span><span class="n">channel_centroids</span> <span class="k">for</span> <span class="n">rsp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">])</span>
+        <span class="n">ewidths</span> <span class="o">=</span> <span class="p">[</span><span class="n">chanwidth</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="k">for</span> <span class="n">chanwidth</span> <span class="ow">in</span> <span class="n">chanwidths</span><span class="p">]</span>
+        <span class="n">src_errs</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">mvar</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">ewidths</span><span class="p">,</span> <span class="n">src_spectra</span><span class="p">,</span> <span class="n">src_errs</span><span class="p">,</span> <span class="n">ulmasks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.spectrum"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">numpoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The model photon, energy, or :math:`\nu F_\nu` spectrum.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            which (str): Which spectrum to return. </span>
+<span class="sd">                         Either &#39;photon&#39;, &#39;energy&#39;, or &#39;nufnu&#39; </span>
+<span class="sd">            numpoints (int, optional): The number of grid points in energy. </span>
+<span class="sd">                                      Default is 1000.</span>
+<span class="sd">            components (bool, optional): </span>
+<span class="sd">                If True, calculate the spectrum for each individual model </span>
+<span class="sd">                components (if there are multiple components). Default is False.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A 2-tuple containing:</span>
+<span class="sd">            </span>
+<span class="sd">            - *np.array*: The energy grid at which the spectrum is calculated </span>
+<span class="sd">            - *np.array* or *list of np.array*: model spectrum values, or </span>
+<span class="sd">              spectrum values for each component</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Fit has not been performed&#39;</span><span class="p">)</span>
+
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_range</span><span class="p">),</span> <span class="n">numpoints</span><span class="p">)</span>
+        <span class="n">pmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span>
+                                         <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
+
+        <span class="c1"># multiply by energy or energy^2 if returning energy or nufnu spectrum</span>
+        <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;energy&#39;</span><span class="p">:</span>
+            <span class="n">pmodel</span> <span class="o">*=</span> <span class="n">grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:]</span>
+        <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;nufnu&#39;</span><span class="p">:</span>
+            <span class="n">pmodel</span> <span class="o">*=</span> <span class="n">grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:]</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">pmodel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.sample_parameters"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.sample_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">sample_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Produce samples of the fitted parameters.  This uses the covariance</span>
+<span class="sd">        matrix and assumes a multivariate normal distribuion.  Caveat Emptor.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Options (like size) to be passed to numpy.random.multivariate_normal </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: The random parameter samples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">covariance</span><span class="p">,</span>
+                                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">samples</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.sample_spectrum"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.sample_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">sample_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">numpoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                        <span class="n">components</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Produce samples of the model photon, energy, or :math:`\nu F_\nu` </span>
+<span class="sd">        spectrum. This uses the covariance matrix and assumes a multivariate </span>
+<span class="sd">        normal distribuion for the parameters. Caveat Emptor.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            which (str): Which spectrum to return.</span>
+<span class="sd">                         Either &#39;photon&#39;, &#39;energy&#39;, or &#39;nufnu&#39;</span>
+<span class="sd">            num_samples (int, optional): The number of spectrum to sample.</span>
+<span class="sd">                                         Default is 1000.</span>
+<span class="sd">            numpoints (int, optional): The number of grid points in energy. </span>
+<span class="sd">                                       Default is 1000.</span>
+<span class="sd">            components (bool, optional): </span>
+<span class="sd">                If True, calculate the spectrum for each individual model </span>
+<span class="sd">                components (if there are multiple components). Default is False.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A 2-tuple containing:</span>
+<span class="sd">            </span>
+<span class="sd">            - *np.array*: The energy grid at which the spectrum is calculated</span>
+<span class="sd">            - *np.array*: Array of shape (``num_samples``, ``numpoints``) if </span>
+<span class="sd">              there is only one component or </span>
+<span class="sd">              (``num_samples``, ``num_components``, ``numpoints``) if there </span>
+<span class="sd">              are multiple components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_parameters</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_range</span><span class="p">),</span> <span class="n">numpoints</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span>
+                                                      <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span> \
+                              <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span> \
+                              <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;energy&#39;</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">*=</span> <span class="n">grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;nufnu&#39;</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">*=</span> <span class="n">grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpectralFitter.sample_flux"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitter.sample_flux">[docs]</a>    <span class="k">def</span> <span class="nf">sample_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erange</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">numpoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Produce samples of the energy-integrated photon or energy flux.</span>
+<span class="sd">        This uses the covariance matrix and assumes a multivariate normal </span>
+<span class="sd">        distribuion for the parameters.  Caveat Emptor.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            erange (float, float): Which spectrum to return. Either &#39;photon&#39;, </span>
+<span class="sd">                                   &#39;energy&#39;, or &#39;nufnu&#39;</span>
+
+<span class="sd">            num_samples (int): The number of spectra to sample. Default is 1000.</span>
+<span class="sd">            numpoints (int): The number of grid points in energy. Default is 1000.</span>
+<span class="sd">            **kwargs: Options to be passed to </span>
+<span class="sd">                      :meth:`~gbm.spectra.functions.Function.integrate`.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: The sampled flux</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_parameters</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="n">flux</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">param_vec</span><span class="p">,</span> <span class="n">erange</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="n">numpoints</span><span class="p">,</span>
+                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">param_vec</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">flux</span></div>
+
+    <span class="k">def</span> <span class="nf">_fold_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Folds the model throught the spectrum and calculates the fit stat</span>
+<span class="sd">        Note:</span>
+<span class="sd">            This is an empty function in the base class, and in inherited class</span>
+<span class="sd">            must define this.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            function (:class:`~.functions.Function`): The function object to use</span>
+<span class="sd">            params (list): The parameters values</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The fit statistic value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_eval_stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate the statistic (and jacobian of the statistic as a function</span>
+<span class="sd">        of the model parameters).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            params (list): The parameters values</span>
+<span class="sd">            function (class:`~.functions.Function`) The function object to use</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (float, np.array): The fit statistic and the jacobian of the fit statistic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fold_model</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">jac</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">stat</span><span class="p">,</span> <span class="o">-</span><span class="n">jac</span>
+
+    <span class="k">def</span> <span class="nf">_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the Jacobian of the fit statistic as a function of the </span>
+<span class="sd">        model parameters.  This is evalated numerically using finite differences.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            params (list): The parameters values</span>
+<span class="sd">            function (class:`~.functions.Function`) The function object to use</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: The Jacobian</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_params</span><span class="p">)</span>
+        <span class="c1"># for each parameter, do partial derivative using finite differences</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_params</span><span class="p">):</span>
+            <span class="n">params_temp</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">function</span><span class="o">.</span><span class="n">delta_rel</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">grad</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pderiv</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">,</span> <span class="n">params_temp</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                   <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grad</span>
+
+    <span class="k">def</span> <span class="nf">_hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the Hessian of the fit statistic as a function of the </span>
+<span class="sd">        model parameters.  This is evalated numerically using finite differences.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            params (list): The parameters values</span>
+<span class="sd">            function (class:`~.functions.Function`) The function object to use</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: The Hessian matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">hess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_params</span><span class="p">,</span> <span class="n">num_params</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_params</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_params</span><span class="p">):</span>
+                <span class="c1"># Hessian is symmetric, so we only have to calculate either the</span>
+                <span class="c1"># upper or lower triangle</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">hess</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">hess</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                    <span class="k">continue</span>
+                <span class="n">params_temp</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">dx1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+                    <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">function</span><span class="o">.</span><span class="n">delta_rel</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">dx2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+                    <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">function</span><span class="o">.</span><span class="n">delta_rel</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">hess</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mixed_pderiv</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">fit_eval</span><span class="p">,</span> <span class="n">params_temp</span><span class="p">,</span>
+                                                <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">dx1</span><span class="p">,</span> <span class="n">dx2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hess</span>
+
+    <span class="k">def</span> <span class="nf">_pderiv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Partial derivative of function with respect to one of its parameters</span>
+<span class="sd">        This is a wrapper around scipy.misc.derivative to allow a partial</span>
+<span class="sd">        derivative to be calculated        </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            function (class:`~.functions.Function`) The function object to use</span>
+<span class="sd">            params (list): The parameters values</span>
+<span class="sd">            index (int, optional): </span>
+<span class="sd">                The index into the parameter list, representing the parameter </span>
+<span class="sd">                for which the partial derivative will be calculated. Default is 0</span>
+<span class="sd">            **kwargs: Options to pass to scipy.misc.derivative </span>
+<span class="sd">                      (such as the ``dx`` argument)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The partial derivative</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">wraps</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="n">the_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fold_model</span><span class="p">(</span><span class="o">*</span><span class="n">the_args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">derivative</span><span class="p">(</span><span class="n">wraps</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_mixed_pderiv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">dx1</span><span class="p">,</span> <span class="n">dx2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mixed second partial derivative of function with respect to its</span>
+<span class="sd">        parameters. This calls _pderiv.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            function (class:`~.functions.Function`) The function object to use</span>
+<span class="sd">            params (list): The parameters values</span>
+<span class="sd">            index1 (int): The index into the parameter list, representing the </span>
+<span class="sd">                       parameter for which the first partial derivative will be </span>
+<span class="sd">                       calculated.</span>
+<span class="sd">            index2 (int): The index into the parameter list, representing the </span>
+<span class="sd">                       parameter for which the second partial derivative will be </span>
+<span class="sd">                       calculated.</span>
+<span class="sd">            dx1 (float): The step size for the first parameter</span>
+<span class="sd">            dx2 (flot): The step size for the second parameter</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The second mixed partial derivative</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">wraps</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">index2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="n">the_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pderiv</span><span class="p">(</span><span class="o">*</span><span class="n">the_args</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index1</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">derivative</span><span class="p">(</span><span class="n">wraps</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="n">index2</span><span class="p">],</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_apply_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply the fit masks to a list of arrays</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            a_list (list of np.array): The list of arrays</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of np.array: The masked array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">one_list</span><span class="p">[</span><span class="n">one_mask</span><span class="p">]</span> \
+                <span class="k">for</span> <span class="n">one_list</span><span class="p">,</span> <span class="n">one_mask</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="SpectralFitterChisq"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitterChisq">[docs]</a><span class="k">class</span> <span class="nc">SpectralFitterChisq</span><span class="p">(</span><span class="n">SpectralFitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Jointly-fit datasets using Chi-Squared Likelihood.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        pha_list (list of :class:`~gbm.data.PHA`): </span>
+<span class="sd">            The PHA objects containg the count spectrum for each detector</span>
+<span class="sd">        bkgd_list (list of :class:`~gbm.background.BackgroundRates`): </span>
+<span class="sd">            The background rates object for each detector</span>
+<span class="sd">        rsp_list (list of :class:`~gbm.data.RSP`): </span>
+<span class="sd">            The response object for each detector</span>
+<span class="sd">        channel_masks (list of np.array(dtype=bool), optional): </span>
+<span class="sd">            A boolean mask for each detector that indicates which energy </span>
+<span class="sd">            channels are to be fit.</span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The channel_mask will typically be set by the </span>
+<span class="sd">                :attr:`valid_channels` attribute in the PHA object.  You can</span>
+<span class="sd">                set channel_masks to override the PHA :attr:`valid_channels`,</span>
+<span class="sd">                but this is usually unnecessary.</span>
+<span class="sd">        method (str, optional): </span>
+<span class="sd">            The fitting algorithm, which should be one of the options for </span>
+<span class="sd">            scipy.optimize.minimize. Note that &#39;TNC&#39; and &#39;SLSQP&#39; are the two </span>
+<span class="sd">            algorithms that provide support for fitting with bounds and </span>
+<span class="sd">            constraints.  Other algorithms will ignore bounds and constraints.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fitted parameters.  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the covariance matrix </span>
+<span class="sd">                may not be valid.</span>
+<span class="sd">        detectors (list of str): The detectors used in the fit</span>
+<span class="sd">        dof (int): The number of degrees of freedom</span>
+<span class="sd">        energy_range (float, float): The full energy range of the fit</span>
+<span class="sd">        function_components (list of str): The names of the individual model </span>
+<span class="sd">                                           components, if appropriate</span>
+<span class="sd">        function_name (str): The name of the model function being fit</span>
+<span class="sd">        hessian (np.array): </span>
+<span class="sd">            The Hessian matrix of the fitted parameters, for which the </span>
+<span class="sd">            covariance matrix is -inverse(Hessian).  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the Hessian matrix may </span>
+<span class="sd">                not be valid.</span>
+<span class="sd">        jacobian (np.array): The Jacobian vector of the likelihood as a </span>
+<span class="sd">                             function of the parameters.</span>
+<span class="sd">        message (str): The message from the fitter on convergence/non-convergence</span>
+<span class="sd">        num_components (int): Number of function components</span>
+<span class="sd">        num_sets (int): Number of datasets/detectors being fit</span>
+<span class="sd">        parameters (np.array): The parameter values at the maximum likelihood</span>
+<span class="sd">        statistic (float): The fit statistic (likelihood)</span>
+<span class="sd">        success (bool): True if the fit was successful, False otherwise.</span>
+<span class="sd">        symmetric_errors (np.array): </span>
+<span class="sd">            The 1-sigma uncertainty on the parameters assuming higher-order terms</span>
+<span class="sd">            of the Taylor expansion of the likelihood about the maximum </span>
+<span class="sd">            likelihood solution is negligible. If those terms are not negligible, </span>
+<span class="sd">            errors could be very incorrect or event NaN.  </span>
+<span class="sd">            See attributes :attr:`covariance` and :attr:`hessian`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">chisq</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fold_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="c1"># fold model through response and convert to raw model counts</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span>
+                                               <span class="n">channel_mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span>
+                                                   <span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># perform chisq calculation for one dataset</span>
+            <span class="n">stat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SpectralFitterPgstat"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitterPgstat">[docs]</a><span class="k">class</span> <span class="nc">SpectralFitterPgstat</span><span class="p">(</span><span class="n">SpectralFitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Jointly-fit datasets using Profile Gaussian likelihood (PGSTAT).</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        pha_list (list of :class:`~gbm.data.PHA`): </span>
+<span class="sd">            The PHA objects containg the count spectrum for each detector</span>
+<span class="sd">        bkgd_list (list of :class:`~gbm.background.BackgroundRates`): </span>
+<span class="sd">            The background rates object for each detector</span>
+<span class="sd">        rsp_list (list of :class:`~gbm.data.RSP`): </span>
+<span class="sd">            The response object for each detector</span>
+<span class="sd">        channel_masks (list of np.array(dtype=bool), optional): </span>
+<span class="sd">            A boolean mask for each detector that indicates which energy </span>
+<span class="sd">            channels are to be fit.</span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The channel_mask will typically be set by the </span>
+<span class="sd">                :attr:`valid_channels` attribute in the PHA object.  You can</span>
+<span class="sd">                set channel_masks to override the PHA :attr:`valid_channels`,</span>
+<span class="sd">                but this is usually unnecessary.</span>
+<span class="sd">        back_exp (list of float, optional): Set if different than the source</span>
+<span class="sd">                                            exposure</span>
+<span class="sd">        method (str, optional): </span>
+<span class="sd">            The fitting algorithm, which should be one of the options for </span>
+<span class="sd">            scipy.optimize.minimize. Note that &#39;TNC&#39; and &#39;SLSQP&#39; are the two </span>
+<span class="sd">            algorithms that provide support for fitting with bounds and </span>
+<span class="sd">            constraints.  Other algorithms will ignore bounds and constraints.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fitted parameters.  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the covariance matrix </span>
+<span class="sd">                may not be valid.</span>
+<span class="sd">        detectors (list of str): The detectors used in the fit</span>
+<span class="sd">        dof (int): The number of degrees of freedom</span>
+<span class="sd">        energy_range (float, float): The full energy range of the fit</span>
+<span class="sd">        function_components (list of str): The names of the individual model </span>
+<span class="sd">                                           components, if appropriate</span>
+<span class="sd">        function_name (str): The name of the model function being fit</span>
+<span class="sd">        hessian (np.array): </span>
+<span class="sd">            The Hessian matrix of the fitted parameters, for which the </span>
+<span class="sd">            covariance matrix is -inverse(Hessian).  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the Hessian matrix may </span>
+<span class="sd">                not be valid.</span>
+<span class="sd">        jacobian (np.array): The Jacobian vector of the likelihood as a </span>
+<span class="sd">                             function of the parameters.</span>
+<span class="sd">        message (str): The message from the fitter on convergence/non-convergence</span>
+<span class="sd">        num_components (int): Number of function components</span>
+<span class="sd">        num_sets (int): Number of datasets/detectors being fit</span>
+<span class="sd">        parameters (np.array): The parameter values at the maximum likelihood</span>
+<span class="sd">        statistic (float): The fit statistic (likelihood)</span>
+<span class="sd">        success (bool): True if the fit was successful, False otherwise.</span>
+<span class="sd">        symmetric_errors (np.array): </span>
+<span class="sd">            The 1-sigma uncertainty on the parameters assuming higher-order terms</span>
+<span class="sd">            of the Taylor expansion of the likelihood about the maximum </span>
+<span class="sd">            likelihood solution is negligible. If those terms are not negligible, </span>
+<span class="sd">            errors could be very incorrect or event NaN.  </span>
+<span class="sd">            See attributes :attr:`covariance` and :attr:`hessian`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">back_exp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">pgstat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># background exposure (may == source exposure)</span>
+        <span class="k">if</span> <span class="n">back_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">back_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_exp</span> <span class="o">=</span> <span class="n">back_exp</span>
+    
+    <span class="k">def</span> <span class="nf">_fold_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="c1"># fold model through response and convert to raw model counts</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span>
+                                               <span class="n">channel_mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># perform pgstat calculation for one dataset</span>
+            <span class="n">stat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_back_exp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_back_var</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_back_exp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SpectralFitterCstat"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitterCstat">[docs]</a><span class="k">class</span> <span class="nc">SpectralFitterCstat</span><span class="p">(</span><span class="n">SpectralFitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Jointly-fit datasets using C-Stat (Poisson source with Poisson background)</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        pha_list (list of :class:`~gbm.data.PHA`): </span>
+<span class="sd">            The PHA objects containg the count spectrum for each detector</span>
+<span class="sd">        bkgd_list (list of :class:`~gbm.background.BackgroundRates`): </span>
+<span class="sd">            The background rates object for each detector</span>
+<span class="sd">        rsp_list (list of :class:`~gbm.data.RSP`): </span>
+<span class="sd">            The response object for each detector</span>
+<span class="sd">        channel_masks (list of np.array(dtype=bool), optional): </span>
+<span class="sd">            A boolean mask for each detector that indicates which energy </span>
+<span class="sd">            channels are to be fit.</span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The channel_mask will typically be set by the </span>
+<span class="sd">                :attr:`valid_channels` attribute in the PHA object.  You can</span>
+<span class="sd">                set channel_masks to override the PHA :attr:`valid_channels`,</span>
+<span class="sd">                but this is usually unnecessary.</span>
+<span class="sd">        back_exp (list of float, optional): Set if different than the source</span>
+<span class="sd">                                            exposure</span>
+<span class="sd">        method (str, optional): </span>
+<span class="sd">            The fitting algorithm, which should be one of the options for </span>
+<span class="sd">            scipy.optimize.minimize. Note that &#39;TNC&#39; and &#39;SLSQP&#39; are the two </span>
+<span class="sd">            algorithms that provide support for fitting with bounds and </span>
+<span class="sd">            constraints.  Other algorithms will ignore bounds and constraints.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fitted parameters.  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the covariance matrix </span>
+<span class="sd">                may not be valid.</span>
+<span class="sd">        detectors (list of str): The detectors used in the fit</span>
+<span class="sd">        dof (int): The number of degrees of freedom</span>
+<span class="sd">        energy_range (float, float): The full energy range of the fit</span>
+<span class="sd">        function_components (list of str): The names of the individual model </span>
+<span class="sd">                                           components, if appropriate</span>
+<span class="sd">        function_name (str): The name of the model function being fit</span>
+<span class="sd">        hessian (np.array): </span>
+<span class="sd">            The Hessian matrix of the fitted parameters, for which the </span>
+<span class="sd">            covariance matrix is -inverse(Hessian).  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the Hessian matrix may </span>
+<span class="sd">                not be valid.</span>
+<span class="sd">        jacobian (np.array): The Jacobian vector of the likelihood as a </span>
+<span class="sd">                             function of the parameters.</span>
+<span class="sd">        message (str): The message from the fitter on convergence/non-convergence</span>
+<span class="sd">        num_components (int): Number of function components</span>
+<span class="sd">        num_sets (int): Number of datasets/detectors being fit</span>
+<span class="sd">        parameters (np.array): The parameter values at the maximum likelihood</span>
+<span class="sd">        statistic (float): The fit statistic (likelihood)</span>
+<span class="sd">        success (bool): True if the fit was successful, False otherwise.</span>
+<span class="sd">        symmetric_errors (np.array): </span>
+<span class="sd">            The 1-sigma uncertainty on the parameters assuming higher-order terms</span>
+<span class="sd">            of the Taylor expansion of the likelihood about the maximum </span>
+<span class="sd">            likelihood solution is negligible. If those terms are not negligible, </span>
+<span class="sd">            errors could be very incorrect or event NaN.  </span>
+<span class="sd">            See attributes :attr:`covariance` and :attr:`hessian`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">back_exp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">cstat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># background exposure (may == source exposure)</span>
+        <span class="k">if</span> <span class="n">back_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">back_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_back_exp</span> <span class="o">=</span> <span class="n">back_exp</span>
+
+    <span class="k">def</span> <span class="nf">_fold_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="c1"># fold model through response and convert to raw model counts</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span>
+                                               <span class="n">channel_mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span>
+                                                   <span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># perform cstat calculation for one dataset</span>
+            <span class="n">stat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_back_exp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_back_exp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SpectralFitterPstat"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.SpectralFitterPstat">[docs]</a><span class="k">class</span> <span class="nc">SpectralFitterPstat</span><span class="p">(</span><span class="n">SpectralFitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Jointly-fit datasets using P-Stat (Poisson source with known background).</span>
+<span class="sd">    This statistic assumes non-zero counts, therefore any channels with zero</span>
+<span class="sd">    counts will be masked out and not used in fitting.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        pha_list (list of :class:`~gbm.data.PHA`): </span>
+<span class="sd">            The PHA objects containg the count spectrum for each detector</span>
+<span class="sd">        bkgd_list (list of :class:`~gbm.background.BackgroundRates`): </span>
+<span class="sd">            The background rates object for each detector</span>
+<span class="sd">        rsp_list (list of :class:`~gbm.data.RSP`): </span>
+<span class="sd">            The response object for each detector</span>
+<span class="sd">        channel_masks (list of np.array(dtype=bool), optional): </span>
+<span class="sd">            A boolean mask for each detector that indicates which energy </span>
+<span class="sd">            channels are to be fit.</span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The channel_mask will typically be set by the </span>
+<span class="sd">                :attr:`valid_channels` attribute in the PHA object.  You can</span>
+<span class="sd">                set channel_masks to override the PHA :attr:`valid_channels`,</span>
+<span class="sd">                but this is usually unnecessary.</span>
+<span class="sd">        back_exp (list of float, optional): Set if different than the source</span>
+<span class="sd">                                            exposure</span>
+<span class="sd">        method (str, optional): </span>
+<span class="sd">            The fitting algorithm, which should be one of the options for </span>
+<span class="sd">            scipy.optimize.minimize. Note that &#39;TNC&#39; and &#39;SLSQP&#39; are the two </span>
+<span class="sd">            algorithms that provide support for fitting with bounds and </span>
+<span class="sd">            constraints.  Other algorithms will ignore bounds and constraints.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        covariance (np.array): The covariance matrix of the fitted parameters.  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the covariance matrix </span>
+<span class="sd">                may not be valid.</span>
+<span class="sd">        detectors (list of str): The detectors used in the fit</span>
+<span class="sd">        dof (int): The number of degrees of freedom</span>
+<span class="sd">        energy_range (float, float): The full energy range of the fit</span>
+<span class="sd">        function_components (list of str): The names of the individual model </span>
+<span class="sd">                                           components, if appropriate</span>
+<span class="sd">        function_name (str): The name of the model function being fit</span>
+<span class="sd">        hessian (np.array): </span>
+<span class="sd">            The Hessian matrix of the fitted parameters, for which the </span>
+<span class="sd">            covariance matrix is -inverse(Hessian).  </span>
+<span class="sd">            </span>
+<span class="sd">            Note:</span>
+<span class="sd">                The assumption of negligible higher-order terms in the Taylor </span>
+<span class="sd">                expansion may not be valid and therefore the Hessian matrix may </span>
+<span class="sd">                not be valid.</span>
+<span class="sd">        jacobian (np.array): The Jacobian vector of the likelihood as a </span>
+<span class="sd">                             function of the parameters.</span>
+<span class="sd">        message (str): The message from the fitter on convergence/non-convergence</span>
+<span class="sd">        num_components (int): Number of function components</span>
+<span class="sd">        num_sets (int): Number of datasets/detectors being fit</span>
+<span class="sd">        parameters (np.array): The parameter values at the maximum likelihood</span>
+<span class="sd">        statistic (float): The fit statistic (likelihood)</span>
+<span class="sd">        success (bool): True if the fit was successful, False otherwise.</span>
+<span class="sd">        symmetric_errors (np.array): </span>
+<span class="sd">            The 1-sigma uncertainty on the parameters assuming higher-order terms</span>
+<span class="sd">            of the Taylor expansion of the likelihood about the maximum </span>
+<span class="sd">            likelihood solution is negligible. If those terms are not negligible, </span>
+<span class="sd">            errors could be very incorrect or event NaN.  </span>
+<span class="sd">            See attributes :attr:`covariance` and :attr:`hessian`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pha_list</span><span class="p">,</span> <span class="n">bkgd_list</span><span class="p">,</span> <span class="n">rsp_list</span><span class="p">,</span> <span class="n">pstat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_fold_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="c1"># fold model through response and convert to raw model counts</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fold_spectrum</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span>
+                                               <span class="n">channel_mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_masks</span><span class="p">[</span>
+                                                   <span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># perform pstat calculation for one dataset</span>
+            <span class="n">stat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_back_rates</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            
+                                  
+            
+        <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<span class="c1"># --------------------------------------------------------------------------</span>
+<span class="c1"># FIT STATISTICS</span>
+
+<div class="viewcode-block" id="chisq"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.chisq">[docs]</a><span class="k">def</span> <span class="nf">chisq</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">,</span> <span class="n">back_rates</span><span class="p">,</span> <span class="n">back_var</span><span class="p">,</span> <span class="n">mod_rates</span><span class="p">,</span> <span class="n">exposure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Chi-Square Likelihood</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        obs_counts (np.array): The total observed counts</span>
+<span class="sd">        back_rates (np.array): The background model count rates</span>
+<span class="sd">        back_var (np.array): The background model count rate variance</span>
+<span class="sd">        mod_rates (np.array): The model source rates</span>
+<span class="sd">        exposure (float):  The source exposure</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:    </span>
+<span class="sd">        float: The chi-squared statistic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">obs_counts</span> <span class="o">-</span> <span class="n">back_rates</span> <span class="o">*</span> <span class="n">exposure</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">like</span> <span class="o">=</span> <span class="p">((</span><span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">back_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">exposure</span><span class="p">)</span> <span class="o">-</span> <span class="n">mod_rates</span><span class="p">[</span>
+        <span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">exposure</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> \
+           <span class="p">(</span><span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">+</span> <span class="n">back_var</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">exposure</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">like</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="cstat"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.cstat">[docs]</a><span class="k">def</span> <span class="nf">cstat</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">,</span> <span class="n">mod_rates</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">back_counts</span><span class="p">,</span> <span class="n">back_exp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;C-Statistic Likelihood for Poisson source + Poisson background.</span>
+<span class="sd">    The &quot;W&quot; statistic from the `XSPEC Statistics Appendix</span>
+<span class="sd">    &lt;https://heasarc.gsfc.nasa.gov/xanadu/xspec/manual/XSappendixStatistics.html&gt;`_.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        obs_counts (np.array): The total observed counts</span>
+<span class="sd">        mod_rates (np.array): The model source rates</span>
+<span class="sd">        exposure (float):  The source exposure</span>
+<span class="sd">        back_counts (np.array): The background model counts</span>
+<span class="sd">        back_exp (float): The background exposure</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:    </span>
+<span class="sd">        float: The C-statistic</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">sum_exp</span> <span class="o">=</span> <span class="n">exposure</span> <span class="o">+</span> <span class="n">back_exp</span>
+    <span class="c1"># special cases for when the observed counts = 0 or when the background</span>
+    <span class="c1"># model counts = 0</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="p">(</span><span class="n">obs_counts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="p">(</span><span class="n">back_counts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mod_rates</span> <span class="o">&lt;</span> <span class="n">obs_counts</span><span class="o">/</span><span class="p">(</span><span class="n">sum_exp</span><span class="p">))</span>
+    <span class="n">mask3</span> <span class="o">=</span> <span class="p">(</span><span class="n">back_counts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mod_rates</span> <span class="o">&gt;=</span> <span class="n">obs_counts</span><span class="o">/</span><span class="p">(</span><span class="n">sum_exp</span><span class="p">))</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">)</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">*</span><span class="n">mod_rates</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">-</span> <span class="n">back_counts</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">back_exp</span><span class="o">/</span><span class="n">sum_exp</span><span class="p">)</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">back_exp</span><span class="o">*</span><span class="n">mod_rates</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">-</span> <span class="n">obs_counts</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">exposure</span><span class="o">/</span><span class="n">sum_exp</span><span class="p">)</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">mask3</span><span class="p">]</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">*</span><span class="n">mod_rates</span><span class="p">[</span><span class="n">mask3</span><span class="p">]</span> <span class="o">+</span> <span class="n">obs_counts</span><span class="p">[</span><span class="n">mask3</span><span class="p">]</span><span class="o">*</span> \
+               <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">[</span><span class="n">mask3</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">exposure</span><span class="o">*</span><span class="n">mod_rates</span><span class="p">[</span><span class="n">mask3</span><span class="p">])</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span>
+    
+    <span class="c1"># for all other cases:</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">mask1</span> <span class="o">|</span> <span class="n">mask2</span> <span class="o">|</span> <span class="n">mask3</span><span class="p">)</span>
+    <span class="n">mod_rates_nz</span> <span class="o">=</span> <span class="n">mod_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">obs_counts_nz</span> <span class="o">=</span> <span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">back_counts_nz</span> <span class="o">=</span> <span class="n">back_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">sum_exp</span><span class="o">*</span><span class="n">mod_rates_nz</span> <span class="o">-</span> <span class="n">obs_counts_nz</span> <span class="o">-</span> <span class="n">back_counts_nz</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> \
+                <span class="mf">4.0</span><span class="o">*</span><span class="n">sum_exp</span><span class="o">*</span><span class="n">back_counts_nz</span><span class="o">*</span><span class="n">mod_rates_nz</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">obs_counts_nz</span> <span class="o">+</span> <span class="n">back_counts_nz</span> <span class="o">-</span> <span class="n">sum_exp</span><span class="o">*</span><span class="n">mod_rates_nz</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">sum_exp</span><span class="p">)</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">*</span><span class="n">mod_rates_nz</span> <span class="o">+</span> <span class="n">sum_exp</span><span class="o">*</span><span class="n">f</span> <span class="o">-</span>\
+              <span class="n">obs_counts_nz</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">exposure</span><span class="o">*</span><span class="n">mod_rates_nz</span> <span class="o">+</span> <span class="n">exposure</span><span class="o">*</span><span class="n">f</span><span class="p">)</span> <span class="o">-</span> \
+              <span class="n">back_counts_nz</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">back_exp</span><span class="o">*</span><span class="n">f</span><span class="p">)</span> <span class="o">-</span> \
+              <span class="n">obs_counts_nz</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">obs_counts_nz</span><span class="p">))</span> <span class="o">-</span> \
+              <span class="n">back_counts_nz</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">back_counts_nz</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="pstat"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.pstat">[docs]</a><span class="k">def</span> <span class="nf">pstat</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">,</span> <span class="n">mod_rates</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">back_rates</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Likelihood for Poisson source + known background.</span>
+<span class="sd">    The &quot;pstat&quot; statistic from the `XSPEC Statistics Appendix</span>
+<span class="sd">    &lt;https://heasarc.gsfc.nasa.gov/xanadu/xspec/manual/XSappendixStatistics.html&gt;`_.</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Elements with zero counts are masked out and not figured in the </span>
+<span class="sd">        statistic.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        obs_counts (np.array): The total observed counts</span>
+<span class="sd">        mod_rates (np.array): The model source rates</span>
+<span class="sd">        exposure (float):  The source exposure</span>
+<span class="sd">        back_rates (np.array): The background model count rates</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:    </span>
+<span class="sd">        float: The C-statistic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">obs_counts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mod_rates</span> <span class="o">+</span> <span class="n">back_rates</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">pstat</span> <span class="o">=</span> <span class="n">exposure</span> <span class="o">*</span> <span class="p">(</span><span class="n">mod_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">+</span> <span class="n">back_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="o">-</span> \
+            <span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">exposure</span><span class="o">*</span><span class="p">(</span><span class="n">mod_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">+</span> \
+            <span class="n">back_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span> <span class="o">-</span> <span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> \
+            <span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">pstat</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="pgstat"><a class="viewcode-back" href="../../../api/api-spectra.html#gbm.spectra.fitting.pgstat">[docs]</a><span class="k">def</span> <span class="nf">pgstat</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">,</span> <span class="n">mod_rates</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">back_counts</span><span class="p">,</span> <span class="n">back_var</span><span class="p">,</span> <span class="n">back_exp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Profile Gaussian Likelihood. From the `XSPEC Statistics Appendix</span>
+<span class="sd">    &lt;https://heasarc.gsfc.nasa.gov/xanadu/xspec/manual/XSappendixStatistics.html&gt;`_.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        obs_counts (np.array): The total observed counts</span>
+<span class="sd">        mod_rates (np.array): The model source rates</span>
+<span class="sd">        exposure (float): The source exposure</span>
+<span class="sd">        back_counts (np.array): The background model counts</span>
+<span class="sd">        back_var (np.array): The background model count variance</span>
+<span class="sd">        back_exp (float): The background exposure</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:    </span>
+<span class="sd">        float: The PG-stat</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">obs_counts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">pg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">obs_counts</span><span class="p">)</span>
+    <span class="c1"># special case for zero observed counts</span>
+    <span class="n">pg</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">exposure</span> <span class="o">*</span> <span class="n">mod_rates</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">+</span> <span class="n">back_counts</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">exposure</span> <span class="o">/</span> <span class="n">back_exp</span><span class="p">)</span> \
+                <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">back_var</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">exposure</span> <span class="o">/</span> <span class="n">back_exp</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">2.0</span>
+    
+    <span class="c1"># for all other cases:</span>
+    <span class="n">obs_counts_nz</span> <span class="o">=</span> <span class="n">obs_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">mod_rates_nz</span> <span class="o">=</span> <span class="n">mod_rates</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">back_counts_nz</span> <span class="o">=</span> <span class="n">back_counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">back_var_nz</span> <span class="o">=</span> <span class="n">back_var</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">exposure</span> <span class="o">*</span> <span class="n">back_var_nz</span> <span class="o">-</span> <span class="n">back_exp</span> <span class="o">*</span> <span class="n">back_counts_nz</span> <span class="o">+</span> \
+                 <span class="n">back_exp</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mod_rates_nz</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> \
+                <span class="mf">4.0</span> <span class="o">*</span> <span class="n">back_exp</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span>
+                        <span class="n">exposure</span> <span class="o">*</span> <span class="n">back_var_nz</span> <span class="o">*</span> <span class="n">mod_rates_nz</span> <span class="o">-</span> \
+                        <span class="n">obs_counts_nz</span> <span class="o">*</span> <span class="n">back_var_nz</span> <span class="o">-</span> \
+                        <span class="n">back_exp</span> <span class="o">*</span> <span class="n">back_counts_nz</span> <span class="o">*</span> <span class="n">mod_rates_nz</span><span class="p">))</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">exposure</span> <span class="o">*</span> <span class="n">back_var_nz</span> <span class="o">-</span> <span class="n">back_exp</span> <span class="o">*</span> <span class="n">back_counts_nz</span> <span class="o">+</span> \
+           <span class="n">back_exp</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mod_rates_nz</span><span class="p">)</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">back_exp</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">pg</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">back_exp</span> <span class="o">*</span> <span class="p">(</span><span class="n">mod_rates_nz</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span> <span class="o">-</span> \
+               <span class="n">obs_counts_nz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+        <span class="n">exposure</span> <span class="o">*</span> <span class="n">mod_rates_nz</span> <span class="o">+</span> <span class="n">exposure</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span> <span class="o">+</span> \
+               <span class="p">(</span><span class="n">back_counts_nz</span> <span class="o">-</span> <span class="n">back_exp</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span>
+                       <span class="mf">2.0</span> <span class="o">*</span> <span class="n">back_var_nz</span><span class="p">)</span> <span class="o">-</span> \
+               <span class="n">obs_counts_nz</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">obs_counts_nz</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="n">pg</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

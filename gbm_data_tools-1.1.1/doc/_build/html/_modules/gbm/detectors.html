@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.detectors &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.detectors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.detectors</h1><div class="highlight"><pre>
+<span></span><span class="c1"># detectors.py: Module containing the GBM detector definitions</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+
+<div class="viewcode-block" id="Detector"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector">[docs]</a><span class="k">class</span> <span class="nc">Detector</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The GBM detector names and pointings.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        pointing (float, float): The spacecraft Azimuth/Zenith pointing </span>
+<span class="sd">        short_name (str): The short name of the detector (e.g. NaI 0 -&gt; &#39;n0&#39;)    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N0</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_00&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">45.89</span><span class="p">,</span> <span class="mf">20.58</span><span class="p">)</span>
+    <span class="n">N1</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_01&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">45.11</span><span class="p">,</span> <span class="mf">45.31</span><span class="p">)</span>
+    <span class="n">N2</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_02&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">58.44</span><span class="p">,</span> <span class="mf">90.21</span><span class="p">)</span>
+    <span class="n">N3</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_03&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">314.87</span><span class="p">,</span> <span class="mf">45.24</span><span class="p">)</span>
+    <span class="n">N4</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_04&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">303.15</span><span class="p">,</span> <span class="mf">90.27</span><span class="p">)</span>
+    <span class="n">N5</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_05&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">3.35</span><span class="p">,</span> <span class="mf">89.79</span><span class="p">)</span>
+    <span class="n">N6</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_06&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">224.93</span><span class="p">,</span> <span class="mf">20.43</span><span class="p">)</span>
+    <span class="n">N7</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_07&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mf">224.62</span><span class="p">,</span> <span class="mf">46.18</span><span class="p">)</span>
+    <span class="n">N8</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_08&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mf">236.61</span><span class="p">,</span> <span class="mf">89.97</span><span class="p">)</span>
+    <span class="n">N9</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_09&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mf">135.19</span><span class="p">,</span> <span class="mf">45.55</span><span class="p">)</span>
+    <span class="n">NA</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_10&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">123.73</span><span class="p">,</span> <span class="mf">90.42</span><span class="p">)</span>
+    <span class="n">NB</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NAI_11&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mf">183.74</span><span class="p">,</span> <span class="mf">90.32</span><span class="p">)</span>
+    <span class="n">B0</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;BGO_00&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">90.00</span><span class="p">)</span>
+    <span class="n">B1</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;BGO_01&#39;</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mf">180.00</span><span class="p">,</span> <span class="mf">90.00</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">zenith</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">long_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="n">number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">azimuth</span> <span class="o">=</span> <span class="n">azimuth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zenith</span> <span class="o">=</span> <span class="n">zenith</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Detector(</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">long_name</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">short_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pointing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">azimuth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zenith</span>
+
+<div class="viewcode-block" id="Detector.is_nai"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector.is_nai">[docs]</a>    <span class="k">def</span> <span class="nf">is_nai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if detector is an NaI</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if detector is NaI, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span></div>
+
+<div class="viewcode-block" id="Detector.is_bgo"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector.is_bgo">[docs]</a>    <span class="k">def</span> <span class="nf">is_bgo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if detector is a BGO</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if detector is BGO, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;B&#39;</span></div>
+
+<div class="viewcode-block" id="Detector.from_str"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector.from_str">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Detector from a short string name (e.g. &#39;n0&#39;)</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The short name</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`Detector`: The detector enum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__members__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+        <span class="c1"># TODO: Reconsider returning None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Detector.from_num"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector.from_num">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_num</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Detector from an index number</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            num (int): The index number</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`Detector`: The detector enum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">cls</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">num</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span>
+        <span class="c1"># TODO: Reconsider returning None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Detector.nai"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector.nai">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">nai</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all detectors that are NaIs</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of :class:`Detector`: The NaI detectors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">cls</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_nai</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="Detector.bgo"><a class="viewcode-back" href="../../api/api-utils.html#gbm.detectors.Detector.bgo">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">bgo</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all detectors that are BGOs</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of :class:`Detector`: The BGO detectors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Detector</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_bgo</span><span class="p">()]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

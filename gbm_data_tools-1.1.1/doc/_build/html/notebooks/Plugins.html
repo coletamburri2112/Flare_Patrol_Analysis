@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Plugin-like Architecture &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualizations" href="Visualizations.html" />
+    <link rel="prev" title="Introduction to the Data Primitives" href="DataPrimitives.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TteData.html">TTE Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Responses.html">Detector Response Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PositionHistory.html">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataFinders.html">Finding GBM Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaExport.html">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectralFitting.html">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Plugin-like Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Data-Binning">Data Binning</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Pre-binned-Algorithms">Pre-binned Algorithms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Unbinned-Algorithms">Unbinned Algorithms</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Background-Fitting">Background Fitting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Pre-binned-Background-Fitting">Pre-binned Background Fitting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Unbinned-Background-Fitting">Unbinned Background Fitting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Spectral-Fitting-Functions">Spectral Fitting Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Spectral-Fitter">Spectral Fitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GBM-Datatypes">GBM Datatypes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
+        
+      <li>Plugin-like Architecture</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/Plugins.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Plugin-like-Architecture">
+<h1>Plugin-like Architecture<a class="headerlink" href="#Plugin-like-Architecture" title="Permalink to this headline">¶</a></h1>
+<p>Parts of the GBM Data Tools were designed such that various operations could be performed by one of several different algorithms. Some of those algorithms are provided in the Data Tools, but we also want to leave open the possibility of future development and user-defined algorithms. Specifically, data binning, background fitting, spectral fitting functions, the maximum-likelihood-based spectral fitter, and even some of the datatypes were designed with an eye toward user-customization. We’ll
+briefly describe each of these areas.</p>
+<hr class="docutils" />
+<div class="section" id="Data-Binning">
+<h2>Data Binning<a class="headerlink" href="#Data-Binning" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned previously, the binning algorithms are divided into two types: algorithms for pre-binned data (found in <code class="docutils literal notranslate"><span class="pre">gbm.binning.binned</span></code>) and algorithms for unbinned data (in <code class="docutils literal notranslate"><span class="pre">gbm.binning.unbinned</span></code>). There are a number of algorithms of each type already provided, but a user could create their own algorithms if they find what is provided isn’t adequate. In both cases, all you need to do is write up a single function that performs the binning by taking in some standard inputs, and providing a
+standard output.</p>
+<div class="section" id="Pre-binned-Algorithms">
+<h3>Pre-binned Algorithms<a class="headerlink" href="#Pre-binned-Algorithms" title="Permalink to this headline">¶</a></h3>
+<p>For prebinned data, let’s say we want to develop a Bayesian-block binning algorithm. Our function should look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bayesblock_rebin</span><span class="p">(</span><span class="n">old_counts</span><span class="p">,</span> <span class="n">old_exposure</span><span class="p">,</span> <span class="n">old_edges</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">some_result_here</span> <span class="o">=</span> <span class="n">some_functionality</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">new_counts</span><span class="p">,</span> <span class="n">new_exposure</span><span class="p">,</span> <span class="n">new_edges</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">The standard required input arguments are</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">old_counts</span></code>: The current array of counts in each bin</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">old_exposure</span></code>: The current array of exposure for each bin</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">old_edges</span></code>: The current array of bin edges</div>
+</div>
+<p>Additionally, you can define any algorithm-specific arguments by replacing <code class="docutils literal notranslate"><span class="pre">*args</span></code> with your additional arguments. For the case of Bayesian Blocks, maybe this would be the P0 parameter.</p>
+<div class="line-block">
+<div class="line">Inside the function block, you implement your algorithm, and the standard required output arguments are</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">new_counts</span></code>: The new array of counts in the rebinned data</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">new_exposure</span></code>: The new array of exposure for the rebinned data</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">new_edges</span></code>: The new array of bin edges for the binned data</div>
+<div class="line">Essentially, the function should read in the old histogram data and provide updated values for the new histogram. As long as you design your function like this, you can use it to bin PHAII data and energy channels.</div>
+</div>
+</div>
+<div class="section" id="Unbinned-Algorithms">
+<h3>Unbinned Algorithms<a class="headerlink" href="#Unbinned-Algorithms" title="Permalink to this headline">¶</a></h3>
+<p>We can also develop a Bayesian-block algorithm for unbinned data. In this case, we would write our function like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bayesblock_bin</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">some_result_here</span> <span class="o">=</span> <span class="n">some_functionality</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">bin_edges</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">The required input argument is</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">times</span></code>: The array of event times</div>
+</div>
+<div class="line-block">
+<div class="line">Again, you can include algorithm-specific arguments in place of <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. The required output is</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">bin_edges</span></code>: The bin edges</div>
+<div class="line">So the algorithm should read in the event times and return the bin edges. A function designed like this can be used to bin TTE data.</div>
+</div>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="Background-Fitting">
+<h2>Background Fitting<a class="headerlink" href="#Background-Fitting" title="Permalink to this headline">¶</a></h2>
+<p>Similar to the binning algorithms, these are divided up into two types: algorithms for pre-binned data (in <code class="docutils literal notranslate"><span class="pre">gbm.background.binned</span></code>) and algorithms for unbinned data (in <code class="docutils literal notranslate"><span class="pre">gbm.background.unbinned</span></code>). However, background fitting requires more than just a simple function like data binning does. We have to define a class that contains certain required (and optional functionality). For many uses, the polynomial-fitting algorithm is used, although we include an unbinned fitter, <code class="docutils literal notranslate"><span class="pre">NaivePoisson</span></code>
+which is actually used in the <a class="reference external" href="https://arxiv.org/abs/1903.12597">GBM subthreshold Targeted Search</a>. Both types of algorithms interface with the <code class="docutils literal notranslate"><span class="pre">gbm.background.BackgroundFitter()</span></code> class, so as long as you follow the requirements, you can design and implement your own background fitting algorithm.</p>
+<div class="section" id="Pre-binned-Background-Fitting">
+<h3>Pre-binned Background Fitting<a class="headerlink" href="#Pre-binned-Background-Fitting" title="Permalink to this headline">¶</a></h3>
+<p>Perhaps we want to make a spline background fitter. This is how we would design such a class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SplineFit</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counts</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">exposure</span><span class="p">):</span>
+        <span class="n">some_init_stuff</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">the_fitting_algorithm</span>
+
+    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">some_interpolation_code</span>
+        <span class="k">return</span> <span class="n">rates</span><span class="p">,</span> <span class="n">rates_err</span>
+
+    <span class="c1"># optional properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_stat_name</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_stat</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_dof</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">The class must be initialized with the following:</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">counts</span></code>: An array of counts in each time bin and energy channel; shape (numtimes, numchans)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">tstart</span></code>: The time bin start edges</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">tstop</span></code>: The time bin end edges</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">exposure</span></code>: The exposure in each time bin</div>
+<div class="line">Typically you should execute anything you need to do to <em>prepare</em> for a fit, but not actually do the fit.</div>
+</div>
+<p>The class is required to have a <code class="docutils literal notranslate"><span class="pre">fit</span></code> method that performs the fit and is not required to output anything. Any algorithm-specific arguments can be specified in place of <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. In short, the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method is intended to allow someone to repeatedly perform a fit with different arguments without having to reinitialize the whole thing again (e.g. for Polynomial, can fit with <code class="docutils literal notranslate"><span class="pre">order=2</span></code>, then retry with <code class="docutils literal notranslate"><span class="pre">order=3</span></code>, etc).</p>
+<div class="line-block">
+<div class="line">The last requirement is that it must have an <code class="docutils literal notranslate"><span class="pre">interpolate</span></code> method that has the following arguments:</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">tstart</span></code>, <code class="docutils literal notranslate"><span class="pre">tstop</span></code>: The time bin start/stop edges over which the fit is being interpolated. And it must return <code class="docutils literal notranslate"><span class="pre">rates</span></code>: The interpolated rates over each time bin and channel, shape (numtimes, numchans)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">rates_err</span></code>: The corresponding rate uncertainties</div>
+</div>
+<p>Optionally, you can provide it the <code class="docutils literal notranslate"><span class="pre">statistic_name</span></code>, <code class="docutils literal notranslate"><span class="pre">statistic</span></code>, and <code class="docutils literal notranslate"><span class="pre">dof</span></code> attributes that can be accessed by the <code class="docutils literal notranslate"><span class="pre">BackgroudFitter</span></code></p>
+</div>
+<div class="section" id="Unbinned-Background-Fitting">
+<h3>Unbinned Background Fitting<a class="headerlink" href="#Unbinned-Background-Fitting" title="Permalink to this headline">¶</a></h3>
+<p>As for unbinned background fitting, maybe we want a more complex fit than <code class="docutils literal notranslate"><span class="pre">NaivePoisson</span></code>; something that incorporates a prior on the presence of a signal:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BayesBackFit</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+        <span class="n">some_init_stuff</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">the_fitting_algorithm</span>
+
+    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">some_interpolation_code</span>
+        <span class="k">return</span> <span class="n">rates</span><span class="p">,</span> <span class="n">rates_err</span>
+
+    <span class="c1"># optional properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_stat_name</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_stat</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_dof</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">You’ll notice that the requirements of the class are pretty similar to the requirements for the pre-binned version. The primary difference is that you initialize the class with</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">times</span></code>: A list of length numchans, each element containing the event times in that energy channel</div>
+</div>
+<p>All the other rules in pre-binned section apply, other than the fact that you may not really need to use <code class="docutils literal notranslate"><span class="pre">tstart</span></code> and <code class="docutils literal notranslate"><span class="pre">tstop</span></code> in the <code class="docutils literal notranslate"><span class="pre">interpolate()</span></code> method. If that’s the case, then you can simply ignore the <code class="docutils literal notranslate"><span class="pre">tstop</span></code> argument in your implementation.</p>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="Spectral-Fitting-Functions">
+<h2>Spectral Fitting Functions<a class="headerlink" href="#Spectral-Fitting-Functions" title="Permalink to this headline">¶</a></h2>
+<p>In this section and the rest of the following sections, instead of relying on an interface class to provide plugin-like capability, we use the concept of <em>inheritance</em>. That is, we can define a parent class that has a bunch of functionality in it, and then write short little child classes that <em>inherit</em> the functionality from the parent. That is how the spectral fitting functions work in <code class="docutils literal notranslate"><span class="pre">gbm.spectra.functions</span></code>.</p>
+<p>In this case, the <code class="docutils literal notranslate"><span class="pre">Function</span></code> class is our parent class, and we never directly instantiate that class. Instead, we want to write our own spectral function that can use all of the functionality built into <code class="docutils literal notranslate"><span class="pre">Function</span></code>. How do we do this? It’s pretty easy, actually. Let’s say we want to write our own power-law function (one is already included, but this is a good example).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gbm.spectra.functions</span> <span class="kn">import</span> <span class="n">Function</span>
+
+<span class="k">class</span> <span class="nc">powerlaw</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">amp</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="k">return</span> <span class="n">amp</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">pivot</span><span class="p">)</span><span class="o">**</span><span class="n">params</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">And that’s it! This has two requirements: First you declare this is inheriting from <code class="docutils literal notranslate"><span class="pre">Function</span></code> in the class definition, and second you define an <code class="docutils literal notranslate"><span class="pre">eval</span></code> method that contains the function evaluation with arguments</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">params</span></code>: The list of parameters</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">x</span></code>: An array of ‘x’ values (i.e. energy)</div>
+<div class="line">And it must return the function evaluation along <code class="docutils literal notranslate"><span class="pre">x</span></code>.</div>
+</div>
+<p>That’s the simplest way to define a function, but there are a lot of other attributes that can be specified so that you can fully leverage the function for spectral fitting. Here’s what our class looks like if we define everything:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">powerlaw</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+    <span class="c1"># The total number of parameters</span>
+    <span class="n">nparams</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="c1"># The list of parameters: (parameter name, units, description)</span>
+    <span class="n">param_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;ph/s/cm^2/keV&#39;</span><span class="p">,</span> <span class="s1">&#39;Amplitude&#39;</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;Photon index&#39;</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;Epiv&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;Pivot energy&#39;</span><span class="p">)]</span>
+
+    <span class="c1">#-----------------------------------------------------------------------</span>
+    <span class="c1"># The following attributes are used for fitting and parameter estimation</span>
+
+    <span class="c1"># The default initialization values for each parameter</span>
+    <span class="n">default_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">]</span>
+    <span class="c1"># The maximum absolute fitting step for each parameter</span>
+    <span class="n">delta_abs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+    <span class="c1"># The maximum relative fitting step for each parameter</span>
+    <span class="n">delta_rel</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]</span>
+    <span class="c1"># The minimum value that each parameter can take</span>
+    <span class="n">min_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-10</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]</span>
+    <span class="c1"># The maximum value that each parameter can take</span>
+    <span class="n">max_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span>
+    <span class="c1"># If True, then the parameter is a free parameter, otherwise it is fixed</span>
+    <span class="n">free</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">amp</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="k">return</span> <span class="n">amp</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">pivot</span><span class="p">)</span><span class="o">**</span><span class="n">params</span>
+</pre></div>
+</div>
+<p>So there is a lot of stuff here (although half of it is comments). Basically, you can give it metadata like the parameter names, units, and descriptions, and that can be printed out so you don’t forget which parameter is which. There are also lists of parameter properties: default initialization values, the min/max allowable range for each parameter, the default step to shift each parameter when fitting, and whether each parameter is free to be fit or is fixed at the initialization value. If
+these aren’t set when you write the function, the parent class provides defaults for all of these. You can update these after your function is initialized, such as the initialization values. Defining these properties will enable you to use your function to its fullest capability. You can evaluate, use in a fit with a wide range of fitting algorithms, integrate, and you can even include your function as one component in a multi-component model.</p>
+<p>The multi-component models are possible because there is special <em>extended</em> class of <code class="docutils literal notranslate"><span class="pre">Function</span></code> called <code class="docutils literal notranslate"><span class="pre">SuperFunction</span></code> that <em>extends</em> all of the functionality of <code class="docutils literal notranslate"><span class="pre">Function</span></code>, but can handle multiple functions. Again, you wouldn’t directly call <code class="docutils literal notranslate"><span class="pre">SuperFunction</span></code>, but if you did something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span> <span class="o">=</span> <span class="n">powerlaw</span><span class="p">()</span><span class="o">+</span><span class="n">Comptonized</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>it would create a SuperFunction that is a sum of the power law you just wrote and the Comptonized function. You can do a fit of that model, and then you can even calculate the contribution of the individual components to the total spectrum.</p>
+</div>
+<div class="section" id="Spectral-Fitter">
+<h2>Spectral Fitter<a class="headerlink" href="#Spectral-Fitter" title="Permalink to this headline">¶</a></h2>
+<p>Currently the only type of spectral fitter we are providing is based on maximum likelihood estimation, although we may expand our options in the future. As for the <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code> class, it provides general fitting capability once one has provided a likelihood to maximize. In our previous examples, we’ve used <code class="docutils literal notranslate"><span class="pre">SpectralFitterPgstat</span></code>, which is a version of <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code> that uses PG-stat as its likelihood. In principle, all you need to do if you want to use a different likelihood is
+write a function that calculates that likelihood from a set of inputs, and pass that to the <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code> initializer. In practice, you may need additional or different inputs to your likelihood function than <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code> assumes, therefore it is much better to <em>inherit</em> <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code> and design your class around your likelihood.</p>
+<div class="line-block">
+<div class="line">If that is the route you take, you will, at a minimum, need to define an internal <code class="docutils literal notranslate"><span class="pre">_fold_model</span></code> method that takes the following inputs:</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">function</span></code>: The reference to your <code class="docutils literal notranslate"><span class="pre">Function</span></code> or <code class="docutils literal notranslate"><span class="pre">SuperFunction</span></code> that you’re fitting</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">params</span></code>: The parameter list for your function</div>
+<div class="line">And it must return the total log-likelihood. You may also need to define the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method if you need more than the standard arguments required by <code class="docutils literal notranslate"><span class="pre">SpectralFitter</span></code>.</div>
+</div>
+<p>Examples can be found in <code class="docutils literal notranslate"><span class="pre">SpectralFitterPgstat</span></code> and <code class="docutils literal notranslate"><span class="pre">SpectralFitterChisq</span></code>.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="GBM-Datatypes">
+<h2>GBM Datatypes<a class="headerlink" href="#GBM-Datatypes" title="Permalink to this headline">¶</a></h2>
+<p>The GBM datatypes, like CTIME, CSPEC, TTE, and others we’ve covered can be extended or inherited to accommodate data from other instruments. For example, as long as your underlying data is similar to GBM (binned in time, binned in energy or unbinned in time, binned in energy), you could make an inherited class that has most, or all, of the functionality provided here. Perhaps you have prebinned data with FITS headers that don’t have the same information as the GBM counterparts, or you have
+different extensions, etc. No matter. We can do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gbm.data.phaii</span> <span class="kn">import</span> <span class="n">PHAII</span>
+
+<span class="k">class</span> <span class="nc">MyNewDataType</span><span class="p">(</span><span class="n">PHAII</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">open_and_read_your_file</span>
+</pre></div>
+</div>
+<p>And there you have it! As long as your redefined <code class="docutils literal notranslate"><span class="pre">open</span></code> method reads the relevant data into a <code class="docutils literal notranslate"><span class="pre">TimeEnergyBins</span></code> object (see the <code class="docutils literal notranslate"><span class="pre">PHAII.open</span></code> method for details), you can use all of the basic functionality. Any additional functionality can be added in your class, and you can override the PHAII functionality you don’t wish to support using python’s <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>.</p>
+<p>Saving the best for last, learn how to <a class="reference internal" href="Visualizations.html"><span class="doc">make and customize pretty plots</span></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="Visualizations.html" class="btn btn-neutral float-right" title="Visualizations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="DataPrimitives.html" class="btn btn-neutral float-left" title="Introduction to the Data Primitives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

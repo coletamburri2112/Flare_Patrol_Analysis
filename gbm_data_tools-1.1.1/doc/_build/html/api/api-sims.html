@@ -1,0 +1,1022 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Simulate Module &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plotting Module" href="api-plot.html" />
+    <link rel="prev" title="Spectra Module" href="api-spectra.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">GBM Data Tools API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api-data.html">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-binning.html">Data Binning Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-background.html">Background Estimation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-spectra.html">Spectra Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulate Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pha-simulation">PHA Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phasimulator">PhaSimulator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tte-simulation">TTE Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ttesourcesimulator">TteSourceSimulator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ttebackgroundsimulator">TteBackgroundSimulator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#simulation-generators">Simulation Generators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#poissonbackgroundgenerator">PoissonBackgroundGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gaussianbackgroundgenerator">GaussianBackgroundGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sourcespectrumgenerator">SourceSpectrumGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#variablepoissonbackground">VariablePoissonBackground</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#variablegaussianbackground">VariableGaussianBackground</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#variablesourcespectrumgenerator">VariableSourceSpectrumGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#eventspectrumgenerator">EventSpectrumGenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#time-profile-functions">Time-Profile Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-plot.html">Plotting Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-finders.html">Data Finders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-utils.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">GBM Data Tools API</a> &raquo;</li>
+        
+      <li>Simulate Module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/api-sims.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="simulate-module">
+<span id="api-sims"></span><h1>Simulate Module<a class="headerlink" href="#simulate-module" title="Permalink to this headline">¶</a></h1>
+<p>The classes and methods in <code class="docutils literal notranslate"><span class="pre">gbm.simulate</span></code> are for simulating spectra and
+event data.</p>
+<div class="section" id="pha-simulation">
+<h2>PHA Simulation<a class="headerlink" href="#pha-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Simulate count spectra by folding a photon model through a detector response.
+Also simulates background from a background model.</p>
+<div class="section" id="phasimulator">
+<h3>PhaSimulator<a class="headerlink" href="#phasimulator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.</span></span><span class="sig-name descname"><span class="pre">PhaSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bkgd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bkgd_distrib</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simulate PHA data given a modeled background spectrum, detector response,
+source spectrum, and exposure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsp</strong> (<a class="reference internal" href="api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>) – A detector response object</p></li>
+<li><p><strong>function</strong> (<a class="reference internal" href="api-spectra.html#gbm.spectra.functions.Function" title="gbm.spectra.functions.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>) – A photon model function</p></li>
+<li><p><strong>params</strong> (<em>iterable</em>) – The parameters for the function</p></li>
+<li><p><strong>exposure</strong> (<em>float</em>) – The source exposure</p></li>
+<li><p><strong>bkgd</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p></li>
+<li><p><strong>bkgd_distrib</strong> (<em>str</em>) – The distribution from which the background is
+simulated; either ‘Poisson’ or ‘Gaussian’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.set_background">
+<span class="sig-name descname"><span class="pre">set_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bkgd_distrib</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.set_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.set_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the background model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bkgd</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p></li>
+<li><p><strong>bkgd_distrib</strong> (<em>str</em>) – The distribution from which the background is
+simulated; either ‘Poisson’ or ‘Gaussian’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.set_rsp">
+<span class="sig-name descname"><span class="pre">set_rsp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.set_rsp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.set_rsp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the detector response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rsp</strong> (<a class="reference internal" href="api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>) – A detector response object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.set_source">
+<span class="sig-name descname"><span class="pre">set_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.set_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.set_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the source spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function</strong> (<a class="reference internal" href="api-spectra.html#gbm.spectra.functions.Function" title="gbm.spectra.functions.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>) – A photon model function</p></li>
+<li><p><strong>params</strong> (<em>iterable</em>) – The parameters for the function</p></li>
+<li><p><strong>exposure</strong> (<em>float</em>) – The source exposure</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.simulate_background">
+<span class="sig-name descname"><span class="pre">simulate_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.simulate_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.simulate_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate simulations of the modeled background spectrum</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num_sims</strong> (<em>int</em>) – Number of simulations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> –     The deviates of the background spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.simulate_source">
+<span class="sig-name descname"><span class="pre">simulate_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.simulate_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.simulate_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate simulations of the source spectrum</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num_sims</strong> (<em>int</em>) – Number of simulations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="api-data.html#gbm.data.primitives.EnergyBins" title="gbm.data.primitives.EnergyBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyBins</span></code></a> –     The deviates of the source spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.simulate_sum">
+<span class="sig-name descname"><span class="pre">simulate_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.simulate_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.simulate_sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate simulations of the background + source spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num_sims</strong> (<em>int</em>) – Number of simulations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="api-data.html#gbm.data.primitives.EnergyBins" title="gbm.data.primitives.EnergyBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyBins</span></code></a> –     The deviates of the total background + source spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.to_bak">
+<span class="sig-name descname"><span class="pre">to_bak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.to_bak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.to_bak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce BAK objects from simulations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_sims</strong> (<em>int</em>) – Number of simulations</p></li>
+<li><p><strong>tstart</strong> (<em>float</em><em>, </em><em>optional</em>) – The start time. If not set, then is zero.</p></li>
+<li><p><strong>tstop</strong> (<em>float</em><em>, </em><em>optional</em>) – Then end time. If not set, then is the exposure.</p></li>
+<li><p><strong>**kwargs</strong> – Options passed to <a class="reference internal" href="api-data.html#gbm.data.BAK" title="gbm.data.BAK"><code class="xref py py-class docutils literal notranslate"><span class="pre">BAK</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="api-data.html#gbm.data.BAK" title="gbm.data.BAK"><code class="xref py py-class docutils literal notranslate"><span class="pre">BAK</span></code></a> – The simulated BAK objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.to_pha">
+<span class="sig-name descname"><span class="pre">to_pha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.to_pha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.to_pha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce PHA objects of the background + source from simulations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_sims</strong> (<em>int</em>) – Number of simulations</p></li>
+<li><p><strong>tstart</strong> (<em>float</em><em>, </em><em>optional</em>) – The start time. If not set, then is zero.</p></li>
+<li><p><strong>tstop</strong> (<em>float</em><em>, </em><em>optional</em>) – Then end time. If not set, then is the exposure.</p></li>
+<li><p><strong>**kwargs</strong> – Options passed to <a class="reference internal" href="api-data.html#gbm.data.PHA" title="gbm.data.PHA"><code class="xref py py-class docutils literal notranslate"><span class="pre">PHA</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="api-data.html#gbm.data.PHA" title="gbm.data.PHA"><code class="xref py py-class docutils literal notranslate"><span class="pre">PHA</span></code></a> – The simulated PHA objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.PhaSimulator.to_phaii">
+<span class="sig-name descname"><span class="pre">to_phaii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/pha.html#PhaSimulator.to_phaii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.PhaSimulator.to_phaii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a PHAII object by concatenating the simulations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_sims</strong> (<em>int</em>) – Number of simulations</p></li>
+<li><p><strong>bin_widths</strong> (<em>float</em><em>, </em><em>optional</em>) – The width of each time bin.  Must be
+&gt;= the exposure.  If not set, the is the exposure.</p></li>
+<li><p><strong>**kwargs</strong> – Options passed to <code class="xref py py-class docutils literal notranslate"><span class="pre">PHAII</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PHAII</span></code> – The simulated PHAII object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="tte-simulation">
+<h2>TTE Simulation<a class="headerlink" href="#tte-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Simulate event data generated from a spectral and temporal source model,
+as well as event data from a spectral and temporal background model.</p>
+<div class="section" id="ttesourcesimulator">
+<h3>TteSourceSimulator<a class="headerlink" href="#ttesourcesimulator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.TteSourceSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.</span></span><span class="sig-name descname"><span class="pre">TteSourceSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteSourceSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteSourceSimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simulate TTE or EventList data for a source spectrum given a detector
+response, spectral model and time profile model.  The spectral shape is
+fixed throughout the time profile of the signal, but the amplitude of the
+spectrum is time-dependent, set by the time profile function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsp</strong> (<a class="reference internal" href="api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>) – A detector response object</p></li>
+<li><p><strong>spec_func</strong> (<a class="reference internal" href="api-spectra.html#gbm.spectra.functions.Function" title="gbm.spectra.functions.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>) – A photon model function</p></li>
+<li><p><strong>spec_params</strong> (<em>iterable</em>) – The parameters for the function</p></li>
+<li><p><strong>time_func</strong> (<em>&lt;function&gt;</em>) – A time profile function</p></li>
+<li><p><strong>time_params</strong> (<em>iterable</em>) – Parameters for the time profile function</p></li>
+<li><p><strong>sample_period</strong> (<em>float</em><em>, </em><em>optional</em>) – The sampling period of the simulator
+in seconds. Default is 0.001. The simulator will produce arrival
+times consistent with a spectrum over a finite time slice.  This
+time slice should be short enough to approximate a non-homogeneous
+Poisson process, but long enough to allow for a tractable
+computation time.</p></li>
+<li><p><strong>deadtime</strong> (<em>float</em><em>, </em><em>optional</em>) – The dead time in seconds for each recorded
+count during which another count cannot be
+recorded. Default is 2e-6 s.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteSourceSimulator.set_response">
+<span class="sig-name descname"><span class="pre">set_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteSourceSimulator.set_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteSourceSimulator.set_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the detector response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rsp</strong> (<a class="reference internal" href="api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>) – A detector response object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteSourceSimulator.set_spectrum">
+<span class="sig-name descname"><span class="pre">set_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteSourceSimulator.set_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteSourceSimulator.set_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec_func</strong> (<a class="reference internal" href="api-spectra.html#gbm.spectra.functions.Function" title="gbm.spectra.functions.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>) – A photon model function</p></li>
+<li><p><strong>spec_params</strong> (<em>iterable</em>) – The parameters for the function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteSourceSimulator.set_time_profile">
+<span class="sig-name descname"><span class="pre">set_time_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteSourceSimulator.set_time_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteSourceSimulator.set_time_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the time profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_func</strong> (<em>&lt;function&gt;</em>) – A time profile function</p></li>
+<li><p><strong>time_params</strong> (<em>iterable</em>) – Parameters for the time profile function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteSourceSimulator.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteSourceSimulator.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteSourceSimulator.simulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an EventList containing the individual counts from the
+simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>float</em>) – The start time of the simulation</p></li>
+<li><p><strong>tstop</strong> (<em>float</em>) – The stop time of the simulation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.primitives.EventList" title="gbm.data.primitives.EventList"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventList</span></code></a> –     The simulated EventList</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteSourceSimulator.to_tte">
+<span class="sig-name descname"><span class="pre">to_tte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteSourceSimulator.to_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteSourceSimulator.to_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an TTE object containing the individual counts from the
+simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>float</em>) – The start time of the simulation</p></li>
+<li><p><strong>tstop</strong> (<em>float</em>) – The stop time of the simulation</p></li>
+<li><p><strong>trigtime</strong> (<em>float</em><em>, </em><em>optional</em>) – The trigger time. Default is 0.</p></li>
+<li><p><strong>**kwargs</strong> – Options to pass to <a class="reference internal" href="api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a> –     The simulated TTE object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="ttebackgroundsimulator">
+<h3>TteBackgroundSimulator<a class="headerlink" href="#ttebackgroundsimulator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.TteBackgroundSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.</span></span><span class="sig-name descname"><span class="pre">TteBackgroundSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd_spectrum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteBackgroundSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteBackgroundSimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simulate TTE or EventList data given a modeled background spectrum and
+time profile model. The spectrum is fixed throughout the time profile of
+the background, but the amplitude of the background is time-dependent, set
+by the time profile function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bkgd_spectrum</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p></li>
+<li><p><strong>distrib</strong> (<em>str</em>) – The distribution from which the background is
+simulated; either ‘Poisson’ or ‘Gaussian’</p></li>
+<li><p><strong>time_func</strong> (<em>&lt;function&gt;</em>) – A time profile function</p></li>
+<li><p><strong>time_params</strong> (<em>iterable</em>) – Parameters for the time profile function</p></li>
+<li><p><strong>sample_period</strong> (<em>float</em><em>, </em><em>optional</em>) – The sampling period of the simulator
+in seconds. Default is 0.001. The simulator will produce arrival
+times consistent with a spectrum over a finite time slice.  This
+time slice should be short enough to approximate a non-homogeneous
+Poisson process, but long enough to allow for a tractable
+computation time.</p></li>
+<li><p><strong>deadtime</strong> (<em>float</em><em>, </em><em>optional</em>) – The dead time in seconds for each recorded
+count during which another count cannot be
+recorded. Default is 2e-6 s.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteBackgroundSimulator.set_background">
+<span class="sig-name descname"><span class="pre">set_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd_spectrum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distrib</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteBackgroundSimulator.set_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteBackgroundSimulator.set_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/change the spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bkgd_spectrum</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p></li>
+<li><p><strong>distrib</strong> (<em>str</em>) – The distribution from which the background is
+simulated; either ‘Poisson’ or ‘Gaussian’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteBackgroundSimulator.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteBackgroundSimulator.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteBackgroundSimulator.simulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an EventList containing the individual counts from the
+background simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>float</em>) – The start time of the simulation</p></li>
+<li><p><strong>tstop</strong> (<em>float</em>) – The stop time of the simulation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.primitives.EventList" title="gbm.data.primitives.EventList"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventList</span></code></a> –     The simulated EventList</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.simulate.TteBackgroundSimulator.to_tte">
+<span class="sig-name descname"><span class="pre">to_tte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/tte.html#TteBackgroundSimulator.to_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.TteBackgroundSimulator.to_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an TTE object containing the individual counts from the
+background simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstart</strong> (<em>float</em>) – The start time of the simulation</p></li>
+<li><p><strong>tstop</strong> (<em>float</em>) – The stop time of the simulation</p></li>
+<li><p><strong>trigtime</strong> (<em>float</em><em>, </em><em>optional</em>) – The trigger time. Default is 0.</p></li>
+<li><p><strong>**kwargs</strong> – Options to pass to <a class="reference internal" href="api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.TTE" title="gbm.data.TTE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TTE</span></code></a> –     The simulated TTE object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="simulation-generators">
+<h2>Simulation Generators<a class="headerlink" href="#simulation-generators" title="Permalink to this headline">¶</a></h2>
+<p>A variety of specialized random generators</p>
+<div class="section" id="poissonbackgroundgenerator">
+<h3>PoissonBackgroundGenerator<a class="headerlink" href="#poissonbackgroundgenerator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.PoissonBackgroundGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">PoissonBackgroundGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#PoissonBackgroundGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.PoissonBackgroundGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.SimGenerator</span></code></p>
+<p>Simulation generator for Poisson Background.
+Once initialized, a single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">PoissonBackgroundGenerator</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bkgd</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> –     A Poisson random deviate of the initialized spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="gaussianbackgroundgenerator">
+<h3>GaussianBackgroundGenerator<a class="headerlink" href="#gaussianbackgroundgenerator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.GaussianBackgroundGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">GaussianBackgroundGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#GaussianBackgroundGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.GaussianBackgroundGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.SimGenerator</span></code></p>
+<p>Simulation generator for Gaussian Background.
+Once initialized, a single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">GaussianBackgroundGenerator</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bkgd</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> –     A Gaussian random deviate of the initialized spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="sourcespectrumgenerator">
+<h3>SourceSpectrumGenerator<a class="headerlink" href="#sourcespectrumgenerator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.SourceSpectrumGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">SourceSpectrumGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#SourceSpectrumGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.SourceSpectrumGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.SimGenerator</span></code></p>
+<p>Simulation generator for a Poisson source spectrum.
+Once initialized, a single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">SourceSpectrumGenerator</span><span class="p">(</span><span class="n">rsp</span><span class="p">,</span> <span class="n">function</span> <span class="n">params</span><span class="p">,</span> <span class="n">exposure</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsp</strong> (<a class="reference internal" href="api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>) – A detector response object</p></li>
+<li><p><strong>function</strong> (<a class="reference internal" href="api-spectra.html#gbm.spectra.functions.Function" title="gbm.spectra.functions.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>) – A photon model function</p></li>
+<li><p><strong>params</strong> (<em>iterable</em>) – The parameters for the function</p></li>
+<li><p><strong>exposure</strong> (<em>float</em>) – The source exposure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><a class="reference internal" href="api-data.html#gbm.data.primitives.EnergyBins" title="gbm.data.primitives.EnergyBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyBins</span></code></a> –     A Poisson random deviate of the initialized source spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="variablepoissonbackground">
+<h3>VariablePoissonBackground<a class="headerlink" href="#variablepoissonbackground" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.VariablePoissonBackground">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">VariablePoissonBackground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#VariablePoissonBackground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.VariablePoissonBackground" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.simulate.generators.PoissonBackgroundGenerator" title="gbm.simulate.generators.PoissonBackgroundGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.PoissonBackgroundGenerator</span></code></a></p>
+<p>Simulation generator for a variable Poisson Background. This
+non-homogeneous approximation allows the amplitude of the spectrum to
+be adjusted, thereby scaling the simulated counts. Once initialized, a
+single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">VariablePoissonBackground</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+
+<span class="c1"># change the amplitude to half of the initialized amplitude</span>
+<span class="n">gen</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bkgd</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><p><strong>amp</strong> (<em>float</em>) – The amplitude, relative to initialized spectrum.
+Setting <code class="docutils literal notranslate"><span class="pre">amp=1</span></code> gives the initialized amplitude.</p>
+</dd>
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p><a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> –     A Poisson random deviate of the spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="variablegaussianbackground">
+<h3>VariableGaussianBackground<a class="headerlink" href="#variablegaussianbackground" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.VariableGaussianBackground">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">VariableGaussianBackground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bkgd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#VariableGaussianBackground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.VariableGaussianBackground" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.simulate.generators.GaussianBackgroundGenerator" title="gbm.simulate.generators.GaussianBackgroundGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.GaussianBackgroundGenerator</span></code></a></p>
+<p>Simulation generator for a variable Gaussian Background. This
+non-homogeneous approximation allows the amplitude of the spectrum to
+be adjusted, thereby scaling the simulated counts. Once initialized, a
+single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">VariableGaussianBackground</span><span class="p">(</span><span class="n">bkgd</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+
+<span class="c1"># change the amplitude to twice of the initialized amplitude</span>
+<span class="n">gen</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="mf">2.0</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bkgd</strong> (<a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a>) – A modeled background spectrum</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><p><strong>amp</strong> (<em>float</em>) – The amplitude, relative to initialized spectrum.
+Setting <code class="docutils literal notranslate"><span class="pre">amp=1</span></code> gives the initialized amplitude.</p>
+</dd>
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p><a class="reference internal" href="api-background.html#gbm.background.BackgroundSpectrum" title="gbm.background.BackgroundSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundSpectrum</span></code></a> –     A Gaussian random deviate of the spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="variablesourcespectrumgenerator">
+<h3>VariableSourceSpectrumGenerator<a class="headerlink" href="#variablesourcespectrumgenerator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.VariableSourceSpectrumGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">VariableSourceSpectrumGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#VariableSourceSpectrumGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.VariableSourceSpectrumGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.simulate.generators.SourceSpectrumGenerator" title="gbm.simulate.generators.SourceSpectrumGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.SourceSpectrumGenerator</span></code></a></p>
+<p>Simulation generator for a Poisson source spectrum, efficient for
+generating deviates when the source spectrum amplitude changes.
+Once initialized, a single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">AmpFreeSourceSpectrumGenerator</span><span class="p">(</span><span class="n">rsp</span><span class="p">,</span> <span class="n">function</span> <span class="n">params</span><span class="p">,</span> <span class="n">exposure</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+
+<span class="c1"># change amplitude, and generate a new deviate</span>
+<span class="n">gen</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsp</strong> (<a class="reference internal" href="api-data.html#gbm.data.RSP" title="gbm.data.RSP"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSP</span></code></a>) – A detector response object</p></li>
+<li><p><strong>function</strong> (<a class="reference internal" href="api-spectra.html#gbm.spectra.functions.Function" title="gbm.spectra.functions.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>) – A photon model function</p></li>
+<li><p><strong>params</strong> (<em>iterable</em>) – The parameters for the function</p></li>
+<li><p><strong>exposure</strong> (<em>float</em>) – The source exposure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><p><strong>amp</strong> (<em>float</em>) – The amplitude.  This value can be set.</p>
+</dd>
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p><a class="reference internal" href="api-data.html#gbm.data.primitives.EnergyBins" title="gbm.data.primitives.EnergyBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyBins</span></code></a> –     A Poisson random deviate of the initialized source spectrum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="eventspectrumgenerator">
+<h3>EventSpectrumGenerator<a class="headerlink" href="#eventspectrumgenerator" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.simulate.generators.EventSpectrumGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.simulate.generators.</span></span><span class="sig-name descname"><span class="pre">EventSpectrumGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_spectrum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/generators.html#EventSpectrumGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.generators.EventSpectrumGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.simulate.generators.SimGenerator</span></code></p>
+<p>Simulation generator producing Poisson arrival times for a source
+spectrum during a finite slice of time. Photon losses from deadtime and
+detection/electronic processes can be accounted for by setting the
+<code class="docutils literal notranslate"><span class="pre">min_sep</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.
+Once initialized, a single deviate or many deviates can be generated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">EventSpectrumGenerator</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+<span class="c1"># generate a single deviate</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># generate 10 deviates</span>
+<span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>count_spectrum</strong> (<em>np.array</em>) – An array of counts in each energy channel</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – The width of the time slice in seconds</p></li>
+<li><p><strong>min_sep</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum possible time separation between
+events.  Default is 2e-6 seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><p><strong>spectrum</strong> (<em>np.array</em>) – The counts in each channel.  This value can be set.
+The counts array will be converted to integer type.</p>
+</dd>
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p><em>(np.array, np.array)</em> – The arrival times and energy channels for each event</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="time-profile-functions">
+<h2>Time-Profile Functions<a class="headerlink" href="#time-profile-functions" title="Permalink to this headline">¶</a></h2>
+<p>These functions are provided to define the time profile of background and
+sources.</p>
+<span class="target" id="module-gbm.simulate.profiles"></span><dl class="py function">
+<dt class="sig sig-object py" id="gbm.simulate.profiles.constant">
+<span class="sig-prename descclassname"><span class="pre">gbm.simulate.profiles.</span></span><span class="sig-name descname"><span class="pre">constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/profiles.html#constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.profiles.constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>A constant background function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Array of times</p></li>
+<li><p><strong>amp</strong> (<em>float</em>) – The background amplitude</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The background evaluated at <code class="docutils literal notranslate"><span class="pre">x</span></code> times</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.simulate.profiles.linear">
+<span class="sig-prename descclassname"><span class="pre">gbm.simulate.profiles.</span></span><span class="sig-name descname"><span class="pre">linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/profiles.html#linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.profiles.linear" title="Permalink to this definition">¶</a></dt>
+<dd><p>A linear background function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Array of times</p></li>
+<li><p><strong>c0</strong> (<em>float</em>) – The constant coefficient</p></li>
+<li><p><strong>c1</strong> (<em>float</em>) – The linear coefficient</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The background evaluated at <code class="docutils literal notranslate"><span class="pre">x</span></code> times</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.simulate.profiles.norris">
+<span class="sig-prename descclassname"><span class="pre">gbm.simulate.profiles.</span></span><span class="sig-name descname"><span class="pre">norris</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_rise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_decay</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/profiles.html#norris"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.profiles.norris" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Norris pulse-shape function:</p>
+<p><span class="math notranslate nohighlight">\(I(t) = A \lambda e^{-\tau_1/t - t/\tau_2} \text{ for } t &gt; 0;\\
+\text{ where } \lambda = e^{2\sqrt(\tau_1/\tau_2)};\)</span></p>
+<p>and where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(A\)</span> is the pulse amplitude</p></li>
+<li><p><span class="math notranslate nohighlight">\(\tau_1\)</span> is the rise time</p></li>
+<li><p><span class="math notranslate nohighlight">\(\tau_2\)</span> is the decay time</p></li>
+</ul>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://iopscience.iop.org/article/10.1086/430294">Norris, J. P., et al. 2005 ApJ 627 324</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Array of times</p></li>
+<li><p><strong>amp</strong> (<em>float</em>) – The amplitude of the pulse</p></li>
+<li><p><strong>tstart</strong> (<em>float</em>) – The start time of the pulse</p></li>
+<li><p><strong>t_rise</strong> (<em>float</em>) – The rise timescal of the pulse</p></li>
+<li><p><strong>t_decay</strong> (<em>flaot</em>) – The decay timescale of the pulse</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The Norris pulse shape evaluated at <code class="docutils literal notranslate"><span class="pre">x</span></code> times</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.simulate.profiles.quadratic">
+<span class="sig-prename descclassname"><span class="pre">gbm.simulate.profiles.</span></span><span class="sig-name descname"><span class="pre">quadratic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/profiles.html#quadratic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.profiles.quadratic" title="Permalink to this definition">¶</a></dt>
+<dd><p>A quadratic background function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Array of times</p></li>
+<li><p><strong>c0</strong> (<em>float</em>) – The constant coefficient</p></li>
+<li><p><strong>c1</strong> (<em>float</em>) – The linear coefficient</p></li>
+<li><p><strong>c2</strong> (<em>float</em>) – The quadratic coefficient</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The background evaluated at <code class="docutils literal notranslate"><span class="pre">x</span></code> times</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbm.simulate.profiles.tophat">
+<span class="sig-prename descclassname"><span class="pre">gbm.simulate.profiles.</span></span><span class="sig-name descname"><span class="pre">tophat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/simulate/profiles.html#tophat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.simulate.profiles.tophat" title="Permalink to this definition">¶</a></dt>
+<dd><p>A tophat (rectangular) pulse function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Array of times</p></li>
+<li><p><strong>amp</strong> (<em>float</em>) – The tophat amplitude</p></li>
+<li><p><strong>tstart</strong> (<em>float</em>) – The start time of the tophat</p></li>
+<li><p><strong>tstop</strong> (<em>float</em>) – The end time of the tophat</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The tophat evaluated at <code class="docutils literal notranslate"><span class="pre">x</span></code> times</p>
+</dd>
+</dl>
+</dd></dl>
+
+<hr class="docutils" />
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api-plot.html" class="btn btn-neutral float-right" title="Plotting Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api-spectra.html" class="btn btn-neutral float-left" title="Spectra Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+.. _v1.1.0:
+
+v1.1.0
+======
+
+Installation
+------------
+
+* Basemap is now not required upon installation for most use cases.  Some 
+  functionality is missing without Basemap: :class:`~gbm.plot.EarthPlot`, some 
+  plotting functions in :class:`~gbm.plot.SkyPlot`, and some lower-level 
+  plotting functions. See install instructions.  For a future release, we are 
+  investigating a move to Cartopy.
+
+Data Module
+-----------
+
+* Fixed errors in loading poshist files prior to May 2009
+
+* :class:`gbm.data.Trigdat`:
+    
+    * Fixed conversion of Trigdat data to PHAII data when using 
+      :meth:`~gbm.data.Trigdat.sum_detectors`
+    
+    * Fixed :class:`triggered_detectors <gbm.data.Trigdat>` attribute for files 
+      prior to March 2010
+  
+* Fixed :meth:`~gbm.data.TTE.slice_energy` for continuous TTE files
+
+* :class:`~gbm.data.RSP`:
+    
+    * Added :meth:`~gbm.data.RSP.resample` to resample the photon axis of the 
+      DRM
+    
+    * Added :meth:`~gbm.data.RSP.rebin` to rebin the channel axis of the DRM
+    
+    * Added :meth:`~gbm.data.RSP.effective_area` to calculate the effective area
+      at an arbitrary energy
+    
+    * Fixed error when extracting DRMs or performing operations on responses 
+      that have no atmospheric scattering response included 
+    
+
+----
+
+Simulations Module
+------------------
+
+* Fixed import of :mod:`gbm.simulate`
+
+* Handle zero-count spectrum in :class:`~gbm.simulate.generators.EventSpectrumGenerator`
+
+
+----
+
+Spectra Module
+--------------
+
+* Fixed behavior when using P-stat to fit data with zero-count channels
+
+* Fixed behavior when using C-stat to fit data with zero-count channels
+
+* Fixed behavior of :class:`~gbm.spectra.fitting.SpectralFitterPgstat` where
+  background rates were incorrectly calculated
+
+* Fixed calculation of model variance
+
+
+----
+
+Plotting Module
+---------------
+
+* Added ability to plot only the total spectral model for multi-component
+  spectral fits in :class:`~gbm.plot.ModelFit`
+
+* Added :class:`ModelFit.view <gbm.plot.ModelFit>` property containing the 
+  current view
+
+
+----
+
+Utilities
+----------
+
+* Fixed behavior of specifying the ``dets`` detector list kwarg in 
+  :class:`ContinuousFtp.get_tte <gbm.finder.ContinuousFtp>`
+
+----
+
+Documentation
+-------------
+
+* Updates to existing API documentation resulting from the above changes
+
+* Updated tutorial on GBM Responses
+
+* Added new tutorial on GBM Spectral Catalog Files

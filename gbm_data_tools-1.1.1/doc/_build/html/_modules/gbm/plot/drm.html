@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.plot.drm &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.plot.drm</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.plot.drm</h1><div class="highlight"><pre>
+<span></span><span class="c1"># drm.py: Plot class for responses</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span>  <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">.globals</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.gbmplot</span> <span class="kn">import</span> <span class="n">GbmPlot</span><span class="p">,</span> <span class="n">HeatMap</span><span class="p">,</span> <span class="n">EffectiveArea</span>
+
+
+<div class="viewcode-block" id="ResponseMatrix"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ResponseMatrix">[docs]</a><span class="k">class</span> <span class="nc">ResponseMatrix</span><span class="p">(</span><span class="n">GbmPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting a response matrix.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        data (:class:`~gbm.data.RSP`, optional): The response object</span>
+<span class="sd">        colorbar (bool, optional): If True, plot the colorbar for the </span>
+<span class="sd">                                   effective area scale. Default is True.</span>
+<span class="sd">        multi (bool, optional):</span>
+<span class="sd">            If True, plots a multiplot window showing the matrix and the integrated</span>
+<span class="sd">            effective area as a function of incident energy and recorded energy</span>
+<span class="sd">        num_contours (int, optional): Number of contours to plot. Default is 100</span>
+<span class="sd">        **kwargs: Options to pass to :class:`~.gbmplot.GbmPlot`</span>
+
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ax (:class:`matplotlib.axes`): The matplotlib axes object for the plot</span>
+<span class="sd">        canvas (Canvas Backend object): The plotting canvas, if set upon </span>
+<span class="sd">                                        initialization.</span>
+<span class="sd">        data (:class:`~gbm.plot.gbmplot.HeatMap&#39;): The matrix plot object</span>
+<span class="sd">        fig (:class:`matplotlib.figure`): The matplotlib figure object</span>
+<span class="sd">        xlim (float, float): The plotting range of the x axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        xscale (str): The scale of the x axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">        ylim (float, float): The plotting range of the y axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        yscale (str): The scale of the y axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_background</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">multi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_contours</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span> <span class="o">=</span> <span class="n">colorbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span> <span class="o">=</span> <span class="n">multi</span>
+
+        <span class="c1"># do the multiplot</span>
+        <span class="k">if</span> <span class="n">multi</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">axis</span><span class="p">,</span> <span class="n">ax_x</span><span class="p">,</span> <span class="n">ax_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_multiplot</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">PhotonEffectiveArea</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">ax_x</span><span class="p">,</span>
+                                          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c</span> <span class="o">=</span> <span class="n">ChannelEffectiveArea</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">ax_y</span><span class="p">,</span>
+                                           <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">ax_x</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ax_y</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_background</span><span class="p">)</span>
+
+        <span class="c1"># initialize the plot axes, labels, ticks, and scales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Photon Energy (keV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Channel Energy (keV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot data and/or background if set on init</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_contours</span><span class="o">=</span><span class="n">num_contours</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">data</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drm</span>
+    
+    <span class="k">def</span> <span class="nf">_init_multiplot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># initialize the multiplot</span>
+
+        <span class="c1"># dimensions</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.55</span>
+        <span class="n">bottom</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.55</span>
+        <span class="n">bottom_h</span> <span class="o">=</span> <span class="n">left_h</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">width</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="p">[</span><span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">]</span>
+        <span class="n">histx</span> <span class="o">=</span> <span class="p">[</span><span class="n">left</span><span class="p">,</span> <span class="n">bottom_h</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mf">0.40</span><span class="p">]</span>
+        <span class="n">histy</span> <span class="o">=</span> <span class="p">[</span><span class="n">left_h</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="mf">0.40</span><span class="p">,</span> <span class="n">height</span><span class="p">]</span>
+
+        <span class="c1"># create the plot axes</span>
+        <span class="n">main_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="n">ax_x</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">histx</span><span class="p">)</span>
+        <span class="n">ax_y</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">histy</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">main_ax</span><span class="p">,</span> <span class="n">ax_x</span><span class="p">,</span> <span class="n">ax_y</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ResponseMatrix.set_response"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ResponseMatrix.set_response">[docs]</a>    <span class="k">def</span> <span class="nf">set_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the response data.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data (:class:`~gbm.data.RSP`): The response object</span>
+<span class="sd">            index (int, optional): The index of the DRM to display</span>
+<span class="sd">            atime (float, optional): The time corresponding to a DRM</span>
+<span class="sd">            **kwargs: Arguments to pass to :class:`~.gbmplot.HeatMap`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">atime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nearest_drm</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">drm</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drm</span> <span class="o">=</span> <span class="n">HeatMap</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">photon_bin_centroids</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">channel_centroids</span><span class="p">,</span>
+                            <span class="n">drm</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># update the background color of the colorbar</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drm</span><span class="o">.</span><span class="n">_artists</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_background</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PhotonEffectiveArea"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.PhotonEffectiveArea">[docs]</a><span class="k">class</span> <span class="nc">PhotonEffectiveArea</span><span class="p">(</span><span class="n">GbmPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting the incident photon effective area</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        data (:class:`~gbm.data.RSP`, optional): The response object</span>
+<span class="sd">        **kwargs: Options to pass to :class:`~.gbmplot.GbmPlot`</span>
+
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ax (:class:`matplotlib.axes`): The matplotlib axes object for the plot</span>
+<span class="sd">        canvas (Canvas Backend object): The plotting canvas, if set upon </span>
+<span class="sd">                                        initialization.</span>
+<span class="sd">        data (:class:`~gbm.plot.gbmplot.EffectiveArea`): The effective area</span>
+<span class="sd">                                                         plot object</span>
+<span class="sd">        fig (:class:`matplotlib.figure`): The matplotlib figure object</span>
+<span class="sd">        xlim (float, float): The plotting range of the x axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        xscale (str): The scale of the x axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">        ylim (float, float): The plotting range of the y axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        yscale (str): The scale of the y axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># initialize the plot axes, labels, ticks, and scales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Photon Energy (keV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Effective Area (cm$^2$)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot data and/or background if set on init</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">photon_bins</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+    
+<div class="viewcode-block" id="PhotonEffectiveArea.set_response"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.PhotonEffectiveArea.set_response">[docs]</a>    <span class="k">def</span> <span class="nf">set_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the response data.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data (:class:`~gbm.data.RSP`): The response object</span>
+<span class="sd">            index (int, optional): The index of the DRM to display</span>
+<span class="sd">            atime (float, optional): The time corresponding to a DRM</span>
+<span class="sd">            **kwargs: Arguments to pass to :class:`~.gbmplot.EffectiveArea`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">atime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">_color</span><span class="p">,</span> <span class="n">_alpha</span><span class="p">,</span> <span class="n">_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">()</span>
+        <span class="n">effarea</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">photon_effective_area</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="n">atime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">EffectiveArea</span><span class="p">(</span><span class="n">effarea</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">_color</span><span class="p">,</span>
+                                   <span class="n">alpha</span><span class="o">=</span><span class="n">_alpha</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The default settings for the plot. If a plot already</span>
+<span class="sd">        exists, use its settings instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_color</span> <span class="o">=</span> <span class="n">DATA_COLOR</span>
+            <span class="n">_alpha</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">color</span>
+            <span class="n">_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">alpha</span>
+            <span class="n">_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_kwargs</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">_color</span><span class="p">,</span> <span class="n">_alpha</span><span class="p">,</span> <span class="n">_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChannelEffectiveArea"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ChannelEffectiveArea">[docs]</a><span class="k">class</span> <span class="nc">ChannelEffectiveArea</span><span class="p">(</span><span class="n">GbmPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting the recorded channel energy effective area.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        data (:class:`~gbm.data.RSP`, optional): The response object</span>
+<span class="sd">        **kwargs: Options to pass to :class:`~.gbmplot.GbmPlot`</span>
+
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ax (:class:`matplotlib.axes`): The matplotlib axes object for the plot</span>
+<span class="sd">        canvas (Canvas Backend object): The plotting canvas, if set upon </span>
+<span class="sd">                                        initialization.</span>
+<span class="sd">        data (:class:`~gbm.plot.gbmplot.EffectiveArea`): The effective area</span>
+<span class="sd">                                                         plot object</span>
+<span class="sd">        fig (:class:`matplotlib.figure`): The matplotlib figure object</span>
+<span class="sd">        xlim (float, float): The plotting range of the x axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        xscale (str): The scale of the x axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">        ylim (float, float): The plotting range of the y axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        yscale (str): The scale of the y axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">canvas</span><span class="o">=</span><span class="n">canvas</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orientation</span> <span class="o">=</span> <span class="n">orientation</span>
+
+        <span class="c1"># initialize the plot axes, labels, ticks, and scales</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orientation</span> <span class="o">==</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Channel Energy (keV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Effective Area (cm$^2$)&#39;</span><span class="p">,</span>
+                                <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Channel Energy (keV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Effective Area (cm$^2$)&#39;</span><span class="p">,</span>
+                                <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot data and/or background if set on init</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">xrange</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orientation</span> <span class="o">==</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">xrange</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xrange</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="ChannelEffectiveArea.set_response"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ChannelEffectiveArea.set_response">[docs]</a>    <span class="k">def</span> <span class="nf">set_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the response data.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data (:class:`~gbm.data.RSP`): The response object</span>
+<span class="sd">            index (int, optional): The index of the DRM to display</span>
+<span class="sd">            atime (float, optional): The time corresponding to a DRM</span>
+<span class="sd">            **kwargs: Arguments to pass to :class:`~.gbmplot.EffectiveArea`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">atime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">_color</span><span class="p">,</span> <span class="n">_alpha</span><span class="p">,</span> <span class="n">_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">()</span>
+        <span class="n">effarea</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">photon_effective_area</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="n">atime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">EffectiveArea</span><span class="p">(</span><span class="n">effarea</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">_color</span><span class="p">,</span>
+                                   <span class="n">alpha</span><span class="o">=</span><span class="n">_alpha</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_orientation</span><span class="p">,</span>
+                                   <span class="o">**</span><span class="n">_kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The default settings for the plot. If a plor already</span>
+<span class="sd">        exists, use its settings instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_color</span> <span class="o">=</span> <span class="n">DATA_COLOR</span>
+            <span class="n">_alpha</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">color</span>
+            <span class="n">_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">alpha</span>
+            <span class="n">_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_kwargs</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">_color</span><span class="p">,</span> <span class="n">_alpha</span><span class="p">,</span> <span class="n">_kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

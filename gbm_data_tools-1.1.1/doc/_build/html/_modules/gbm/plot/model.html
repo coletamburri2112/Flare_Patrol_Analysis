@@ -1,0 +1,522 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.plot.model &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.plot.model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.plot.model</h1><div class="highlight"><pre>
+<span></span><span class="c1"># model.py: Plot class for spectral fits and models</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">.gbmplot</span> <span class="kn">import</span> <span class="n">GbmPlot</span><span class="p">,</span> <span class="n">Histo</span><span class="p">,</span> <span class="n">ModelData</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">ModelSamples</span>
+<span class="kn">from</span> <span class="nn">.lib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<div class="viewcode-block" id="ModelFit"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit">[docs]</a><span class="k">class</span> <span class="nc">ModelFit</span><span class="p">(</span><span class="n">GbmPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting spectral fits.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        fitter (:class:`~gbm.spectra.fitting.SpectralFitter`, optional): </span>
+<span class="sd">            The spectral fitter</span>
+<span class="sd">        view (str, optional): The plot view, one of &#39;counts&#39;, &#39;photon&#39;, </span>
+<span class="sd">                              &#39;energy&#39; or &#39;nufnu&#39;. Default is &#39;counts&#39;</span>
+<span class="sd">        resid (bool, optional): If True, plots the residuals in counts view. </span>
+<span class="sd">                                Default is True.</span>
+<span class="sd">        **kwargs: Options to pass to :class:`~.gbmplot.GbmPlot`</span>
+<span class="sd">        </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        ax (:class:`matplotlib.axes`): The matplotlib axes object for the plot</span>
+<span class="sd">        canvas (Canvas Backend object): The plotting canvas, if set upon </span>
+<span class="sd">                                        initialization.</span>
+<span class="sd">        count_data (Collection of :class:`~.gbmplot.ModelData`):</span>
+<span class="sd">            The count data plot elements</span>
+<span class="sd">        count_models (Collection of :class:`~.gbmplot.Histo`): </span>
+<span class="sd">            The count model plot elements</span>
+<span class="sd">        fig (:class:`matplotlib.figure`): The matplotlib figure object</span>
+<span class="sd">        model_spectrum (Collection of :class:`~.gbmplot.ModelSamples`):</span>
+<span class="sd">            The model spectrum sample elements</span>
+<span class="sd">        residuals (Collection of :class:`~gbmplot.ModelData`):</span>
+<span class="sd">            The fit residual plot elements</span>
+<span class="sd">        view (str): The current plot view</span>
+<span class="sd">        xlim (float, float): The plotting range of the x axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        xscale (str): The scale of the x axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">        ylim (float, float): The plotting range of the y axis. </span>
+<span class="sd">                             This attribute can be set.</span>
+<span class="sd">        yscale (str): The scale of the y axis, either &#39;linear&#39; or &#39;log&#39;. </span>
+<span class="sd">                      This attribute can be set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define a list of default plotting colors to cycle through</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="s1">&#39;#7F3C8D,#11A579,#3969AC,#F2B701,#E73F74,#80BA5A,#E68310,#008695,#CF1C90,#f97b72,#4b4b8f,#A5AA99&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">_min_y</span> <span class="o">=</span> <span class="mf">1e-10</span>    
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fitter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="s1">&#39;counts&#39;</span><span class="p">,</span> <span class="n">resid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">VisibleDeprecationWarning</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                                          <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.7</span><span class="p">,</span> <span class="mf">6.7</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+                                          <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;height_ratios&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_models</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_data</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resids</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_spectrum</span> <span class="o">=</span> <span class="kc">None</span>
+                
+                
+        <span class="c1"># plot data and/or background if set on init</span>
+        <span class="k">if</span> <span class="n">fitter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_fit</span><span class="p">(</span><span class="n">fitter</span><span class="p">,</span> <span class="n">resid</span><span class="o">=</span><span class="n">resid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interactive</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">count_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_models</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">count_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_data</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resids</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_spectrum</span>
+    
+<div class="viewcode-block" id="ModelFit.set_fit"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.set_fit">[docs]</a>    <span class="k">def</span> <span class="nf">set_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span class="n">resid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the fitter. If a fitter already exists, this triggers a replot of </span>
+<span class="sd">        the fit.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            fitter (:class:`~gbm.spectra.fitting.SpectralFitter`): </span>
+<span class="sd">                The spectral fitter for which a fit has been performed</span>
+<span class="sd">            resid (bool, optional):  If True, plot the fit residuals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span> <span class="o">=</span> <span class="n">fitter</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">==</span> <span class="s1">&#39;counts&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">count_spectrum</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">resid</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_residuals</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hide_residuals</span><span class="p">()</span>
+        
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">==</span> <span class="s1">&#39;photon&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">photon_spectrum</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">==</span> <span class="s1">&#39;energy&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">energy_spectrum</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">==</span> <span class="s1">&#39;nufnu&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nufnu_spectrum</span><span class="p">()</span>
+        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+           
+<div class="viewcode-block" id="ModelFit.count_spectrum"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.count_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">count_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the count spectrum fit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="s1">&#39;counts&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        
+        <span class="n">model_counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">model_count_spectrum</span><span class="p">()</span>
+        <span class="n">energy</span><span class="p">,</span> <span class="n">chanwidths</span><span class="p">,</span> <span class="n">data_counts</span><span class="p">,</span> <span class="n">data_counts_err</span><span class="p">,</span> <span class="n">ulmasks</span> <span class="o">=</span> \
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">data_count_spectrum</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="n">det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_count_models</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">Histo</span><span class="p">(</span><span class="n">model_counts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> 
+                                      <span class="n">edges_to_zero</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                      <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">det</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_count_data</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">ModelData</span><span class="p">(</span><span class="n">energy</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">data_counts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                                   <span class="n">chanwidths</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">data_counts_err</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> <span class="n">ulmask</span><span class="o">=</span><span class="n">ulmasks</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                                   <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                                   <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Rate [count s$^{-1}$ keV$^{-1}$]&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="ModelFit.photon_spectrum"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.photon_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">photon_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the photon spectrum model</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_samples (int, optional): The number of sample spectra. </span>
+<span class="sd">                                         Default is 10.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="s1">&#39;photon&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_spectral_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Photon Flux [ph cm$^{-2}$ s$^{-1}$ keV$^{-1}$]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelFit.energy_spectrum"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.energy_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">energy_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the energy spectrum model</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_samples (int, optional): The number of sample spectra. </span>
+<span class="sd">                                         Default is 100.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="s1">&#39;energy&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_spectral_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Energy Flux [ph cm$^{-2}$ s$^{-1}$]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelFit.nufnu_spectrum"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.nufnu_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">nufnu_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the nuFnu spectrum model</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_samples (int, optional): The number of sample spectra. </span>
+<span class="sd">                                         Default is 100.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="s1">&#39;nufnu&#39;</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_spectral_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\nu F_\nu$ [keV ph cm$^{-2}$ s$^{-1}$]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span></div>
+       
+<div class="viewcode-block" id="ModelFit.show_residuals"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.show_residuals">[docs]</a>    <span class="k">def</span> <span class="nf">show_residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Show the fit residuals</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            sigma (bool, optional): If True, plot the residuals in units of </span>
+<span class="sd">                                    model sigma, otherwise in units of counts. </span>
+<span class="sd">                                    Default is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if we don&#39;t already have residuals axis</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="p">)</span>
+        
+        <span class="c1"># get the residuals</span>
+        <span class="n">energy</span><span class="p">,</span> <span class="n">chanwidths</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">resid_err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">residuals</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+        
+        <span class="c1"># plot for each detector/dataset</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">num_sets</span><span class="p">):</span>
+            <span class="n">det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resids</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">ModelData</span><span class="p">(</span><span class="n">energy</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">resid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">chanwidths</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">resid_err</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">))</span>
+            <span class="n">ymin</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">resid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">resid_err</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+            <span class="n">ymax</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">resid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">resid_err</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="c1"># the zero line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Energy [kev]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">sigma</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Residuals [sigma]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Residuals [counts]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        
+        <span class="c1"># we have to set the y-axis range manually, because the y-axis</span>
+        <span class="c1"># autoscale is broken (known issue) in matplotlib for this situation</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ymin</span><span class="p">)</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ymax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mf">1.0</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ymin</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span><span class="p">)</span><span class="o">*</span><span class="n">ymin</span><span class="p">,</span> 
+                                <span class="p">(</span><span class="mf">1.0</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ymax</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span><span class="p">)</span><span class="o">*</span><span class="n">ymax</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="ModelFit.hide_residuals"><a class="viewcode-back" href="../../../api/api-plot.html#gbm.plot.ModelFit.hide_residuals">[docs]</a>    <span class="k">def</span> <span class="nf">hide_residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hide the fit residuals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resid_ax</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Energy (keV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Residuals already hidden&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the view properties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">energy_range</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Energy [kev]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">PLOTFONTSIZE</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot_spectral_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">plot_components</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the spectral model by sampling from the Gaussian approximation</span>
+<span class="sd">        to the parameters&#39; posterior.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_samples (int, optional): The number of sample spectra. </span>
+<span class="sd">                                         Default is 100.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># clean plot and hide residuals if any</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_residuals</span><span class="p">()</span>
+        
+        
+        <span class="n">num_comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">num_components</span>
+        <span class="n">comps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">function_components</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">function_name</span>
+        
+        <span class="c1"># if the number of model components is &gt; 1, plot each one</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_comp</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">plot_components</span><span class="p">):</span>
+            <span class="n">energies</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">sample_spectrum</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> 
+                                                             <span class="n">num_samples</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span> 
+                                                             <span class="n">components</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_model</span> <span class="o">=</span> <span class="p">[</span><span class="n">ModelSamples</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">samples</span><span class="p">[:,</span><span class="n">i</span><span class="p">,:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> 
+                                    <span class="n">label</span><span class="o">=</span><span class="n">comps</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> 
+                                    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_comp</span><span class="p">)]</span>
+                                            
+            <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># or just plot the function</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_model</span> <span class="o">=</span> <span class="p">[]</span>    
+            <span class="n">energies</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitter</span><span class="o">.</span><span class="n">sample_spectrum</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> 
+                                                             <span class="n">num_samples</span><span class="o">=</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ModelSamples</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> 
+                                        <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">()</span>
+                
+        <span class="c1"># fix the alphas for the legend</span>
+        <span class="n">legend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">lh</span> <span class="ow">in</span> <span class="n">legend</span><span class="o">.</span><span class="n">legendHandles</span><span class="p">:</span>
+            <span class="n">lh</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">lh</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_y</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_y</span><span class="p">,</span> <span class="mf">10.0</span><span class="o">*</span><span class="n">y_max</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

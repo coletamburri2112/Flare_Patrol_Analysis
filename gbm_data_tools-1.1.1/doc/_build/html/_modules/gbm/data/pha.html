@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.data.pha &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.data.pha</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.data.pha</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pha.py: PHA and BAK classes</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DataFile</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">headers</span> <span class="k">as</span> <span class="n">hdr</span>
+<span class="kn">from</span> <span class="nn">.primitives</span> <span class="kn">import</span> <span class="n">EnergyBins</span>
+
+
+<div class="viewcode-block" id="PHA"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.PHA">[docs]</a><span class="k">class</span> <span class="nc">PHA</span><span class="p">(</span><span class="n">DataFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;PHA class for count spectra.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        data (:class:`~.primitives.EnergyBins`): The PHA data</span>
+<span class="sd">        datatype (str): The datatype of the file</span>
+<span class="sd">        detector (str): The GBM detector the file is associated with</span>
+<span class="sd">        directory (str): The directory the file is located in</span>
+<span class="sd">        energy_range (float, float): The energy range of the spectrum</span>
+<span class="sd">        exposure (float): The exposure of the PHA data</span>
+<span class="sd">        filename (str): The filename</span>
+<span class="sd">        full_path (str): The full path+filename</span>
+<span class="sd">        gti ([(float, float), ...]): The good time intervals</span>
+<span class="sd">        headers (dict): The headers for each extension of the PHA</span>
+<span class="sd">        id (str): The GBM file ID</span>
+<span class="sd">        is_gbm_file (bool): True if the file is a valid GBM standard file, </span>
+<span class="sd">                            False if it is not.</span>
+<span class="sd">        is_trigger (bool): True if the file is a GBM trigger file, False if not</span>
+<span class="sd">        numchans (int): The number of energy channels</span>
+<span class="sd">        tcent (float): The center time of the data</span>
+<span class="sd">        time_range (float, float): The time range of the spectrum</span>
+<span class="sd">        trigtime (float): The trigger time of the data, if available</span>
+<span class="sd">        valid_channels (np.array(dtype=bool)): The channels that are marked </span>
+<span class="sd">                                               valid and available for fitting </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PHA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gti</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span> <span class="nf">_assert_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valrange</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">valrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">valrange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> \
+            <span class="s1">&#39;Range must be in increasing order: (lo, hi)&#39;</span>
+        <span class="k">return</span> <span class="n">valrange</span>
+
+    <span class="k">def</span> <span class="nf">_assert_range_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_list</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">range_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">range_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">range_list</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">range_list</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gti</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gti</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tcent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">range</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numchans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">valid_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">exposure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PHA.open"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.PHA.open">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a PHA FITS file and return the PHA object</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The filename of the FITS file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`PHA`: The PHA object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_file_properties</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="c1"># open FITS file</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
+            <span class="c1"># store headers</span>
+            <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">hdulist</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">hdu</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">})</span>
+
+            <span class="c1"># trigger time</span>
+            <span class="k">if</span> <span class="s1">&#39;TRIGTIME&#39;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="c1"># if trigger, shift to trigger time reference</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">ebounds</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">gti</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;GTI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span>
+                <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span>
+
+            <span class="c1"># create the energy histogram, the core of the PHA</span>
+            <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">ebounds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                               <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;EXPOSURE&#39;</span><span class="p">])</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">EnergyBins</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s1">&#39;COUNTS&#39;</span><span class="p">],</span> <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span>
+                                   <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">],</span> <span class="n">exposure</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_gti</span> <span class="o">=</span> <span class="n">gti</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_set_channel_mask</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s1">&#39;QUALITY&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="PHA.from_data"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.PHA.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">gti</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                  <span class="n">detector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">ra_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">backfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rspfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a PHA object from an EnergyBins data object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (:class:`~.primitives.EnergyBins`): The PHA count spectrum data</span>
+<span class="sd">            tstart (float): The start time of the data</span>
+<span class="sd">            tstop (float): The end time of the data</span>
+<span class="sd">            gti ([(float, float), ...], optional): </span>
+<span class="sd">                The list of tuples representing the good time intervals </span>
+<span class="sd">                (start, stop). If omitted, the GTI is assumed to be </span>
+<span class="sd">                [(tstart, tstop)].</span>
+<span class="sd">            trigtime (float, optional): </span>
+<span class="sd">                The trigger time, if applicable. If provided, the data times </span>
+<span class="sd">                will be shifted relative to the trigger time. Default is zero.</span>
+<span class="sd">            detector (str, optional):  The detector that produced the data</span>
+<span class="sd">            object (str, optional): The object being observed</span>
+<span class="sd">            ra_obj (float, optional): The RA of the object</span>
+<span class="sd">            dec_obj (float, optional): The Dec of the object</span>
+<span class="sd">            err_rad (float, optional): The localization error radius of the object</span>
+<span class="sd">            datatype (str, optional): The datatype from which the PHA is created</span>
+<span class="sd">            backfile (str, optional): The associated background file</span>
+<span class="sd">            rspfile (str, optional): The associated response file</span>
+<span class="sd">            meta (str, optional): Additional metadata string to be added to </span>
+<span class="sd">                                  standard filename</span>
+<span class="sd">            channel_mask (np.array(dtype=bool)): </span>
+<span class="sd">                A boolean array representing the valid channels to be used for </span>
+<span class="sd">                fitting. If omitted, assumes all non-zero count channels are valid.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`PHA`: The PHA object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">filetype</span> <span class="o">=</span> <span class="s1">&#39;SPECTRUM&#39;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">detchans</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;trigtime must be a float&#39;</span><span class="p">)</span>        
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;trigtime must be non-negative&#39;</span><span class="p">)</span>
+        
+        <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="n">trigtime</span>
+        <span class="n">tstart</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">tstop</span> <span class="o">+=</span> <span class="n">trigtime</span>
+
+        <span class="c1"># create the primary extension</span>
+        <span class="n">primary_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">primary</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="n">filetype</span><span class="p">,</span>
+                                     <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                                     <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span>
+                                     <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                     <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span>
+                                     <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">primary_header</span><span class="p">]</span>
+        <span class="n">header_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span>
+
+        <span class="c1"># ebounds extension</span>
+        <span class="n">ebounds_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">ebounds</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                                     <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                                     <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                     <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span>
+                                     <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span> <span class="n">detchans</span><span class="o">=</span><span class="n">detchans</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebounds_header</span><span class="p">)</span>
+        <span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">)</span>
+
+        <span class="c1"># spectrum extension</span>
+        <span class="n">spectrum_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">pha_spectrum</span><span class="p">(</span><span class="n">exposure</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                           <span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                                           <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                                           <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                           <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                                           <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span>
+                                           <span class="n">detchans</span><span class="o">=</span><span class="n">detchans</span><span class="p">,</span>
+                                           <span class="n">backfile</span><span class="o">=</span><span class="n">backfile</span><span class="p">,</span> <span class="n">rspfile</span><span class="o">=</span><span class="n">rspfile</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum_header</span><span class="p">)</span>
+        <span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">)</span>
+
+        <span class="c1"># gti extension</span>
+        <span class="k">if</span> <span class="n">gti</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gti</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">)]</span>
+        <span class="n">gti</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gti</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;START&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;STOP&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f8&#39;</span><span class="p">)])</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">gti</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                             <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                             <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gti_header</span><span class="p">)</span>
+        <span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;GTI&#39;</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_gti</span> <span class="o">=</span> <span class="n">gti</span>
+
+        <span class="c1"># set the channel mask</span>
+        <span class="c1"># if no channel mask is given, assume zero-count channels are bad</span>
+        <span class="k">if</span> <span class="n">channel_mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="n">channel_mask</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">counts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_channel_mask</span> <span class="o">=</span> <span class="n">channel_mask</span>
+
+        <span class="c1"># store headers and set data properties </span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">header</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">header</span> <span class="ow">in</span>
+                        <span class="nb">zip</span><span class="p">(</span><span class="n">header_names</span><span class="p">,</span> <span class="n">headers</span><span class="p">)}</span>
+
+        <span class="c1"># set file info</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span>
+                           <span class="n">tstart</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">time_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;pha&#39;</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="PHA.write"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.PHA.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the data to a FITS file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): The directory to write the file</span>
+<span class="sd">            filename (str, optional): If set, will override the standardized name</span>
+<span class="sd">            backfile (str, optional): If set, will add the associated BAK file</span>
+<span class="sd">                                      name to the PHA SPECTRUM header</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set filename</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Filename not set&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+        
+        <span class="k">if</span> <span class="n">backfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;BACKFILE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">backfile</span>
+
+        <span class="c1"># make ebounds table</span>
+        <span class="n">chan_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">ebounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">),</span>
+                                                    <span class="p">(</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">),</span>
+                                                    <span class="p">(</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">)])</span>
+        <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_idx</span>
+        <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">lo_edges</span>
+        <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">hi_edges</span>
+
+        <span class="c1"># make spectrum table</span>
+        <span class="n">trigtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">),</span>
+                                                 <span class="p">(</span><span class="s1">&#39;COUNTS&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i4&#39;</span><span class="p">),</span>
+                                                 <span class="p">(</span><span class="s1">&#39;QUALITY&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">)])</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_idx</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;COUNTS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">counts</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;QUALITY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># create FITS</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">()</span>
+        <span class="n">primary_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primary_hdu</span><span class="p">)</span>
+
+        <span class="n">ebounds_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ebounds</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">,</span>
+                                       <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebounds_hdu</span><span class="p">)</span>
+
+        <span class="n">spectrum_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">,</span>
+                                        <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum_hdu</span><span class="p">)</span>
+
+        <span class="n">gti</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gti</span><span class="p">)</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">gti</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;GTI&#39;</span><span class="p">],</span>
+                                   <span class="n">name</span><span class="o">=</span><span class="s1">&#39;GTI&#39;</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gti_hdu</span><span class="p">)</span>
+
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">full_path</span><span class="p">,</span> <span class="n">checksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PHA.slice_energy"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.PHA.slice_energy">[docs]</a>    <span class="k">def</span> <span class="nf">slice_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_ranges</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Slice the PHA by one or more energy range. Produces a new PHA object.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            energy_ranges ([(float, float), ...]): The energy ranges to slice over</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`PHA`: A new PHA object with the requested energy range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">energy_ranges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assert_range_list</span><span class="p">(</span><span class="n">energy_ranges</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_assert_range</span><span class="p">(</span><span class="n">energy_range</span><span class="p">))</span> \
+                <span class="k">for</span> <span class="n">energy_range</span> <span class="ow">in</span> <span class="n">energy_ranges</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">EnergyBins</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">tstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TSTART&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TSTOP&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">]</span>
+        <span class="n">ra_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">]</span>
+        <span class="n">dec_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">]</span>
+        <span class="n">err_rad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;ERR_RAD&#39;</span><span class="p">]</span>
+        <span class="n">backfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;BACKFIL&#39;</span><span class="p">]</span>
+        <span class="n">rspfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;RESPFILE&#39;</span><span class="p">]</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename_obj</span><span class="o">.</span><span class="n">meta</span>
+
+        <span class="n">pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">gti</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gti</span><span class="p">,</span>
+                             <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">detector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
+                             <span class="nb">object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span>
+                             <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                             <span class="n">backfile</span><span class="o">=</span><span class="n">backfile</span><span class="p">,</span> <span class="n">rspfile</span><span class="o">=</span><span class="n">rspfile</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pha</span></div>
+
+<div class="viewcode-block" id="PHA.rebin_energy"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.PHA.rebin_energy">[docs]</a>    <span class="k">def</span> <span class="nf">rebin_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rebin the PHA in energy given a rebinning method. </span>
+<span class="sd">        Produces a new PHA object.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            method (&lt;function&gt;): The rebinning function</span>
+<span class="sd">            *args: Arguments to be passed to the rebinning function</span>
+<span class="sd">            emin (float, optional): The minimum energy to rebin. If omitted, </span>
+<span class="sd">                                    uses the lowest energy edge of the data</span>
+<span class="sd">            emax (float, optional): The maximum energy to rebin. If omitted, </span>
+<span class="sd">                                    uses the highest energy edge of the data</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`PHA`: A new PHA object with the requested rebinned data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rebin</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">tstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TSTART&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TSTOP&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;OBJECT&#39;</span><span class="p">]</span>
+        <span class="n">ra_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;RA_OBJ&#39;</span><span class="p">]</span>
+        <span class="n">dec_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;DEC_OBJ&#39;</span><span class="p">]</span>
+        <span class="n">err_rad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;ERR_RAD&#39;</span><span class="p">]</span>
+        <span class="n">backfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;BACKFIL&#39;</span><span class="p">]</span>
+        <span class="n">rspfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;RESPFILE&#39;</span><span class="p">]</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename_obj</span><span class="o">.</span><span class="n">meta</span>
+        <span class="n">pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">gti</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gti</span><span class="p">,</span>
+                             <span class="n">trigtime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">detector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span>
+                             <span class="nb">object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span>
+                             <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                             <span class="n">backfile</span><span class="o">=</span><span class="n">backfile</span><span class="p">,</span> <span class="n">rspfile</span><span class="o">=</span><span class="n">rspfile</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pha</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_channel_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quality_flags</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">quality_flags</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">quality_flags</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="BAK"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.BAK">[docs]</a><span class="k">class</span> <span class="nc">BAK</span><span class="p">(</span><span class="n">PHA</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for a PHA background spectrum.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        data (:class:`~.primitives.EnergyBins`): The PHA data</span>
+<span class="sd">        datatype (str): The datatype of the file</span>
+<span class="sd">        detector (str): The GBM detector the file is associated with</span>
+<span class="sd">        directory (str): The directory the file is located in</span>
+<span class="sd">        energy_range (float, float): The energy range of the spectrum</span>
+<span class="sd">        exposure (float): The exposure of the PHA data</span>
+<span class="sd">        filename (str): The filename</span>
+<span class="sd">        full_path (str): The full path+filename</span>
+<span class="sd">        gti ([(float, float), ...]): The good time intervals</span>
+<span class="sd">        headers (dict): The headers for each extension of the PHA</span>
+<span class="sd">        id (str): The GBM file ID</span>
+<span class="sd">        is_gbm_file (bool): True if the file is a valid GBM standard file, </span>
+<span class="sd">                            False if it is not.</span>
+<span class="sd">        is_trigger (bool): True if the file is a GBM trigger file, False if not</span>
+<span class="sd">        numchans (int): The number of energy channels</span>
+<span class="sd">        tcent (float): The center time of the data</span>
+<span class="sd">        time_range (float, float): The time range of the spectrum</span>
+<span class="sd">        trigtime (float): The trigger time of the data, if available</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">PHA</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_mask</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BAK.open"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.BAK.open">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a BAK FITS file and return the BAK object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The filename of the FITS file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">            :class:`BAK`: The BAK object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..background</span> <span class="kn">import</span> <span class="n">BackgroundSpectrum</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_file_properties</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="c1"># open FITS file</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
+            <span class="c1"># store headers</span>
+            <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">hdulist</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">hdu</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">})</span>
+
+
+            <span class="c1"># trigger time</span>
+            <span class="k">if</span> <span class="s1">&#39;TRIGTIME&#39;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;TRIGTIME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">ebounds</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">gti</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;GTI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span>
+                <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span>
+
+            <span class="c1"># create the background spectrum, the core of the BAK</span>
+            <span class="n">exposure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">ebounds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                               <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">][</span><span class="s1">&#39;EXPOSURE&#39;</span><span class="p">])</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">BackgroundSpectrum</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s1">&#39;RATE&#39;</span><span class="p">],</span> <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;STAT_ERR&#39;</span><span class="p">],</span>
+                                           <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">],</span> <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">],</span>
+                                           <span class="n">exposure</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">_gti</span> <span class="o">=</span> <span class="n">gti</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BAK.from_data"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.BAK.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">gti</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                  <span class="n">detector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a BAK object from a :class:`~gbm.background.BackgroundSpectrum` </span>
+<span class="sd">        data object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (:class:`~gbm.background.BackgroundSpectrum`): </span>
+<span class="sd">                The background count rate spectrum</span>
+<span class="sd">            tstart (float): The start time of the data</span>
+<span class="sd">            tstop (float): The end time of the data</span>
+<span class="sd">            gti ([(float, float), ...], optional): </span>
+<span class="sd">                The list of tuples representing the good time intervals </span>
+<span class="sd">                (start, stop). If omitted, the GTI is assumed to be </span>
+<span class="sd">                [(tstart, tstop)].</span>
+<span class="sd">            trigtime (float, optional): </span>
+<span class="sd">                The trigger time, if applicable. If provided, the data times </span>
+<span class="sd">                will be shifted relative to the trigger time. Default is zero.</span>
+<span class="sd">            detector (str, optional):  The detector that produced the data</span>
+<span class="sd">            object (str, optional): The object being observed</span>
+<span class="sd">            ra_obj (float, optional): The RA of the object</span>
+<span class="sd">            dec_obj (float, optional): The Dec of the object</span>
+<span class="sd">            err_rad (float, optional): The localization error radius of the object</span>
+<span class="sd">            datatype (str, optional): The datatype from which the PHA is created</span>
+<span class="sd">            meta (str, optional): Additional metadata string to be added to </span>
+<span class="sd">                                  standard filename</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`BAK`: The BAK object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">filetype</span> <span class="o">=</span> <span class="s1">&#39;BACKGROUND&#39;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">detchans</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+        
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">trigtime</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;trigtime must be a float&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">trigtime</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;trigtime must be non-negative&#39;</span><span class="p">)</span>
+        
+        <span class="n">obj</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="n">trigtime</span>
+        <span class="n">tstart</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">tstop</span> <span class="o">+=</span> <span class="n">trigtime</span>
+
+        <span class="c1"># create the primary extension</span>
+        <span class="n">primary_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">primary</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="n">filetype</span><span class="p">,</span>
+                                     <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                                     <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span>
+                                     <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                     <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span>
+                                     <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">primary_header</span><span class="p">]</span>
+        <span class="n">header_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">]</span>
+
+        <span class="c1"># ebounds extension</span>
+        <span class="n">ebounds_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">ebounds</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                                     <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                                     <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                     <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span> <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span>
+                                     <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span> <span class="n">detchans</span><span class="o">=</span><span class="n">detchans</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebounds_header</span><span class="p">)</span>
+        <span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">)</span>
+
+        <span class="c1"># spectrum extension</span>
+        <span class="n">spectrum_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">pha_spectrum</span><span class="p">(</span><span class="n">exposure</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                           <span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                                           <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                                           <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                                           <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                                           <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">,</span>
+                                           <span class="n">detchans</span><span class="o">=</span><span class="n">detchans</span><span class="p">,</span>
+                                           <span class="n">poisserr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">spectrum_header</span><span class="p">[</span><span class="s1">&#39;HDUCLAS2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;BKG&#39;</span><span class="p">,</span> <span class="s1">&#39;Background PHA Spectrum&#39;</span><span class="p">)</span>
+        <span class="n">spectrum_header</span><span class="p">[</span><span class="s1">&#39;HDUCLAS3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;RATE&#39;</span><span class="p">,</span> <span class="s1">&#39;PHA data stored as rates&#39;</span><span class="p">)</span>
+        <span class="n">spectrum_header</span><span class="p">[</span><span class="s1">&#39;TUNIT2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;count/s&#39;</span>
+        <span class="n">spectrum_header</span><span class="p">[</span><span class="s1">&#39;TUNIT3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;count/s&#39;</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum_header</span><span class="p">)</span>
+        <span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">)</span>
+
+        <span class="c1"># gti extension</span>
+        <span class="k">if</span> <span class="n">gti</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gti</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">)]</span>
+        <span class="n">gti</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gti</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;START&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;STOP&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f8&#39;</span><span class="p">)])</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti_header</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">gti</span><span class="p">(</span><span class="n">detnam</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span>
+                             <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span> <span class="n">ra_obj</span><span class="o">=</span><span class="n">ra_obj</span><span class="p">,</span>
+                             <span class="n">dec_obj</span><span class="o">=</span><span class="n">dec_obj</span><span class="p">,</span> <span class="n">err_rad</span><span class="o">=</span><span class="n">err_rad</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gti_header</span><span class="p">)</span>
+        <span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;GTI&#39;</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_gti</span> <span class="o">=</span> <span class="n">gti</span>
+
+        <span class="c1"># store headers and set data properties </span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">header</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">header</span> <span class="ow">in</span>
+                        <span class="nb">zip</span><span class="p">(</span><span class="n">header_names</span><span class="p">,</span> <span class="n">headers</span><span class="p">)}</span>
+
+        <span class="c1"># set file info</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span>
+                           <span class="n">tstart</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">time_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;bak&#39;</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">obj</span><span class="o">.</span><span class="n">trigtime</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="BAK.write"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.BAK.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the data to a FITS file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): The directory to write the file</span>
+<span class="sd">            filename (str, optional): If set, will override the standardized name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set filename</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Filename not set&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">][</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+
+        <span class="c1"># make ebounds table</span>
+        <span class="n">chan_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">ebounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">),</span>
+                                                    <span class="p">(</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">),</span>
+                                                    <span class="p">(</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f4&#39;</span><span class="p">)])</span>
+        <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_idx</span>
+        <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MIN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">lo_edges</span>
+        <span class="n">ebounds</span><span class="p">[</span><span class="s1">&#39;E_MAX&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">hi_edges</span>
+
+        <span class="c1"># make spectrum table</span>
+        <span class="n">trigtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigtime</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numchans</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i2&#39;</span><span class="p">),</span>
+                                                 <span class="p">(</span><span class="s1">&#39;RATE&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f8&#39;</span><span class="p">),</span>
+                                                 <span class="p">(</span><span class="s1">&#39;STAT_ERR&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;f8&#39;</span><span class="p">)])</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;CHANNEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_idx</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;RATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">rates</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s1">&#39;STAT_ERR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">rate_uncertainty</span>
+
+        <span class="c1"># create FITS</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">()</span>
+        <span class="n">primary_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primary_hdu</span><span class="p">)</span>
+
+        <span class="n">ebounds_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ebounds</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">,</span>
+                                       <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;EBOUNDS&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ebounds_hdu</span><span class="p">)</span>
+
+        <span class="n">spectrum_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">,</span>
+                                        <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;SPECTRUM&#39;</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum_hdu</span><span class="p">)</span>
+
+        <span class="n">gti</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gti</span><span class="p">)</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;START&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti</span><span class="p">[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">trigtime</span>
+        <span class="n">gti_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">BinTableHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">gti</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="s1">&#39;GTI&#39;</span><span class="p">],</span>
+                                   <span class="n">name</span><span class="o">=</span><span class="s1">&#39;GTI&#39;</span><span class="p">)</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gti_hdu</span><span class="p">)</span>
+
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">full_path</span><span class="p">,</span> <span class="n">checksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BAK.rebin_energy"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.BAK.rebin_energy">[docs]</a>    <span class="k">def</span> <span class="nf">rebin_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not Implemented&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Function not available for BAK objects&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BAK.slice_energy"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.BAK.slice_energy">[docs]</a>    <span class="k">def</span> <span class="nf">slice_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not Implemented&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Function not available for BAK objects&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

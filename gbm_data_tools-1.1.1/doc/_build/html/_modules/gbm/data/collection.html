@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gbm.data.collection &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../../../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gbm.data.collection</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gbm.data.collection</h1><div class="highlight"><pre>
+<span></span><span class="c1"># collection.py: Data collection classes</span>
+<span class="c1">#</span>
+<span class="c1">#     Authors: William Cleveland (USRA),</span>
+<span class="c1">#              Adam Goldstein (USRA) and</span>
+<span class="c1">#              Daniel Kocevski (NASA)</span>
+<span class="c1">#</span>
+<span class="c1">#     Portions of the code are Copyright 2020 William Cleveland and</span>
+<span class="c1">#     Adam Goldstein, Universities Space Research Association</span>
+<span class="c1">#     All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1">#     Written for the Fermi Gamma-ray Burst Monitor (Fermi-GBM)</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#     it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#     the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#     (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#     This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#     GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#     You should have received a copy of the GNU General Public License</span>
+<span class="c1">#     along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="DataCollection"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DataCollection">[docs]</a><span class="k">class</span> <span class="nc">DataCollection</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A container for a collection of like data objects, such as a collection</span>
+<span class="sd">    of :class:`Ctime` objects.  This class exposes the individual objects&#39;</span>
+<span class="sd">    attributes, and it exposes the methods of the object class so that methods </span>
+<span class="sd">    can be called on the collection as a whole.  For that reason, each object in </span>
+<span class="sd">    the DataCollection must be of the same type, otherwise an error is raised.  </span>
+<span class="sd">    The type of the collection is set by the first object inserted into the </span>
+<span class="sd">    collection and the collection type is immutable thereafter.</span>
+<span class="sd">    </span>
+<span class="sd">    Objects are stored in the collection in the order they are added.</span>
+<span class="sd">    </span>
+<span class="sd">    The number of items in the collection can be retrieved by ``len()`` and</span>
+<span class="sd">    one can iterate over the items:: </span>
+<span class="sd">        [data_item for data_item in DataCollection]</span>
+<span class="sd">    </span>
+<span class="sd">    In addition to the DataCollection methods, all of the individual object </span>
+<span class="sd">    attributes and methods are exposed, and they become methods of the </span>
+<span class="sd">    DataCollection.  Note that individual object attributes become *methods* </span>
+<span class="sd">    i.e. if you have an item attribute called item.name, then the corresponding </span>
+<span class="sd">    DataCollection method would be item.name().</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        items (list): The names of the items in the DataCollection</span>
+<span class="sd">        types (str): The type of the objects in the DataCollection            </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_enforce_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;Incorrect data item for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+
+<div class="viewcode-block" id="DataCollection.from_list"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DataCollection.from_list">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a list of objects and optionally a list of corresponding names, </span>
+<span class="sd">        create a new DataCollection. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_list (list of :obj:`objects`): </span>
+<span class="sd">                The list of objects to be in the collection</span>
+<span class="sd">            names (list of :obj:`str`, optional):  </span>
+<span class="sd">                The list of corresponding names to the objects.  If not set, </span>
+<span class="sd">                will try to retrieve a name from object.filename (assuming it&#39;s </span>
+<span class="sd">                a data object). If that fails, each item will be named </span>
+<span class="sd">                ambiguously &#39;item1&#39;, &#39;item2&#39;, etc.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns                </span>
+<span class="sd">            :py:class:`DataCollection`: The newly created collection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="c1"># set the names</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Names list must be same size as data list&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span>
+
+        <span class="c1"># include the objects</span>
+        <span class="k">for</span> <span class="n">data_item</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">include</span><span class="p">(</span><span class="n">data_item</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="DataCollection.to_list"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DataCollection.to_list">[docs]</a>    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the objects contained in the DataCollection as a list.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (list of :obj:`objects`): </span>
+<span class="sd">                The list of objects, in the order that they were inserted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DataCollection.include"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DataCollection.include">[docs]</a>    <span class="k">def</span> <span class="nf">include</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_item</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert an object into the collection.  The first item inserted will </span>
+<span class="sd">        set the immutable type.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_item (:obj:`object`): A data object to include</span>
+<span class="sd">            name (str, optional): </span>
+<span class="sd">                An optional corresponding name.  If not set, will try to </span>
+<span class="sd">                retrieve a name from object.filename (assuming it&#39;s a data </span>
+<span class="sd">                object). If that fails, each item will be named ambiguously </span>
+<span class="sd">                &#39;item1&#39;, &#39;item2&#39;, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if this is the first item inserted, set the type of the Collection</span>
+        <span class="c1"># and expose the attributes and methods of the object</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_item</span><span class="p">)</span>
+            <span class="nb">dir</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_item</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">()</span> <span class="k">if</span>
+                   <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;_.&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_method_call</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>   
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># otherwise, ensure that each object inserted is of the same type</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_item</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;A DataCollection must contain like objects&#39;</span><span class="p">)</span>
+
+        <span class="c1"># insert with user-defined name</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_item</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># or try to insert using filename attribute</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="n">data_item</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_item</span>
+            <span class="c1"># otherwise default to ambiguity</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="s1">&#39;item</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data_item</span></div>
+
+<div class="viewcode-block" id="DataCollection.remove"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DataCollection.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove an object from the collection given the name </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            item_name (str): The name of the item to remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataCollection.get_item"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.DataCollection.get_item">[docs]</a>    <span class="k">def</span> <span class="nf">get_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve an object from the DataCollection by name</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            item_name (str): The name of the item to retrieve</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`object`: The retrieved data item</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="n">item_name</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_method_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is the wrapper for the exposde attribute and method calls.  </span>
+<span class="sd">        Applies method_name over all items in the DataCollection</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            method_name (str): The name of the method or attribute</span>
+<span class="sd">            *args: Additional arguments to be passed to the method</span>
+<span class="sd">            **kwargs: Additional keyword arguments to be passed to the method</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None or list: If not None, will return the results from all </span>
+<span class="sd">            objects in the list     </span>
+<span class="sd">       &quot;&quot;&quot;</span>
+        <span class="c1"># get the attributes/methods for each item</span>
+        <span class="n">refs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+        <span class="c1"># if method_name is a method, then it will be callable</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">refs</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="c1"># otherwise, method_name will not be callable if it is an attribute</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we are setting an attribute    </span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                       <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="c1"># we are retrieving an attribute</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">refs</span>
+
+        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="GbmDetectorCollection"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmDetectorCollection">[docs]</a><span class="k">class</span> <span class="nc">GbmDetectorCollection</span><span class="p">(</span><span class="n">DataCollection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for a collection of GBM-specific data objects, such as a </span>
+<span class="sd">    collection of ``Ctime`` objects from different detectors.</span>
+<span class="sd">    </span>
+<span class="sd">    The special behavior of this class is to provide a way to interact with</span>
+<span class="sd">    a collection of detector data that may contain a mix of different *types*</span>
+<span class="sd">    of detectors.  For example, many times we want a collection of GBM NaI</span>
+<span class="sd">    and GBM BGO detectors.  These detectors have very different energy ranges,</span>
+<span class="sd">    and so may require different inputs for a variety of functions.  This</span>
+<span class="sd">    collection allows one to specify the different arguments for NaI and BGO</span>
+<span class="sd">    data without having to implement many ugly and space-wasting loops and</span>
+<span class="sd">    ``if...else`` decisions.</span>
+<span class="sd">    </span>
+<span class="sd">    In addition to the GbmDetectorCollection methods, all of the individual </span>
+<span class="sd">    object attributes and methods are exposed, and they become methods of the </span>
+<span class="sd">    DataCollection.  Note that individual object attributes become *methods* </span>
+<span class="sd">    i.e. if you have an item attribute called item.name, then the corresponding </span>
+<span class="sd">    DataCollection method would be item.name().    </span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        items (list): The names of the items in the DataCollection</span>
+<span class="sd">        types (str): The type of the objects in the DataCollection            </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dets</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="GbmDetectorCollection.from_list"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmDetectorCollection.from_list">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a list of objects and optionally a list of corresponding names</span>
+<span class="sd">        and corresponding detector names, create a new GbmDetectorCollection. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_list (list of :obj:`objects`): </span>
+<span class="sd">                The list of objects to be in the collection</span>
+<span class="sd">            names (list of :obj:`str`, optional):  </span>
+<span class="sd">                The list of corresponding names to the objects.  If not set, </span>
+<span class="sd">                will try to retrieve a name from object.filename (assuming it&#39;s </span>
+<span class="sd">                a data object). If that fails, each item will be named </span>
+<span class="sd">                ambiguously &#39;item1&#39;, &#39;item2&#39;, etc.</span>
+<span class="sd">            dets (list of :obj:`str`, optional): </span>
+<span class="sd">                The detector names for each object. If not set, will try to</span>
+<span class="sd">                retrieve from the object.detector attribute.  If that attribute </span>
+<span class="sd">                doesn&#39;t exist, an error will be raised, and the user will need </span>
+<span class="sd">                to specify this list.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns                </span>
+<span class="sd">            :py:class:`GbmDetectorCollection`: The newly created collection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="c1"># set the detector names</span>
+        <span class="k">if</span> <span class="n">dets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dets</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;Detector list must be same size as data list&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_item</span><span class="o">.</span><span class="n">detector</span> <span class="k">for</span> <span class="n">data_item</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Cannot find detector information. &#39;</span>
+                                     <span class="s1">&#39;Need to manually set&#39;</span><span class="p">)</span>
+        <span class="c1"># set the names</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Names list must be same size as data list&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span>
+
+        <span class="c1"># include the objects</span>
+        <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">include</span><span class="p">(</span><span class="n">data_item</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">data_item</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+         <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">names</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="GbmDetectorCollection.remove"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmDetectorCollection.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove an object from the collection given the name </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            item_name (str): The name of the item to remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="o">==</span> <span class="n">item_name</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GbmDetectorCollection.include"><a class="viewcode-back" href="../../../api/api-data.html#gbm.data.GbmDetectorCollection.include">[docs]</a>    <span class="k">def</span> <span class="nf">include</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_item</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert an object into the GbmDetectorCollection.  The first item </span>
+<span class="sd">        inserted will set the immutable type.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_item (:obj:`object`): A data object to include</span>
+<span class="sd">            det (str): The corresponding detector for the item</span>
+<span class="sd">            name (str, optional): </span>
+<span class="sd">                An optional corresponding name.  If not set, will try to </span>
+<span class="sd">                retrieve a name from object.filename (assuming it&#39;s a data </span>
+<span class="sd">                object). If that fails, each item will be named ambiguously </span>
+<span class="sd">                &#39;item1&#39;, &#39;item2&#39;, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">include</span><span class="p">(</span><span class="n">data_item</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_method_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">nai_args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nai_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">bgo_args</span><span class="o">=</span><span class="p">(),</span> <span class="n">bgo_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is the wrapper for the attribute and method calls.  Applies </span>
+<span class="sd">        method_name over all items in the GbmDetectorCollection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method_name (str): The name of the method or attribute</span>
+<span class="sd">            *args: Additional arguments to be passed to the method</span>
+<span class="sd">            nai_args: Arguments to be applied only to the NaI objects</span>
+<span class="sd">            bgo_args: Arguments to be applied only to the BGO objects</span>
+<span class="sd">            nai_kwargs: Keywords to be applied only to the NaI objects</span>
+<span class="sd">            bgo_kwargs: Keywords to be applied only to the BGO objects</span>
+<span class="sd">            **kwargs: Additional keyword arguments to be passed to the </span>
+<span class="sd">                      method. Will be applied to both NaI and BGO objects </span>
+<span class="sd">                      and will be appended to any existing keywords from </span>
+<span class="sd">                      nai_kwargs or bgo_kwargs</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:       </span>
+<span class="sd">        None or list: If not None, will return the results from all objects </span>
+<span class="sd">                      in the list     </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">nai_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nai_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">bgo_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bgo_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nai_args</span> <span class="o">=</span> <span class="n">args</span>
+            <span class="n">bgo_args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nai_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">bgo_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># get the attributes/methods for each item</span>
+        <span class="n">refs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+        <span class="c1"># if method_name is a method, then it will be callable</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">refs</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dets</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s1">&#39;n&#39;</span> <span class="ow">in</span> <span class="n">det</span><span class="p">:</span>
+                    <span class="n">our_args</span> <span class="o">=</span> <span class="n">nai_args</span>
+                    <span class="n">our_kwargs</span> <span class="o">=</span> <span class="n">nai_kwargs</span>
+                <span class="k">elif</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">det</span><span class="p">:</span>
+                    <span class="n">our_args</span> <span class="o">=</span> <span class="n">bgo_args</span>
+                    <span class="n">our_kwargs</span> <span class="o">=</span> <span class="n">bgo_kwargs</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)(</span><span class="o">*</span><span class="n">our_args</span><span class="p">,</span> <span class="o">**</span><span class="n">our_kwargs</span><span class="p">))</span>
+
+        <span class="c1"># otherwise, method_name will not be callable if it is an attribute</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we are setting an attribute    </span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nai_args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">bgo_args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dets</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="s1">&#39;n&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">detector</span><span class="p">:</span>
+                        <span class="n">our_args</span> <span class="o">=</span> <span class="n">nai_args</span>
+                    <span class="k">elif</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">detector</span><span class="p">:</span>
+                        <span class="n">our_args</span> <span class="o">=</span> <span class="n">bgo_args</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">))</span>
+            <span class="c1"># we are retrieving an attribute</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">refs</span>
+
+        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1735 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Finding GBM Data &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Analysis Workflow: Reduction and Export" href="PhaExport.html" />
+    <link rel="prev" title="GBM Localizations and Sky Maps" href="Skymaps.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PhaiiData.html">GBM Science Data: Time History Spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TteData.html">TTE Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Responses.html">Detector Response Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PositionHistory.html">The Position History Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trigdat.html">Quicklook Trigger Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skymaps.html">GBM Localizations and Sky Maps</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Finding GBM Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Searching-the-GBM-Catalogs">Searching the GBM Catalogs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PhaExport.html">Analysis Workflow: Reduction and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpectralFitting.html">Analysis Workflow: Spectral Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScatFiles.html">GBM Spectral Catalog Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulations.html">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DataPrimitives.html">Introduction to the Data Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Plugins.html">Plugin-like Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visualizations.html">Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">GBM Data Tools API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
+        
+      <li>Finding GBM Data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/DataFinders.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Finding-GBM-Data">
+<h1>Finding GBM Data<a class="headerlink" href="#Finding-GBM-Data" title="Permalink to this headline">¶</a></h1>
+<p>A natural question may be: “Where do I find the data I need?” Well, you’re in luck, because this will show you how to find the data you seek. GBM Data is hosted publicly on the HEASARC FTP server via the Fermi Science Support Center, and the data are stored in a consistent directory structure. But instead of having to navigate a winding maze of FTP directories, we provide a couple of classes built to retrieve the data you want. First, you need to decide if you want trigger data (say from a GRB)
+or continuous data. Let’s start with trigger data, and assume you know the trigger number you’re interested in:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the datafinder class for triggers</span>
+<span class="kn">from</span> <span class="nn">gbm.finder</span> <span class="kn">import</span> <span class="n">TriggerFtp</span>
+
+<span class="c1"># initialize the Trigger data finder with a trigger number</span>
+<span class="n">trig_finder</span> <span class="o">=</span> <span class="n">TriggerFtp</span><span class="p">(</span><span class="s1">&#39;190114873&#39;</span><span class="p">)</span>
+<span class="n">trig_finder</span><span class="o">.</span><span class="n">num_files</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+122
+</pre></div></div>
+</div>
+<p>We don’t really care about the directory structure, we just want the data. So this quickly gets us to the directory we need. There are 122 files associated with this trigger. Say we want CSPEC data. is there CSPEC available?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">trig_finder</span><span class="o">.</span><span class="n">ls_cspec</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;glg_cspec_b0_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_b1_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n0_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n1_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n2_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n3_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n4_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n5_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n6_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n7_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n8_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_n9_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_na_bn190114873_v00.pha&#39;,
+ &#39;glg_cspec_nb_bn190114873_v00.pha&#39;]
+</pre></div></div>
+</div>
+<p>Great! There’s a full complement of CSPEC data. How about responses for the CSPEC data?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">trig_finder</span><span class="o">.</span><span class="n">ls_rsp</span><span class="p">(</span><span class="n">cspec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ctime</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;glg_cspec_b0_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_b1_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n0_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n1_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n2_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n3_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n4_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n5_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n6_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n7_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n8_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_n9_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_na_bn190114873_v02.rsp&#39;,
+ &#39;glg_cspec_nb_bn190114873_v02.rsp&#39;]
+</pre></div></div>
+</div>
+<p>Again, we can list all of the relevant files. Are there any quicklook lightcurve plots?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">trig_finder</span><span class="o">.</span><span class="n">ls_lightcurve</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;glg_lc_chan12_bn190114873_v00.pdf&#39;,
+ &#39;glg_lc_chan34_bn190114873_v00.pdf&#39;,
+ &#39;glg_lc_chan567_bn190114873_v00.pdf&#39;,
+ &#39;glg_lc_chantot_bn190114873_v00.pdf&#39;,
+ &#39;glg_lc_tot_bn190114873_v00.pdf&#39;]
+</pre></div></div>
+</div>
+<p>What if we want to move on to another trigger? You don’t have to create a new <code class="docutils literal notranslate"><span class="pre">TriggerFTP</span></code> object, you can just <code class="docutils literal notranslate"><span class="pre">set_trigger()</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># change trigger</span>
+<span class="n">trig_finder</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span><span class="s1">&#39;170817529&#39;</span><span class="p">)</span>
+<span class="n">trig_finder</span><span class="o">.</span><span class="n">num_files</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+128
+</pre></div></div>
+</div>
+<p>Of course, you don’t want to just list the files in a directory, you want to download them. Let’s download all the catalog files for GRB 170817A:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">trig_finder</span><span class="o">.</span><span class="n">get_cat_files</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+glg_bcat_all_bn170817529_v01.fit [==============================] 100.00%
+glg_scat_all_bn170817529_flnc_band_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_flnc_comp_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_flnc_plaw_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_flnc_sbpl_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_pflx_band_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_pflx_comp_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_pflx_plaw_v00.fit [==============================] 100.00%
+glg_scat_all_bn170817529_pflx_sbpl_v00.fit [==============================] 100.00%
+glg_tcat_all_bn170817529_v03.fit [==============================] 100.00%
+</pre></div></div>
+</div>
+<p>Now we want some continuous data. There aren’t any trigger numbers for continuous data. Continuous CTIME and CSPEC are available in files that cover a whole day (in UTC) and TTE are offered in hourly files. To find the data you need, instead of a trigger number, you need to specify a time</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the datafinder class for continuous data</span>
+<span class="kn">from</span> <span class="nn">gbm.finder</span> <span class="kn">import</span> <span class="n">ContinuousFtp</span>
+
+<span class="c1"># initialize the continuous data finder with a time (Fermi MET, UTC, or GPS)</span>
+<span class="n">cont_finder</span> <span class="o">=</span> <span class="n">ContinuousFtp</span><span class="p">(</span><span class="n">met</span><span class="o">=</span><span class="mf">587683338.0</span><span class="p">)</span>
+<span class="n">cont_finder</span><span class="o">.</span><span class="n">num_files</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+379
+</pre></div></div>
+</div>
+<p>That’s a whole lotta files in this directory. Most of them are TTE; remember that each hour has a TTE file (since the end of 2012) for each detector. Let’s just list the CTIME that’s available:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># list ctime data covering this time</span>
+<span class="n">cont_finder</span><span class="o">.</span><span class="n">ls_ctime</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;glg_ctime_b0_190816_v00.pha&#39;,
+ &#39;glg_ctime_b1_190816_v00.pha&#39;,
+ &#39;glg_ctime_n0_190816_v00.pha&#39;,
+ &#39;glg_ctime_n1_190816_v00.pha&#39;,
+ &#39;glg_ctime_n2_190816_v00.pha&#39;,
+ &#39;glg_ctime_n3_190816_v00.pha&#39;,
+ &#39;glg_ctime_n4_190816_v00.pha&#39;,
+ &#39;glg_ctime_n5_190816_v00.pha&#39;,
+ &#39;glg_ctime_n6_190816_v00.pha&#39;,
+ &#39;glg_ctime_n7_190816_v00.pha&#39;,
+ &#39;glg_ctime_n8_190816_v00.pha&#39;,
+ &#39;glg_ctime_n9_190816_v00.pha&#39;,
+ &#39;glg_ctime_na_190816_v00.pha&#39;,
+ &#39;glg_ctime_nb_190816_v00.pha&#39;]
+</pre></div></div>
+</div>
+<p>Now let’s list the available TTE for this time. This will only list the TTE files in the directory that cover the relevant time:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># list hourly TTE data covering this time</span>
+<span class="n">cont_finder</span><span class="o">.</span><span class="n">ls_tte</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;glg_tte_b0_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_b1_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n0_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n1_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n2_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n3_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n4_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n5_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n6_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n7_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n8_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_n9_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_na_190816_21z_v00.fit.gz&#39;,
+ &#39;glg_tte_nb_190816_21z_v00.fit.gz&#39;]
+</pre></div></div>
+</div>
+<p>Similar to the trigger finder, you can use the same object to search at different times.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># change the time of interest</span>
+<span class="n">cont_finder</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">utc</span><span class="o">=</span><span class="s1">&#39;2017-08-17T12:41:06.47&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now how about downloading the position history file for this time:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">cont_finder</span><span class="o">.</span><span class="n">get_poshist</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+glg_poshist_all_170817_v01.fit [==============================] 100.00%
+</pre></div></div>
+</div>
+<hr class="docutils" />
+<div class="section" id="Searching-the-GBM-Catalogs">
+<h2>Searching the GBM Catalogs<a class="headerlink" href="#Searching-the-GBM-Catalogs" title="Permalink to this headline">¶</a></h2>
+<p>The HEASARC also hosts two catalogs that are of interest here: a Trigger Catalog that contains information about every GBM trigger, and a Burst Catalog that contains standard analysis of every triggered GRB. HEASARC provides a way to search these catalogs online through their Browse interface, but we offer a way to do it in Python through the Data Tools.</p>
+<p>Let’s look at the trigger catalog first:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.finder</span> <span class="kn">import</span> <span class="n">TriggerCatalog</span>
+
+<span class="n">trigcat</span> <span class="o">=</span> <span class="n">TriggerCatalog</span><span class="p">()</span>
+<span class="n">trigcat</span><span class="o">.</span><span class="n">num_rows</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Downloading Catalog from HEASARC via w3query.pl...
+Finished in 8 s
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+8283
+</pre></div></div>
+</div>
+<p>Depending on your connection, initialization may take a few seconds. You can see what columns are available in the catalog:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">trigcat</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([&#39;version&#39;, &#39;trigger_name&#39;, &#39;name&#39;, &#39;ra&#39;, &#39;dec&#39;, &#39;trigger_time&#39;,
+       &#39;trigger_type&#39;, &#39;reliability&#39;, &#39;adc_high&#39;, &#39;adc_low&#39;, &#39;bii&#39;,
+       &#39;channel_high&#39;, &#39;channel_low&#39;, &#39;dec_scx&#39;, &#39;dec_scz&#39;,
+       &#39;detector_mask&#39;, &#39;end_time&#39;, &#39;error_radius&#39;, &#39;geo_lat&#39;, &#39;geo_long&#39;,
+       &#39;lii&#39;, &#39;localization_source&#39;, &#39;phi&#39;, &#39;ra_scx&#39;, &#39;ra_scz&#39;, &#39;theta&#39;,
+       &#39;time&#39;, &#39;trigger_algorithm&#39;, &#39;trigger_timescale&#39;], dtype=&#39;&lt;U19&#39;)
+</pre></div></div>
+</div>
+<p>You can also return the range of values for a given column:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># error_radius is the statistical localization radius in degrees</span>
+<span class="n">trigcat</span><span class="o">.</span><span class="n">column_range</span><span class="p">(</span><span class="s1">&#39;error_radius&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.0, 93.54)
+</pre></div></div>
+</div>
+<p>If you only care about specific columns in the table, you can return a numpy record array with only those columns. Let’s return a table with the trigger name and time for every trigger:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">trigcat</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;trigger_name&#39;</span><span class="p">,</span> <span class="s1">&#39;trigger_time&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+rec.array([(&#39;bn120403857&#39;, &#39;2012-04-03 20:33:58.493&#39;),
+           (&#39;bn140912846&#39;, &#39;2014-09-12 20:18:03.669&#39;),
+           (&#39;bn120227725&#39;, &#39;2012-02-27 17:24:41.054&#39;), ...,
+           (&#39;bn110201399&#39;, &#39;2011-02-01 09:35:10.251&#39;),
+           (&#39;bn150705660&#39;, &#39;2015-07-05 15:50:18.845&#39;),
+           (&#39;bn220403863&#39;, &#39;2022-04-03 20:42:39.048&#39;)],
+          dtype=[(&#39;trigger_name&#39;, &#39;&lt;U23&#39;), (&#39;trigger_time&#39;, &#39;&lt;U23&#39;)])
+</pre></div></div>
+</div>
+<p>Importantly, we can make slices of the catalog based on conditionals. Let’s only select triggers with localization radii between 1.1 and 10 degrees:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">sliced_trigcat</span> <span class="o">=</span> <span class="n">trigcat</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="s1">&#39;error_radius&#39;</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">hi</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">sliced_trigcat</span><span class="o">.</span><span class="n">num_rows</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2482
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">sliced_trigcat</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;trigger_name&#39;</span><span class="p">,</span> <span class="s1">&#39;trigger_time&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+rec.array([(&#39;bn120227725&#39;, &#39;2012-02-27 17:24:41.054&#39;),
+           (&#39;bn141205018&#39;, &#39;2014-12-05 00:25:29.813&#39;),
+           (&#39;bn170116238&#39;, &#39;2017-01-16 05:43:15.259&#39;), ...,
+           (&#39;bn210624041&#39;, &#39;2021-06-24 00:58:23.248&#39;),
+           (&#39;bn091012783&#39;, &#39;2009-10-12 18:47:02.770&#39;),
+           (&#39;bn180304259&#39;, &#39;2018-03-04 06:12:47.267&#39;)],
+          dtype=[(&#39;trigger_name&#39;, &#39;&lt;U23&#39;), (&#39;trigger_time&#39;, &#39;&lt;U23&#39;)])
+</pre></div></div>
+</div>
+<p>You can also slice on multiple conditionals, simultaneously. Select everything that has a localization radius between 1.1-10 degrees, <em>and</em> happened on or after January 1, 2019:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># perform a row slice based on multiple conditionals that can span more than one column</span>
+<span class="n">sliced_trigcat2</span> <span class="o">=</span> <span class="n">trigcat</span><span class="o">.</span><span class="n">slices</span><span class="p">([(</span><span class="s1">&#39;error_radius&#39;</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;trigger_time&#39;</span><span class="p">,</span> <span class="s1">&#39;2019-01-01 00:00:00&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)])</span>
+<span class="n">sliced_trigcat2</span><span class="o">.</span><span class="n">num_rows</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+566
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">sliced_trigcat2</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;trigger_name&#39;</span><span class="p">,</span> <span class="s1">&#39;trigger_time&#39;</span><span class="p">,</span> <span class="s1">&#39;error_radius&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+rec.array([(&#39;bn150806478&#39;, &#39;2019-01-02 06:11:31.125&#39;,  6.3833),
+           (&#39;bn130623790&#39;, &#39;2019-01-17 08:50:43.596&#39;,  4.63  ),
+           (&#39;bn171213061&#39;, &#39;2019-01-18 22:29:49.932&#39;,  7.39  ),
+           (&#39;bn160508290&#39;, &#39;2019-01-19 05:59:03.575&#39;,  8.35  ),
+           (&#39;bn160804576&#39;, &#39;2019-01-29 12:55:42.675&#39;,  5.    ),
+           (&#39;bn210529996&#39;, &#39;2019-01-31 02:36:33.938&#39;,  5.83  ),
+           (&#39;bn110124784&#39;, &#39;2019-01-31 23:08:35.673&#39;,  9.14  ),
+           (&#39;bn110710507&#39;, &#39;2019-02-01 06:03:28.818&#39;,  7.8667),
+           (&#39;bn150319498&#39;, &#39;2019-02-02 05:36:55.718&#39;,  2.88  ),
+           (&#39;bn151222340&#39;, &#39;2019-02-02 15:13:12.939&#39;,  2.89  ),
+           (&#39;bn090228976&#39;, &#39;2019-02-03 23:24:11.710&#39;,  3.3   ),
+           (&#39;bn100405414&#39;, &#39;2019-02-04 15:02:50.914&#39;,  7.4667),
+           (&#39;bn090726218&#39;, &#39;2019-02-05 22:31:15.658&#39;,  7.06  ),
+           (&#39;bn120702891&#39;, &#39;2019-02-15 18:31:22.475&#39;,  8.48  ),
+           (&#39;bn120217808&#39;, &#39;2019-02-17 04:31:26.137&#39;,  3.23  ),
+           (&#39;bn150922462&#39;, &#39;2019-02-18 07:54:33.343&#39;,  4.3167),
+           (&#39;bn210518889&#39;, &#39;2019-02-22 07:29:35.526&#39;,  6.1   ),
+           (&#39;bn181119606&#39;, &#39;2019-02-22 12:53:27.151&#39;,  1.75  ),
+           (&#39;bn091112928&#39;, &#39;2019-02-26 12:21:45.676&#39;,  4.54  ),
+           (&#39;bn210324468&#39;, &#39;2019-02-28 23:21:16.317&#39;,  3.11  ),
+           (&#39;bn100621452&#39;, &#39;2019-03-03 05:45:22.235&#39;,  2.81  ),
+           (&#39;bn160818230&#39;, &#39;2019-03-04 08:54:35.515&#39;,  7.76  ),
+           (&#39;bn190215772&#39;, &#39;2019-03-04 19:37:23.342&#39;,  1.19  ),
+           (&#39;bn181121401&#39;, &#39;2019-03-06 22:37:43.178&#39;,  8.    ),
+           (&#39;bn210424694&#39;, &#39;2019-03-07 03:37:16.537&#39;,  8.58  ),
+           (&#39;bn100219026&#39;, &#39;2019-03-10 09:32:32.569&#39;,  2.93  ),
+           (&#39;bn170614255&#39;, &#39;2019-03-12 10:42:10.794&#39;,  3.48  ),
+           (&#39;bn150712960&#39;, &#39;2019-03-13 03:36:00.811&#39;, 10.    ),
+           (&#39;bn191017391&#39;, &#39;2019-03-15 12:17:42.138&#39;,  1.5   ),
+           (&#39;bn160805498&#39;, &#39;2019-03-19 08:28:17.514&#39;,  2.86  ),
+           (&#39;bn200506404&#39;, &#39;2019-03-19 09:00:37.980&#39;,  2.15  ),
+           (&#39;bn160628136&#39;, &#39;2019-03-21 08:42:33.858&#39;,  8.52  ),
+           (&#39;bn200425701&#39;, &#39;2019-03-23 04:17:14.965&#39;,  7.25  ),
+           (&#39;bn110130230&#39;, &#39;2019-03-23 07:16:51.688&#39;,  6.75  ),
+           (&#39;bn200622092&#39;, &#39;2019-03-25 23:58:57.211&#39;,  1.35  ),
+           (&#39;bn091209001&#39;, &#39;2019-03-26 07:31:38.998&#39;,  2.93  ),
+           (&#39;bn160322552&#39;, &#39;2019-03-26 23:24:41.342&#39;,  4.65  ),
+           (&#39;bn100517518&#39;, &#39;2019-03-27 02:39:10.973&#39;,  7.75  ),
+           (&#39;bn140124527&#39;, &#39;2019-03-30 16:39:32.274&#39;,  2.02  ),
+           (&#39;bn121125469&#39;, &#39;2019-04-06 11:09:47.053&#39;,  5.24  ),
+           (&#39;bn200502574&#39;, &#39;2019-04-06 17:52:33.155&#39;,  2.7   ),
+           (&#39;bn160807480&#39;, &#39;2019-04-07 13:48:36.785&#39;,  5.8833),
+           (&#39;bn171202113&#39;, &#39;2019-04-07 16:07:26.493&#39;,  2.68  ),
+           (&#39;bn160102936&#39;, &#39;2019-04-07 18:54:41.578&#39;,  3.46  ),
+           (&#39;bn110920338&#39;, &#39;2019-04-08 12:52:18.176&#39;,  5.    ),
+           (&#39;bn140626843&#39;, &#39;2019-04-11 09:45:48.597&#39;,  6.61  ),
+           (&#39;bn110524510&#39;, &#39;2019-04-11 13:53:58.091&#39;,  6.95  ),
+           (&#39;bn210910456&#39;, &#39;2019-04-19 09:55:37.770&#39;,  9.5333),
+           (&#39;bn171017823&#39;, &#39;2019-04-20 23:32:24.966&#39;,  5.54  ),
+           (&#39;bn160206566&#39;, &#39;2019-04-22 06:48:17.495&#39;,  6.25  ),
+           (&#39;bn091107635&#39;, &#39;2019-04-22 16:05:04.521&#39;,  4.46  ),
+           (&#39;bn150211239&#39;, &#39;2019-04-28 18:48:12.460&#39;,  9.08  ),
+           (&#39;bn150317580&#39;, &#39;2019-04-29 17:49:50.579&#39;,  5.7167),
+           (&#39;bn210903077&#39;, &#39;2019-05-02 04:01:30.415&#39;,  5.38  ),
+           (&#39;bn190129539&#39;, &#39;2019-05-04 09:57:34.203&#39;,  6.2   ),
+           (&#39;bn161227498&#39;, &#39;2019-05-04 16:16:28.313&#39;,  4.88  ),
+           (&#39;bn130924910&#39;, &#39;2019-05-05 01:14:09.330&#39;,  5.86  ),
+           (&#39;bn151211672&#39;, &#39;2019-05-07 06:28:23.301&#39;,  5.96  ),
+           (&#39;bn201008754&#39;, &#39;2019-05-07 23:16:29.638&#39;,  4.    ),
+           (&#39;bn140224788&#39;, &#39;2019-05-08 19:22:50.400&#39;,  3.69  ),
+           (&#39;bn090428441&#39;, &#39;2019-05-10 02:52:13.232&#39;,  4.2   ),
+           (&#39;bn110828435&#39;, &#39;2019-05-10 10:19:16.044&#39;,  9.05  ),
+           (&#39;bn190504415&#39;, &#39;2019-05-13 19:47:08.098&#39;,  7.85  ),
+           (&#39;bn100923844&#39;, &#39;2019-05-17 19:30:10.172&#39;,  5.35  ),
+           (&#39;bn190808752&#39;, &#39;2019-05-25 00:45:47.652&#39;,  1.38  ),
+           (&#39;bn220211047&#39;, &#39;2019-05-31 07:29:11.825&#39;,  8.66  ),
+           (&#39;bn120105584&#39;, &#39;2019-06-01 07:47:24.176&#39;,  2.8   ),
+           (&#39;bn140714268&#39;, &#39;2019-06-03 19:04:25.984&#39;,  1.14  ),
+           (&#39;bn200313456&#39;, &#39;2019-06-05 23:22:27.118&#39;,  5.27  ),
+           (&#39;bn190407672&#39;, &#39;2019-06-06 01:55:07.776&#39;,  4.54  ),
+           (&#39;bn170829674&#39;, &#39;2019-06-07 01:42:44.289&#39;,  3.56  ),
+           (&#39;bn170604603&#39;, &#39;2019-06-08 00:12:18.394&#39;,  4.1   ),
+           (&#39;bn080802386&#39;, &#39;2019-06-09 07:34:05.259&#39;,  4.1   ),
+           (&#39;bn130219775&#39;, &#39;2019-06-10 17:59:49.908&#39;,  1.21  ),
+           (&#39;bn100614498&#39;, &#39;2019-06-12 03:57:24.648&#39;,  2.99  ),
+           (&#39;bn190603795&#39;, &#39;2019-06-15 15:16:27.372&#39;,  5.86  ),
+           (&#39;bn170815526&#39;, &#39;2019-06-19 00:26:01.777&#39;,  5.32  ),
+           (&#39;bn130118482&#39;, &#39;2019-06-19 14:16:25.891&#39;,  6.7   ),
+           (&#39;bn100525744&#39;, &#39;2019-06-20 12:10:10.809&#39;,  3.55  ),
+           (&#39;bn170717952&#39;, &#39;2019-06-23 11:03:27.095&#39;,  8.17  ),
+           (&#39;bn160804775&#39;, &#39;2019-06-26 06:06:21.684&#39;,  1.92  ),
+           (&#39;bn120224282&#39;, &#39;2019-06-28 12:30:55.320&#39;,  4.6   ),
+           (&#39;bn120605453&#39;, &#39;2019-06-30 06:09:58.319&#39;,  2.62  ),
+           (&#39;bn170310883&#39;, &#39;2019-07-07 06:50:05.127&#39;,  9.76  ),
+           (&#39;bn180722993&#39;, &#39;2019-07-07 07:23:01.216&#39;,  3.5   ),
+           (&#39;bn220114168&#39;, &#39;2019-07-08 08:45:11.798&#39;,  8.45  ),
+           (&#39;bn190720613&#39;, &#39;2019-07-10 00:19:20.250&#39;,  1.16  ),
+           (&#39;bn170403707&#39;, &#39;2019-07-12 00:25:20.655&#39;,  2.28  ),
+           (&#39;bn111010709&#39;, &#39;2019-07-12 02:16:41.727&#39;,  1.67  ),
+           (&#39;bn180826356&#39;, &#39;2019-07-14 13:44:39.039&#39;,  5.95  ),
+           (&#39;bn130204484&#39;, &#39;2019-07-16 00:27:59.548&#39;,  7.07  ),
+           (&#39;bn220316476&#39;, &#39;2019-07-16 22:00:08.119&#39;,  2.86  ),
+           (&#39;bn110107886&#39;, &#39;2019-07-19 02:42:21.537&#39;,  3.28  ),
+           (&#39;bn220104167&#39;, &#39;2019-07-19 11:57:51.264&#39;,  3.1   ),
+           (&#39;bn110903009&#39;, &#39;2019-07-20 14:42:09.784&#39;,  1.18  ),
+           (&#39;bn190505051&#39;, &#39;2019-07-20 23:08:38.764&#39;,  9.54  ),
+           (&#39;bn211223350&#39;, &#39;2019-07-26 15:24:53.610&#39;,  8.06  ),
+           (&#39;bn200402403&#39;, &#39;2019-07-26 20:14:30.561&#39;,  5.08  ),
+           (&#39;bn190804792&#39;, &#39;2019-07-28 06:30:36.852&#39;,  4.44  ),
+           (&#39;bn091109895&#39;, &#39;2019-08-04 19:00:37.518&#39;,  4.09  ),
+           (&#39;bn100902990&#39;, &#39;2019-08-05 02:32:30.450&#39;,  7.2   ),
+           (&#39;bn171009138&#39;, &#39;2019-08-05 04:46:00.970&#39;,  5.11  ),
+           (&#39;bn150623397&#39;, &#39;2019-08-05 05:40:46.904&#39;,  6.2167),
+           (&#39;bn190610750&#39;, &#39;2019-08-06 16:12:33.324&#39;,  1.21  ),
+           (&#39;bn080816503&#39;, &#39;2019-08-08 18:03:17.432&#39;,  2.    ),
+           (&#39;bn130517781&#39;, &#39;2019-08-10 16:12:01.243&#39;,  1.5   ),
+           (&#39;bn201127147&#39;, &#39;2019-08-28 14:44:26.448&#39;,  6.58  ),
+           (&#39;bn100609783&#39;, &#39;2019-08-30 00:32:48.260&#39;,  2.53  ),
+           (&#39;bn200831462&#39;, &#39;2019-08-30 06:20:46.350&#39;,  8.45  ),
+           (&#39;bn220401896&#39;, &#39;2019-08-31 07:57:31.191&#39;,  5.    ),
+           (&#39;bn110328520&#39;, &#39;2019-08-31 16:38:37.978&#39;,  1.7   ),
+           (&#39;bn171106498&#39;, &#39;2019-09-03 17:19:36.255&#39;,  3.12  ),
+           (&#39;bn140501497&#39;, &#39;2019-09-05 23:38:28.489&#39;,  2.73  ),
+           (&#39;bn210924960&#39;, &#39;2019-09-06 18:25:09.288&#39;,  9.94  ),
+           (&#39;bn100424876&#39;, &#39;2019-09-10 00:39:37.860&#39;,  2.42  ),
+           (&#39;bn151118554&#39;, &#39;2019-09-15 05:44:57.911&#39;,  3.59  ),
+           (&#39;bn180119210&#39;, &#39;2019-09-19 18:20:02.656&#39;,  3.5333),
+           (&#39;bn191110587&#39;, &#39;2019-09-21 16:45:55.125&#39;,  9.53  ),
+           (&#39;bn180126095&#39;, &#39;2019-09-23 14:48:02.751&#39;,  1.2   ),
+           (&#39;bn161228553&#39;, &#39;2019-09-30 09:36:06.502&#39;,  2.24  ),
+           (&#39;bn180522678&#39;, &#39;2019-10-09 07:08:56.769&#39;,  1.91  ),
+           (&#39;bn110625474&#39;, &#39;2019-10-15 07:50:43.992&#39;,  5.55  ),
+           (&#39;bn170606968&#39;, &#39;2019-10-17 09:23:39.266&#39;,  3.12  ),
+           (&#39;bn111010237&#39;, &#39;2019-10-19 11:15:15.469&#39;,  3.18  ),
+           (&#39;bn140831374&#39;, &#39;2019-10-22 06:50:05.074&#39;,  9.9   ),
+           (&#39;bn130409960&#39;, &#39;2019-10-22 08:11:06.253&#39;,  2.22  ),
+           (&#39;bn190202234&#39;, &#39;2019-10-23 15:06:56.755&#39;,  2.11  ),
+           (&#39;bn130407800&#39;, &#39;2019-10-25 22:13:42.213&#39;,  9.29  ),
+           (&#39;bn180913783&#39;, &#39;2019-10-26 08:23:44.459&#39;,  6.73  ),
+           (&#39;bn120309402&#39;, &#39;2019-10-27 15:19:07.590&#39;,  9.2333),
+           (&#39;bn180730018&#39;, &#39;2019-10-28 04:10:01.398&#39;,  8.29  ),
+           (&#39;bn140218427&#39;, &#39;2019-10-28 05:05:21.712&#39;,  3.62  ),
+           (&#39;bn111109873&#39;, &#39;2019-10-28 14:08:04.442&#39;,  1.5   ),
+           (&#39;bn180626392&#39;, &#39;2019-11-01 21:28:50.523&#39;,  8.21  ),
+           (&#39;bn101025267&#39;, &#39;2019-11-04 12:38:38.563&#39;,  3.86  ),
+           (&#39;bn121117018&#39;, &#39;2019-11-04 15:36:47.645&#39;,  4.32  ),
+           (&#39;bn090222179&#39;, &#39;2019-11-08 00:04:37.596&#39;,  4.3   ),
+           (&#39;bn130716352&#39;, &#39;2019-11-10 14:05:34.993&#39;,  6.27  ),
+           (&#39;bn081130212&#39;, &#39;2019-11-11 08:19:09.572&#39;,  7.2   ),
+           (&#39;bn151107851&#39;, &#39;2019-11-11 08:44:29.948&#39;,  1.67  ),
+           (&#39;bn210515623&#39;, &#39;2019-11-11 13:07:10.792&#39;,  1.57  ),
+           (&#39;bn090814950&#39;, &#39;2019-11-12 08:51:18.192&#39;,  2.12  ),
+           (&#39;bn101101744&#39;, &#39;2019-11-13 13:52:44.522&#39;,  3.06  ),
+           (&#39;bn141031257&#39;, &#39;2019-11-17 00:08:28.724&#39;,  9.01  ),
+           (&#39;bn090108020&#39;, &#39;2019-11-18 22:12:01.821&#39;,  3.8   ),
+           (&#39;bn160216560&#39;, &#39;2019-11-25 15:12:45.686&#39;,  5.2167),
+           (&#39;bn101220576&#39;, &#39;2019-11-29 03:22:27.127&#39;,  1.25  ),
+           (&#39;bn220211657&#39;, &#39;2019-11-30 06:04:41.797&#39;,  7.02  ),
+           (&#39;bn120703498&#39;, &#39;2019-11-30 12:09:34.900&#39;,  5.15  ),
+           (&#39;bn170610689&#39;, &#39;2019-12-11 06:03:47.840&#39;,  2.57  ),
+           (&#39;bn150703259&#39;, &#39;2019-12-12 05:52:18.051&#39;,  2.02  ),
+           (&#39;bn180218635&#39;, &#39;2019-12-13 06:05:33.022&#39;,  4.44  ),
+           (&#39;bn080806896&#39;, &#39;2019-12-13 18:49:07.969&#39;,  2.9   ),
+           (&#39;bn171126235&#39;, &#39;2019-12-20 14:08:29.264&#39;,  3.29  ),
+           (&#39;bn130314147&#39;, &#39;2019-12-21 19:14:28.844&#39;,  1.41  ),
+           (&#39;bn181216551&#39;, &#39;2019-12-25 07:25:16.497&#39;,  5.42  ),
+           (&#39;bn120504468&#39;, &#39;2019-12-25 17:37:51.867&#39;,  4.06  ),
+           (&#39;bn100328141&#39;, &#39;2019-12-27 17:21:44.144&#39;,  4.82  ),
+           (&#39;bn211120548&#39;, &#39;2020-01-05 21:55:28.993&#39;,  1.93  ),
+           (&#39;bn160119072&#39;, &#39;2020-01-10 12:26:08.356&#39;,  6.31  ),
+           (&#39;bn090403314&#39;, &#39;2020-01-11 15:11:08.106&#39;,  9.7   ),
+           (&#39;bn110517902&#39;, &#39;2020-01-12 12:36:31.101&#39;,  8.3   ),
+           (&#39;bn090529564&#39;, &#39;2020-01-14 03:40:43.724&#39;,  1.5   ),
+           (&#39;bn160718975&#39;, &#39;2020-01-17 12:24:06.532&#39;,  1.82  ),
+           (&#39;bn170614486&#39;, &#39;2020-01-19 16:37:07.531&#39;,  1.86  ),
+           (&#39;bn110117364&#39;, &#39;2020-01-27 18:11:18.671&#39;,  9.63  ),
+           (&#39;bn210620204&#39;, &#39;2020-01-30 05:57:16.079&#39;,  8.5   ),
+           (&#39;bn140630505&#39;, &#39;2020-01-30 09:59:56.672&#39;,  2.24  ),
+           (&#39;bn220424481&#39;, &#39;2020-02-01 00:57:20.322&#39;,  1.88  ),
+           (&#39;bn120118898&#39;, &#39;2020-02-03 03:44:03.546&#39;,  7.17  ),
+           (&#39;bn110806043&#39;, &#39;2020-02-03 20:39:37.917&#39;,  8.4833),
+           (&#39;bn080805496&#39;, &#39;2020-02-04 12:25:17.161&#39;,  5.6   ),
+           (&#39;bn101223834&#39;, &#39;2020-02-05 20:17:23.328&#39;,  4.34  ),
+           (&#39;bn121220311&#39;, &#39;2020-02-07 01:22:55.598&#39;,  8.3   ),
+           (&#39;bn211211909&#39;, &#39;2020-02-08 01:14:17.086&#39;,  7.3   ),
+           (&#39;bn110710954&#39;, &#39;2020-02-19 09:54:14.678&#39;,  3.87  ),
+           (&#39;bn131125689&#39;, &#39;2020-02-21 03:52:58.711&#39;,  2.25  ),
+           (&#39;bn140928100&#39;, &#39;2020-02-23 19:32:03.243&#39;,  7.07  ),
+           (&#39;bn130919352&#39;, &#39;2020-02-24 05:05:49.279&#39;,  5.72  ),
+           (&#39;bn190411579&#39;, &#39;2020-03-01 07:40:46.355&#39;,  3.18  ),
+           (&#39;bn120226871&#39;, &#39;2020-03-13 10:57:12.130&#39;,  6.01  ),
+           (&#39;bn120309265&#39;, &#39;2020-03-17 00:40:30.488&#39;,  6.7333),
+           (&#39;bn120309358&#39;, &#39;2020-03-19 07:44:40.320&#39;,  6.7333),
+           (&#39;bn150707124&#39;, &#39;2020-03-20 09:56:46.851&#39;,  2.53  ),
+           (&#39;bn130623396&#39;, &#39;2020-03-23 18:46:32.956&#39;,  7.12  ),
+           (&#39;bn210504959&#39;, &#39;2020-03-26 12:24:47.903&#39;,  3.91  ),
+           (&#39;bn110522296&#39;, &#39;2020-03-27 20:56:48.165&#39;,  6.4   ),
+           (&#39;bn190615636&#39;, &#39;2020-04-02 09:39:37.908&#39;,  2.32  ),
+           (&#39;bn120819048&#39;, &#39;2020-04-02 16:30:29.655&#39;,  7.94  ),
+           (&#39;bn130206482&#39;, &#39;2020-04-02 19:46:23.077&#39;,  2.4   ),
+           (&#39;bn140906175&#39;, &#39;2020-04-03 22:04:03.419&#39;,  7.66  ),
+           (&#39;bn170724543&#39;, &#39;2020-04-03 23:21:57.371&#39;,  5.25  ),
+           (&#39;bn130815420&#39;, &#39;2020-04-04 16:57:02.830&#39;,  1.6   ),
+           (&#39;bn210518545&#39;, &#39;2020-04-05 09:27:21.555&#39;,  1.77  ),
+           (&#39;bn150907794&#39;, &#39;2020-04-07 06:22:01.482&#39;,  8.9333),
+           (&#39;bn160605921&#39;, &#39;2020-04-07 09:18:33.475&#39;,  5.93  ),
+           (&#39;bn170908686&#39;, &#39;2020-04-12 06:57:11.947&#39;,  6.4667),
+           (&#39;bn170831179&#39;, &#39;2020-04-18 20:45:00.278&#39;,  1.61  ),
+           (&#39;bn090320801&#39;, &#39;2020-04-21 20:45:59.726&#39;,  9.5   ),
+           (&#39;bn160518985&#39;, &#39;2020-04-25 16:49:50.945&#39;,  4.04  ),
+           (&#39;bn140219319&#39;, &#39;2020-05-01 10:25:44.847&#39;,  8.23  ),
+           (&#39;bn170817908&#39;, &#39;2020-05-02 13:46:33.856&#39;,  3.69  ),
+           (&#39;bn170219002&#39;, &#39;2020-05-03 17:18:33.570&#39;,  1.41  ),
+           (&#39;bn210101620&#39;, &#39;2020-05-05 23:50:44.085&#39;,  4.56  ),
+           (&#39;bn140105065&#39;, &#39;2020-05-06 00:28:41.053&#39;,  6.07  ),
+           (&#39;bn130722605&#39;, &#39;2020-05-06 09:41:08.981&#39;,  8.85  ),
+           (&#39;bn160803373&#39;, &#39;2020-05-07 15:52:58.839&#39;,  7.05  ),
+           (&#39;bn160804180&#39;, &#39;2020-05-09 22:59:04.499&#39;,  6.69  ),
+           (&#39;bn100417166&#39;, &#39;2020-05-10 10:41:16.959&#39;,  9.18  ),
+           (&#39;bn170119228&#39;, &#39;2020-05-17 18:52:28.279&#39;,  4.41  ),
+           (&#39;bn110421757&#39;, &#39;2020-05-22 15:36:39.467&#39;,  1.71  ),
+           (&#39;bn130208684&#39;, &#39;2020-05-25 14:40:28.486&#39;,  4.67  ),
+           (&#39;bn090831317&#39;, &#39;2020-05-29 12:05:34.896&#39;,  1.92  ),
+           (&#39;bn170718229&#39;, &#39;2020-05-31 02:51:18.524&#39;,  7.9833),
+           (&#39;bn120625119&#39;, &#39;2020-06-01 02:19:49.995&#39;,  1.17  ),
+           (&#39;bn100714672&#39;, &#39;2020-06-04 18:39:45.859&#39;,  3.69  ),
+           (&#39;bn210125369&#39;, &#39;2020-06-07 08:41:49.657&#39;,  6.51  ),
+           (&#39;bn090511684&#39;, &#39;2020-06-09 09:06:59.309&#39;,  7.    ),
+           (&#39;bn171207055&#39;, &#39;2020-06-14 14:34:55.239&#39;,  9.54  ),
+           (&#39;bn090109332&#39;, &#39;2020-06-15 06:00:05.083&#39;,  9.8   ),
+           (&#39;bn190408536&#39;, &#39;2020-06-16 01:09:15.631&#39;,  9.0833),
+           (&#39;bn170506169&#39;, &#39;2020-06-16 15:41:47.725&#39;,  9.69  ),
+           (&#39;bn080723339&#39;, &#39;2020-06-19 02:36:11.670&#39;,  5.5667),
+           (&#39;bn161217128&#39;, &#39;2020-06-19 06:03:22.367&#39;,  7.56  ),
+           (&#39;bn130112286&#39;, &#39;2020-06-19 11:48:43.086&#39;,  4.93  ),
+           (&#39;bn120226447&#39;, &#39;2020-06-22 02:11:48.116&#39;,  1.15  ),
+           (&#39;bn160206430&#39;, &#39;2020-06-23 18:02:48.953&#39;,  4.17  ),
+           (&#39;bn150829183&#39;, &#39;2020-06-25 12:45:49.143&#39;,  2.17  ),
+           (&#39;bn180201780&#39;, &#39;2020-06-29 12:49:49.292&#39;,  9.21  ),
+           (&#39;bn150317798&#39;, &#39;2020-06-30 23:31:21.894&#39;,  5.    ),
+           (&#39;bn220401429&#39;, &#39;2020-07-03 08:11:39.611&#39;,  4.55  ),
+           (&#39;bn120101354&#39;, &#39;2020-07-03 23:16:41.839&#39;,  8.77  ),
+           (&#39;bn090815946&#39;, &#39;2020-07-06 15:12:08.383&#39;,  2.35  ),
+           (&#39;bn150416773&#39;, &#39;2020-07-07 01:44:02.537&#39;,  1.93  ),
+           (&#39;bn181127274&#39;, &#39;2020-07-09 03:31:16.764&#39;,  9.3   ),
+           (&#39;bn150802512&#39;, &#39;2020-07-13 22:02:40.092&#39;,  7.05  ),
+           (&#39;bn090902401&#39;, &#39;2020-07-14 05:56:02.259&#39;,  3.8   ),
+           (&#39;bn160512536&#39;, &#39;2020-07-14 08:15:25.914&#39;,  5.08  ),
+           (&#39;bn160211119&#39;, &#39;2020-07-14 10:28:45.459&#39;,  4.97  ),
+           (&#39;bn090815438&#39;, &#39;2020-07-16 07:34:28.480&#39;,  5.65  ),
+           (&#39;bn131126163&#39;, &#39;2020-07-22 02:14:55.944&#39;,  2.28  ),
+           (&#39;bn200924284&#39;, &#39;2020-07-23 16:35:24.787&#39;,  3.08  ),
+           (&#39;bn130304410&#39;, &#39;2020-07-24 05:06:18.985&#39;,  1.2   ),
+           (&#39;bn140608713&#39;, &#39;2020-08-01 15:35:46.754&#39;,  2.91  ),
+           (&#39;bn090909487&#39;, &#39;2020-08-02 11:46:46.843&#39;,  8.05  ),
+           (&#39;bn150622892&#39;, &#39;2020-08-03 16:52:43.637&#39;,  4.8833),
+           (&#39;bn090429530&#39;, &#39;2020-08-08 11:15:57.405&#39;,  4.8   ),
+           (&#39;bn190601325&#39;, &#39;2020-08-09 05:04:31.565&#39;,  8.28  ),
+           (&#39;bn091223511&#39;, &#39;2020-08-09 06:07:22.164&#39;,  2.39  ),
+           (&#39;bn200802491&#39;, &#39;2020-08-11 15:10:42.684&#39;,  2.12  ),
+           (&#39;bn180428102&#39;, &#39;2020-08-16 11:39:31.527&#39;,  3.04  ),
+           (&#39;bn120522361&#39;, &#39;2020-08-26 04:29:52.571&#39;,  2.02  ),
+           (&#39;bn201031744&#39;, &#39;2020-08-30 09:54:18.490&#39;,  4.    ),
+           (&#39;bn121211289&#39;, &#39;2020-08-31 11:06:00.842&#39;,  8.8   ),
+           (&#39;bn120308588&#39;, &#39;2020-09-03 02:42:40.872&#39;,  1.19  ),
+           (&#39;bn160101215&#39;, &#39;2020-09-07 22:57:28.091&#39;,  1.37  ),
+           (&#39;bn200529504&#39;, &#39;2020-09-08 21:15:41.430&#39;,  3.65  ),
+           (&#39;bn130925546&#39;, &#39;2020-09-09 04:01:22.387&#39;,  4.12  ),
+           (&#39;bn200808469&#39;, &#39;2020-09-14 12:48:30.034&#39;,  5.32  ),
+           (&#39;bn110522256&#39;, &#39;2020-09-16 19:28:39.957&#39;,  5.56  ),
+           (&#39;bn170207906&#39;, &#39;2020-09-19 09:35:23.295&#39;,  6.085 ),
+           (&#39;bn211204901&#39;, &#39;2020-09-19 13:38:51.064&#39;,  1.72  ),
+           (&#39;bn140829880&#39;, &#39;2020-09-19 23:08:22.645&#39;,  3.53  ),
+           (&#39;bn190712095&#39;, &#39;2020-09-20 19:56:59.570&#39;,  7.59  ),
+           (&#39;bn170428136&#39;, &#39;2020-09-22 17:13:53.618&#39;,  7.46  ),
+           (&#39;bn100722291&#39;, &#39;2020-09-22 18:04:24.240&#39;,  8.06  ),
+           (&#39;bn120616630&#39;, &#39;2020-09-24 05:38:29.540&#39;,  8.54  ),
+           (&#39;bn200830413&#39;, &#39;2020-09-24 06:48:55.203&#39;,  7.19  ),
+           (&#39;bn170511477&#39;, &#39;2020-09-24 09:15:20.824&#39;,  6.79  ),
+           (&#39;bn171212948&#39;, &#39;2020-09-25 14:38:02.660&#39;,  9.95  ),
+           (&#39;bn150912117&#39;, &#39;2020-09-28 13:14:39.150&#39;,  4.6833),
+           (&#39;bn200619108&#39;, &#39;2020-10-04 02:16:01.088&#39;,  4.02  ),
+           (&#39;bn211102338&#39;, &#39;2020-10-04 08:45:57.614&#39;,  4.1   ),
+           (&#39;bn081229187&#39;, &#39;2020-10-07 02:56:38.168&#39;,  8.8   ),
+           (&#39;bn160303201&#39;, &#39;2020-10-08 18:06:00.936&#39;,  9.05  ),
+           (&#39;bn140705539&#39;, &#39;2020-10-11 15:06:24.659&#39;,  5.83  ),
+           (&#39;bn090306245&#39;, &#39;2020-10-11 20:04:36.171&#39;,  4.1   ),
+           (&#39;bn140716306&#39;, &#39;2020-10-12 05:35:38.502&#39;,  5.67  ),
+           (&#39;bn131112243&#39;, &#39;2020-10-16 03:16:21.143&#39;,  4.7833),
+           (&#39;bn200714247&#39;, &#39;2020-10-19 01:40:02.642&#39;,  6.67  ),
+           (&#39;bn150206407&#39;, &#39;2020-10-19 11:36:22.276&#39;,  6.76  ),
+           (&#39;bn130818941&#39;, &#39;2020-10-20 17:33:54.329&#39;,  2.23  ),
+           (&#39;bn160709370&#39;, &#39;2020-10-21 02:39:55.415&#39;,  3.04  ),
+           (&#39;bn161115745&#39;, &#39;2020-10-31 17:51:24.536&#39;,  8.44  ),
+           (&#39;bn200723691&#39;, &#39;2020-11-04 19:23:25.206&#39;,  4.01  ),
+           (&#39;bn180426549&#39;, &#39;2020-11-05 05:09:32.233&#39;,  1.65  ),
+           (&#39;bn151212064&#39;, &#39;2020-11-08 15:28:23.267&#39;,  1.69  ),
+           (&#39;bn120926335&#39;, &#39;2020-11-09 02:31:05.793&#39;,  1.51  ),
+           (&#39;bn120206949&#39;, &#39;2020-11-18 09:43:48.444&#39;,  2.25  ),
+           (&#39;bn101202154&#39;, &#39;2020-11-19 08:13:13.510&#39;,  6.13  ),
+           (&#39;bn100506653&#39;, &#39;2020-11-21 01:29:49.006&#39;,  3.9   ),
+           (&#39;bn140824606&#39;, &#39;2020-11-21 03:07:45.547&#39;,  1.49  ),
+           (&#39;bn110806050&#39;, &#39;2020-11-21 10:02:44.050&#39;,  3.35  ),
+           (&#39;bn120715066&#39;, &#39;2020-11-22 14:58:07.917&#39;,  3.73  ),
+           (&#39;bn090814368&#39;, &#39;2020-11-22 16:49:15.973&#39;,  5.53  ),
+           (&#39;bn190326975&#39;, &#39;2020-11-22 17:17:38.742&#39;,  4.59  ),
+           (&#39;bn170908071&#39;, &#39;2020-11-23 17:15:03.337&#39;,  8.1   ),
+           (&#39;bn150512432&#39;, &#39;2020-11-24 15:12:51.361&#39;,  3.64  ),
+           (&#39;bn090219074&#39;, &#39;2020-11-27 03:31:44.755&#39;,  5.2   ),
+           (&#39;bn130601547&#39;, &#39;2020-12-01 02:52:14.911&#39;,  6.2667),
+           (&#39;bn130215649&#39;, &#39;2020-12-07 23:26:55.727&#39;,  2.1   ),
+           (&#39;bn120716577&#39;, &#39;2020-12-13 03:53:30.699&#39;,  5.09  ),
+           (&#39;bn140912664&#39;, &#39;2020-12-13 17:54:05.752&#39;,  8.21  ),
+           (&#39;bn130224370&#39;, &#39;2020-12-17 02:35:03.511&#39;,  2.62  ),
+           (&#39;bn160118060&#39;, &#39;2020-12-18 19:09:13.922&#39;,  1.49  ),
+           (&#39;bn121113544&#39;, &#39;2020-12-21 14:11:43.014&#39;,  2.06  ),
+           (&#39;bn160317640&#39;, &#39;2020-12-21 23:28:47.633&#39;,  3.84  ),
+           (&#39;bn211216556&#39;, &#39;2020-12-22 11:03:25.686&#39;,  4.29  ),
+           (&#39;bn150919556&#39;, &#39;2020-12-23 04:09:46.408&#39;,  7.7   ),
+           (&#39;bn091106762&#39;, &#39;2020-12-26 13:16:26.600&#39;,  5.6   ),
+           (&#39;bn170315582&#39;, &#39;2020-12-29 15:20:12.706&#39;,  9.18  ),
+           (&#39;bn100304004&#39;, &#39;2020-12-31 10:44:19.747&#39;,  3.26  ),
+           (&#39;bn180618245&#39;, &#39;2020-12-31 13:12:41.630&#39;,  6.2167),
+           (&#39;bn170127239&#39;, &#39;2021-01-01 14:53:06.860&#39;,  6.95  ),
+           (&#39;bn181221565&#39;, &#39;2021-01-01 20:39:23.613&#39;,  6.06  ),
+           (&#39;bn200614608&#39;, &#39;2021-01-05 16:03:05.920&#39;,  6.46  ),
+           (&#39;bn160316573&#39;, &#39;2021-01-06 00:10:45.287&#39;,  3.44  ),
+           (&#39;bn120602539&#39;, &#39;2021-01-06 05:11:16.402&#39;,  7.1333),
+           (&#39;bn190513824&#39;, &#39;2021-01-08 10:10:10.464&#39;,  8.2333),
+           (&#39;bn190222537&#39;, &#39;2021-01-17 10:58:52.032&#39;,  1.5   ),
+           (&#39;bn090225009&#39;, &#39;2021-01-23 07:19:03.067&#39;,  8.7   ),
+           (&#39;bn130831058&#39;, &#39;2021-01-25 08:52:00.399&#39;,  8.06  ),
+           (&#39;bn210227115&#39;, &#39;2021-01-26 10:00:05.890&#39;,  5.8   ),
+           (&#39;bn201004365&#39;, &#39;2021-01-27 06:26:17.020&#39;,  4.29  ),
+           (&#39;bn120415958&#39;, &#39;2021-02-01 13:36:22.493&#39;,  4.96  ),
+           (&#39;bn100714686&#39;, &#39;2021-02-02 20:10:31.299&#39;,  9.69  ),
+           (&#39;bn100410740&#39;, &#39;2021-02-04 06:29:25.656&#39;,  1.7   ),
+           (&#39;bn080809808&#39;, &#39;2021-02-04 18:38:59.570&#39;,  7.1   ),
+           (&#39;bn171212040&#39;, &#39;2021-02-07 14:27:58.984&#39;,  5.    ),
+           (&#39;bn190406465&#39;, &#39;2021-02-10 17:07:07.657&#39;,  7.09  ),
+           (&#39;bn090830775&#39;, &#39;2021-02-13 17:47:14.165&#39;,  5.9833),
+           (&#39;bn220418661&#39;, &#39;2021-02-25 05:13:35.722&#39;,  7.77  ),
+           (&#39;bn191019469&#39;, &#39;2021-02-27 02:45:10.888&#39;,  3.28  ),
+           (&#39;bn190612165&#39;, &#39;2021-02-28 01:22:53.968&#39;,  9.3   ),
+           (&#39;bn121019233&#39;, &#39;2021-03-03 10:11:38.358&#39;,  7.52  ),
+           (&#39;bn210615982&#39;, &#39;2021-03-08 20:06:00.143&#39;,  7.55  ),
+           (&#39;bn100811781&#39;, &#39;2021-03-12 04:04:04.895&#39;,  3.57  ),
+           (&#39;bn150224127&#39;, &#39;2021-03-15 17:10:51.604&#39;,  6.05  ),
+           (&#39;bn170808065&#39;, &#39;2021-03-17 09:08:29.045&#39;,  2.    ),
+           (&#39;bn140204547&#39;, &#39;2021-03-24 11:14:28.212&#39;,  5.64  ),
+           (&#39;bn110722710&#39;, &#39;2021-03-24 19:59:58.322&#39;,  4.66  ),
+           (&#39;bn160421137&#39;, &#39;2021-03-28 20:45:16.970&#39;,  1.18  ),
+           (&#39;bn140311618&#39;, &#39;2021-04-01 23:17:04.029&#39;,  3.32  ),
+           (&#39;bn220330520&#39;, &#39;2021-04-06 22:46:05.228&#39;,  3.75  ),
+           (&#39;bn191130253&#39;, &#39;2021-04-11 03:30:56.435&#39;,  2.27  ),
+           (&#39;bn150128624&#39;, &#39;2021-04-11 13:32:44.633&#39;,  9.09  ),
+           (&#39;bn121118576&#39;, &#39;2021-04-11 16:31:10.877&#39;,  2.4   ),
+           (&#39;bn161124636&#39;, &#39;2021-04-16 23:56:59.561&#39;,  6.2333),
+           (&#39;bn130106995&#39;, &#39;2021-04-17 11:51:27.471&#39;,  1.87  ),
+           (&#39;bn170521882&#39;, &#39;2021-04-19 21:10:28.455&#39;,  9.7   ),
+           (&#39;bn081209981&#39;, &#39;2021-04-22 13:44:40.169&#39;,  4.9   ),
+           (&#39;bn170111815&#39;, &#39;2021-04-24 16:40:00.979&#39;,  6.71  ),
+           (&#39;bn200421865&#39;, &#39;2021-04-25 04:21:31.259&#39;,  2.28  ),
+           (&#39;bn160301113&#39;, &#39;2021-04-27 04:57:12.992&#39;,  6.6   ),
+           (&#39;bn170731751&#39;, &#39;2021-04-29 15:47:23.416&#39;,  6.3   ),
+           (&#39;bn100610276&#39;, &#39;2021-04-30 21:42:17.665&#39;,  7.9   ),
+           (&#39;bn200112525&#39;, &#39;2021-05-02 07:05:17.885&#39;,  2.    ),
+           (&#39;bn130725527&#39;, &#39;2021-05-03 19:34:09.461&#39;,  2.27  ),
+           (&#39;bn161106499&#39;, &#39;2021-05-04 23:00:47.171&#39;,  1.5   ),
+           (&#39;bn090325526&#39;, &#39;2021-05-07 18:40:38.042&#39;,  7.7167),
+           (&#39;bn081115165&#39;, &#39;2021-05-09 13:53:40.418&#39;,  3.2   ),
+           (&#39;bn160803157&#39;, &#39;2021-05-12 13:15:42.991&#39;,  4.35  ),
+           (&#39;bn110503130&#39;, &#39;2021-05-15 14:56:46.180&#39;,  5.8833),
+           (&#39;bn140110814&#39;, &#39;2021-05-16 23:34:46.497&#39;,  3.19  ),
+           (&#39;bn161029357&#39;, &#39;2021-05-18 00:46:54.636&#39;,  6.35  ),
+           (&#39;bn200507662&#39;, &#39;2021-05-18 13:04:09.640&#39;,  2.2   ),
+           (&#39;bn150228213&#39;, &#39;2021-05-18 21:20:17.915&#39;,  5.45  ),
+           (&#39;bn150911337&#39;, &#39;2021-05-19 06:38:53.855&#39;,  4.9333),
+           (&#39;bn191009298&#39;, &#39;2021-05-19 19:22:03.942&#39;,  1.41  ),
+           (&#39;bn150828333&#39;, &#39;2021-05-24 04:59:59.092&#39;,  2.26  ),
+           (&#39;bn151227072&#39;, &#39;2021-05-24 11:20:34.686&#39;,  1.53  ),
+           (&#39;bn131002326&#39;, &#39;2021-05-27 03:21:49.149&#39;,  7.05  ),
+           (&#39;bn210503815&#39;, &#39;2021-05-27 04:58:58.571&#39;,  5.1   ),
+           (&#39;bn110221244&#39;, &#39;2021-05-28 14:03:46.163&#39;,  1.24  ),
+           (&#39;bn151212030&#39;, &#39;2021-05-29 23:53:37.098&#39;,  3.6   ),
+           (&#39;bn111018595&#39;, &#39;2021-06-02 20:46:02.339&#39;,  7.15  ),
+           (&#39;bn210416998&#39;, &#39;2021-06-03 21:46:28.382&#39;,  7.2833),
+           (&#39;bn130408653&#39;, &#39;2021-06-05 05:08:58.389&#39;,  3.93  ),
+           (&#39;bn200609380&#39;, &#39;2021-06-06 22:40:25.321&#39;,  1.88  ),
+           (&#39;bn140725583&#39;, &#39;2021-06-07 21:23:49.282&#39;,  5.28  ),
+           (&#39;bn170723116&#39;, &#39;2021-06-15 21:23:51.505&#39;,  1.41  ),
+           (&#39;bn150908689&#39;, &#39;2021-06-15 23:33:53.604&#39;,  6.2167),
+           (&#39;bn170205521&#39;, &#39;2021-06-19 12:45:43.730&#39;,  4.99  ),
+           (&#39;bn170709848&#39;, &#39;2021-06-20 04:54:14.284&#39;,  7.7   ),
+           (&#39;bn120423889&#39;, &#39;2021-06-20 15:59:29.600&#39;,  5.9333),
+           (&#39;bn210820004&#39;, &#39;2021-06-21 10:44:03.750&#39;,  5.01  ),
+           (&#39;bn111012811&#39;, &#39;2021-06-22 10:33:01.760&#39;,  1.71  ),
+           (&#39;bn150817819&#39;, &#39;2021-06-24 00:58:23.248&#39;,  6.35  ),
+           (&#39;bn160611244&#39;, &#39;2021-06-25 21:23:21.140&#39;,  9.2667),
+           (&#39;bn120915000&#39;, &#39;2021-06-26 23:46:24.876&#39;,  5.87  ),
+           (&#39;bn110831936&#39;, &#39;2021-06-27 17:57:20.742&#39;,  9.1167),
+           (&#39;bn160812507&#39;, &#39;2021-07-01 07:47:14.117&#39;,  6.4667),
+           (&#39;bn160322484&#39;, &#39;2021-07-06 03:50:09.746&#39;,  6.55  ),
+           (&#39;bn150506630&#39;, &#39;2021-07-06 13:41:34.000&#39;,  3.21  ),
+           (&#39;bn170127382&#39;, &#39;2021-07-09 04:49:04.308&#39;,  9.55  ),
+           (&#39;bn121009292&#39;, &#39;2021-07-15 20:46:30.607&#39;,  1.53  ),
+           (&#39;bn110529034&#39;, &#39;2021-07-16 11:38:13.679&#39;,  1.5   ),
+           (&#39;bn110430375&#39;, &#39;2021-07-19 03:55:47.030&#39;,  2.53  ),
+           (&#39;bn151110925&#39;, &#39;2021-07-24 02:31:33.469&#39;,  6.0167),
+           (&#39;bn111012456&#39;, &#39;2021-07-25 01:08:29.397&#39;,  2.08  ),
+           (&#39;bn090425377&#39;, &#39;2021-07-26 02:32:56.804&#39;,  2.1   ),
+           (&#39;bn161212652&#39;, &#39;2021-07-27 09:50:46.735&#39;,  8.5   ),
+           (&#39;bn120322979&#39;, &#39;2021-07-31 02:12:43.477&#39;,  8.7   ),
+           (&#39;bn131215298&#39;, &#39;2021-07-31 08:48:17.629&#39;,  1.38  ),
+           (&#39;bn190326314&#39;, &#39;2021-08-01 13:57:18.595&#39;,  1.26  ),
+           (&#39;bn150412128&#39;, &#39;2021-08-01 15:34:44.860&#39;,  3.9667),
+           (&#39;bn150817677&#39;, &#39;2021-08-07 12:36:42.844&#39;,  5.4   ),
+           (&#39;bn160317385&#39;, &#39;2021-08-07 16:29:19.536&#39;,  5.5   ),
+           (&#39;bn161004849&#39;, &#39;2021-08-12 00:15:51.734&#39;,  6.5333),
+           (&#39;bn170908104&#39;, &#39;2021-08-12 16:47:01.014&#39;,  4.8   ),
+           (&#39;bn160201883&#39;, &#39;2021-08-13 00:54:23.674&#39;,  2.9   ),
+           (&#39;bn180618385&#39;, &#39;2021-08-15 02:23:49.635&#39;,  4.4   ),
+           (&#39;bn150428305&#39;, &#39;2021-08-18 22:00:41.009&#39;,  6.06  ),
+           (&#39;bn151106957&#39;, &#39;2021-08-20 00:05:14.008&#39;,  9.3667),
+           (&#39;bn220310122&#39;, &#39;2021-08-21 07:40:28.595&#39;,  5.65  ),
+           (&#39;bn210812699&#39;, &#39;2021-08-22 06:32:44.581&#39;,  1.12  ),
+           (&#39;bn151206363&#39;, &#39;2021-08-22 17:30:24.489&#39;,  5.1333),
+           (&#39;bn170124238&#39;, &#39;2021-08-26 07:01:45.161&#39;,  2.61  ),
+           (&#39;bn130615398&#39;, &#39;2021-08-27 10:10:16.144&#39;,  6.2   ),
+           (&#39;bn171205642&#39;, &#39;2021-08-28 05:03:59.131&#39;,  4.65  ),
+           (&#39;bn180420612&#39;, &#39;2021-09-03 01:50:17.389&#39;,  4.6167),
+           (&#39;bn110712566&#39;, &#39;2021-09-03 17:26:58.653&#39;,  7.1333),
+           (&#39;bn191028589&#39;, &#39;2021-09-04 20:47:39.631&#39;,  7.67  ),
+           (&#39;bn180910032&#39;, &#39;2021-09-09 10:43:19.365&#39;,  2.12  ),
+           (&#39;bn151007630&#39;, &#39;2021-09-10 10:56:08.397&#39;,  7.3167),
+           (&#39;bn210417494&#39;, &#39;2021-09-11 02:28:08.403&#39;,  5.05  ),
+           (&#39;bn150417817&#39;, &#39;2021-09-15 12:43:41.202&#39;,  8.1167),
+           (&#39;bn081207680&#39;, &#39;2021-09-17 03:45:47.224&#39;,  1.2   ),
+           (&#39;bn181105904&#39;, &#39;2021-09-19 15:39:51.957&#39;,  8.7667),
+           (&#39;bn171225119&#39;, &#39;2021-09-23 02:59:03.493&#39;,  5.2   ),
+           (&#39;bn170716717&#39;, &#39;2021-09-24 23:02:52.138&#39;,  5.2667),
+           (&#39;bn131118137&#39;, &#39;2021-09-25 01:20:08.678&#39;,  4.3333),
+           (&#39;bn160615209&#39;, &#39;2021-09-25 19:12:27.965&#39;,  5.4333),
+           (&#39;bn211118985&#39;, &#39;2021-09-26 01:03:30.369&#39;,  2.68  ),
+           (&#39;bn150713951&#39;, &#39;2021-09-26 20:51:18.648&#39;,  6.25  ),
+           (&#39;bn091115177&#39;, &#39;2021-09-28 18:16:13.787&#39;,  7.94  ),
+           (&#39;bn220324110&#39;, &#39;2021-10-02 06:08:13.109&#39;,  2.64  ),
+           (&#39;bn150919606&#39;, &#39;2021-10-02 08:06:34.268&#39;,  2.57  ),
+           (&#39;bn150912260&#39;, &#39;2021-10-02 17:45:21.634&#39;,  8.5333),
+           (&#39;bn220323507&#39;, &#39;2021-10-11 19:23:39.819&#39;,  9.93  ),
+           (&#39;bn100827455&#39;, &#39;2021-10-18 16:43:27.608&#39;,  5.68  ),
+           (&#39;bn091219462&#39;, &#39;2021-10-21 11:02:54.311&#39;,  5.42  ),
+           (&#39;bn120527573&#39;, &#39;2021-10-27 05:51:52.696&#39;,  5.8333),
+           (&#39;bn140809133&#39;, &#39;2021-11-02 08:06:03.219&#39;,  4.11  ),
+           (&#39;bn120315732&#39;, &#39;2021-11-02 14:05:35.140&#39;,  6.15  ),
+           (&#39;bn120630398&#39;, &#39;2021-11-03 22:47:04.209&#39;,  1.1   ),
+           (&#39;bn140508629&#39;, &#39;2021-11-04 12:57:41.643&#39;,  3.56  ),
+           (&#39;bn150608303&#39;, &#39;2021-11-04 18:21:49.113&#39;,  5.1667),
+           (&#39;bn131209963&#39;, &#39;2021-11-09 00:39:44.168&#39;,  6.14  ),
+           (&#39;bn150613619&#39;, &#39;2021-11-09 02:42:47.336&#39;,  7.35  ),
+           (&#39;bn220115230&#39;, &#39;2021-11-11 01:50:36.974&#39;,  2.42  ),
+           (&#39;bn151210329&#39;, &#39;2021-11-12 14:34:22.373&#39;,  6.1167),
+           (&#39;bn140308710&#39;, &#39;2021-11-13 10:49:38.698&#39;,  2.67  ),
+           (&#39;bn141229808&#39;, &#39;2021-11-15 16:31:22.410&#39;,  5.4667),
+           (&#39;bn151216140&#39;, &#39;2021-11-16 08:42:33.609&#39;,  5.05  ),
+           (&#39;bn220209959&#39;, &#39;2021-11-16 11:40:59.976&#39;,  1.4   ),
+           (&#39;bn110605811&#39;, &#39;2021-11-16 14:03:53.348&#39;,  9.4833),
+           (&#39;bn211116363&#39;, &#39;2021-11-18 23:38:14.587&#39;,  5.1333),
+           (&#39;bn200403919&#39;, &#39;2021-11-20 13:09:46.838&#39;,  4.19  ),
+           (&#39;bn150912600&#39;, &#39;2021-11-24 02:29:53.557&#39;,  6.38  ),
+           (&#39;bn161030278&#39;, &#39;2021-11-30 15:16:27.028&#39;,  5.6167),
+           (&#39;bn110619959&#39;, &#39;2021-12-01 02:03:54.877&#39;,  9.1333),
+           (&#39;bn110711502&#39;, &#39;2021-12-01 20:42:52.881&#39;,  7.3667),
+           (&#39;bn150910276&#39;, &#39;2021-12-04 11:50:05.858&#39;,  5.3167),
+           (&#39;bn150529948&#39;, &#39;2021-12-04 21:37:00.552&#39;,  8.35  ),
+           (&#39;bn100702531&#39;, &#39;2021-12-07 09:59:09.093&#39;,  8.5167),
+           (&#39;bn120630963&#39;, &#39;2021-12-10 22:29:51.290&#39;,  6.4333),
+           (&#39;bn160810523&#39;, &#39;2021-12-11 21:48:42.842&#39;,  7.6667),
+           (&#39;bn160219747&#39;, &#39;2021-12-12 09:28:03.511&#39;,  6.7167),
+           (&#39;bn130726509&#39;, &#39;2021-12-12 12:46:26.439&#39;,  5.7167),
+           (&#39;bn140523985&#39;, &#39;2021-12-16 06:45:52.056&#39;,  9.2   ),
+           (&#39;bn090305052&#39;, &#39;2021-12-16 13:21:07.392&#39;,  5.4   ),
+           (&#39;bn110929345&#39;, &#39;2021-12-17 07:04:30.327&#39;,  5.0667),
+           (&#39;bn161028295&#39;, &#39;2021-12-19 14:55:22.567&#39;,  6.15  ),
+           (&#39;bn120618672&#39;, &#39;2021-12-19 21:49:46.008&#39;,  7.3667),
+           (&#39;bn160815299&#39;, &#39;2021-12-21 20:48:40.580&#39;,  8.08  ),
+           (&#39;bn161222118&#39;, &#39;2021-12-23 08:23:22.258&#39;,  4.3167),
+           (&#39;bn180416924&#39;, &#39;2021-12-25 00:20:28.067&#39;,  2.13  ),
+           (&#39;bn110808445&#39;, &#39;2021-12-31 07:00:31.787&#39;,  8.6167),
+           (&#39;bn180407745&#39;, &#39;2022-01-01 22:18:30.632&#39;,  9.7667),
+           (&#39;bn210516982&#39;, &#39;2022-01-03 02:20:03.681&#39;,  9.52  ),
+           (&#39;bn120605953&#39;, &#39;2022-01-03 21:03:12.889&#39;,  7.7   ),
+           (&#39;bn171226604&#39;, &#39;2022-01-04 04:01:02.604&#39;,  7.65  ),
+           (&#39;bn160904462&#39;, &#39;2022-01-05 06:01:31.434&#39;,  9.1167),
+           (&#39;bn190323179&#39;, &#39;2022-01-05 07:06:40.737&#39;,  6.54  ),
+           (&#39;bn150818741&#39;, &#39;2022-01-09 07:39:10.685&#39;,  7.5333),
+           (&#39;bn150808961&#39;, &#39;2022-01-09 09:28:12.787&#39;,  6.6667),
+           (&#39;bn100725573&#39;, &#39;2022-01-09 12:57:21.984&#39;,  5.1667),
+           (&#39;bn110621949&#39;, &#39;2022-01-10 15:55:38.323&#39;,  6.75  ),
+           (&#39;bn120628973&#39;, &#39;2022-01-11 06:30:49.104&#39;,  7.15  ),
+           (&#39;bn140525971&#39;, &#39;2022-01-11 18:21:07.760&#39;,  8.2833),
+           (&#39;bn170915342&#39;, &#39;2022-01-11 19:21:49.433&#39;,  5.2   ),
+           (&#39;bn111005398&#39;, &#39;2022-01-12 01:03:46.833&#39;,  5.28  ),
+           (&#39;bn160101791&#39;, &#39;2022-01-12 02:19:22.232&#39;,  8.6333),
+           (&#39;bn120618128&#39;, &#39;2022-01-12 04:31:20.071&#39;,  2.59  ),
+           (&#39;bn170414551&#39;, &#39;2022-01-12 05:42:51.541&#39;,  2.27  ),
+           (&#39;bn170128303&#39;, &#39;2022-01-13 06:49:04.371&#39;,  5.2667),
+           (&#39;bn160510506&#39;, &#39;2022-01-13 10:28:59.035&#39;,  6.5833),
+           (&#39;bn160804152&#39;, &#39;2022-01-14 04:02:16.627&#39;,  6.8167),
+           (&#39;bn160729273&#39;, &#39;2022-01-14 11:26:42.769&#39;,  6.6333),
+           (&#39;bn181225786&#39;, &#39;2022-01-14 11:39:42.666&#39;,  6.61  ),
+           (&#39;bn091223191&#39;, &#39;2022-01-14 13:23:05.832&#39;,  8.85  ),
+           (&#39;bn190203975&#39;, &#39;2022-01-14 14:01:47.413&#39;,  9.0333),
+           (&#39;bn191117006&#39;, &#39;2022-01-15 00:49:17.356&#39;,  9.1   ),
+           (&#39;bn201020732&#39;, &#39;2022-01-15 05:30:29.953&#39;,  1.62  ),
+           (&#39;bn160807127&#39;, &#39;2022-01-15 07:05:44.907&#39;,  7.4   ),
+           (&#39;bn140217043&#39;, &#39;2022-01-15 08:16:31.270&#39;,  3.08  ),
+           (&#39;bn150911197&#39;, &#39;2022-01-15 09:26:39.887&#39;,  9.85  ),
+           (&#39;bn151108942&#39;, &#39;2022-01-15 12:39:25.292&#39;,  9.6833),
+           (&#39;bn170717639&#39;, &#39;2022-01-15 14:20:00.880&#39;,  4.4833),
+           (&#39;bn180622578&#39;, &#39;2022-01-15 17:00:27.581&#39;,  2.16  ),
+           (&#39;bn151226980&#39;, &#39;2022-01-15 18:52:49.070&#39;,  9.1833),
+           (&#39;bn190118937&#39;, &#39;2022-01-15 22:37:50.514&#39;,  3.42  ),
+           (&#39;bn091230712&#39;, &#39;2022-01-17 01:27:12.742&#39;,  5.07  ),
+           (&#39;bn110527564&#39;, &#39;2022-01-17 01:39:37.260&#39;,  7.6167),
+           (&#39;bn150815832&#39;, &#39;2022-01-19 11:46:07.857&#39;,  5.7333),
+           (&#39;bn120315329&#39;, &#39;2022-01-20 05:54:01.088&#39;,  6.6333),
+           (&#39;bn141124277&#39;, &#39;2022-01-20 14:51:55.915&#39;,  4.98  ),
+           (&#39;bn100610417&#39;, &#39;2022-01-24 01:47:00.032&#39;,  4.4833),
+           (&#39;bn181105315&#39;, &#39;2022-01-25 19:01:21.666&#39;,  4.8833),
+           (&#39;bn151113830&#39;, &#39;2022-01-30 23:14:35.949&#39;,  5.3333),
+           (&#39;bn210701324&#39;, &#39;2022-01-31 05:40:28.513&#39;,  8.3833),
+           (&#39;bn120530121&#39;, &#39;2022-02-03 15:22:40.041&#39;,  3.27  ),
+           (&#39;bn160122338&#39;, &#39;2022-02-09 23:00:50.423&#39;,  6.1333),
+           (&#39;bn140404030&#39;, &#39;2022-02-11 01:07:48.877&#39;,  4.88  ),
+           (&#39;bn141109447&#39;, &#39;2022-02-11 15:46:28.962&#39;,  2.77  ),
+           (&#39;bn170202190&#39;, &#39;2022-02-11 22:01:44.635&#39;,  5.2833),
+           (&#39;bn151014430&#39;, &#39;2022-02-14 00:02:40.608&#39;,  6.55  ),
+           (&#39;bn160128807&#39;, &#39;2022-02-22 02:21:17.836&#39;,  7.5   ),
+           (&#39;bn150915165&#39;, &#39;2022-02-22 19:24:07.136&#39;,  4.6833),
+           (&#39;bn220125793&#39;, &#39;2022-03-05 11:33:20.478&#39;,  5.6333),
+           (&#39;bn150623895&#39;, &#39;2022-03-05 16:13:02.180&#39;,  4.6167),
+           (&#39;bn170823820&#39;, &#39;2022-03-06 07:20:00.522&#39;,  5.3667),
+           (&#39;bn150716433&#39;, &#39;2022-03-08 05:35:30.099&#39;,  8.25  ),
+           (&#39;bn151211252&#39;, &#39;2022-03-10 02:55:07.867&#39;,  7.5333),
+           (&#39;bn161026312&#39;, &#39;2022-03-13 18:50:51.769&#39;,  5.8333),
+           (&#39;bn211103949&#39;, &#39;2022-03-14 21:32:57.716&#39;,  6.75  ),
+           (&#39;bn171012680&#39;, &#39;2022-03-15 02:25:56.875&#39;,  7.1167),
+           (&#39;bn170917325&#39;, &#39;2022-03-16 11:25:37.875&#39;,  6.8833),
+           (&#39;bn120822628&#39;, &#39;2022-03-20 04:39:54.512&#39;,  7.7   ),
+           (&#39;bn110301817&#39;, &#39;2022-03-21 06:46:22.002&#39;,  5.1333),
+           (&#39;bn150628787&#39;, &#39;2022-03-23 12:10:11.567&#39;,  9.6667),
+           (&#39;bn150824125&#39;, &#39;2022-03-24 02:39:04.314&#39;,  4.84  ),
+           (&#39;bn150908288&#39;, &#39;2022-03-30 12:28:09.273&#39;,  5.7833),
+           (&#39;bn170923188&#39;, &#39;2022-04-01 10:17:40.891&#39;,  5.03  ),
+           (&#39;bn111018785&#39;, &#39;2022-04-01 21:29:49.486&#39;,  7.46  ),
+           (&#39;bn150715906&#39;, &#39;2022-04-03 10:10:02.661&#39;,  6.3   ),
+           (&#39;bn180426005&#39;, &#39;2022-04-03 22:16:46.499&#39;,  2.8   ),
+           (&#39;bn140319964&#39;, &#39;2022-04-04 17:47:23.327&#39;,  3.64  ),
+           (&#39;bn181013796&#39;, &#39;2022-04-05 06:11:39.121&#39;,  5.3167),
+           (&#39;bn180715741&#39;, &#39;2022-04-07 04:00:42.152&#39;,  5.12  ),
+           (&#39;bn160518039&#39;, &#39;2022-04-11 07:20:00.530&#39;,  2.18  ),
+           (&#39;bn080803772&#39;, &#39;2022-04-13 04:01:04.779&#39;,  5.9   ),
+           (&#39;bn220313785&#39;, &#39;2022-04-15 15:28:59.684&#39;,  7.1667),
+           (&#39;bn160307326&#39;, &#39;2022-04-17 13:52:35.964&#39;,  6.8667),
+           (&#39;bn150816756&#39;, &#39;2022-04-17 22:31:39.145&#39;,  5.6333),
+           (&#39;bn180128915&#39;, &#39;2022-04-18 15:51:58.878&#39;,  3.62  ),
+           (&#39;bn180618314&#39;, &#39;2022-04-21 08:17:54.527&#39;,  5.0667),
+           (&#39;bn210909447&#39;, &#39;2022-04-23 08:30:02.748&#39;,  1.82  ),
+           (&#39;bn180330891&#39;, &#39;2022-04-24 11:32:49.172&#39;,  3.7   ),
+           (&#39;bn160725306&#39;, &#39;2022-04-26 07:10:36.182&#39;,  6.75  ),
+           (&#39;bn160317762&#39;, &#39;2022-04-30 05:28:17.848&#39;,  7.65  ),
+           (&#39;bn180826785&#39;, &#39;2022-04-30 21:35:59.799&#39;,  5.3167),
+           (&#39;bn210624041&#39;, &#39;2022-05-01 04:49:36.246&#39;,  4.64  ),
+           (&#39;bn091012783&#39;, &#39;2022-05-01 11:28:01.143&#39;,  2.45  ),
+           (&#39;bn180304259&#39;, &#39;2022-05-04 00:15:42.682&#39;,  9.5   )],
+          dtype=[(&#39;trigger_name&#39;, &#39;&lt;U23&#39;), (&#39;trigger_time&#39;, &#39;&lt;U23&#39;), (&#39;error_radius&#39;, &#39;&lt;f8&#39;)])
+</pre></div></div>
+</div>
+<p>You’ll notice in the table listing that there are multiple datatypes. This is an improvement over the scripts provided by HEASARC, because there is no metadata provided to tell you if a column is a specific datatype. Our catalog classes have automatic type-detection so you don’t have to worry about converting strings to ints or floats.</p>
+<p>We can also connect to the burst catalog in the same way we connected to the trigger catalog:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gbm.finder</span> <span class="kn">import</span> <span class="n">BurstCatalog</span>
+<span class="n">burstcat</span> <span class="o">=</span> <span class="n">BurstCatalog</span><span class="p">()</span>
+<span class="n">burstcat</span><span class="o">.</span><span class="n">num_rows</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Downloading Catalog from HEASARC via w3query.pl...
+Finished in 70 s
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+3273
+</pre></div></div>
+</div>
+<p>Again, this may take several seconds, largely because of how the HEASARC perl API works. One word about the Burst Catalog before you get overwhelmed: it has <em>a lot</em> of columns. Basically every parameter for every standard spectral model that is fit, for both a time-integrated spectrum and the spectrum at the peak flux. There is also T90, T50, flux, and fluence information on different timescales and energy ranges. All in all, there are <strong>306</strong> different columns. Gasp.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">burstcat</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([&#39;name&#39;, &#39;ra&#39;, &#39;dec&#39;, &#39;trigger_time&#39;, &#39;t90&#39;, &#39;t90_error&#39;,
+       &#39;t90_start&#39;, &#39;fluence&#39;, &#39;fluence_error&#39;, &#39;flux_1024&#39;,
+       &#39;flux_1024_error&#39;, &#39;flux_1024_time&#39;, &#39;flux_64&#39;, &#39;flux_64_error&#39;,
+       &#39;flnc_band_ampl&#39;, &#39;flnc_band_ampl_pos_err&#39;,
+       &#39;flnc_band_ampl_neg_err&#39;, &#39;flnc_band_epeak&#39;,
+       &#39;flnc_band_epeak_pos_err&#39;, &#39;flnc_band_epeak_neg_err&#39;,
+       &#39;flnc_band_alpha&#39;, &#39;flnc_band_alpha_pos_err&#39;,
+       &#39;flnc_band_alpha_neg_err&#39;, &#39;flnc_band_beta&#39;,
+       &#39;flnc_band_beta_pos_err&#39;, &#39;flnc_band_beta_neg_err&#39;,
+       &#39;flnc_spectrum_start&#39;, &#39;flnc_spectrum_stop&#39;,
+       &#39;pflx_best_fitting_model&#39;, &#39;pflx_best_model_redchisq&#39;,
+       &#39;flnc_best_fitting_model&#39;, &#39;flnc_best_model_redchisq&#39;,
+       &#39;actual_1024ms_interval&#39;, &#39;actual_256ms_interval&#39;,
+       &#39;actual_64ms_interval&#39;, &#39;back_interval_high_start&#39;,
+       &#39;back_interval_high_stop&#39;, &#39;back_interval_low_start&#39;,
+       &#39;back_interval_low_stop&#39;, &#39;bcat_detector_mask&#39;, &#39;bcatalog&#39;, &#39;bii&#39;,
+       &#39;duration_energy_high&#39;, &#39;duration_energy_low&#39;, &#39;error_radius&#39;,
+       &#39;flnc_band_dof&#39;, &#39;flnc_band_ergflnc&#39;, &#39;flnc_band_ergflnc_error&#39;,
+       &#39;flnc_band_ergflncb&#39;, &#39;flnc_band_ergflncb_error&#39;,
+       &#39;flnc_band_ergflux&#39;, &#39;flnc_band_ergflux_error&#39;,
+       &#39;flnc_band_phtflnc&#39;, &#39;flnc_band_phtflnc_error&#39;,
+       &#39;flnc_band_phtflncb&#39;, &#39;flnc_band_phtflncb_error&#39;,
+       &#39;flnc_band_phtflux&#39;, &#39;flnc_band_phtflux_error&#39;,
+       &#39;flnc_band_phtfluxb&#39;, &#39;flnc_band_phtfluxb_error&#39;,
+       &#39;flnc_band_redchisq&#39;, &#39;flnc_band_redfitstat&#39;,
+       &#39;flnc_band_statistic&#39;, &#39;flnc_comp_ampl&#39;, &#39;flnc_comp_ampl_neg_err&#39;,
+       &#39;flnc_comp_ampl_pos_err&#39;, &#39;flnc_comp_dof&#39;, &#39;flnc_comp_epeak&#39;,
+       &#39;flnc_comp_epeak_neg_err&#39;, &#39;flnc_comp_epeak_pos_err&#39;,
+       &#39;flnc_comp_ergflnc&#39;, &#39;flnc_comp_ergflnc_error&#39;,
+       &#39;flnc_comp_ergflncb&#39;, &#39;flnc_comp_ergflncb_error&#39;,
+       &#39;flnc_comp_ergflux&#39;, &#39;flnc_comp_ergflux_error&#39;, &#39;flnc_comp_index&#39;,
+       &#39;flnc_comp_index_neg_err&#39;, &#39;flnc_comp_index_pos_err&#39;,
+       &#39;flnc_comp_phtflnc&#39;, &#39;flnc_comp_phtflnc_error&#39;,
+       &#39;flnc_comp_phtflncb&#39;, &#39;flnc_comp_phtflncb_error&#39;,
+       &#39;flnc_comp_phtflux&#39;, &#39;flnc_comp_phtflux_error&#39;,
+       &#39;flnc_comp_phtfluxb&#39;, &#39;flnc_comp_phtfluxb_error&#39;,
+       &#39;flnc_comp_pivot&#39;, &#39;flnc_comp_pivot_neg_err&#39;,
+       &#39;flnc_comp_pivot_pos_err&#39;, &#39;flnc_comp_redchisq&#39;,
+       &#39;flnc_comp_redfitstat&#39;, &#39;flnc_comp_statistic&#39;, &#39;flnc_plaw_ampl&#39;,
+       &#39;flnc_plaw_ampl_neg_err&#39;, &#39;flnc_plaw_ampl_pos_err&#39;,
+       &#39;flnc_plaw_dof&#39;, &#39;flnc_plaw_ergflnc&#39;, &#39;flnc_plaw_ergflnc_error&#39;,
+       &#39;flnc_plaw_ergflncb&#39;, &#39;flnc_plaw_ergflncb_error&#39;,
+       &#39;flnc_plaw_ergflux&#39;, &#39;flnc_plaw_ergflux_error&#39;, &#39;flnc_plaw_index&#39;,
+       &#39;flnc_plaw_index_neg_err&#39;, &#39;flnc_plaw_index_pos_err&#39;,
+       &#39;flnc_plaw_phtflnc&#39;, &#39;flnc_plaw_phtflnc_error&#39;,
+       &#39;flnc_plaw_phtflncb&#39;, &#39;flnc_plaw_phtflncb_error&#39;,
+       &#39;flnc_plaw_phtflux&#39;, &#39;flnc_plaw_phtflux_error&#39;,
+       &#39;flnc_plaw_phtfluxb&#39;, &#39;flnc_plaw_phtfluxb_error&#39;,
+       &#39;flnc_plaw_pivot&#39;, &#39;flnc_plaw_pivot_neg_err&#39;,
+       &#39;flnc_plaw_pivot_pos_err&#39;, &#39;flnc_plaw_redchisq&#39;,
+       &#39;flnc_plaw_redfitstat&#39;, &#39;flnc_plaw_statistic&#39;, &#39;flnc_sbpl_ampl&#39;,
+       &#39;flnc_sbpl_ampl_neg_err&#39;, &#39;flnc_sbpl_ampl_pos_err&#39;,
+       &#39;flnc_sbpl_brken&#39;, &#39;flnc_sbpl_brken_neg_err&#39;,
+       &#39;flnc_sbpl_brken_pos_err&#39;, &#39;flnc_sbpl_brksc&#39;,
+       &#39;flnc_sbpl_brksc_neg_err&#39;, &#39;flnc_sbpl_brksc_pos_err&#39;,
+       &#39;flnc_sbpl_dof&#39;, &#39;flnc_sbpl_ergflnc&#39;, &#39;flnc_sbpl_ergflnc_error&#39;,
+       &#39;flnc_sbpl_ergflncb&#39;, &#39;flnc_sbpl_ergflncb_error&#39;,
+       &#39;flnc_sbpl_ergflux&#39;, &#39;flnc_sbpl_ergflux_error&#39;, &#39;flnc_sbpl_indx1&#39;,
+       &#39;flnc_sbpl_indx1_neg_err&#39;, &#39;flnc_sbpl_indx1_pos_err&#39;,
+       &#39;flnc_sbpl_indx2&#39;, &#39;flnc_sbpl_indx2_neg_err&#39;,
+       &#39;flnc_sbpl_indx2_pos_err&#39;, &#39;flnc_sbpl_phtflnc&#39;,
+       &#39;flnc_sbpl_phtflnc_error&#39;, &#39;flnc_sbpl_phtflncb&#39;,
+       &#39;flnc_sbpl_phtflncb_error&#39;, &#39;flnc_sbpl_phtflux&#39;,
+       &#39;flnc_sbpl_phtflux_error&#39;, &#39;flnc_sbpl_phtfluxb&#39;,
+       &#39;flnc_sbpl_phtfluxb_error&#39;, &#39;flnc_sbpl_pivot&#39;,
+       &#39;flnc_sbpl_pivot_neg_err&#39;, &#39;flnc_sbpl_pivot_pos_err&#39;,
+       &#39;flnc_sbpl_redchisq&#39;, &#39;flnc_sbpl_redfitstat&#39;,
+       &#39;flnc_sbpl_statistic&#39;, &#39;flu_high&#39;, &#39;flu_low&#39;, &#39;fluence_batse&#39;,
+       &#39;fluence_batse_error&#39;, &#39;flux_256&#39;, &#39;flux_256_error&#39;,
+       &#39;flux_256_time&#39;, &#39;flux_64_time&#39;, &#39;flux_batse_1024&#39;,
+       &#39;flux_batse_1024_error&#39;, &#39;flux_batse_1024_time&#39;, &#39;flux_batse_256&#39;,
+       &#39;flux_batse_256_error&#39;, &#39;flux_batse_256_time&#39;, &#39;flux_batse_64&#39;,
+       &#39;flux_batse_64_error&#39;, &#39;flux_batse_64_time&#39;, &#39;last_modified&#39;,
+       &#39;lii&#39;, &#39;pflx_band_alpha&#39;, &#39;pflx_band_alpha_neg_err&#39;,
+       &#39;pflx_band_alpha_pos_err&#39;, &#39;pflx_band_ampl&#39;,
+       &#39;pflx_band_ampl_neg_err&#39;, &#39;pflx_band_ampl_pos_err&#39;,
+       &#39;pflx_band_beta&#39;, &#39;pflx_band_beta_neg_err&#39;,
+       &#39;pflx_band_beta_pos_err&#39;, &#39;pflx_band_dof&#39;, &#39;pflx_band_epeak&#39;,
+       &#39;pflx_band_epeak_neg_err&#39;, &#39;pflx_band_epeak_pos_err&#39;,
+       &#39;pflx_band_ergflnc&#39;, &#39;pflx_band_ergflnc_error&#39;,
+       &#39;pflx_band_ergflncb&#39;, &#39;pflx_band_ergflncb_error&#39;,
+       &#39;pflx_band_ergflux&#39;, &#39;pflx_band_ergflux_error&#39;,
+       &#39;pflx_band_phtflnc&#39;, &#39;pflx_band_phtflnc_error&#39;,
+       &#39;pflx_band_phtflncb&#39;, &#39;pflx_band_phtflncb_error&#39;,
+       &#39;pflx_band_phtflux&#39;, &#39;pflx_band_phtflux_error&#39;,
+       &#39;pflx_band_phtfluxb&#39;, &#39;pflx_band_phtfluxb_error&#39;,
+       &#39;pflx_band_redchisq&#39;, &#39;pflx_band_redfitstat&#39;,
+       &#39;pflx_band_statistic&#39;, &#39;pflx_comp_ampl&#39;, &#39;pflx_comp_ampl_neg_err&#39;,
+       &#39;pflx_comp_ampl_pos_err&#39;, &#39;pflx_comp_dof&#39;, &#39;pflx_comp_epeak&#39;,
+       &#39;pflx_comp_epeak_neg_err&#39;, &#39;pflx_comp_epeak_pos_err&#39;,
+       &#39;pflx_comp_ergflnc&#39;, &#39;pflx_comp_ergflnc_error&#39;,
+       &#39;pflx_comp_ergflncb&#39;, &#39;pflx_comp_ergflncb_error&#39;,
+       &#39;pflx_comp_ergflux&#39;, &#39;pflx_comp_ergflux_error&#39;, &#39;pflx_comp_index&#39;,
+       &#39;pflx_comp_index_neg_err&#39;, &#39;pflx_comp_index_pos_err&#39;,
+       &#39;pflx_comp_phtflnc&#39;, &#39;pflx_comp_phtflnc_error&#39;,
+       &#39;pflx_comp_phtflncb&#39;, &#39;pflx_comp_phtflncb_error&#39;,
+       &#39;pflx_comp_phtflux&#39;, &#39;pflx_comp_phtflux_error&#39;,
+       &#39;pflx_comp_phtfluxb&#39;, &#39;pflx_comp_phtfluxb_error&#39;,
+       &#39;pflx_comp_pivot&#39;, &#39;pflx_comp_pivot_neg_err&#39;,
+       &#39;pflx_comp_pivot_pos_err&#39;, &#39;pflx_comp_redchisq&#39;,
+       &#39;pflx_comp_redfitstat&#39;, &#39;pflx_comp_statistic&#39;, &#39;pflx_plaw_ampl&#39;,
+       &#39;pflx_plaw_ampl_neg_err&#39;, &#39;pflx_plaw_ampl_pos_err&#39;,
+       &#39;pflx_plaw_dof&#39;, &#39;pflx_plaw_ergflnc&#39;, &#39;pflx_plaw_ergflnc_error&#39;,
+       &#39;pflx_plaw_ergflncb&#39;, &#39;pflx_plaw_ergflncb_error&#39;,
+       &#39;pflx_plaw_ergflux&#39;, &#39;pflx_plaw_ergflux_error&#39;, &#39;pflx_plaw_index&#39;,
+       &#39;pflx_plaw_index_neg_err&#39;, &#39;pflx_plaw_index_pos_err&#39;,
+       &#39;pflx_plaw_phtflnc&#39;, &#39;pflx_plaw_phtflnc_error&#39;,
+       &#39;pflx_plaw_phtflncb&#39;, &#39;pflx_plaw_phtflncb_error&#39;,
+       &#39;pflx_plaw_phtflux&#39;, &#39;pflx_plaw_phtflux_error&#39;,
+       &#39;pflx_plaw_phtfluxb&#39;, &#39;pflx_plaw_phtfluxb_error&#39;,
+       &#39;pflx_plaw_pivot&#39;, &#39;pflx_plaw_pivot_neg_err&#39;,
+       &#39;pflx_plaw_pivot_pos_err&#39;, &#39;pflx_plaw_redchisq&#39;,
+       &#39;pflx_plaw_redfitstat&#39;, &#39;pflx_plaw_statistic&#39;, &#39;pflx_sbpl_ampl&#39;,
+       &#39;pflx_sbpl_ampl_neg_err&#39;, &#39;pflx_sbpl_ampl_pos_err&#39;,
+       &#39;pflx_sbpl_brken&#39;, &#39;pflx_sbpl_brken_neg_err&#39;,
+       &#39;pflx_sbpl_brken_pos_err&#39;, &#39;pflx_sbpl_brksc&#39;,
+       &#39;pflx_sbpl_brksc_neg_err&#39;, &#39;pflx_sbpl_brksc_pos_err&#39;,
+       &#39;pflx_sbpl_dof&#39;, &#39;pflx_sbpl_ergflnc&#39;, &#39;pflx_sbpl_ergflnc_error&#39;,
+       &#39;pflx_sbpl_ergflncb&#39;, &#39;pflx_sbpl_ergflncb_error&#39;,
+       &#39;pflx_sbpl_ergflux&#39;, &#39;pflx_sbpl_ergflux_error&#39;, &#39;pflx_sbpl_indx1&#39;,
+       &#39;pflx_sbpl_indx1_neg_err&#39;, &#39;pflx_sbpl_indx1_pos_err&#39;,
+       &#39;pflx_sbpl_indx2&#39;, &#39;pflx_sbpl_indx2_neg_err&#39;,
+       &#39;pflx_sbpl_indx2_pos_err&#39;, &#39;pflx_sbpl_phtflnc&#39;,
+       &#39;pflx_sbpl_phtflnc_error&#39;, &#39;pflx_sbpl_phtflncb&#39;,
+       &#39;pflx_sbpl_phtflncb_error&#39;, &#39;pflx_sbpl_phtflux&#39;,
+       &#39;pflx_sbpl_phtflux_error&#39;, &#39;pflx_sbpl_phtfluxb&#39;,
+       &#39;pflx_sbpl_phtfluxb_error&#39;, &#39;pflx_sbpl_pivot&#39;,
+       &#39;pflx_sbpl_pivot_neg_err&#39;, &#39;pflx_sbpl_pivot_pos_err&#39;,
+       &#39;pflx_sbpl_redchisq&#39;, &#39;pflx_sbpl_redfitstat&#39;,
+       &#39;pflx_sbpl_statistic&#39;, &#39;pflx_spectrum_start&#39;, &#39;pflx_spectrum_stop&#39;,
+       &#39;scat_detector_mask&#39;, &#39;scatalog&#39;, &#39;t50&#39;, &#39;t50_error&#39;, &#39;t50_start&#39;,
+       &#39;trigger_name&#39;], dtype=&#39;&lt;U24&#39;)
+</pre></div></div>
+</div>
+<div class="line-block">
+<div class="line">Good luck.</div>
+<div class="line">Everything that we demoed for the trigger catalog can also be done with the Burst Catalog.</div>
+</div>
+<p><a class="reference internal" href="PhaExport.html"><span class="doc">Next</span></a>, we will put together some of what we’ve learned to do reduce some GBM data and export it.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="PhaExport.html" class="btn btn-neutral float-right" title="Analysis Workflow: Reduction and Export" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Skymaps.html" class="btn btn-neutral float-left" title="GBM Localizations and Sky Maps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1264 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Data Finders &mdash; GBM Data Tools 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Utilities" href="api-utils.html" />
+    <link rel="prev" title="Plotting Module" href="api-plot.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GBM Data Tools
+          
+
+          
+            
+            <img src="../_static/fermi_face.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/index.html">Jupyter Notebooks</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">GBM Data Tools API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api-data.html">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-binning.html">Data Binning Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-background.html">Background Estimation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-spectra.html">Spectra Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-sims.html">Simulate Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-plot.html">Plotting Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Finders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-classes">Base Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ftpfinder">FtpFinder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#heasarcbrowse">HeasarcBrowse</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ftp-finders">FTP Finders</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#triggerftp">TriggerFtp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#continuousftp">ContinuousFtp</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#heasarc-catalogs">HEASARC Catalogs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#triggercatalog">TriggerCatalog</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#burstcatalog">BurstCatalog</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-utils.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Change Logs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GBM Data Tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">GBM Data Tools API</a> &raquo;</li>
+        
+      <li>Data Finders</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/api-finders.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="data-finders">
+<span id="api-finders"></span><h1>Data Finders<a class="headerlink" href="#data-finders" title="Permalink to this headline">¶</a></h1>
+<p>The classes in <code class="docutils literal notranslate"><span class="pre">gbm.finder</span></code> are for finding data in the GBM trigger and
+continuous data FTP databases, and for searching the online GBM catalogs.</p>
+<div class="section" id="base-classes">
+<h2>Base Classes<a class="headerlink" href="#base-classes" title="Permalink to this headline">¶</a></h2>
+<p>These base classes define an interface to the HEASARC FTP data server for GBM
+data and the online Browse catalog.</p>
+<div class="section" id="ftpfinder">
+<h3>FtpFinder<a class="headerlink" href="#ftpfinder" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.finder.FtpFinder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.finder.</span></span><span class="sig-name descname"><span class="pre">FtpFinder</span></span><a class="reference internal" href="../_modules/gbm/finder.html#FtpFinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.FtpFinder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A base class for the interface to the HEASARC FTP archive of GBM data.
+Specifically, it creates a connection to legacy.gsfc.nasa.gov</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_files</strong> (<em>int</em>) – Number of files in the current directory</p></li>
+<li><p><strong>files</strong> (<em>list of str</em>) – The list of files in the current directory</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class should not be directly instantiated, but rather inherited.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.FtpFinder.ls">
+<span class="sig-name descname"><span class="pre">ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#FtpFinder.ls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.FtpFinder.ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the directory contents of an FTP directory associated with
+a trigger or data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – The id associated with a trigger or data set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – Alphabetically ordered file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="heasarcbrowse">
+<h3>HeasarcBrowse<a class="headerlink" href="#heasarcbrowse" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.finder.HeasarcBrowse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.finder.</span></span><span class="sig-name descname"><span class="pre">HeasarcBrowse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#HeasarcBrowse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.HeasarcBrowse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class that interfaces with the HEASARC Browse API.  This can be
+called directly, but primarily intended as a base class.</p>
+<p>The class makes a query to HEASARC’s w3query.pl perl script in
+BATCHRETRIEVALCATALOG mode.  All fields and rows are retrieved so that
+this class, on instantiation, contains the full set of catalog data.
+Any queries based on row or columns selections/slices are then done locally,
+instead of making repeated requests to the HEASARC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the table to be passed to the
+w3query.pl script.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>columns</strong> (<em>np.array</em>) – The names of the columns available in the table</p></li>
+<li><p><strong>num_cols</strong> (<em>int</em>) – The total number of columns (fields) in the data table</p></li>
+<li><p><strong>num_rows</strong> – (int): The total number of rows in the data table</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.HeasarcBrowse.column_range">
+<span class="sig-name descname"><span class="pre">column_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#HeasarcBrowse.column_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.HeasarcBrowse.column_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data range for a given column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>column</strong> (<em>str</em>) – The column name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – The (lo, hi) range of the data column</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.HeasarcBrowse.get_table">
+<span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#HeasarcBrowse.get_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.HeasarcBrowse.get_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the table data as a record array with proper type conversions.
+Missing values are treated as type-converted <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The columns to return. If omitted,
+returns all columns.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.recarray</em> – A record array containing the requested data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.HeasarcBrowse.slice">
+<span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#HeasarcBrowse.slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.HeasarcBrowse.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform row slices of the data table based on a conditional of a
+single column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column</strong> (<em>str</em>) – The column name</p></li>
+<li><p><strong>lo</strong> (<em>optional</em>) – The minimum (inclusive) value of the slice. If not
+set, uses the lowest range of the data in the column.</p></li>
+<li><p><strong>hi</strong> (<em>optional</em>) – The maximum (inclusive) value of the slice. If not
+set, uses the highest range of the data in the column.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeasarcBrowse</span></code></a> – Returns a new catalog with the sliced rows</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.HeasarcBrowse.slices">
+<span class="sig-name descname"><span class="pre">slices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#HeasarcBrowse.slices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.HeasarcBrowse.slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform row slices of the data table based on a conditional of
+multiple columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>list of tuples</em>) – A list of tuples, where each tuple is (column, lo, hi).  The
+‘column’ is the column name, ‘lo’ is the lowest bounding value,
+and ‘hi’ is the highest bouding value.  If no low or high
+bounding is desired, set to None. See <a class="reference internal" href="#gbm.finder.HeasarcBrowse.slice" title="gbm.finder.HeasarcBrowse.slice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">slice()</span></code></a> for more
+info.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeasarcBrowse</span></code></a> – Returns a new catalog with the sliced rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="ftp-finders">
+<h2>FTP Finders<a class="headerlink" href="#ftp-finders" title="Permalink to this headline">¶</a></h2>
+<p>Classes to find and download GBM data.
+Inherits from <a class="reference internal" href="#gbm.finder.FtpFinder" title="gbm.finder.FtpFinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">FtpFinder</span></code></a>.</p>
+<div class="section" id="triggerftp">
+<h3>TriggerFtp<a class="headerlink" href="#triggerftp" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.finder.</span></span><span class="sig-name descname"><span class="pre">TriggerFtp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tnum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.finder.FtpFinder" title="gbm.finder.FtpFinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.finder.FtpFinder</span></code></a></p>
+<p>A class that interfaces with the HEASARC FTP trigger directories.
+An instance of this class will represent the available files associated
+with a single trigger.</p>
+<p>An instance can be created without a trigger number, however a trigger
+number will need to be set by set_trigger(tnum) to query and download files.
+An instance can also be changed from one trigger number to another without
+having to create a new instance.  If multiple instances are created and
+exist simultaneously, they will all use a single FTP connection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since HEASARC transitioned to FTPS, some have had issues with
+connecting to the HEASARC FTP site via Python’s ftplib for no obvious
+reason while it works flawlessy for others (even on the same platform).
+Currently the thought is that this may be related to the underlying
+OpenSSL version that is installed.  If you have connection problems
+using this, you may consider upgrading you OpenSSL and see if that
+solves your problem. A potential solution is to do the following:</p>
+<ul class="simple">
+<li><p>$ pip3 install pyopenssl</p></li>
+<li><p>$ pip3 install requests[security]</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tnum</strong> (<em>str</em><em>, </em><em>optional</em>) – A valid trigger number</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>num_files</strong> (<em>int</em>) – Number of files in the current directory</p></li>
+<li><p><strong>files</strong> (<em>list of str</em>) – The list of files in the current directory</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_all">
+<span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all files associated with the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_cat_files">
+<span class="sig-name descname"><span class="pre">get_cat_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_cat_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_cat_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all catalog files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_cspec">
+<span class="sig-name descname"><span class="pre">get_cspec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_cspec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_cspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the cspec files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_ctime">
+<span class="sig-name descname"><span class="pre">get_ctime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_ctime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_ctime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the ctime files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_healpix">
+<span class="sig-name descname"><span class="pre">get_healpix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_healpix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_healpix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the healpix localization file for the trigger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_lightcurve">
+<span class="sig-name descname"><span class="pre">get_lightcurve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_lightcurve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_lightcurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the lightcurve plots for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_localization">
+<span class="sig-name descname"><span class="pre">get_localization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_localization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_localization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all localization files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_rsp">
+<span class="sig-name descname"><span class="pre">get_rsp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cspec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_rsp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_rsp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the response Type-I files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>ctime</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, download the ctime responses.
+Default is True.</p></li>
+<li><p><strong>cspec</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, download the cspec responses.
+Default is True.</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_rsp2">
+<span class="sig-name descname"><span class="pre">get_rsp2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cspec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_rsp2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_rsp2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the response Type-I files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>ctime</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, download the ctime responses.
+Default is True.</p></li>
+<li><p><strong>cspec</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, download the cspec responses.
+Default is True.</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_trigdat">
+<span class="sig-name descname"><span class="pre">get_trigdat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_trigdat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_trigdat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the trigger data (trigdat) file for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.get_tte">
+<span class="sig-name descname"><span class="pre">get_tte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.get_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.get_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the TTE files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls">
+<span class="sig-name descname"><span class="pre">ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.TriggerFtp.ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the directory contents of an FTP directory associated with
+a trigger or data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – The id associated with a trigger or data set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – Alphabetically ordered file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_cat_files">
+<span class="sig-name descname"><span class="pre">ls_cat_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_cat_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_cat_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all catalog files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_cspec">
+<span class="sig-name descname"><span class="pre">ls_cspec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_cspec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_cspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all cspec files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_ctime">
+<span class="sig-name descname"><span class="pre">ls_ctime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_ctime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_ctime" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all ctime files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_lightcurve">
+<span class="sig-name descname"><span class="pre">ls_lightcurve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_lightcurve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_lightcurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all lightcurve plots for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_localization">
+<span class="sig-name descname"><span class="pre">ls_localization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_localization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_localization" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all localization files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_rsp">
+<span class="sig-name descname"><span class="pre">ls_rsp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cspec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_rsp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_rsp" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all response Type-I files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctime</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, list the ctime responses.
+Default is True.</p></li>
+<li><p><strong>cspec</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, list the cspec responses.
+Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_rsp2">
+<span class="sig-name descname"><span class="pre">ls_rsp2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cspec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_rsp2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_rsp2" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all response Type-II files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctime</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, list the ctime responses.
+Default is True.</p></li>
+<li><p><strong>cspec</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, list the cspec responses.
+Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_trigdat">
+<span class="sig-name descname"><span class="pre">ls_trigdat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_trigdat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_trigdat" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the trigger data (trigdat) file for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.ls_tte">
+<span class="sig-name descname"><span class="pre">ls_tte</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.ls_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.ls_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all tte files for the trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerFtp.set_trigger">
+<span class="sig-name descname"><span class="pre">set_trigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerFtp.set_trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerFtp.set_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the trigger number. If the object was previously associated
+with a trigger number, this will effectively change the working
+directory to that of the new trigger number. If the trigger number is
+invalid, an exception will be raised, and no directory change will be
+made.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tnum</strong> (<em>str</em>) – A valid trigger number</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="continuousftp">
+<h3>ContinuousFtp<a class="headerlink" href="#continuousftp" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.finder.</span></span><span class="sig-name descname"><span class="pre">ContinuousFtp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">met</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">utc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.finder.FtpFinder" title="gbm.finder.FtpFinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.finder.FtpFinder</span></code></a></p>
+<p>A class that interfaces with the HEASARC FTP continuous daily data
+directories. An instance of this class will represent the available files
+associated with a single day.</p>
+<p>An instance can be created without a time, however a time will need to be
+set by set_time() to query and download files. An instance can also be
+changed from one time to another without having to create a new instance.
+If multiple instances are created and exist simultaneously, they will all
+use a single FTP connection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since HEASARC transitioned to FTPS, some have had issues with
+connecting to the HEASARC FTP site via Python’s ftplib for no obvious
+reason while it works flawlessy for others (even on the same platform).
+Currently the thought is that this may be related to the underlying
+OpenSSL version that is installed.  If you have connection problems
+using this, you may consider upgrading you OpenSSL and see if that
+solves your problem. A potential solution is to do the following:</p>
+<ul class="simple">
+<li><p>$ pip3 install pyopenssl</p></li>
+<li><p>$ pip3 install requests[security]</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>met</strong> (<em>float</em><em>, </em><em>optional</em>) – A time in MET. Either met, utc, or gps must be set.</p></li>
+<li><p><strong>utc</strong> (<em>str</em><em>, </em><em>optional</em>) – A UTC time in ISO format: YYYY-MM-DDTHH:MM:SS</p></li>
+<li><p><strong>gps</strong> (<em>float</em><em>, </em><em>optional</em>) – A GPS time</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>num_files</strong> (<em>int</em>) – Number of files in the current directory</p></li>
+<li><p><strong>files</strong> (<em>list of str</em>) – The list of files in the current directory</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.get_all">
+<span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.get_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all files within a daily directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use at your own risk. Unless you have a high-bandwidth connection
+and can handle downloading several GBs, this function is not
+recommended for use.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.get_cspec">
+<span class="sig-name descname"><span class="pre">get_cspec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.get_cspec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.get_cspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the cspec files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.get_ctime">
+<span class="sig-name descname"><span class="pre">get_ctime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.get_ctime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.get_ctime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the ctime files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.get_poshist">
+<span class="sig-name descname"><span class="pre">get_poshist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.get_poshist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.get_poshist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the poshist file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.get_spechist">
+<span class="sig-name descname"><span class="pre">get_spechist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.get_spechist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.get_spechist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the spechist files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.get_tte">
+<span class="sig-name descname"><span class="pre">get_tte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.get_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.get_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all TTE files associated with a time.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unless you have a high-bandwidth connection and can handle
+downloading several GBs, it is not recommended to download the
+full day of TTE data.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_dir</strong> (<em>str</em>) – The download directory</p></li>
+<li><p><strong>dets</strong> (<em>list</em><em>, </em><em>optional</em>) – The detectors’ data to download.
+If omitted, will download all.</p></li>
+<li><p><strong>full_day</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will download the TTE files for the full day.  If False,
+will return the TTE files for the covering the specified time.
+Default is False.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will output the download status.
+Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.ls">
+<span class="sig-name descname"><span class="pre">ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.ContinuousFtp.ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the directory contents of an FTP directory associated with
+a trigger or data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – The id associated with a trigger or data set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – Alphabetically ordered file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.ls_cspec">
+<span class="sig-name descname"><span class="pre">ls_cspec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.ls_cspec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.ls_cspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all cspec files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.ls_ctime">
+<span class="sig-name descname"><span class="pre">ls_ctime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.ls_ctime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.ls_ctime" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all ctime files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.ls_poshist">
+<span class="sig-name descname"><span class="pre">ls_poshist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.ls_poshist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.ls_poshist" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the poshist file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.ls_spechist">
+<span class="sig-name descname"><span class="pre">ls_spechist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.ls_spechist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.ls_spechist" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all spechist files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.ls_tte">
+<span class="sig-name descname"><span class="pre">ls_tte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.ls_tte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.ls_tte" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all TTE files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>full_day</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will return the TTE files for the full day.  If False,
+will return the TTE files for the hour covering the specified
+time. Default is False.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – The file list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.ContinuousFtp.set_time">
+<span class="sig-name descname"><span class="pre">set_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">met</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">utc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#ContinuousFtp.set_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.ContinuousFtp.set_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the time. If the object was previously associated with a
+different time, this will effectively change the working directory to
+that of the new time. If the time is invalid, an exception will be
+raised, and no directory change will be made.</p>
+<p>Only one of met, utc, or gps should be defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>met</strong> (<em>float</em><em>, </em><em>optional</em>) – A time in MET.</p></li>
+<li><p><strong>utc</strong> (<em>str</em><em>, </em><em>optional</em>) – A UTC time in ISO format: YYYY-MM-DDTHH:MM:SS</p></li>
+<li><p><strong>gps</strong> (<em>float</em><em>, </em><em>optional</em>) – A GPS time</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="heasarc-catalogs">
+<h2>HEASARC Catalogs<a class="headerlink" href="#heasarc-catalogs" title="Permalink to this headline">¶</a></h2>
+<p>Classes to download and query the GBM trigger and burst catalogs.</p>
+<div class="section" id="triggercatalog">
+<h3>TriggerCatalog<a class="headerlink" href="#triggercatalog" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.finder.TriggerCatalog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.finder.</span></span><span class="sig-name descname"><span class="pre">TriggerCatalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord_units_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#TriggerCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.TriggerCatalog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.finder.HeasarcBrowse</span></code></a></p>
+<p>Class that interfaces with the GBM Trigger Catalog via HEASARC Browse.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because this calls HEASARC’s w3query.pl script on initialization,
+it may take several seconds for the object to load.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coord_units_deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, converts the hms sexigesimal format output by HEASARC to
+decimal degree. Default is True.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>columns</strong> (<em>np.array</em>) – The names of the columns available in the table</p></li>
+<li><p><strong>num_cols</strong> (<em>int</em>) – The total number of columns (fields) in the data table</p></li>
+<li><p><strong>num_rows</strong> – (int): The total number of rows in the data table</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerCatalog.column_range">
+<span class="sig-name descname"><span class="pre">column_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.TriggerCatalog.column_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data range for a given column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>column</strong> (<em>str</em>) – The column name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – The (lo, hi) range of the data column</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerCatalog.get_table">
+<span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.TriggerCatalog.get_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the table data as a record array with proper type conversions.
+Missing values are treated as type-converted <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The columns to return. If omitted,
+returns all columns.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.recarray</em> – A record array containing the requested data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerCatalog.slice">
+<span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.TriggerCatalog.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform row slices of the data table based on a conditional of a
+single column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column</strong> (<em>str</em>) – The column name</p></li>
+<li><p><strong>lo</strong> (<em>optional</em>) – The minimum (inclusive) value of the slice. If not
+set, uses the lowest range of the data in the column.</p></li>
+<li><p><strong>hi</strong> (<em>optional</em>) – The maximum (inclusive) value of the slice. If not
+set, uses the highest range of the data in the column.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeasarcBrowse</span></code></a> – Returns a new catalog with the sliced rows</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.TriggerCatalog.slices">
+<span class="sig-name descname"><span class="pre">slices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.TriggerCatalog.slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform row slices of the data table based on a conditional of
+multiple columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>list of tuples</em>) – A list of tuples, where each tuple is (column, lo, hi).  The
+‘column’ is the column name, ‘lo’ is the lowest bounding value,
+and ‘hi’ is the highest bouding value.  If no low or high
+bounding is desired, set to None. See <a class="reference internal" href="#gbm.finder.TriggerCatalog.slice" title="gbm.finder.TriggerCatalog.slice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">slice()</span></code></a> for more
+info.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeasarcBrowse</span></code></a> – Returns a new catalog with the sliced rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="burstcatalog">
+<h3>BurstCatalog<a class="headerlink" href="#burstcatalog" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbm.finder.BurstCatalog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbm.finder.</span></span><span class="sig-name descname"><span class="pre">BurstCatalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord_units_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gbm/finder.html#BurstCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbm.finder.BurstCatalog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbm.finder.HeasarcBrowse</span></code></a></p>
+<p>Class that interfaces with the GBM Burst Catalog via HEASARC Browse.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because this calls HEASARC’s w3query.pl script on initialization,
+it may take several seconds up to a couple of minutes for the object
+to load.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coord_units_deg</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, converts the hms sexigesimal format output by HEASARC to
+decimal degree. Default is True.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>columns</strong> (<em>np.array</em>) – The names of the columns available in the table</p></li>
+<li><p><strong>num_cols</strong> (<em>int</em>) – The total number of columns (fields) in the data table</p></li>
+<li><p><strong>num_rows</strong> – (int): The total number of rows in the data table</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.BurstCatalog.column_range">
+<span class="sig-name descname"><span class="pre">column_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.BurstCatalog.column_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data range for a given column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>column</strong> (<em>str</em>) – The column name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – The (lo, hi) range of the data column</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.BurstCatalog.get_table">
+<span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.BurstCatalog.get_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the table data as a record array with proper type conversions.
+Missing values are treated as type-converted <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The columns to return. If omitted,
+returns all columns.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.recarray</em> – A record array containing the requested data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.BurstCatalog.slice">
+<span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.BurstCatalog.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform row slices of the data table based on a conditional of a
+single column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column</strong> (<em>str</em>) – The column name</p></li>
+<li><p><strong>lo</strong> (<em>optional</em>) – The minimum (inclusive) value of the slice. If not
+set, uses the lowest range of the data in the column.</p></li>
+<li><p><strong>hi</strong> (<em>optional</em>) – The maximum (inclusive) value of the slice. If not
+set, uses the highest range of the data in the column.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeasarcBrowse</span></code></a> – Returns a new catalog with the sliced rows</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbm.finder.BurstCatalog.slices">
+<span class="sig-name descname"><span class="pre">slices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gbm.finder.BurstCatalog.slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform row slices of the data table based on a conditional of
+multiple columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>list of tuples</em>) – A list of tuples, where each tuple is (column, lo, hi).  The
+‘column’ is the column name, ‘lo’ is the lowest bounding value,
+and ‘hi’ is the highest bouding value.  If no low or high
+bounding is desired, set to None. See <a class="reference internal" href="#gbm.finder.BurstCatalog.slice" title="gbm.finder.BurstCatalog.slice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">slice()</span></code></a> for more
+info.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gbm.finder.HeasarcBrowse" title="gbm.finder.HeasarcBrowse"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeasarcBrowse</span></code></a> – Returns a new catalog with the sliced rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api-utils.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api-plot.html" class="btn btn-neutral float-left" title="Plotting Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
