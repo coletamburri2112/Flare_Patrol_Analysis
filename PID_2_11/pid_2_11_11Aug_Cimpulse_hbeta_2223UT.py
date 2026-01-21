@@ -156,7 +156,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.003
+fwhm = 0.001
 
 # # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45
