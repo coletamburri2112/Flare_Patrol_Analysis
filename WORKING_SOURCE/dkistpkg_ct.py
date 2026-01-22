@@ -2638,6 +2638,10 @@ def plt_allrasterprofile(maxindices,scaled_flare_time,dispersion_range,end=5):
 def prep_arms(base,folder_arm1,folder_arm2,file_arm1,file_arm2,startind=2548,\
               nslit = 91):
     
+    # function to get coordinates (from L1 header) for two DKIST arms, could 
+    # be any.  startind and nslit are the start index for a good-seeing scan
+    # to do the alignment and the number of slits per scan.
+    
     dir_list_arm1 = pathdef(base,folder_arm1) 
     dir_list_arm2 = pathdef(base,folder_arm2) 
 

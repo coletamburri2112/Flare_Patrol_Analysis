@@ -4,6 +4,21 @@
 Created on Thu Jan 22 11:10:28 2026
 
 @author: coletamburri
+
+Function to co-align two ViSP slits since the L1 headers do not have the correct
+info, and save to a file.  The final sxes are only relative to the coordinates
+stored in the L1 file of arm1 - i.e. the final coordinates will be in the 
+reference frame defined by the L1 header of arm1.  Determination of absolute 
+coordinates will require co-alignment between ViSP, VBI, SDO.
+
+Options to save (0 or 1) the relative coordinates to a file, and also to 
+process (0 or 1) the ViSP data from the two arms in question.  If not, just skips
+to the co-alignment step so that trial and error can be used without re-reading
+every file every time.  
+
+Variables addshift and multshift should be changed until the crosshairs in the
+ViSP data line up - both will need adjustment.
+
 """
 
 import numpy as np
