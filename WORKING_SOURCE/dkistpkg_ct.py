@@ -2635,6 +2635,60 @@ def plt_allrasterprofile(maxindices,scaled_flare_time,dispersion_range,end=5):
     return None
 
         
+def prep_arms(base,folder_arm1,folder_arm2,file_arm1,file_arm2,startind=2548,\
+              nslit = 91):
+    
+    dir_list_arm1 = pathdef(base,folder_arm1) 
+    dir_list_arm2 = pathdef(base,folder_arm2) 
+
+    goodscan_arm1 = dir_list_arm1[startind:startind+nslit]
+    goodscan_arm2 = dir_list_arm2[startind:startind+nslit]
+
+    #function to get co-ordinates along slit
+    firststep = fits.open(base+folder_arm1+goodscan_arm1[0])
+    
+    center = firststep[1].header['CRVAL1']
+    dy = firststep[1].header['CDELT1']
+    center_unit = firststep[1].header['CUNIT1']
+    n1 = firststep[1].header['NAXIS1']
+    
+    yarr_arm1 = np.arange(center+(n1*dy/2),center-(n1*dy/2),-dy)
+    
+    #function to get co-ordinates along slit
+    firststep = fits.open(base+folder_arm2+goodscan_arm2[0])
+    
+    center = firststep[1].header['CRVAL1']
+    dy = firststep[1].header['CDELT1']
+    center_unit = firststep[1].header['CUNIT1']
+    n1 = firststep[1].header['NAXIS1']
+    
+    yarr_arm2 = np.arange(center+(n1*dy/2),center-(n1*dy/2),-dy)
+    
+    # x coordinates
+    step = fits.open(base+folder_arm2+goodscan_arm2[0])
+    center = firststep[1].header['CRVAL3']
+    dx = firststep[1].header['CDELT3']
+    center_unit = firststep[1].header['CUNIT3']
+    n3 = 91
+    
+    xarr_arm2 = np.arange(center+(n3*dx/2),center-(n3*dx/2),-dx)
+    
+    #hbeta
+    
+    step = fits.open(base+folder_arm1+goodscan_arm1[0])
+    center = firststep[1].header['CRVAL3']
+    dx = firststep[1].header['CDELT3']
+    center_unit = firststep[1].header['CUNIT3']
+    n3 = 91
+    
+    xarr_arm1 = np.arange(center+(n3*dx/2),center-(n3*dx/2),-dx)
+    
+    return xarr_arm1, yarr_arm1, xarr_arm2, yarr_arm2, dir_list_arm1, \
+        dir_list_arm2
+    
+            
+        
+    
 
         
 
