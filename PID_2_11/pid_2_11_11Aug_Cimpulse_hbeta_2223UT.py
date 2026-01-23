@@ -89,7 +89,7 @@ clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True)
 startstepqs = 0
 endstepqs=100
 
-########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
+########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE AS FLARE
 #if want QS to be the same file
 startstepqs = 2400+148
 endstepqs=2400+148+91
