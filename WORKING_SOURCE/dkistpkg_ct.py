@@ -372,7 +372,7 @@ def fourstepprocess(path,folder1,dir_list2,fullstokes=1):
         # image_data_arr_arr_raster1, image_data_arr_arr_raster2,\
         # image-data_arr-arr_raster3, image_data_arr_arr_raster3
         
-def multistepprocess(path,folder,dir_list,div=10,startstep=0,endstep=-1):
+def multistepprocess(path,folder,dir_list,div=10,startstep=0,endstep=-1,qscut=0):
     
     # Multi-step raster procesing of DKIST data; bare bones storage, no
     # separation based on slit step, output includes all slit step positions
@@ -402,9 +402,14 @@ def multistepprocess(path,folder,dir_list,div=10,startstep=0,endstep=-1):
             i_data = i_file[1].data[0]
             image_data_arrs0.append(i_data)
             rasterpos.append(i_file[1].header['CRPIX3'])
+            
+
     
     # all rasters
     image_data_arr_arr = np.array(image_data_arrs0)
+    
+    if qscut > 0:
+        image_data_arr_arr=image_data_arr_arr[:,:,qscut:]
 
     
     return image_data_arr_arr, rasterpos, times
@@ -509,8 +514,10 @@ def scaling(for_scale,nonflare_multfact,limbdarkening,nonflare_average,
         for j in range(np.shape(scaled_flare_time)[2]):
             if end ==0:
                 bkgd_subtract_flaretime[i,:,j] = scaled_flare_time[i,:,j]-nonflare_average[:]
-            else:
+            elif end > 0:
                 bkgd_subtract_flaretime[i,end:,j] = scaled_flare_time[i,end:,j]-nonflare_average[:-end]
+            elif end < 0:
+                bkgd_subtract_flaretime[i,:end,j] = scaled_flare_time[i,:end,j]-nonflare_average[-end:]
 
         
     return scaled_flare_time, bkgd_subtract_flaretime

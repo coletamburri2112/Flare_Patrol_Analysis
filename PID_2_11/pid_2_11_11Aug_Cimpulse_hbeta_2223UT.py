@@ -17,7 +17,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=2
+end=0
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -34,7 +34,13 @@ muted = DKISTanalysis.color_muted2()
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
 folder2 = 'APQVP'  #QS - but change to hbeta specific
+
 folder3hbeta = 'ARYEE'
+
+########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
+#if want QS to be from same file
+folder2=folder3hbeta
+##########
 
 # list of files in directory for DKIST/ViSP
 dir_list2hbeta = DKISTanalysis.pathdef(path,folder3hbeta) #flaretime
@@ -44,9 +50,15 @@ dir_list3 = DKISTanalysis.pathdef(path2,folder2) #qs
 lon = 57.99 #degrees
 lat = -15 #degrees
 
+
 lonqs = 0
 latqs = 0
 
+########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
+#if want QS to be from same file
+lonqs = 57.99 #degrees
+latqs = -15 #degrees
+##########
 
 
 wlhbeta = 486.2 # central wavelength, Hbeta
@@ -76,6 +88,13 @@ clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True)
 # time step start for chosen QS observations
 startstepqs = 0
 endstepqs=100
+
+########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
+#if want QS to be the same file
+startstepqs = 2400+148
+endstepqs=2400+148+91
+########
+
 startstep=2400 #where does interesting bit begin?
 endstep=2800#where does interesting bit end? #originally 3400, shortening
 
@@ -84,12 +103,15 @@ endstep=2800#where does interesting bit end? #originally 3400, shortening
 image_data_arr_arrhbeta, rasterposhbeta, timeshbeta = \
     DKISTanalysis.multistepprocess(path,folder3hbeta,dir_list2hbeta,startstep=startstep,div=1,endstep=endstep)
 
+
+########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
 #array processed
 # process multi-step raster - for qs time
 image_data_arr_arr_qs, rasterpos_qs, times_qs = \
     DKISTanalysis.multistepprocess(path2,folder2,dir_list3,div=1,
-                                   startstep=startstepqs,endstep=endstepqs)
-    
+                                   startstep=startstepqs,endstep=endstepqs,\
+                                   qscut=1900)
+ ########   
     
     
 
@@ -127,6 +149,7 @@ space_and_time_averaged_qs = \
 # # available, as is the case for the Ca II H window).  Most of the next steps
 # # are not used for pid_1_38, but include in any case to model the use of lines
 line1 = 485.97411 #fe I
+
 line2 = 486.2610 #v1
 
 # # Definition of "telluric" or other absorption lines for calibration.
@@ -156,7 +179,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.001
+fwhm = 0.003
 
 # # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45
@@ -190,7 +213,7 @@ nonflare_multfact = fit_vals
 #show comparison of atlas to qs
 fig,ax=plt.subplots()
 ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
-ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
+ax.plot(dispersion_range_fin,yconv,label='convolved')
 ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
 ax.set_xlim([485.5,487]);
 ax.legend();plt.show()

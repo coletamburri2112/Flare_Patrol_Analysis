@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tol_colors as tc
 
-hbeta=0
+hbeta=1
 
 #filehbeta = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass_hbeta.npz'
 filehbeta = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
@@ -61,7 +61,7 @@ else:
 spectra = flare
 
 if hbeta==1:
-    hbeta_avg = np.mean(flare[:,hbeta_low:hbeta_high,:],1)
+    hbeta_avg = np.mean(spectra[:,hbeta_low:hbeta_high,:],1)
     hbeta_redwing = flare[:,650,:]
     hbeta_bluewing = flare[:,570,:]
     choice = hbeta_avg
