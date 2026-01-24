@@ -20,7 +20,7 @@ import nltk
 
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
-line = 0 #  0 for caii/hepsilon, 1 for hbeta
+line = 1 #  0 for caii/hepsilon, 1 for hbeta
 
 
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
@@ -30,9 +30,9 @@ line = 0 #  0 for caii/hepsilon, 1 for hbeta
 #filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
 #coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
 if line ==1:
-    filename = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
+    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_Hbeta_calib_bestseeing.npz'
 if line ==0:
-    filename = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
+    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_CaIIH_calib_bestseeing.npz'
 res = np.load(filename)
 
 # coordres = np.load(coord_filename)
@@ -56,7 +56,7 @@ caII_high = 775
 hepsilon_low = 775
 hepsilon_high = 900
 
-dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 xarr_caII = dkist_coords['xarr_caII']
@@ -67,9 +67,9 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 
 #cutoff0 = 1.5 # for more than one frame
 if line == 1:
-    cutoff0=2.5  # for h-beta
+    cutoff0=9  # for h-beta
 if line == 0:
-    cutoff0=2
+    cutoff0=3
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 #cutoff0=2.6 # for hepsilon
 
@@ -228,7 +228,7 @@ def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=5
     blue_intensity = curve[blue-hbeta_low]
     core_intensity = curve[core-hbeta_low]
     red_intensity = curve[red-hbeta_low]
-    ratio = (core_intensity/blue_intensity)+(red_intensity/core_intensity)
+    ratio = (core_intensity/blue_intensity)
     return ratio
 
 dists=[]
@@ -253,7 +253,7 @@ inds = np.arange(len(km0.means()))
 #df = pd.DataFrame({'x':inds,'y':relint}) # by relint
 
 if line == 0:
-    df = pd.DataFrame({'x':inds,'y':wm}) # by relint
+    df = pd.DataFrame({'x':inds,'y':wm}) # by wm
 if line == 1:
     df = pd.DataFrame({'x':inds,'y':bc_int}) # by blue wing to core - 480 to 600
 
