@@ -15,7 +15,7 @@ hbeta=1
 #filehbeta = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass_hbeta.npz'
 filehbeta = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
 hbetascaled = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta_scaled.npz'
-
+filehbeta = '/Users/coletamburri/Desktop/11Aug2024_calibrated_with_NEWQS_Hbeta_cut.npz'
 file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
 #file = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass.npz'
 #file = '/Users/coletamburri/Desktop/Misc_DKIST/ViSPselection11August24Mclass.npz'
@@ -44,8 +44,9 @@ if hbeta==1:
     data_hbeta_scaled = np.load(hbetascaled)
     wl = data_hbeta['wl']
     # scaled = data['scaled']
-    flare = data_hbeta['flare']
-    scaled = data_hbeta_scaled['scaled']
+    #flare = data_hbeta['flare']
+    flare=data_hbeta['bkgd']
+    #scaled = data_hbeta_scaled['scaled']
     time_hbeta = data_hbeta['time']
 else:
     data = np.load(file)
