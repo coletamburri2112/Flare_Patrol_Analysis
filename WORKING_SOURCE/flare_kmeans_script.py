@@ -67,7 +67,7 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 
 #cutoff0 = 1.5 # for more than one frame
 if line == 1:
-    cutoff0=9  # for h-beta
+    cutoff0=11 # for h-beta
 if line == 0:
     cutoff0=3
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
@@ -228,7 +228,7 @@ def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=5
     blue_intensity = curve[blue-hbeta_low]
     core_intensity = curve[core-hbeta_low]
     red_intensity = curve[red-hbeta_low]
-    ratio = (core_intensity/blue_intensity)
+    ratio = (core_intensity/blue_intensity)-(red_intensity)/(core_intensity)
     return ratio
 
 dists=[]
@@ -255,7 +255,7 @@ inds = np.arange(len(km0.means()))
 if line == 0:
     df = pd.DataFrame({'x':inds,'y':wm}) # by wm
 if line == 1:
-    df = pd.DataFrame({'x':inds,'y':bc_int}) # by blue wing to core - 480 to 600
+    df = pd.DataFrame({'x':inds,'y':wm}) # by blue wing to core - 480 to 600
 
 df.sort_values(by=['y'])
 
