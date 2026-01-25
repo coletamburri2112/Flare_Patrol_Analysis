@@ -467,8 +467,8 @@ def spatialaxis(path,folder1,dir_list2,line='Ca II H',pid='84',shift=0):
 
        
 
-def scaling(for_scale,nonflare_multfact,limbdarkening,nonflare_average,
-            limbd = 1,end=5):
+def scaling(for_scale,nonflare_multfact,limbdarkening,startstep_noflare,endstep_noflare,
+            startspace_noflare,limbd = 1,end=5):
     # Scaling relative to QS values.  For this, require inputs of "nonflare" -
     # this can take the form of off-kernel observations.  In our case, was a disk
     # center observation, hence the allowance for limb darkening correction.  
@@ -507,7 +507,13 @@ def scaling(for_scale,nonflare_multfact,limbdarkening,nonflare_average,
             
     
     bkgd_subtract_flaretime = np.zeros(np.shape(for_scale))
-
+    
+    time_averaged_noflare = np.mean(scaled_flare_time[startstep_noflare:endstep_noflare,:,startspace_noflare:],axis=0)
+    
+    space_and_time_averaged_noflare = np.mean(time_averaged_noflare,axis=1)
+    
+    nonflare_average = space_and_time_averaged_noflare
+    
     # Subtracted averaged, scaled data cube 
     # from each time step in scaled data cube
     for i in range(np.shape(scaled_flare_time)[0]):

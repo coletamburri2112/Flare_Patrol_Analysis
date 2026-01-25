@@ -63,7 +63,7 @@ hpc1_arcsec, hpc2_arcsec, x_center, y_center, z, rho, mu, doppshrel,\
 hpc1_arcsecqs, hpc2_arcsecqs, x_centerqs, y_centerqs, zqs, rhoqs, muqs, doppshrelqs,\
     doppshnonrelqs = \
     DKISTanalysis.spatialinit(path2,folder2,dir_list3,lon,lat,wl)
-print('here1')
+
 # get limb darkening coefficient 
 clv_corr = DKISTanalysis.limbdarkening(wl, mu=mu, nm=True)
     # for Ca II H (require mu value for determination, be sure to specify
@@ -78,8 +78,14 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
 startstepqs = 0
 endstepqs=20
 startstep=2400#where does interesting bit begin?
-endstep=3400#where does interesting bit end?
-print('here2')
+endstep=2800#where does interesting bit end?
+
+startstep_noflare = 148
+endstep_noflare=148+91
+
+startspace_noflare = 1500
+
+
 # process multi-step raster - for qs time
 image_data_arr_arr, rasterpos, times = \
     DKISTanalysis.multistepprocess(path,folder1,dir_list2,startstep=startstep,div=1,endstep=endstep)
@@ -97,19 +103,6 @@ shift = .123
 spatial_range, dispersion_range = DKISTanalysis.spatialaxis(path,folder1,
                                                             dir_list2,line='Ca II H',
                                                             pid='2_11',shift=shift)
-
-# # old code, when basing QS on 15 August 2022 disk-center observations
-# #only for 19 August observations, really - the QS will be different for others
-# nonflare_average = np.load('/Users/coletamburri/Desktop/'+\
-#                            'DKIST_Data/bolow_nonflare_average.npy')
-# nonflare_stdevs = np.load('/Users/coletamburri/Desktop/'+\
-#                           'DKIST_Data/bolow_nonflare_stdevs.npy')
-# nonflare_fitvals = np.load('/Users/coletamburri/Desktop/'+\
-#                            'DKIST_Data/bolow_nonflare_fit_vals.npy')
-# nonflare_multfact = np.load('/Users/coletamburri/Desktop/'+\
-#                             'DKIST_Data/bolow_nonflare_mult_fact.npy')
-    
-# Begin calibration based on QS
 
 # Load Kurucz FTS Atlas
 wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range)
@@ -152,7 +145,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.002 # in nm
+fwhm = 0.003 # in nm
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45
@@ -190,13 +183,13 @@ cont_mult_facts,fit_vals,\
         
 # calibrated quiet sun, again, using updated fit values
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
-nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # intensity calibration, background subtraction for flare-time                            
 scaled_flare_time, bkgd_subtract_flaretime = \
     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
-                          nonflare_average_avg,end=end)
+                          startstep_noflare,endstep_noflare,startspace_noflare,\
+                              end=end)
 
 # definition of index bounds for Ca II H lines
 caII_low_foravg = 570

@@ -37,10 +37,6 @@ folder2 = 'APQVP'  #QS - but change to hbeta specific
 
 folder3hbeta = 'ARYEE'
 
-########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
-#if want QS to be from same file
-folder2=folder3hbeta
-##########
 
 # list of files in directory for DKIST/ViSP
 dir_list2hbeta = DKISTanalysis.pathdef(path,folder3hbeta) #flaretime
@@ -53,12 +49,6 @@ lat = -15 #degrees
 
 lonqs = 0
 latqs = 0
-
-########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE
-#if want QS to be from same file
-lonqs = 57.99 #degrees
-latqs = -15 #degrees
-##########
 
 
 wlhbeta = 486.2 # central wavelength, Hbeta
@@ -89,11 +79,12 @@ clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True)
 startstepqs = 0
 endstepqs=100
 
-########CHANGED THIS 23 JAN FOR READ QS FROM SAME FILE AS FLARE
-#if want QS to be the same file
-startstepqs = 2400+148
-endstepqs=2400+148+91
+#sample for non-flare - has to be same mu angle
+startstep_noflare = 148
+endstep_noflare=148+91
 ########
+
+startspace_noflare = 1500
 
 startstep=2400 #where does interesting bit begin?
 endstep=2800#where does interesting bit end? #originally 3400, shortening
@@ -109,8 +100,7 @@ image_data_arr_arrhbeta, rasterposhbeta, timeshbeta = \
 # process multi-step raster - for qs time
 image_data_arr_arr_qs, rasterpos_qs, times_qs = \
     DKISTanalysis.multistepprocess(path2,folder2,dir_list3,div=1,
-                                   startstep=startstepqs,endstep=endstepqs,\
-                                   qscut=1900)
+                                   startstep=startstepqs,endstep=endstepqs)
  ########   
     
     
@@ -207,7 +197,6 @@ cont_mult_facts,fit_vals,\
         
 # calibrated quiet sun, again, using updated fit values
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
-nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 #show comparison of atlas to qs
@@ -223,11 +212,11 @@ ax.legend();plt.show()
 # intensity calibration, background subtraction for flare-time                            
 scaled_flare_time, bkgd_subtract_flaretime = \
     DKISTanalysis.scaling(image_data_arr_arrhbeta, nonflare_multfact,clv_corrhbeta,
-                          nonflare_average_avg,end=end)
+                          startstep_noflare,endstep_noflare,startspace_noflare,end=end)
 
 
-low_foravg = 500
-high_foravg = 650
+# low_foravg = 500
+# high_foravg = 650
 
 # # definition of index bounds for Ca II H lines
 # caII_low_foravg = 525
