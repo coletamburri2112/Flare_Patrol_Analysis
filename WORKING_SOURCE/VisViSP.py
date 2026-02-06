@@ -9,8 +9,10 @@ Created on Sun Mar  9 09:00:29 2025
 import numpy as np
 import matplotlib.pyplot as plt
 import tol_colors as tc
+import pandas as pd
 
-hbeta=1
+
+hbeta=0
 
 #filehbeta = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass_hbeta.npz'
 filehbeta = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
@@ -56,7 +58,7 @@ else:
     #scaled = data['scaled']
 
     flare = data['flare']
-    #time = data['time']
+    times = data['time']
     
 
 spectra = flare
@@ -84,7 +86,7 @@ else:
     # both_avg = np.mean(spectra[:,caII_low:hep_high,:],1)
     
     # all_avg = np.mean(spectra,1)
-    choice=caii_avg_redwing
+    choice=caii_avg_bluewing
     
 
 if spec == 1: # just want to look at spectra
@@ -137,23 +139,27 @@ else:
     cc = plt.ginput(n_points,timeout = 120)
     
     #fig,ax=plt.subplots(len(cc),1)
-    fig,ax=plt.subplots(5,2)
+    fig,ax=plt.subplots(figsize=(12,6),dpi=100)
     for i in range(len(cc)):
         xsel,ysel = cc[i][0],cc[i][1]
         #ax.flatten()[i].plot(spectra[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
-        ax.flatten()[i].plot(flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
+        ax.plot(wl,flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i],linewidth=4)
         #ax.flatten()[i].plot(flare[int(cc[-1][0])+xlo,:,int(cc[-1][1])+ylo],color='black',alpha=0.5)
         
         #ax.flatten()[i].plot(wl,flare[int(xsel)+xlo,:,int(ysel)+ylo],color=colors[i])
-        # if hbeta == 0:
-        #     ax.flatten()[i].axvline(396.85)
-        #     ax.flatten()[i].axvline(397.01)
-        #     ax.flatten()[i].set_xlim([396.7,397.07])
-        #     ax.flatten()[i].set_ylim([-.1e6,7e6])
+        if hbeta == 0:
+            ax.axvline(396.847,linewidth=2,linestyle='dashed',color='grey')
+            ax.axvline(397.01,linewidth=2,linestyle='dashed',color='#CC6677')
+            ax.set_xlim([396.7,397.1])
+            ax.set_ylim([-.1e6,7e6])
+        ax.grid('on')
         # if hbeta == 1:
         #     ax.flatten()[i].axvline(486.14)
         #     ax.flatten()[i].set_xlim([486.14-0.6,486.14+.6])
         #     ax.flatten()[i].set_ylim([-.1e6,6e6])
+    ax.set_xlabel('Wavelength [nm]',fontsize=12)
+    ax.set_ylabel(r'Intensity [erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$ sr$^{-1}$]',fontsize=12)
+
     fig.show()
         
     
@@ -164,20 +170,63 @@ else:
     # Extract zoomed-in frame from coordinates
     framezoom = choice[xlo:xhi,ylo:yhi]
     
-    # Plot zoomed-in
-    fig,ax=plt.subplots(dpi=300)
-    ax.pcolormesh(np.transpose(choice[xlo:xhi,ylo:yhi]),cmap='magma')
-    for i in range(len(cc)):
-        xsel,ysel = cc[i][0],cc[i][1]
-        ax.plot(xsel,ysel,'x',color=colors[i])
-    ax.invert_xaxis()
-        
-    #ax.set_xlim([xlo,xhi])
-    #ax.set_ylim([ylo,yhi])
     
-    ax.invert_yaxis()
-    #ax.set_aspect('equal')
-    plt.show()
+    dkist_coord_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords.npz'
+    dkist_coords = np.load(dkist_coord_file)
+
+    xarr_caII = dkist_coords['xarr_caII']
+    yarr_caII = dkist_coords['yarr_caII']
+
+    xarr_hbeta = dkist_coords['xarr_hbeta']
+    yarr_hbeta = dkist_coords['yarr_hbeta']
+    
+    if hbeta == 1:
+        startspace = 300 # 500 for ca ii
+        endspace = 1800 # 1500 for ca ii
+    if hbeta == 0:
+        startspace = 300 # 500 for ca ii
+        endspace = 1700 # 1500 for ca ii
+    
+    if hbeta == 1:
+        xarr_ch = xarr_hbeta[:-1]
+        yarr_ch = yarr_hbeta[ylo:yhi]
+    if hbeta==0:
+        xarr_ch = xarr_caII[:-1]
+        yarr_ch = yarr_caII[ylo:yhi]
+    
+    maskind = {'x': cc[:][0], 'y': cc[:][1]}
+    df_mask = pd.DataFrame(maskind)
+    
+    fig,ax=plt.subplots(2,5,figsize=(20,7),dpi=200)
+
+    for i in range(10):
+        ax.flatten()[i].pcolormesh(xarr_ch,yarr_ch,np.transpose(choice[57+(91*i):56+(91*(i+1)),ylo:yhi-1]),cmap='grey',alpha=1)
+        lower_threshold=57+(91*i)
+        upper_threshold=56+(91*(i+1))
+        xsel = cc[i][0]
+        ysel = cc[i][1]
+        xsel=xsel-lower_threshold+xlo
+
+        ax.flatten()[i].scatter(xarr_ch[int(xsel)],yarr_ch[int(ysel)],40,color=colors[i],alpha=1,marker='x')
+        #ax.flatten()[i].invert_xaxis()
+        #ax.flatten()[i].invert_yaxis()
+        #ax.flatten()[i].set_ylim([yhi,ylo])
+        #ax.flatten()[i].set_ylim([-251,-218])
+        #ax.flatten()[i].set_xlim([759,766])
+        ax.flatten()[i].tick_params(axis='x', labelrotation=45)
+        ax.flatten()[i].tick_params(axis='y', labelrotation=45)
+        
+        ax.flatten()[i].tick_params(axis='x',labelsize=6)
+        ax.flatten()[i].tick_params(axis='y',labelsize=6)
+        ax.flatten()[i].set_title(times[57+91*i][11:19],fontsize=8)
+        #ax.flatten()[i].set_xticks([760,763,766])
+    ax.flatten()[0].set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
+    ax.flatten()[5].set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
+
+    ax.flatten()[7].set_xlabel('DKIST HPC-x [arcsec]',fontsize=6)
+    fig.tight_layout(pad=2.0) 
+    fig.subplots_adjust(hspace=0.5,wspace=0.3)
+
         
         
     

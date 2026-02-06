@@ -16,7 +16,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=2
+end=1
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -43,6 +43,7 @@ caII_low = 570
 caII_high = 775
 hep_low = 775
 hep_high = 918
+
 
 # Stonyhurst lon/lat position of the AR from JHv
 lon = 61.65 #degrees
@@ -80,8 +81,16 @@ endstepqs=20
 startstep=2400#where does interesting bit begin?
 endstep=2800#where does interesting bit end?
 
-startstep_noflare = 148
-endstep_noflare=148+91
+#for light curves
+startstep=2100#where does interesting bit begin?
+endstep=3500#where does interesting bit end?
+
+#for best ViSP scans
+startstep=2400#where does interesting bit begin?
+endstep=3400#where does interesting bit end?
+
+startstep_noflare = 148+(9*91)
+endstep_noflare=148+(10*91)
 
 startspace_noflare = 1500
 
@@ -145,7 +154,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.003 # in nm
+fwhm = 0.002 # in nm
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45

@@ -54,6 +54,9 @@ latqs = 0
 wlhbeta = 486.2 # central wavelength, Hbeta
 
 
+hbeta_low = 443
+hbeta_high = 730
+
     
 # spatial coordinates hbeta
 hpc1_arcsechbeta, hpc2_arcsechbeta, x_centerhbeta, y_centerhbeta, zhbeta, rhohbeta, muhbeta, doppshrelhbeta,\
@@ -80,14 +83,22 @@ startstepqs = 0
 endstepqs=100
 
 #sample for non-flare - has to be same mu angle
-startstep_noflare = 148
-endstep_noflare=148+91
+startstep_noflare = 148+(9*91)
+endstep_noflare=148+(10*91)
 ########
 
 startspace_noflare = 1500
 
 startstep=2400 #where does interesting bit begin?
 endstep=2800#where does interesting bit end? #originally 3400, shortening
+
+# for light curve only
+startstep=2100
+endstep=3500
+
+# for ten scan only
+startstep=2400
+endstep=3400
 
     
 # process multi-step raster - for hbeta

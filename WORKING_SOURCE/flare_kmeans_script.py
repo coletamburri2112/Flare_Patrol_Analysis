@@ -20,7 +20,9 @@ import nltk
 
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
-line = 1 #  0 for caii/hepsilon, 1 for hbeta
+line = 0#  0 for caii/hepsilon, 1 for hbeta
+
+manyscan = 1
 
 
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
@@ -33,6 +35,19 @@ if line ==1:
     filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_Hbeta_calib_bestseeing.npz'
 if line ==0:
     filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_CaIIH_calib_bestseeing.npz'
+    
+nsteps = 91
+start = 148 #143 for saved Hbeta spectra
+if line == 1:
+    start = 57
+nframes = 10
+
+if manyscan ==1:
+    if line ==0:
+        filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH.npz'
+    if line ==1:
+        filename =  '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta.npz'
+    start=57
 res = np.load(filename)
 
 # coordres = np.load(coord_filename)
@@ -43,6 +58,7 @@ res = np.load(filename)
 
 flare_arr = res['flare']
 wave = res['wl']
+times=res['times'];
 #times = res['arr_1']
 
 
@@ -68,8 +84,12 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 #cutoff0 = 1.5 # for more than one frame
 if line == 1:
     cutoff0=11 # for h-beta
-if line == 0:
+    if manyscan:
+        cutoff0=7.5 # for hbeta all frames
+if line == 0: # for ca II
     cutoff0=3
+    if manyscan:
+        cutoff0=3.4
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 #cutoff0=2.6 # for hepsilon
 
@@ -78,7 +98,6 @@ if line == 1:
 if line == 0:
     n_clusters0 = 35
 
-nframes = 1
 
 if line == 1:
     startspace = 300 # 500 for ca ii
@@ -86,9 +105,7 @@ if line == 1:
 if line == 0:
     startspace = 300 # 500 for ca ii
     endspace = 1700 # 1500 for ca ii
-nsteps = 91
-#start = 148 #148 for saved Ca II H/Hepsilon files
-start = 148 #143 for saved Hbeta spectra
+
 
 #cent = 396.85
 #cent=397.01
@@ -107,6 +124,9 @@ if line == 0:
     linelow = caII_low
     linehigh = caII_high
     
+selwls = wave[linelow:linehigh]
+
+
 obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,startspace:endspace],1)
 flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
 
@@ -220,6 +240,11 @@ def find_weightmean(curve,find_nearest):
     weighted_mean = np.average(values, weights=weights)
     return weighted_mean
 
+def find_velocity(rest_wl,obs_wl):
+    c= 299792458 # m/s
+    
+    return c*(obs_wl-rest_wl)/(obs_wl)
+
 def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=566,red=580):
     values = np.linspace(0,len(curve),len(curve))
     
@@ -260,7 +285,9 @@ if line == 1:
 df.sort_values(by=['y'])
 
 sortedinds = df.sort_values(['y'])['x']
+sortedwls = df.sort_values(['y'])['y']
 sortedinds=np.asarray(sortedinds)
+sortedwls = np.asarray(sortedwls)
 
 distlocs = []
 
@@ -269,38 +296,74 @@ for i in range(len(groups0)):
     
 colors = plt.cm.turbo(np.linspace(0,1,n_clusters0))
 
-fig,ax=plt.subplots(figsize=(1.5,4),dpi=200)
 
 if line == 1:
-    xarr_ch = xarr_hbeta
-    yarr_ch = yarr_hbeta[startspace:endspace+1]
+    xarr_ch = xarr_hbeta[:-1]
+    yarr_ch = yarr_hbeta[startspace:endspace]
 if line==0:
     xarr_ch = xarr_caII
     yarr_ch = yarr_caII[startspace:endspace+1]
+    
+maskind = {'x': x_mask0, 'y': y_mask0,'dist':distlocs}
+df_mask = pd.DataFrame(maskind)
 
 
-ax.pcolormesh(xarr_ch,yarr_ch,np.transpose(frame_line[:,:]),cmap='grey',alpha=1)
-ax.scatter(xarr_ch[x_mask0],yarr_ch[y_mask0],2,color=colors[distlocs],alpha=.6,marker='s')
-ax.invert_xaxis()
-ax.invert_yaxis()
+if manyscan ==1:
+    fig,ax=plt.subplots(1,10,figsize=(30,4),dpi=200)
+
+    for i in range(10):
+        ax.flatten()[i].pcolormesh(xarr_ch,yarr_ch,np.transpose(frame_line[(91*i):(91*(i+1)),:]),cmap='grey',alpha=1)
+        lower_threshold=(91*i)
+        upper_threshold=(91*(i+1))
+        sel = df_mask[(df_mask['x'] > lower_threshold) & (df_mask['x'] < upper_threshold)]
+        xmask_sel = sel['x'].values-lower_threshold
+        ymask_sel = sel['y'].values
+        distlocs_sel = sel['dist'].values
+
+        ax.flatten()[i].scatter(xarr_ch[xmask_sel],yarr_ch[ymask_sel],2,color=colors[distlocs_sel],alpha=.6,marker='s')
+        ax.flatten()[i].invert_xaxis()
+        ax.flatten()[i].invert_yaxis()
+        ax.flatten()[i].set_ylim([-251,-218])
+        ax.flatten()[i].set_xlim([759,766])
+        ax.flatten()[i].tick_params(axis='x', labelrotation=45)
+        ax.flatten()[i].tick_params(axis='y', labelrotation=45)
+        if i>0:
+            ax.flatten()[i].set_yticks([])
+        
+        ax.flatten()[i].tick_params(axis='x',labelsize=6)
+        ax.flatten()[i].tick_params(axis='y',labelsize=6)
+        ax.flatten()[i].set_title(times[57+91*i][11:19],fontsize=8)
+        ax.flatten()[i].set_xticks([760,763,766])
+    ax.flatten()[0].set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
+    ax.flatten()[4].set_xlabel('                          DKIST HPC-x [arcsec]',fontsize=6)
+else:
+    fig,ax=plt.subplots(figsize=(1.5,4),dpi=200)
+
+    ax.pcolormesh(xarr_ch,yarr_ch,np.transpose(frame_line[:,:]),cmap='grey',alpha=1)
+    ax.scatter(xarr_ch[x_mask0],yarr_ch[y_mask0],2,color=colors[distlocs],alpha=.6,marker='s')
+    ax.invert_xaxis()
+    ax.invert_yaxis()
+    ax.set_ylim([-251,-218])
+    ax.set_xlim([759,766])
+    ax.tick_params(axis='y', labelrotation=90)
+    ax.set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
+    ax.set_xlabel('DKIST HPC-x [arcsec]',fontsize=6)
+    ax.tick_params(axis='x',labelsize=6)
+    ax.tick_params(axis='y',labelsize=6)
 
 ##for transformation only
 # else:
 #     ax.pcolormesh(vispx,vispy,np.transpose(frame_line[:-2,:]),cmap='grey',alpha=1)
 #     ax.scatter(x_mask_t,y_mask_t,5,color=colors[distlocs],alpha=.6,marker='s')
 #     ax.invert_yaxis()
-ax.set_ylim([-251,-218])
-ax.set_xlim([759,766])
+
 # # for tranformation
 # ax.set_ylim([2800,800])
 # ax.set_xlim([1750,2100])
-ax.tick_params(axis='y', labelrotation=90)
-ax.set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
-ax.set_xlabel('DKIST HPC-x [arcsec]',fontsize=6)
-ax.tick_params(axis='x',labelsize=6)
-ax.tick_params(axis='y',labelsize=6)
 
-fig.tight_layout()
+fig.subplots_adjust(wspace=0.1)
+
+
 fig.show()
 
 #fig,ax=plt.subplots(3,4,figsize=(5,4),dpi=200)
@@ -317,6 +380,7 @@ for i in range(len(arr_normprofs0)):
     ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
 
     
+
 for i in range(n_clusters0):
     ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
     ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
@@ -333,11 +397,16 @@ for i in range(n_clusters0):
     right=False,         # ticks along the top edge are off
     labelleft=False)# labels along the bottom edge are off
     ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
-         ha='right', va='top', fontsize=8, fontweight='bold')
+         ha='right', va='top', fontsize=6, fontstyle='italic')
     ax.flatten()[i].set_ylim([-0.2,1.2])
     ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+    
+    obs_wl = selwls[int(sortedwls[i])]
+    
+    velocity = find_velocity(cent,obs_wl)
+    ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
 
-
+fig.subplots_adjust(hspace=0.25,wspace=0.05)
 
 fig.show()
 
