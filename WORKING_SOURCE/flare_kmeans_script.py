@@ -89,7 +89,7 @@ if line == 1:
 if line == 0: # for ca II
     cutoff0=3
     if manyscan:
-        cutoff0=3.4
+        cutoff0=2.5
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 #cutoff0=2.6 # for hepsilon
 
