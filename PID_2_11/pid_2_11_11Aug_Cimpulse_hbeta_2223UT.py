@@ -83,11 +83,11 @@ startstepqs = 0
 endstepqs=100
 
 #sample for non-flare - has to be same mu angle
-startstep_noflare = 148+(9*91)
-endstep_noflare=148+(10*91)
+startstep_noflare = 148
+endstep_noflare=148+91
 ########
 
-startspace_noflare = 1500
+startspace_noflare = 1900
 
 startstep=2400 #where does interesting bit begin?
 endstep=2800#where does interesting bit end? #originally 3400, shortening
