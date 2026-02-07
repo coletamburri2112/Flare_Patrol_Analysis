@@ -22,7 +22,7 @@ import nltk
 nsteps = 91
 line = 0#  0 for caii/hepsilon, 1 for hbeta
 
-manyscan = 1
+manyscan = 0
 
 
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
@@ -32,14 +32,13 @@ manyscan = 1
 #filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
 #coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
 if line ==1:
-    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_Hbeta_calib_bestseeing.npz'
+    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta_singlescan.npz'
 if line ==0:
-    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_CaIIH_calib_bestseeing.npz'
+    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH_singlescan.npz'
     
 nsteps = 91
-start = 148 #143 for saved Hbeta spectra
-if line == 1:
-    start = 57
+start = 0 #143 for saved Hbeta spectra
+
 nframes = 10
 
 if manyscan ==1:
@@ -58,7 +57,7 @@ res = np.load(filename)
 
 flare_arr = res['flare']
 wave = res['wl']
-times=res['times'];
+times=res['times']
 #times = res['arr_1']
 
 
@@ -83,11 +82,11 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 
 #cutoff0 = 1.5 # for more than one frame
 if line == 1:
-    cutoff0=11 # for h-beta
+    cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=7.5 # for hbeta all frames
+        cutoff0=7 # for hbeta all frames
 if line == 0: # for ca II
-    cutoff0=3
+    cutoff0=2.5
     if manyscan:
         cutoff0=2.5
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
@@ -105,10 +104,6 @@ if line == 1:
 if line == 0:
     startspace = 300 # 500 for ca ii
     endspace = 1700 # 1500 for ca ii
-
-
-#cent = 396.85
-#cent=397.01
 
 if line == 1:
     cent=486.1375
