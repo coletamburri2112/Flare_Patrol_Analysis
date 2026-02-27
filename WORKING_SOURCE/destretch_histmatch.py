@@ -26,11 +26,12 @@ import skimage
 from skimage.exposure import match_histograms
 
 pid='2_11'
-vbifold = '/Volumes/VBI_External/pid_'+pid+'/'
+vbifold = '/Volumes/ViSP_External/pid_'+pid+'/'
 # vbiexp ='BXWNO' # 19 August 2022
 #vbiexp = 'BDJKM' # 11 August 2024 M-class
-#vbiexp = 'L1-HDGZO' # 11 August 2024 C-class with new ID
-vbiexp = 'AKDKX' # 11 August 2024 C-class
+vbiexp = 'MBVIDS' # 11 August 2024 C-class with new ID
+
+#vbiexp = 'AKDKX' # 11 August 2024 C-class
 #vbiexp = 'AZLRR' # 8 August 2024 X-class blue continuum
 # vbiexp = 'AWYMX' # 8 August 2024 M-class
 #vbiexp= 'DXHIEL' # 11 August 2024 in blue continuum
@@ -38,10 +39,12 @@ vbiexp = 'AKDKX' # 11 August 2024 C-class
 # file = '/VBI_2022_08_19T20_42_07_333_00656282_I_BXWNO_L1.fits' # 19 August 2022
 #file = '/VBI_2024_08_08T20_12_32_333333_00656282_I_AXXJL_L1.fits' # 11 August 2024 M-class
 #file = '/VBI_2024_08_11T20_12_34_333333_00450400_I_AZLRR_L1.fits'
-file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_AKDKX_L1.fits'
+#file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_AKDKX_L1.fits'
+file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_MBVIDS_L1.fits'
 savfold='/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/'+vbiexp+'/'
-filt='H_alpha'
-xtraflag = 'C_class_impulsive_phase_100_350'
+#filt='H_alpha'
+filt = 'Halpha'
+xtraflag = 'C_class_impulsive_phase_Halpha_180_350'
 
 hdu_list = fits.open(vbifold+vbiexp+file)
 image=hdu_list[1].data[0,:,:]
@@ -49,7 +52,7 @@ image=hdu_list[1].data[0,:,:]
 tileSizeInput = [128, 64, 48, 24]  # original from FW
 #tileSizeInput = [64,48,24] # test from CAT
 
-if os.path.isdir(savfold)=='False':
+if os.path.isdir(savfold)==False:
     os.mkdir(savfold)
 
 # #display
@@ -67,9 +70,9 @@ dir_list.sort()
 
 dataCube=[]
 
-# here define times.  For C-class flare, 200:450 is the original destretching range
-loc_files=dir_list[100:350] # I think this should be the original destretching for C-class flare
-#loc_files = [150:450]
+# here define times.
+loc_files=dir_list[180:350] # destretching with pre-flare
+
 lowx=0
 highx=-1
 lowy=0
@@ -89,7 +92,7 @@ dataCube=fits.open(savfold+'pre-destretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits
 #make a movie 
 utilvbi.storeSequence(dataCube,savfold+'pre-destretch_'+filt+'_'+xtraflag+'.mp4', dpi=300, write=True)
 
-Video(savfold+'re-destretch_'+filt+'_'+xtraflag+'.mp4', embed=True, width=600, height=600)
+Video(savfold+'pre-destretch_'+filt+'_'+xtraflag+'.mp4', embed=True, width=600, height=600)
 
 #restore datacube
 dataCube=fits.open(savfold+'pre-destretch_dataCube'+'_'+filt+'_'+xtraflag+'.fits')[0].data
