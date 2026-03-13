@@ -18,7 +18,7 @@ hbeta=0
 filehbeta = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
 hbetascaled = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta_scaled.npz'
 filehbeta = '/Users/coletamburri/Desktop/11Aug2024_calibrated_with_NEWQS_Hbeta_cut.npz'
-file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
+file = '/Volumes/ViSP_External/CaII_11Aug204_Cclass_newcalib.npz'
 #file = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass.npz'
 #file = '/Users/coletamburri/Desktop/Misc_DKIST/ViSPselection11August24Mclass.npz'
 
@@ -76,17 +76,16 @@ else:
     
     #caii_avg_inner = np.mean(spectra[:,caii_inner_low:caii_inner_high,:],1)
     
-    caii_avg_redwing = spectra[:,700,:]
+    caii_avg_redwing = spectra[:600,:] #old was 700
     
-    caii_avg_bluewing = spectra[:,622,:]
-    caii_avg_core = spectra[:,650,:]
-
+    caii_avg_bluewing = spectra[:,540,:] #old was 622
+    caii_avg_core = spectra[:,570,:] # old was 650
 
     
     # both_avg = np.mean(spectra[:,caII_low:hep_high,:],1)
     
     # all_avg = np.mean(spectra,1)
-    choice=caii_avg_bluewing
+    choice=caii_avg_redwing
     
 
 if spec == 1: # just want to look at spectra

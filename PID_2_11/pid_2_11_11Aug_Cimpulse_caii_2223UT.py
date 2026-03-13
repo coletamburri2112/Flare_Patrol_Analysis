@@ -16,7 +16,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=1
+end=3
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -32,8 +32,8 @@ muted = DKISTanalysis.color_muted2()
 # path and file ID for ViSP data
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
-folder1 = 'AQWDJ'
-folder2 = 'AORVR'  #need to add data for QS for 11 august...
+folder1 = 'XVOUZY'
+folder2 = 'CZGJML'  #need to add data for QS for 11 august...
 
 # list of files in directory for DKIST/ViSP
 dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
@@ -106,7 +106,8 @@ image_data_arr_arr_qs, rasterpos_qs, times_qs = \
     
 
 #odd shift in the data for eid_2_11 - added logic to adjust for    
-shift = .123
+#shift = 0.123 (original shift for EID 2.11)
+shift = -.0375 # (correction for shift no longer as big after re-calibration by DKIST data center 6 March 2026)
 
 # spatial and dispersion axes for single observation (single slit step)
 spatial_range, dispersion_range = DKISTanalysis.spatialaxis(path,folder1,
@@ -125,18 +126,19 @@ space_and_time_averaged_qs = \
 # telluric lines for comparison (or other absorption lines if telluric not 
 # available, as is the case for the Ca II H window).  Most of the next steps
 # are not used for pid_1_38, but include in any case to model the use of lines
-line1 = 396.7432
-line2 = 396.926
+line1 = 396.74204
+#line2 = 396.9261
+line2=397.0996
 
 # Definition of "telluric" or other absorption lines for calibration.
 # The QS spectrum is already averaged in space and time, so any absorption lines
 # (as is necessary for the 19 August 2022 observations) are ok
 
 # indices of telluric lines in spectrum - lower
-lowinds = [510,720]
+lowinds = [433,830]
 
 # indices of telluric lines in spectrum - upper
-highinds = [550,755]
+highinds = [469,854]
 
 # define the multiplication factor (polynomial), new dispersion range, fit values
 # to scale the quiet sun to FTS atlas
@@ -145,8 +147,8 @@ cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
                                        space_and_time_averaged_qs,wlsel,ilamsel,
                                        DKISTanalysis.find_nearest,line1,line2,
                                        lowinds,highinds,limbdark_fact=clv_corrqs,
-                                       noqs_flag=2,cont_vals = [396.49,396.5,396.628,396.71,396.77,
-                                                396.9,397.075])
+                                       noqs_flag=2,cont_vals = [396.357,396.441,396.49,396.513,396.628,396.71,396.77,
+                                                396.9,397.075,397.156],order=2)
 
 # calibrate the quiet sun 
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
@@ -154,7 +156,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.002 # in nm
+fwhm = 0.0016 # in nm
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45

@@ -461,8 +461,7 @@ def spatialaxis(path,folder1,dir_list2,line='Ca II H',pid='84',shift=0):
         spatial_range = np.linspace(centerspace-deltspace*(nspace-1)/2,
                                     centerspace+deltspace*(nspace-1)/2,nspace)   
         
-    if shift > 0:
-        dispersion_range = dispersion_range-shift
+    dispersion_range = dispersion_range-shift
     return spatial_range, dispersion_range
 
        
@@ -508,9 +507,9 @@ def scaling(for_scale,nonflare_multfact,limbdarkening,startstep_noflare,endstep_
     
     bkgd_subtract_flaretime = np.zeros(np.shape(for_scale))
     
-    time_averaged_noflare = np.mean(scaled_flare_time[startstep_noflare:endstep_noflare,:,startspace_noflare:],axis=0)
+    time_averaged_noflare = np.nanmean(scaled_flare_time[startstep_noflare:endstep_noflare,:,startspace_noflare:],axis=0)
     
-    space_and_time_averaged_noflare = np.mean(time_averaged_noflare,axis=1)
+    space_and_time_averaged_noflare = np.nanmean(time_averaged_noflare,axis=1)
     
     nonflare_average = space_and_time_averaged_noflare
     
@@ -2090,9 +2089,9 @@ def comp_fts_to_qs(wlsel, ilamsel, dispersion_range, qs_obs,lowint=0, highint=-1
     
     qs_sel = qs_obs[timelow:timehigh,:,lowint:highint]
     
-    time_averaged_qs = np.mean(qs_sel,axis=0)
+    time_averaged_qs = np.nanmean(qs_sel,axis=0)
     
-    space_and_time_averaged_qs = np.mean(time_averaged_qs,axis=1)
+    space_and_time_averaged_qs = np.nanmean(time_averaged_qs,axis=1)
     
     fig,ax = plt.subplots()
     
