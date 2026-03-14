@@ -76,7 +76,7 @@ else:
     
     #caii_avg_inner = np.mean(spectra[:,caii_inner_low:caii_inner_high,:],1)
     
-    caii_avg_redwing = spectra[:600,:] #old was 700
+    caii_avg_redwing = spectra[:,600,:] #old was 700
     
     caii_avg_bluewing = spectra[:,540,:] #old was 622
     caii_avg_core = spectra[:,570,:] # old was 650
@@ -226,6 +226,28 @@ else:
     fig.tight_layout(pad=2.0) 
     fig.subplots_adjust(hspace=0.5,wspace=0.3)
 
+
+    specmap = []
+    
+        
+    fig,ax=plt.subplots()
+    ax.pcolormesh(np.transpose(choice[xlo:xhi,ylo:yhi]),cmap='magma')
+    for i in range(len(cc)):
+        xsel,ysel = cc[i][0],cc[i][1]
+        specmap.append(flare[int(xsel)+xlo,:,int(ysel)+ylo])
+        ax.scatter(xsel,ysel,color=colors[i])
+    ax.invert_xaxis()
+    ax.invert_yaxis()
+    fig.show()
+    
+    fig,ax=plt.subplots();
+    X=wl
+    Y=np.arange(n_points)
+
+    ax.pcolormesh(X,Y,specmap,cmap='Reds')
+    ax.set_xlim(396.8,397.1)
+    ax.axvline(396.847)
+    ax.axvline(397.01)
         
         
     
