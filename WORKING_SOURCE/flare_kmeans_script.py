@@ -22,7 +22,7 @@ import nltk
 nsteps = 91
 line = 0#  0 for caii/hepsilon, 1 for hbeta
 
-manyscan = 0
+manyscan = 1
 
 
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
@@ -43,9 +43,9 @@ nframes = 10
 
 if manyscan ==1:
     if line ==0:
-        filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH.npz'
+        filename = '/Volumes/ViSP_External/CaII_11Aug_2024_Cclass_newcalib.npz'
     if line ==1:
-        filename =  '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta.npz'
+        filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
     start=57
 res = np.load(filename)
 
@@ -57,21 +57,21 @@ res = np.load(filename)
 
 flare_arr = res['flare']
 wave = res['wl']
-times=res['times']
+times=res['time']
 #times = res['arr_1']
 
 
 
-hbeta_low =443
-hbeta_high = 730
+hbeta_low =353
+hbeta_high = 640
 
-caII_low = 570
-caII_high = 775
+caII_low = 480 #570 for first calibration pre March 6
+caII_high = 690
 
-hepsilon_low = 775
-hepsilon_high = 900
+hepsilon_low = 685
+hepsilon_high = 810
 
-dkist_coord_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 xarr_caII = dkist_coords['xarr_caII']
@@ -108,7 +108,7 @@ if line == 0:
 if line == 1:
     cent=486.1375
 if line == 0:
-    cent = 396.847
+    cent = 396.85
 
 # change based on line
 
@@ -263,9 +263,9 @@ wm=[]
 for i in range(len(km0.means())):
     wm.append(find_weightmean(km0.means()[i],find_nearest))
     
-bc_int=[]
-for i in range(len(km0.means())):
-    bc_int.append(blue_to_core(km0.means()[i]))
+# bc_int=[]
+# for i in range(len(km0.means())):
+#     bc_int.append(blue_to_core(km0.means()[i]))
 
 inds = np.arange(len(km0.means()))
 
