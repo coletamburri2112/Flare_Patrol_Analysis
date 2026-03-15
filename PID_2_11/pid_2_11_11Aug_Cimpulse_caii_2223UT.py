@@ -16,7 +16,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=3
+end=0
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -79,15 +79,15 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
 startstepqs = 0
 endstepqs=20
 startstep=2400#where does interesting bit begin?
-endstep=2800#where does interesting bit end?
+endstep=2700#where does interesting bit end?
 
-#for light curves
-startstep=2100#where does interesting bit begin?
-endstep=3500#where does interesting bit end?
+# #for light curves
+# startstep=2100#where does interesting bit begin?
+# endstep=3500#where does interesting bit end?
 
-#for best ViSP scans
-startstep=2400#where does interesting bit begin?
-endstep=3400#where does interesting bit end?
+# #for best ViSP scans
+# startstep=2400#where does interesting bit begin?
+# endstep=3400#where does interesting bit end?
 
 startstep_noflare = 148
 endstep_noflare=148+91
@@ -107,7 +107,7 @@ image_data_arr_arr_qs, rasterpos_qs, times_qs = \
 
 #odd shift in the data for eid_2_11 - added logic to adjust for    
 #shift = 0.123 (original shift for EID 2.11)
-shift = -.0375 # (correction for shift no longer as big after re-calibration by DKIST data center 6 March 2026)
+shift = -0.0375 # (correction for shift no longer as big after re-calibration by DKIST data center 6 March 2026)
 
 # spatial and dispersion axes for single observation (single slit step)
 spatial_range, dispersion_range = DKISTanalysis.spatialaxis(path,folder1,
@@ -147,8 +147,8 @@ cont_mult_facts,fit_vals,new_dispersion_range,dispersion_range_fin,rat=\
                                        space_and_time_averaged_qs,wlsel,ilamsel,
                                        DKISTanalysis.find_nearest,line1,line2,
                                        lowinds,highinds,limbdark_fact=clv_corrqs,
-                                       noqs_flag=2,cont_vals = [396.357,396.441,396.49,396.513,396.628,396.71,396.77,
-                                                396.9,397.075,397.156],order=2)
+                                       noqs_flag=2,cont_vals = [396.357,396.385,396.413,396.441,396.49,396.513,396.628,396.71,396.77,
+                                                396.9,397.075,397.156],order=4)
 
 # calibrate the quiet sun 
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
@@ -188,9 +188,10 @@ cont_mult_facts,fit_vals,\
         DKISTanalysis.get_calibration_poly(dispersion_range,
                                            space_and_time_averaged_qs,
                                            new_dispersion_range,yconv,
-                                           DKISTanalysis.find_nearest,
-                                           line1,line2,lowinds,highinds,
-                                           limbdark_fact=clv_corrqs,noqs_flag=2)
+                                           DKISTanalysis.find_nearest,line1,line2,
+                                           lowinds,highinds,limbdark_fact=clv_corrqs,
+                                           noqs_flag=2,cont_vals = [396.357,396.385,396.413,396.441,396.49,396.513,396.628,396.71,396.77,
+                                                    396.9,397.075,397.156],order=4)
         
 # calibrated quiet sun, again, using updated fit values
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
@@ -211,9 +212,9 @@ spacelow = 1000
 spacehigh = -1
 
 #indices of max intensity in each frame
-maxindices = DKISTanalysis.maxintind(dispersion_range,bkgd_subtract_flaretime,
-                                     caII_low,caII_high,
-                                     spacelow,spacehigh)
+# maxindices = DKISTanalysis.maxintind(dispersion_range,bkgd_subtract_flaretime,
+#                                      caII_low,caII_high,
+#                                      spacelow,spacehigh)
 
 ### remove if desire tracking of central position ###
 #testing with just the initial brightest point in the ribbon
@@ -234,7 +235,7 @@ maxindices = DKISTanalysis.maxintind(dispersion_range,bkgd_subtract_flaretime,
 
 # plot intensity calibrated, background-subtracted spectra
 DKISTanalysis.pltsubtract(dispersion_range_fin,nonflare_average_avg,
-                          scaled_flare_time,muted,maxindices,end=end,pid='pid_2_11')
+                          scaled_flare_time,muted,[1370],end=end,pid='pid_2_11')
 
 # variation in intensity value corresponding to wavelengths; PTE; to test
 # for variations in pseudo-continuum.  If PTE high, cannot be explained by the

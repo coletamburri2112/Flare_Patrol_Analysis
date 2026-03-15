@@ -17,7 +17,7 @@ Description of script:
 
 """
 # shift of wavelength range by inspection
-end=0
+end=-1
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
@@ -33,9 +33,9 @@ muted = DKISTanalysis.color_muted2()
 # path and file ID for ViSP data
 path = '/Volumes/ViSP_External/pid_2_11/'
 path2 = '/Volumes/ViSP_External/pid_2_11/'
-folder2 = 'APQVP'  #QS - but change to hbeta specific
+folder2 = 'HSBDOY'  #QS - but change to hbeta specific
 
-folder3hbeta = 'ARYEE'
+folder3hbeta = 'JPYGIO'
 
 
 # list of files in directory for DKIST/ViSP
@@ -43,15 +43,15 @@ dir_list2hbeta = DKISTanalysis.pathdef(path,folder3hbeta) #flaretime
 dir_list3 = DKISTanalysis.pathdef(path2,folder2) #qs
 
 # Stonyhurst lon/lat position of the AR from JHv
-lon = 57.99 #degrees
-lat = -15 #degrees
+lon = 61.65 #degrees
+lat = -12.08 #degrees
 
 
 lonqs = 0
 latqs = 0
 
 
-wlhbeta = 486.2 # central wavelength, Hbeta
+wlhbeta = 486.135 # central wavelength, Hbeta
 
 
 hbeta_low = 443
@@ -89,14 +89,14 @@ endstep_noflare=148+91
 
 startspace_noflare = 1900
 
-startstep=2400 #where does interesting bit begin?
-endstep=2800#where does interesting bit end? #originally 3400, shortening
+# startstep=2400 #where does interesting bit begin?
+# endstep=2700#where does interesting bit end? #originally 3400, shortening
 
-# for light curve only
-startstep=2100
-endstep=3500
+# # for light curve only
+# startstep=2100
+# endstep=3500
 
-# for ten scan only
+# # for ten scan only
 startstep=2400
 endstep=3400
 
@@ -115,12 +115,13 @@ image_data_arr_arr_qs, rasterpos_qs, times_qs = \
  ########   
     
     
+shift = -0.053 # (correction for shift no longer as big after re-calibration by DKIST data center 6 March 2026)
 
 # # spatial and dispersion axes for single observation (single slit step)
 
 spatial_range , dispersion_range = DKISTanalysis.spatialaxis(path,folder3hbeta,
                                                             dir_list2hbeta,line='H-beta',
-                                                            pid='2_11')
+                                                            pid='2_11',shift=shift)
 
 # # # old code, when basing QS on 15 August 2022 disk-center observations
 # # #only for 19 August observations, really - the QS will be different for others
@@ -136,7 +137,7 @@ spatial_range , dispersion_range = DKISTanalysis.spatialaxis(path,folder3hbeta,
 # Begin calibration based on QS
 
 # # Load Kurucz FTS Atlas
-wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range-.101)
+wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range)
 #wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range)
 wlsel=wlsel/10
 
@@ -149,21 +150,21 @@ space_and_time_averaged_qs = \
 # # telluric lines for comparison (or other absorption lines if telluric not 
 # # available, as is the case for the Ca II H window).  Most of the next steps
 # # are not used for pid_1_38, but include in any case to model the use of lines
-line1 = 485.97411 #fe I
+line1 = 485.739 #Pr 3???
 
-line2 = 486.2610 #v1
+line2 = 486.56115 # Ti 2
 
 # # Definition of "telluric" or other absorption lines for calibration.
 # # The QS spectrum is already averaged in space and time, so any absorption lines
 # # (as is necessary for the 19 August 2022 observations) are ok
 
 # # indices of telluric lines in spectrum - lower
-lowinds = [390,666]
+lowinds = [91,832]
 
 # # indices of telluric lines in spectrum - upper
-highinds = [455,700]
+highinds = [133,882]
 
-cont_vals = [485.669]
+cont_vals = [485.8643]
 
 # # define the multiplication factor (polynomial), new dispersion range, fit values
 # # to scale the quiet sun to FTS atlas
@@ -180,7 +181,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.003
+fwhm = 0.0016
 
 # # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45
