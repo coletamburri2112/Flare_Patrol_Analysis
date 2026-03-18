@@ -20,7 +20,7 @@ import nltk
 
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
-line = 0#  0 for caii/hepsilon, 1 for hbeta
+line = 1#  0 for caii/hepsilon, 1 for hbeta
 
 manyscan = 1
 
@@ -84,11 +84,11 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=7 # for hbeta all frames
+        cutoff0=5 # was 7 before
 if line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
-        cutoff0=2.5
+        cutoff0=2.5 
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 #cutoff0=2.6 # for hepsilon
 
@@ -263,9 +263,9 @@ wm=[]
 for i in range(len(km0.means())):
     wm.append(find_weightmean(km0.means()[i],find_nearest))
     
-# bc_int=[]
-# for i in range(len(km0.means())):
-#     bc_int.append(blue_to_core(km0.means()[i]))
+bc_int=[]
+for i in range(len(km0.means())):
+    bc_int.append(blue_to_core(km0.means()[i]))
 
 inds = np.arange(len(km0.means()))
 
@@ -299,8 +299,22 @@ if line==0:
     xarr_ch = xarr_caII
     yarr_ch = yarr_caII[startspace:endspace+1]
     
+
+
+groupsarr = np.asarray(groups0)
+
+#working here on removing the H-beta profiles that are clearly not flare-time
+# started 17 MARCH 2026
+if line==1:
+    for i in range(len(km0.means())):
+        if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
+            print(i)
+            x_mask0[groupsarr==i]=0
+            y_mask0[groupsarr==i]=0
+            
 maskind = {'x': x_mask0, 'y': y_mask0,'dist':distlocs}
 df_mask = pd.DataFrame(maskind)
+
 
 
 if manyscan ==1:
@@ -335,7 +349,7 @@ else:
     fig,ax=plt.subplots(figsize=(1.5,4),dpi=200)
 
     ax.pcolormesh(xarr_ch,yarr_ch,np.transpose(frame_line[:,:]),cmap='grey',alpha=1)
-    ax.scatter(xarr_ch[x_mask0],yarr_ch[y_mask0],2,color=colors[distlocs],alpha=.6,marker='s')
+    ax.scatter(xarr_ch[x_mask0],yarr_ch[y_mask0],1.2,color=colors[distlocs],alpha=.6,marker='s')
     ax.invert_xaxis()
     ax.invert_yaxis()
     ax.set_ylim([-251,-218])
@@ -371,35 +385,85 @@ for i in range(len(arr_normprofs0)):
     curve = arr_normprofs0[i]
     group = groups0[i]
     ind = np.where(sortedinds==group)[0][0]
-    ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
-    ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
+    if km0.means()[group][0] < km0.means()[group][int(len(km0.means()[group])/2)]:
+        ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
+        ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
+    else:
+        ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.005,color='black')
+        ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')   
 
     
 
 for i in range(n_clusters0):
-    ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
-    ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
-    ax.flatten()[i].tick_params(
-    axis='x',          # changes apply to the x-axis
-    which='both',      # both major and minor ticks are affected
-    bottom=False,      # ticks along the bottom edge are off
-    top=False,         # ticks along the top edge are off
-    labelbottom=False)
-    ax.flatten()[i].tick_params(
-    axis='y',          # changes apply to the x-axis
-    which='both',      # both major and minor ticks are affected
-    left=False,      # ticks along the bottom edge are off
-    right=False,         # ticks along the top edge are off
-    labelleft=False)# labels along the bottom edge are off
-    ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
-         ha='right', va='top', fontsize=6, fontstyle='italic')
-    ax.flatten()[i].set_ylim([-0.2,1.2])
-    ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
-    
-    obs_wl = selwls[int(sortedwls[i])]
-    
-    velocity = find_velocity(cent,obs_wl)
-    ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+    if line == 1:
+        if km0.means()[sortedinds[i]][0] < km0.means()[sortedinds[i]][int(len(km0.means()[sortedinds[i]])/2)]:
+            ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+            ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
+            ax.flatten()[i].tick_params(
+            axis='x',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            bottom=False,      # ticks along the bottom edge are off
+            top=False,         # ticks along the top edge are off
+            labelbottom=False)
+            ax.flatten()[i].tick_params(
+            axis='y',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            left=False,      # ticks along the bottom edge are off
+            right=False,         # ticks along the top edge are off
+            labelleft=False)# labels along the bottom edge are off
+            ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
+                 ha='right', va='top', fontsize=6, fontstyle='italic')
+            ax.flatten()[i].set_ylim([-0.2,1.2])
+            ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+            
+            obs_wl = selwls[int(sortedwls[i])]
+            
+            velocity = find_velocity(cent,obs_wl)
+            ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+        else:
+            ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color='grey',markersize=.1,alpha=0.5)
+            ax.flatten()[group].axvline(cent,linewidth=0.6,c='black',alpha=0.2)
+            ax.flatten()[i].tick_params(
+            axis='x',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            bottom=False,      # ticks along the bottom edge are off
+            top=False,         # ticks along the top edge are off
+            labelbottom=False)
+            ax.flatten()[i].tick_params(
+            axis='y',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            left=False,      # ticks along the bottom edge are off
+            right=False,         # ticks along the top edge are off
+            labelleft=False)# labels along the bottom edge are off
+            ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
+                 ha='right', va='top', fontsize=6, fontstyle='italic',alpha=0.5)
+            ax.flatten()[i].set_ylim([-0.2,1.2])
+            ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+    else:
+        ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+        ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
+        ax.flatten()[i].tick_params(
+        axis='x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        bottom=False,      # ticks along the bottom edge are off
+        top=False,         # ticks along the top edge are off
+        labelbottom=False)
+        ax.flatten()[i].tick_params(
+        axis='y',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        left=False,      # ticks along the bottom edge are off
+        right=False,         # ticks along the top edge are off
+        labelleft=False)# labels along the bottom edge are off
+        ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
+             ha='right', va='top', fontsize=6, fontstyle='italic')
+        ax.flatten()[i].set_ylim([-0.2,1.2])
+        ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+        
+        obs_wl = selwls[int(sortedwls[i])]
+        
+        velocity = find_velocity(cent,obs_wl)
+        ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+        
 
 fig.subplots_adjust(hspace=0.25,wspace=0.05)
 
