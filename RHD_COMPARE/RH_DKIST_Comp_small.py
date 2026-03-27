@@ -269,8 +269,8 @@ fig,ax=plt.subplots(dpi=200,figsize=(5,4))
 # ax.plot(dkist_wl,normalize_range(dkist_int/1e6,400,heplowh20),alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
 
 
-ax.plot(dkist_wl,model_subtract1/1e6,alpha=1,c='b',linewidth=2,label=r'EB1, 500s, $v_{turb} = 7\;km\;s^{-1}$')
-ax.plot(dkist_wl,model_subtract_TC/1e6,alpha=1,c='red',linewidth=2,label=r'TC1, 90s, $v_{turb} = 7\;km\;s^{-1}$')
+#ax.plot(dkist_wl,model_subtract1/1e6,alpha=1,c='b',linewidth=2,label=r'EB1, 500s, $v_{turb} = 7\;km\;s^{-1}$')
+#ax.plot(dkist_wl,model_subtract_TC/1e6,alpha=1,c='red',linewidth=2,label=r'TC1, 90s, $v_{turb} = 7\;km\;s^{-1}$')
 ax.plot(dkist_wl,model_subtract1_orig/1e6,alpha=.7,c='b',linewidth=2,linestyle='dashed',label=r'EB1, 500s, $v_{turb} = 2\;km\;s^{-1}$')
 ax.plot(dkist_wl,model_subtract_TC_orig/1e6,alpha=.7,c='red',linewidth=2,linestyle='dashed',label=r'TC1, 90s, $v_{turb} = 2\;km\;s^{-1}$')
 ax.plot(dkist_wl,dkist_int/1e6,alpha=1,c='black',linewidth=2,label='DKIST/ViSP')
