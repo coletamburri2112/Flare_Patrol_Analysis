@@ -26,7 +26,7 @@ import skimage
 from skimage.exposure import match_histograms
 
 pid='2_11'
-vbifold = '/Volumes/ViSP_External/pid_'+pid+'/'
+vbifold = '/Volumes/ViSP_External/pid_'+pid+'_VBI/'
 # vbiexp ='BXWNO' # 19 August 2022
 #vbiexp = 'BDJKM' # 11 August 2024 M-class
 vbiexp = 'MBVIDS' # 11 August 2024 C-class with new ID
