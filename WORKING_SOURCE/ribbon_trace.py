@@ -59,7 +59,12 @@ def intensity_along_polyline(image, points):
     # map_coordinates expects (row, col) = (y, x)
     sample_coords = np.vstack([coords[:, 1], coords[:, 0]])
 
-    intensities = map_coordinates(image, sample_coords, order=1, mode='nearest')
+    intensities = map_coordinates(image, sample_coords, order=3, mode='nearest')
+    
+    # try wihtout interpolant
+    intensities=[]
+    for i in range(np.shape(sample_coords)[1]):
+        intensities.append(image[int(sample_coords[0,i]),int(sample_coords[1,i])])
 
     return coords, intensities
 
@@ -117,7 +122,7 @@ ch=100
 
 image = destretch[0].data[ch,:,:]
 
-npoints=30
+npoints=10 # 30 for full ribbon
 
 fig,ax=plt.subplots(dpi=200)
 ax.imshow(image,cmap='sdoaia304')
@@ -150,25 +155,25 @@ for i in range(0,170,1):
 
 l=len(intensities)
 n=len(intensities)
-dx = l / n      # Spatial sampling interval (meters)
+dx = l / n      # Spatial sampling interval
 space_x = np.linspace(0, l, n, endpoint=False)
 
 all_freq = []
-all_fft = []
+psds = []
 
 for i in range(len(intensities_all)):
     chintensities = intensities_all[i]
     # Compute the 1D FFT
     fft_result = np.fft.fft(chintensities/np.max(chintensities))
-    
+    #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
     # Get the frequencies for the result
     freqs = np.fft.fftfreq(n,d=dx)
     
     all_freq.append(freqs)
     
-    all_fft.append(fft_result)
+    psds.append((np.abs(fft_result)**2)/(1/dx)/n) #power spectral density (n is number of samples, dx is sampling frequency)
     
-all_fftarr = np.array(all_fft)
+all_psdarr = np.array(psds)
 all_freqarr = np.array(all_freq)
 
 pix_to_arcsec = 0.017
@@ -208,8 +213,8 @@ ax.flatten()[0].invert_yaxis()
 
 ax.flatten()[0].set_ylabel('Distance along trace [km]')
 ax.flatten()[0].set_xlabel('Time [UT]')
-ax.flatten()[1].pcolormesh(np.arange(170),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],np.transpose(np.abs(all_fftarr)[:,1:n//2]),cmap='inferno',vmax=24);
-ax.flatten()[1].axhspan(200,400, facecolor='grey', alpha=0.2)
+ax.flatten()[1].pcolormesh(np.arange(170),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],np.transpose(all_psdarr[:,1:n//2]),cmap='inferno',vmax=(20**2)/dx/n);
+#ax.flatten()[1].axhspan(200,400, facecolor='grey', alpha=0.2)
 ax.flatten()[1].axhline(200,color='red')
 ax.flatten()[1].axhline(400,color='red')
 
@@ -249,12 +254,23 @@ from scipy.signal import savgol_filter
 
 
 fig,ax=plt.subplots();
+ntimes = 6
+
+colors = plt.cm.cool(np.linspace(0,1,ntimes))
+l2=0
 for i in range(0,120,20):
-    ax.plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],savgol_filter(np.abs(all_fftarr)[i,1:n//2],window_length=20,polyorder=3),label=str(i))
+    ax.plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],savgol_filter(all_psdarr[i,1:n//2],window_length=20,polyorder=3),label=onlytimevbi[177+i],color=colors[l2])
+    l2+=1
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlim([0,2000])
-ax.axvline(250)
+ax.axvline(200,color='red',linestyle='dashed')
+ax.axvline(400,color='red',linestyle='dashed')
+ax.axvspan(200,400, facecolor='red', alpha=0.2)
+ax.axvline(25,color='black',linestyle='dashed')
+ax.axvline(65,color='black',linestyle='dashed')
+ax.axvspan(25,65, facecolor='grey', alpha=0.2)
+
 ax.legend()
 fig.show()
 
