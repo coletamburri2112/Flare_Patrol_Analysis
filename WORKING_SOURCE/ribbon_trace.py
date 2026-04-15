@@ -59,7 +59,8 @@ def intensity_along_polyline(image, points):
     # map_coordinates expects (row, col) = (y, x)
     sample_coords = np.vstack([coords[:, 1], coords[:, 0]])
 
-    intensities = map_coordinates(image, sample_coords, order=3, mode='nearest')
+    ## if want to do via spline interpolant
+    #intensities = map_coordinates(image, sample_coords, order=3, mode='nearest')
     
     # try wihtout interpolant
     intensities=[]
@@ -122,7 +123,7 @@ ch=100
 
 image = destretch[0].data[ch,:,:]
 
-npoints=10 # 30 for full ribbon
+npoints=30 # 30 for full ribbon
 
 fig,ax=plt.subplots(dpi=200)
 ax.imshow(image,cmap='sdoaia304')
@@ -131,6 +132,7 @@ ax.set_ylim([2550,1000])
 
 fig.show()
 
+# if original
 cc = plt.ginput(npoints,timeout = 120)
 
 xs = []
@@ -140,21 +142,56 @@ for i in range(npoints):
     xs.append(cc[i][0])
     ys.append(cc[i][1])
 
+
+# if derived
+ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords.npz')['points']
+
+ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords.npz')['points']
+
+xs_full = []
+ys_full = []
+
+for i in range(len(ccfull)):
+    xs_full.append(ccfull[i][0])
+    ys_full.append(ccfull[i][1])
+    
+xs_part = []
+ys_part = []
+
+for i in range(len(ccpart)):
+    xs_part.append(ccpart[i][0])
+    ys_part.append(ccpart[i][1])
+
+
+
+
 intensities_all = []
 coords_all=[]
 
 for i in range(0,170,1):
     image = destretch[0].data[i,:,:]
-    coords, intensities = intensity_along_polyline(image, cc)
+    coords, intensities = intensity_along_polyline(image, ccfull)
     intensities_all.append(intensities)
     coords_all.append(coords)
     
-#overplot fried parameter on on this map
-
-#compute FFT
-
 l=len(intensities)
 n=len(intensities)
+    
+    
+intensities_part = []
+coords_part=[]
+
+for i in range(0,170,1):
+    image = destretch[0].data[i,:,:]
+    coords, intensities = intensity_along_polyline(image, ccpart)
+    intensities_part.append(intensities)
+    coords_part.append(coords)
+    
+l2=len(intensities)
+n2=len(intensities)
+
+#compute FFT for the first
+
 dx = l / n      # Spatial sampling interval
 space_x = np.linspace(0, l, n, endpoint=False)
 
@@ -180,34 +217,58 @@ pix_to_arcsec = 0.017
 arcsec_to_km=727
 km_to_Mm = 0.001
 
-fig,ax=plt.subplots(1,3,dpi=200)
-ax.flatten()[0].imshow(destretch[0].data[20,:,:],cmap='sdoaia304')
-ax.flatten()[0].plot(xs,ys,c='grey',linestyle='solid',markersize=4,linewidth=1)
+# fig,ax=plt.subplots(1,3,dpi=200)
+# ax.flatten()[0].imshow(destretch[0].data[20,:,:],cmap='sdoaia304')
+# ax.flatten()[0].plot(xs,ys,c='grey',linestyle='solid',markersize=4,linewidth=1)
+# ax.flatten()[0].set_xlim([1700,2400])
+# ax.flatten()[0].set_ylim([2550,1000])
+
+# ax.flatten()[1].imshow(destretch[0].data[38,:,:],cmap='sdoaia304')
+# ax.flatten()[1].plot(xs,ys,c='grey',linestyle='solid',markersize=4,linewidth=1)
+# ax.flatten()[1].set_xlim([1700,2400])
+# ax.flatten()[1].set_ylim([2550,1000])
+
+# ax.flatten()[2].imshow(destretch[0].data[100,:,:],cmap='sdoaia304')
+# ax.flatten()[2].plot(xs,ys,c='grey',linestyle='solid',markersize=4,linewidth=1)
+# ax.flatten()[2].set_xlim([1700,2400])
+# ax.flatten()[2].set_ylim([2550,1000])
+
+# ax.flatten()[0].set_xticks([])
+# ax.flatten()[1].set_xticks([])
+# ax.flatten()[2].set_xticks([])
+
+# ax.flatten()[0].set_yticks([])
+# ax.flatten()[1].set_yticks([])
+# ax.flatten()[2].set_yticks([])
+
+
+# fig.show()
+
+# plotting for both traces of ribbon - full ribbon and partial ribbon
+
+X=np.arange(np.shape(destretch[0].data[0,:,:])[0])*0.017
+Y=np.arange(np.shape(destretch[0].data[0,:,:])[0])*0.017
+
+fig,ax=plt.subplots(1,2,dpi=200,figsize=(5,20))
+
+ax.flatten()[0].pcolormesh(destretch[0].data[38,:,:],cmap='gray')
+ax.flatten()[0].plot(xs_full,ys_full,c='magenta',linestyle='solid',markersize=4,linewidth=2)
+ax.flatten()[0].plot(xs_part,ys_part,c='darkred',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[0].set_xlim([1700,2400])
 ax.flatten()[0].set_ylim([2550,1000])
 
-ax.flatten()[1].imshow(destretch[0].data[38,:,:],cmap='sdoaia304')
-ax.flatten()[1].plot(xs,ys,c='grey',linestyle='solid',markersize=4,linewidth=1)
+ax.flatten()[1].pcolormesh(destretch[0].data[100,:,:],cmap='gray')
+ax.flatten()[1].plot(xs_full,ys_full,c='magenta',linestyle='solid',markersize=4,linewidth=2)
+ax.flatten()[1].plot(xs_part,ys_part,c='darkred',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[1].set_xlim([1700,2400])
 ax.flatten()[1].set_ylim([2550,1000])
 
-ax.flatten()[2].imshow(destretch[0].data[100,:,:],cmap='sdoaia304')
-ax.flatten()[2].plot(xs,ys,c='grey',linestyle='solid',markersize=4,linewidth=1)
-ax.flatten()[2].set_xlim([1700,2400])
-ax.flatten()[2].set_ylim([2550,1000])
-
-ax.flatten()[0].set_xticks([])
-ax.flatten()[1].set_xticks([])
-ax.flatten()[2].set_xticks([])
-
-ax.flatten()[0].set_yticks([])
-ax.flatten()[1].set_yticks([])
-ax.flatten()[2].set_yticks([])
-
-
+ax.flatten()[1].tick_params(axis='x',labelsize=5)
 fig.show()
+
+# plotting time-distance plots (incl. fft)
     
-fig,ax=plt.subplots(2,1,dpi=100,figsize=(10,10));
+fig,ax=plt.subplots(3,1,dpi=100,figsize=(10,15));
 ax.flatten()[0].pcolormesh(np.arange(170),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intensities_all),cmap='Reds');
 ax.flatten()[0].invert_yaxis()
 
@@ -217,6 +278,12 @@ ax.flatten()[1].pcolormesh(np.arange(170),arcsec_to_km*pix_to_arcsec*1/all_freqa
 #ax.flatten()[1].axhspan(200,400, facecolor='grey', alpha=0.2)
 ax.flatten()[1].axhline(200,color='red')
 ax.flatten()[1].axhline(400,color='red')
+
+ax.flatten()[2].pcolormesh(np.arange(170),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intensities_part),cmap='magma');
+ax.flatten()[2].invert_yaxis()
+
+ax.flatten()[2].set_ylabel('Distance along trace [km]')
+ax.flatten()[2].set_xlabel('Time [UT]')
 
 
 #ax.flatten()[1].invert_yaxis()
@@ -242,10 +309,12 @@ ax3.set_ylabel(r'$r_0$ [cm]')
 
 ax.flatten()[0].set_xticks([0,20,40,60,80,100,120],[onlytimevbi[177],onlytimevbi[177+20],onlytimevbi[177+40],onlytimevbi[177+60],onlytimevbi[177+80],onlytimevbi[177+100],onlytimevbi[177+120]])
 ax.flatten()[1].set_xticks([0,20,40,60,80,100,120],[onlytimevbi[177],onlytimevbi[177+20],onlytimevbi[177+40],onlytimevbi[177+60],onlytimevbi[177+80],onlytimevbi[177+100],onlytimevbi[177+120]])
+ax.flatten()[2].set_xticks([0,20,40,60,80,100,120],[onlytimevbi[177],onlytimevbi[177+20],onlytimevbi[177+40],onlytimevbi[177+60],onlytimevbi[177+80],onlytimevbi[177+100],onlytimevbi[177+120]])
 
 
 ax.flatten()[0].set_xlim([0,138])
 ax.flatten()[1].set_xlim([0,138])
+ax.flatten()[2].set_xlim([0,138])
 
 fig.show()
 
