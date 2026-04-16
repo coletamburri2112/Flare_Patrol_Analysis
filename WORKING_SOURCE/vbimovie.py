@@ -37,6 +37,7 @@ import matplotlib.animation as animation
 import sunpy.visualization.colormaps as cm
 import matplotlib
 
+from datetime import datetime, timedelta
 
   
 
@@ -51,7 +52,7 @@ folder1 = 'DXHIEL'
 #folder2 = 'BDPMQ' # for QS calibration - data from 22UT on 19 August
 
 # list of files in directory for DKIST/ViSP
-dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
+#dir_list2 = DKISTanalysis.pathdef(path,folder1) #flaretime
 #dir_list3 = DKISTanalysis.pathdef(path,folder2) #qs
 
 
@@ -62,7 +63,8 @@ aolock = []
 #    fried.append(i_file_raster1[1].header['ATMOS_R0'])
 #    aolock.append(i_file_raster1[1].header['AO_LOCK'])
     
-dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
+#dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
+dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_177_347.fits')
 #dC = fits.open('/Users/coletamburri/Desktop/DXHIEL/postdestretch_dataCube_blue_cont_C_class_impulsive_phase.fits')[0].data # Xclass
 
 
@@ -74,6 +76,95 @@ dCslice = dC #Mclass or C class (100 and 250 frames, respectively
 #friedarr = np.asarray(fried)
 #ndices = np.argwhere(friedarr[0:350]>0.035)
 indices = np.arange(len(dCslice))
+
+# define times
+t3 = np.arange(datetime(2024,8,11,22,31,26),
+              datetime(2024,8,11,22,38,57), 
+              timedelta(seconds=2.666)).astype(datetime)
+
+
+
+#limits for entire flare region
+ylow = 1600
+yhigh = 2300
+xlow = 900
+xhigh = 2700
+
+#limits for small part of region r1A ("bead d")
+ylow1 = 1800
+yhigh1 = 2300
+xlow1 = 2000
+xhigh1 = 2500
+
+#limits for three small beads
+ylow2 = 1900
+yhigh2 = 2100
+xlow2 = 2270
+xhigh2 = 2470
+
+#limits for regionr1B
+ylow3 = 1600
+yhigh3 = 2300
+xlow3 = 900
+xhigh3 = 1750
+
+#limits for central outflow region
+ylow4 = 1600
+yhigh4 = 2300
+xlow4 = 1600
+xhigh4 = 2000
+
+#limits for r2
+ylow5= 200
+yhigh5 = 1300
+xlow5 = 1200
+xhigh5 = 2500
+
+
+def storeJPG(data,outfolder,times,end=137,dpi=300,lowx=0,highx=-1,lowy=0,highy=-1):
+    for i in range(end):
+        image = data[0].data[i,lowx:highx,lowy:highy]
+        
+        imagenorm = (image-image.min())/(image.max()-image.min())
+        
+        fig,ax=plt.subplots(dpi=dpi,figsize=(10,10))
+        ax.imshow(imagenorm,cmap='sdoaia304')
+        ax.set_title(str(times[i])+' UT',fontsize=12)
+        fig.savefig(outfolder+str(i)+'.png')
+        
+outfolder = '/Users/coletamburri/Desktop/fullframe/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3)        
+
+outfolder = '/Users/coletamburri/Desktop/regionr1B/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3,lowx=xlow,highx=xhigh,lowy=ylow,highy=yhigh)
+
+outfolder = '/Users/coletamburri/Desktop/regionr1A/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3,lowx=xlow1,highx=xhigh1,lowy=ylow1,highy=yhigh1)
+
+outfolder = '/Users/coletamburri/Desktop/threebeadsr1A/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3,lowx=xlow2,highx=xhigh2,lowy=ylow2,highy=yhigh2)
+
+outfolder = '/Users/coletamburri/Desktop/regionr1B/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3,lowx=xlow3,highx=xhigh3,lowy=ylow3,highy=yhigh3)
+
+outfolder = '/Users/coletamburri/Desktop/outflow/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3,lowx=xlow4,highx=xhigh4,lowy=ylow4,highy=yhigh4)
+
+outfolder = '/Users/coletamburri/Desktop/r2/'
+os.mkdir(outfolder)
+storeJPG(dC,outfolder,t3,lowx=xlow5,highx=xhigh5,lowy=ylow5,highy=yhigh5)
+
+
+
+
+
+                  
 
 def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
     fig =plt.figure(dpi=300)
