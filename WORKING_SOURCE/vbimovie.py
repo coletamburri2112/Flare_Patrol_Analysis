@@ -120,8 +120,12 @@ yhigh5 = 1300
 xlow5 = 1200
 xhigh5 = 2500
 
+loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc.npz',allow_pickle='True')
+#timesvbi=loadvbilc['times']
+lcvbi=loadvbilc['lc']
 
-def storeJPG(data,outfolder,times,end=137,dpi=300,lowx=0,highx=-1,lowy=0,highy=-1):
+
+def storeJPG(data,outfolder,times,lc,end=137,dpi=300,lowx=0,highx=-1,lowy=0,highy=-1,leftsubplot=0.05):
     for i in range(end):
         image = data[0].data[i,lowx:highx,lowy:highy]
         
@@ -130,35 +134,44 @@ def storeJPG(data,outfolder,times,end=137,dpi=300,lowx=0,highx=-1,lowy=0,highy=-
         fig,ax=plt.subplots(dpi=dpi,figsize=(10,10))
         ax.imshow(imagenorm,cmap='sdoaia304')
         ax.set_title(str(times[i])+' UT',fontsize=12)
+        
+        ax_inset = ax.inset_axes([leftsubplot, 0.8, 0.4, 0.15]) 
+        ax_inset.plot(lcvbi[:end],color='black')
+        ax_inset.set_xticks([])
+        ax_inset.set_yticks([])
+        ax_inset.patch.set_alpha(0.7)
+        ax_inset.axvline(i,color='red',linestyle='dashed')
+        
+
         fig.savefig(outfolder+str(i)+'.png')
         
 outfolder = '/Users/coletamburri/Desktop/fullframe/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3)        
+storeJPG(dC,outfolder,t3,lcvbi)        
 
 outfolder = '/Users/coletamburri/Desktop/regionr1B/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lowx=xlow,highx=xhigh,lowy=ylow,highy=yhigh)
+storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow,highx=xhigh,lowy=ylow,highy=yhigh)
 
 outfolder = '/Users/coletamburri/Desktop/regionr1A/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lowx=xlow1,highx=xhigh1,lowy=ylow1,highy=yhigh1)
+storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow1,highx=xhigh1,lowy=ylow1,highy=yhigh1)
 
 outfolder = '/Users/coletamburri/Desktop/threebeadsr1A/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lowx=xlow2,highx=xhigh2,lowy=ylow2,highy=yhigh2)
+storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow2,highx=xhigh2,lowy=ylow2,highy=yhigh2)
 
 outfolder = '/Users/coletamburri/Desktop/regionr1B/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lowx=xlow3,highx=xhigh3,lowy=ylow3,highy=yhigh3)
+storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow3,highx=xhigh3,lowy=ylow3,highy=yhigh3)
 
 outfolder = '/Users/coletamburri/Desktop/outflow/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lowx=xlow4,highx=xhigh4,lowy=ylow4,highy=yhigh4)
+storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow4,highx=xhigh4,lowy=ylow4,highy=yhigh4)
 
 outfolder = '/Users/coletamburri/Desktop/r2/'
 os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lowx=xlow5,highx=xhigh5,lowy=ylow5,highy=yhigh5)
+storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow5,highx=xhigh5,lowy=ylow5,highy=yhigh5)
 
 
 
