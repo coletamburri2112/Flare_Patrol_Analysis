@@ -115,13 +115,13 @@ for i in range(len(timesvbi)):
     # Format: Year-Month-Day Hour:Minute:Second
     onlytimevbi.append(date_str[-15:-7])
     
-onlytimevbi_samp = onlytimevbi[177:347]
+onlytimevbi_samp = onlytimevbi[47:347]
     
-file = '/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_177_347.fits'
+file = '/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_47_347.fits'
 
 destretch = fits.open(file)
 
-ch=100
+ch=230
 
 image = destretch[0].data[ch,:,:]
 
@@ -134,41 +134,61 @@ ax.set_ylim([2550,1000])
 
 fig.show()
 
-# # if original
-# cc = plt.ginput(npoints,timeout = 120)
-
-# xs = []
-# ys = []
-
-# for i in range(npoints):
-#     xs.append(cc[i][0])
-#     ys.append(cc[i][1])
-
-
-# if derived
-ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords.npz')['points']
-
-ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords.npz')['points']
+# if original
+ccfull = plt.ginput(npoints,timeout = 120)
 
 xs_full = []
 ys_full = []
 
-for i in range(len(ccfull)):
+for i in range(npoints):
     xs_full.append(ccfull[i][0])
     ys_full.append(ccfull[i][1])
     
+npoints=10 # 10 for part ribbon
+
+fig,ax=plt.subplots(dpi=200)
+ax.imshow(image,cmap='sdoaia304')
+ax.set_xlim([1700,2400])
+ax.set_ylim([2550,1000])
+
+fig.show()
+
+# if original
+ccpart = plt.ginput(npoints,timeout = 120)
+
 xs_part = []
 ys_part = []
 
-for i in range(len(ccpart)):
+for i in range(npoints):
     xs_part.append(ccpart[i][0])
     ys_part.append(ccpart[i][1])
+
+
+
+# # if derived
+# ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords.npz')['points']
+
+# ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords.npz')['points']
+
+# xs_full = []
+# ys_full = []
+
+# for i in range(len(ccfull)):
+#     xs_full.append(ccfull[i][0])
+#     ys_full.append(ccfull[i][1])
+    
+# xs_part = []
+# ys_part = []
+
+# for i in range(len(ccpart)):
+#     xs_part.append(ccpart[i][0])
+#     ys_part.append(ccpart[i][1])
 
 
 intensities_all = []
 coords_all=[]
 
-for i in range(0,170,1):
+for i in range(0,300,1):
     image = destretch[0].data[i,:,:]
     coords, intensities = intensity_along_polyline(image, ccfull)
     intensities_all.append(intensities)
@@ -181,7 +201,7 @@ n=len(intensities)
 intensities_part = []
 coords_part=[]
 
-for i in range(0,170,1):
+for i in range(0,300,1):
     image = destretch[0].data[i,:,:]
     coords, intensities = intensity_along_polyline(image, ccpart)
     intensities_part.append(intensities)
@@ -274,13 +294,13 @@ Y=np.arange(np.shape(destretch[0].data[0,:,:])[0])*0.017
 
 fig,ax=plt.subplots(1,2,dpi=200,figsize=(5,20))
 
-ax.flatten()[0].pcolormesh(destretch[0].data[38,:,:],cmap='gray')
+ax.flatten()[0].pcolormesh(destretch[0].data[38+130,:,:],cmap='gray')
 ax.flatten()[0].plot(xs_full,ys_full,c='magenta',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[0].plot(xs_part,ys_part,c='darkred',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[0].set_xlim([1700,2400])
 ax.flatten()[0].set_ylim([2550,1000])
 
-ax.flatten()[1].pcolormesh(destretch[0].data[100,:,:],cmap='gray')
+ax.flatten()[1].pcolormesh(destretch[0].data[100+130,:,:],cmap='gray')
 ax.flatten()[1].plot(xs_full,ys_full,c='magenta',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[1].plot(xs_part,ys_part,c='darkred',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[1].set_xlim([1700,2400])
@@ -301,25 +321,25 @@ t3 = np.arange(datetime(2024,8,11,22,31,26),
               timedelta(seconds=2.666)).astype(datetime)
     
 fig,ax=plt.subplots(4,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
-ax.flatten()[0].pcolormesh(np.arange(170),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intensities_all),cmap='afmhot');
+ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intensities_all),cmap='afmhot');
 ax.flatten()[0].invert_yaxis()
 
 ax.flatten()[0].set_ylabel('Distance along trace [km]',fontsize=8)
 ax.flatten()[0].set_xlabel('Time [UT]',fontsize=8)
 #ax.flatten()[1].pcolormesh(np.arange(170),all_freqarr[0,1:n//2],np.transpose(np.power(all_psdarr[:,1:n//2],.25)),cmap='seismic');
 
-ax.flatten()[1].pcolormesh(np.arange(170),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],np.transpose(np.power(all_psdarr[:,1:n//2],.25)),cmap='seismic');
+ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],np.transpose(np.power(all_psdarr[:,1:n//2],.25)),cmap='seismic');
 #ax.flatten()[1].axhspan(200,400, facecolor='grey', alpha=0.2)
 #ax.flatten()[1].axhline(200,color='red')
 #ax.flatten()[1].axhline(400,color='red')
 
-ax.flatten()[2].pcolormesh(np.arange(170),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intensities_part),cmap='afmhot');
+ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intensities_part),cmap='afmhot');
 ax.flatten()[2].invert_yaxis()
 
 ax.flatten()[2].set_ylabel('Distance along trace [km]',fontsize=8)
 ax.flatten()[2].set_xlabel('Time [UT]',fontsize=8)
 
-ax.flatten()[3].pcolormesh(np.arange(170),arcsec_to_km*pix_to_arcsec*1/part_freqarr[0,1:n2//2],np.transpose(np.power(part_psdarr[:,1:n2//2],.25)),cmap='seismic');
+ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/part_freqarr[0,1:n2//2],np.transpose(np.power(part_psdarr[:,1:n2//2],.25)),cmap='seismic');
 #ax.flatten()[3].pcolormesh(np.arange(170),part_freqarr[0,1:n2//2],np.transpose(np.power(part_psdarr[:,1:n2//2],.25)),cmap='seismic');
 
 
@@ -357,29 +377,29 @@ ax.flatten()[0].set_xticks([])
 ax.flatten()[1].set_xticks([])
 ax.flatten()[2].set_xticks([])
 
-# vertical lines at peak of HXR... 22:33:13 UT
-ax.flatten()[0].axvline(40,color='white',linestyle='dashed',linewidth=1)
-ax.flatten()[1].axvline(40,color='white',linestyle='dashed',linewidth=1)
-#ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
-ax.flatten()[3].axvline(40,color='white',linestyle='dashed',linewidth=1)
+# # vertical lines at peak of HXR... 22:33:13 UT
+# ax.flatten()[0].axvline(40,color='white',linestyle='dashed',linewidth=1)
+# ax.flatten()[1].axvline(40,color='white',linestyle='dashed',linewidth=1)
+# #ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
+# ax.flatten()[3].axvline(40,color='white',linestyle='dashed',linewidth=1)
 
-# ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
-ax.flatten()[0].axvline(97,color='white',linestyle='dotted',linewidth=1)
-ax.flatten()[1].axvline(97,color='white',linestyle='dotted',linewidth=1)
-#ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
-ax.flatten()[3].axvline(97,color='white',linestyle='dotted',linewidth=1)
-
-
+# # ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
+# ax.flatten()[0].axvline(97,color='white',linestyle='dotted',linewidth=1)
+# ax.flatten()[1].axvline(97,color='white',linestyle='dotted',linewidth=1)
+# #ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
+# ax.flatten()[3].axvline(97,color='white',linestyle='dotted',linewidth=1)
 
 
-ax2.plot(friedvbi[177:347],c='white',linewidth=1)
-ax3.plot(friedvbi[177:347],c='white',linewidth=1)
-ax6.plot(friedvbi[177:347],c='white',linewidth=1)
+
+
+ax2.plot(friedvbi[47:347],c='white',linewidth=1)
+ax3.plot(friedvbi[47:347],c='white',linewidth=1)
+ax6.plot(friedvbi[47:347],c='white',linewidth=1)
 
 
 
 ax4 = ax.flatten()[0].twinx()
-ax4.plot(np.arange(137),lcvbi[:137],color='black',linewidth=2);
+#ax4.plot(np.arange(267),lcvbi[:267],color='black',linewidth=2);
 ax4.set_yticks([])
 
 ax5 = ax.flatten()[1].twinx()
@@ -396,13 +416,13 @@ ax6.set_ylabel(r'$r_0$ [cm]',fontsize=8)
 
 
 
-ax.flatten()[3].set_xticks([0,20,40,60,80,100,120],[onlytimevbi[177],onlytimevbi[177+20],onlytimevbi[177+40],onlytimevbi[177+60],onlytimevbi[177+80],onlytimevbi[177+100],onlytimevbi[177+120]])
+ax.flatten()[3].set_xticks([0,20,40,60,80,100,120],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
 
 
-ax.flatten()[0].set_xlim([0,138])
-ax.flatten()[1].set_xlim([0,138])
-ax.flatten()[2].set_xlim([0,138])
-ax.flatten()[3].set_xlim([0,138])
+ax.flatten()[0].set_xlim([0,300])
+ax.flatten()[1].set_xlim([0,300])
+ax.flatten()[2].set_xlim([0,300])
+ax.flatten()[3].set_xlim([0,300])
 
 
 ax.flatten()[0].tick_params(axis='both', labelsize=8)
@@ -419,30 +439,30 @@ ax6.tick_params(axis='both', labelsize=8)
 
 fig.show()
 
-from scipy.signal import savgol_filter
+# from scipy.signal import savgol_filter
 
 
 
-fig,ax=plt.subplots();
-ntimes = 6
+# fig,ax=plt.subplots();
+# ntimes = 6
 
-colors = plt.cm.cool(np.linspace(0,1,ntimes))
-l2=0
-for i in range(0,120,20):
-    ax.plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],savgol_filter(all_psdarr[i,1:n//2],window_length=20,polyorder=3),label=onlytimevbi[177+i],color=colors[l2])
-    l2+=1
-ax.set_xscale('log')
-ax.set_yscale('log')
-ax.set_xlim([0,2000])
-ax.axvline(200,color='red',linestyle='dashed')
-ax.axvline(400,color='red',linestyle='dashed')
-ax.axvspan(200,400, facecolor='red', alpha=0.2)
-ax.axvline(25,color='black',linestyle='dashed')
-ax.axvline(65,color='black',linestyle='dashed')
-ax.axvspan(25,65, facecolor='grey', alpha=0.2)
+# colors = plt.cm.cool(np.linspace(0,1,ntimes))
+# l2=0
+# for i in range(0,120,20):
+#     ax.plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],savgol_filter(all_psdarr[i,1:n//2],window_length=20,polyorder=3),label=onlytimevbi[177+i],color=colors[l2])
+#     l2+=1
+# ax.set_xscale('log')
+# ax.set_yscale('log')
+# ax.set_xlim([0,2000])
+# ax.axvline(200,color='red',linestyle='dashed')
+# ax.axvline(400,color='red',linestyle='dashed')
+# ax.axvspan(200,400, facecolor='red', alpha=0.2)
+# ax.axvline(25,color='black',linestyle='dashed')
+# ax.axvline(65,color='black',linestyle='dashed')
+# ax.axvspan(25,65, facecolor='grey', alpha=0.2)
 
-ax.legend()
-fig.show()
+# ax.legend()
+# fig.show()
 
 # # do it again but add some number to each x coordinate in cc
 

@@ -44,7 +44,7 @@ file = '/VBI_2024_08_11T22_23_34_333333_00656282_I_MBVIDS_L1.fits'
 savfold='/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/'+vbiexp+'/'
 #filt='H_alpha'
 filt = 'Halpha'
-xtraflag = 'C_class_impulsive_phase_Halpha_180_350'
+xtraflag = 'C_class_impulsive_phase_Halpha_50_350'
 
 hdu_list = fits.open(vbifold+vbiexp+file)
 image=hdu_list[1].data[0,:,:]
@@ -71,7 +71,7 @@ dir_list.sort()
 dataCube=[]
 
 # here define times.
-loc_files=dir_list[180:350] # destretching with pre-flare
+loc_files=dir_list[50:350] # destretching with pre-flare
 
 lowx=0
 highx=-1
