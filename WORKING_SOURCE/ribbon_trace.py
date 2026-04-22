@@ -166,9 +166,9 @@ for i in range(npoints):
 
 
 # # if derived
-# ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords.npz')['points']
+# ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords_morepreflare.npz')['points']
 
-# ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords.npz')['points']
+# ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords_morepreflare.npz')['points']
 
 # xs_full = []
 # ys_full = []
@@ -301,8 +301,8 @@ ax.flatten()[0].set_xlim([1700,2400])
 ax.flatten()[0].set_ylim([2550,1000])
 
 ax.flatten()[1].pcolormesh(destretch[0].data[100+130,:,:],cmap='gray')
-ax.flatten()[1].plot(xs_full,ys_full,c='magenta',linestyle='solid',markersize=4,linewidth=2)
-ax.flatten()[1].plot(xs_part,ys_part,c='darkred',linestyle='solid',markersize=4,linewidth=2)
+ax.flatten()[1].plot(xs_full,ys_full,c='darkgreen',linestyle='solid',markersize=4,linewidth=2)
+ax.flatten()[1].plot(xs_part,ys_part,c='violet',linestyle='solid',markersize=4,linewidth=2)
 ax.flatten()[1].set_xlim([1700,2400])
 ax.flatten()[1].set_ylim([2550,1000])
 
@@ -313,7 +313,9 @@ fig.show()
 
 # load light curve
 
-loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc.npz',allow_pickle='True')
+#loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
+loadvbilc = np.load('/Users/coletamburri/Desktop/vbi_lc_extended.npz',allow_pickle='True')
+
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
 t3 = np.arange(datetime(2024,8,11,22,31,26),
@@ -377,17 +379,17 @@ ax.flatten()[0].set_xticks([])
 ax.flatten()[1].set_xticks([])
 ax.flatten()[2].set_xticks([])
 
-# # vertical lines at peak of HXR... 22:33:13 UT
-# ax.flatten()[0].axvline(40,color='white',linestyle='dashed',linewidth=1)
-# ax.flatten()[1].axvline(40,color='white',linestyle='dashed',linewidth=1)
-# #ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
-# ax.flatten()[3].axvline(40,color='white',linestyle='dashed',linewidth=1)
+# vertical lines at peak of HXR... 22:33:13 UT
+ax.flatten()[0].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+ax.flatten()[1].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+#ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
+ax.flatten()[3].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
 
-# # ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
-# ax.flatten()[0].axvline(97,color='white',linestyle='dotted',linewidth=1)
-# ax.flatten()[1].axvline(97,color='white',linestyle='dotted',linewidth=1)
-# #ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
-# ax.flatten()[3].axvline(97,color='white',linestyle='dotted',linewidth=1)
+# ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
+ax.flatten()[0].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+ax.flatten()[1].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+#ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
+ax.flatten()[3].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
 
 
 
@@ -399,7 +401,7 @@ ax6.plot(friedvbi[47:347],c='white',linewidth=1)
 
 
 ax4 = ax.flatten()[0].twinx()
-#ax4.plot(np.arange(267),lcvbi[:267],color='black',linewidth=2);
+ax4.plot(np.arange(300),lcvbi[:300],color='black',linewidth=2);
 ax4.set_yticks([])
 
 ax5 = ax.flatten()[1].twinx()
@@ -416,13 +418,13 @@ ax6.set_ylabel(r'$r_0$ [cm]',fontsize=8)
 
 
 
-ax.flatten()[3].set_xticks([0,20,40,60,80,100,120],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
+ax.flatten()[3].set_xticks([0,40,80,120,160,200,240,280],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240],onlytimevbi[47+280]])
 
 
-ax.flatten()[0].set_xlim([0,300])
-ax.flatten()[1].set_xlim([0,300])
-ax.flatten()[2].set_xlim([0,300])
-ax.flatten()[3].set_xlim([0,300])
+ax.flatten()[0].set_xlim([0,267])
+ax.flatten()[1].set_xlim([0,267])
+ax.flatten()[2].set_xlim([0,267])
+ax.flatten()[3].set_xlim([0,267])
 
 
 ax.flatten()[0].tick_params(axis='both', labelsize=8)
