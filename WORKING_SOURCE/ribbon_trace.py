@@ -25,17 +25,7 @@ from datetime import datetime, timedelta
 
 
 def intensity_along_polyline(image, points):
-    """
-    Sample image intensity along straight-line segments connecting points.
 
-    Parameters:
-        image (2D ndarray): grayscale image
-        points (list of (x, y)): ordered points
-
-    Returns:
-        coords (ndarray): (N, 2) sampled (x, y) coordinates
-        intensities (ndarray): sampled intensity values
-    """
     points = np.array(points)
     
     all_coords = []
@@ -292,21 +282,55 @@ part_freqarr = np.array(all_freq_part)
 X=np.arange(np.shape(destretch[0].data[0,:,:])[0])*0.017
 Y=np.arange(np.shape(destretch[0].data[0,:,:])[0])*0.017
 
-fig,ax=plt.subplots(1,2,dpi=200,figsize=(5,20))
+# fig,ax=plt.subplots(1,2,dpi=200,figsize=(3,20))
 
-ax.flatten()[0].pcolormesh(destretch[0].data[38+130,:,:],cmap='gray')
-ax.flatten()[0].plot(xs_full,ys_full,c='magenta',linestyle='solid',markersize=4,linewidth=2)
-ax.flatten()[0].plot(xs_part,ys_part,c='darkred',linestyle='solid',markersize=4,linewidth=2)
-ax.flatten()[0].set_xlim([1700,2400])
-ax.flatten()[0].set_ylim([2550,1000])
+# ax.flatten()[0].pcolormesh(destretch[0].data[38+130,:,:],cmap='gray')
+# ax.flatten()[0].plot(xs_full,ys_full,c='green',linestyle='solid',markersize=4,linewidth=2)
+# ax.flatten()[0].plot(xs_part,ys_part,c='violet',linestyle='solid',markersize=4,linewidth=2)
+# ax.flatten()[0].set_xlim([1700,2400])
+# ax.flatten()[0].set_ylim([2550,1000])
 
-ax.flatten()[1].pcolormesh(destretch[0].data[100+130,:,:],cmap='gray')
-ax.flatten()[1].plot(xs_full,ys_full,c='darkgreen',linestyle='solid',markersize=4,linewidth=2)
-ax.flatten()[1].plot(xs_part,ys_part,c='violet',linestyle='solid',markersize=4,linewidth=2)
-ax.flatten()[1].set_xlim([1700,2400])
-ax.flatten()[1].set_ylim([2550,1000])
+# xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
+# yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017
 
-ax.flatten()[1].tick_params(axis='x',labelsize=5)
+# ax.flatten()[1].pcolormesh(destretch[0].data[100+130,:,:],cmap='gray')
+# ax.flatten()[1].scatter(xs_full,ys_full,2,c='green',linestyle='-o')#,markersize=4,linewidth=2)
+# ax.flatten()[1].scatter(xs_part,ys_part,2,c='violet',linestyle='-o')#,markersize=4,linewidth=2)
+# ax.flatten()[1].set_xlim([1700,2400])
+# ax.flatten()[1].set_ylim([2550,1000])
+# ax.flatten()[1].set_xticks([1800,2000,2200],[xarcsec[1800],xarcsec[2000],xarcsec[2200]])
+# ax.flatten()[1].set_yticks([2400,2000,1600,1200],[yarcsec[2400],yarcsec[2000],xarcsec[1600],xarcsec[1200]])
+
+
+# ax.flatten()[1].tick_params(axis='x',labelsize=5)
+# fig.show()
+
+fig,ax=plt.subplots(dpi=200,figsize=(3,10))
+
+xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
+yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017
+
+ax.pcolormesh(destretch[0].data[100+130,:,:],cmap='sdoaia304',alpha=0.9)
+ax.plot(xs_full,ys_full,c='green',linestyle='-',marker='o',markersize=1,linewidth=.75)
+ax.plot(xs_part,ys_part,c='violet',linestyle='-',marker='o',markersize=1,linewidth=.75)
+ax.set_xlim([1700,2400])
+ax.set_ylim([2550,1000])
+ax.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
+ax.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
+
+
+ax.tick_params(axis='x',labelsize=5.5)
+ax.tick_params(axis='y',labelsize=5.5)
+ax.set_aspect('equal')
+
+ax.xaxis.set_minor_locator(MultipleLocator(50)) 
+ax.yaxis.set_minor_locator(MultipleLocator(50)) 
+ax.set_xlabel('VBI-X [arcsec]',fontsize=6)
+ax.set_ylabel('VBI-Y [arcsec]',fontsize=6)
+
+
+ax.grid(alpha=0.2)
+
 fig.show()
 
 # plotting time-distance plots (incl. fft)
@@ -350,7 +374,7 @@ ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/part_freq
 #ax.flatten()[1].axhline(300,color='white',linestyle='dashdot') # bead size
 ax.flatten()[1].set_ylim([25,2000])
 
-ax.flatten()[1].set_yscale('log')
+#ax.flatten()[1].set_yscale('log')
 ax.flatten()[1].set_ylabel('Spatial scale [km]',fontsize=8)
 #ax.flatten()[1].set_ylabel(r'Frequency [pix$^{-1}$]',fontsize=8)
 
@@ -364,7 +388,7 @@ ax.flatten()[3].set_ylim([25,2000])
 # ax.flatten()[3].set_ylim([0,0.1])
 # ax.flatten()[3].set_ylim([0,0.1])
 
-ax.flatten()[3].set_yscale('log')
+#ax.flatten()[3].set_yscale('log')
 ax.flatten()[3].set_ylabel('Spatial scale [km]',fontsize=8)
 
 #ax.flatten()[3].set_ylabel(r'Frequency [pix$^{-1}$]',fontsize=8)
