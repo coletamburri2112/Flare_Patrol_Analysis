@@ -136,7 +136,7 @@ def intensity_along_slot(image, points):
             for j in range(np.shape(coordsp)[0]):
                 intensitiesj.append(image[int(coordsp[j,1]),int(coordsp[j,0])])
                 
-            int_avg.append(np.nanmax(intensitiesj))
+            int_avg.append(np.nanmax(intensitiesj)) #max shows patterns better
 
 
     coords = np.vstack(all_coords)
