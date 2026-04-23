@@ -23,7 +23,59 @@ import dkistpkg_ct as DKISTanalysis
 from scipy.ndimage import map_coordinates
 from datetime import datetime, timedelta
 
-npoints=50 # 30 for full ribbon
+
+
+# Gaussian + linear background
+def gaussian_linear(x, A, mu, sigma, B, C):
+    return A * np.exp(-(x - mu)**2 / (2 * sigma**2)) + B*x + C
+
+# get times and Fried parameter for entire series
+vbi_filenames=[]
+
+path = '/Volumes/ViSP_External/pid_2_11_VBI/MBVIDS'
+# Specify the directory
+folder = Path(path)
+
+# List all files and folders
+for item in folder.iterdir():
+    if item.is_file():
+        vbi_filenames.append(item.name)
+
+vbi_filenames.sort()
+del vbi_filenames[0:3]
+vbi_filenames
+
+timesvbi=[]
+friedvbi=[]
+
+for i in range(len(vbi_filenames)-1):
+    timesvbi.append(fits.open(path+'/'+vbi_filenames[i])[1].header['DATE-BEG'])
+    if fits.open(path+'/'+vbi_filenames[i])[1].header['AO_LOCK']==True:
+        friedvbi.append(fits.open(path+'/'+vbi_filenames[i])[1].header['ATMOS_R0']*100)    
+    else:
+        friedvbi.append(float(0))
+        
+#convert to datetime
+datetimevbi=[]
+for i in range(len(timesvbi)):
+    date_str = timesvbi[i]
+    # Format: Year-Month-Day Hour:Minute:Second
+    datetimevbi.append(datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f"))
+    
+#strip day
+onlytimevbi = []
+for i in range(len(timesvbi)):
+    date_str = timesvbi[i]
+    # Format: Year-Month-Day Hour:Minute:Second
+    onlytimevbi.append(date_str[-15:-7])
+    
+onlytimevbi_samp = onlytimevbi[47:347]
+    
+file = '/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_47_347.fits'
+
+destretch = fits.open(file)
+
+npoints=4# 30 for full ribbon
 image = destretch[0].data[210,:,:]
 fig,ax=plt.subplots(dpi=200)
 
@@ -49,8 +101,8 @@ def intensity_along_slot(image, points):
         x0_2, y0_2 = points_side2[i]
         x1_2, y1_2 = points_side2[i + 1]
 
-        # Number of samples based on segment length - use shorter side (inside of ribbon curvature)
-        length = int(np.hypot(x1_2 - x0_2, y1_2 - y0_2))
+        # Number of samples based on segment length - use longer side (inside of ribbon curvature)
+        length = int(np.hypot(x0_2 - x1_2, y0_2 - y1_2))
         if length == 0:
             continue
 
@@ -99,7 +151,7 @@ for m in range(0,300,1):
     coords,coords1,int_avg = intensity_along_slot(image,ccslot)
     int_avg_all.append(int_avg)
     
-fig,ax=plt.subplots();ax.pcolormesh(np.transpose(int_avg_all),cmap='sdoaia304');ax.invert_yaxis();fig.show()
+fig,ax=plt.subplots();ax.pcolormesh(np.transpose(int_avg_all),cmap='afmhot');ax.invert_yaxis();fig.show()
     
 #debugging
 image = destretch[0].data[210,:,:]
