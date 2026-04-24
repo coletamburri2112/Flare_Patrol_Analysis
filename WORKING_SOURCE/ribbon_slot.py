@@ -509,6 +509,11 @@ ax.yaxis.set_minor_locator(MultipleLocator(50))
 ax.set_xlabel('VBI-X [arcsec]',fontsize=6)
 ax.set_ylabel('VBI-Y [arcsec]',fontsize=6)
 
+for i in range(2,len(xs_full),2):
+    ax.plot(xs_full[i:i+2],ys_full[i:i+2],c='green',linestyle='--',marker='o',markersize=1,linewidth=.75)
+
+for i in range(2,len(xs_part),2):
+    ax.plot(xs_part[i:i+2],ys_part[i:i+2],c='violet',linestyle='--',marker='o',markersize=1,linewidth=.75)
 
 ax.grid(alpha=0.2)
 
