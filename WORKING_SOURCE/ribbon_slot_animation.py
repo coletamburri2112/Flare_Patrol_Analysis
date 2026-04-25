@@ -25,6 +25,7 @@ from scipy.ndimage import map_coordinates
 from datetime import datetime, timedelta
 from scipy.interpolate import interp1d
 import os
+from scipy.signal import savgol_filter
 
 
 def intensity_along_slot(image, points):
@@ -154,11 +155,14 @@ timesvbi=[]
 friedvbi=[]
 
 for i in range(len(vbi_filenames)-1):
-    timesvbi.append(fits.open(path+'/'+vbi_filenames[i])[1].header['DATE-BEG'])
-    if fits.open(path+'/'+vbi_filenames[i])[1].header['AO_LOCK']==True:
-        friedvbi.append(fits.open(path+'/'+vbi_filenames[i])[1].header['ATMOS_R0']*100)    
+    hdul = fits.open(path+'/'+vbi_filenames[i])
+    timesvbi.append(hdul[1].header['DATE-BEG'])
+    if hdul[1].header['AO_LOCK']==True:
+        friedvbi.append(fits.open(path+'/'+vbi_filenames[i])[1].header['ATMOS_R0']*100)   
+        hdul.close()
     else:
         friedvbi.append(float(0))
+        hdul.close()
         
 #convert to datetime
 datetimevbi=[]
@@ -324,10 +328,24 @@ t3 = np.arange(datetime(2024,8,11,22,31,26),
               datetime(2024,8,11,22,38,57), 
               timedelta(seconds=2.666)).astype(datetime)
 
-outfolder = '/Users/coletamburri/Desktop/powerspec_movie/'
+outfolder = '/Users/coletamburri/Desktop/powerspec_movie_smooth/'
+outfolder2 = '/Users/coletamburri/Desktop/ribbontrace_movie/'
 
 os.mkdir(outfolder)
-for i in range(260):
+#os.mkdir(outfolder2)
+
+#os.mkdir(outfolder)
+
+xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
+yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017
+
+#for SV filter
+kern1 = 8
+kern2 = 8
+
+poly1 = 3
+poly2 = 3
+for i in range(0,260,1):
     
     xmaxsch = xmaxsallall[i]
     ymaxsch = ymaxsallall[i]
@@ -335,45 +353,163 @@ for i in range(260):
     xmaxsch2 = xmaxsallall2[i]
     ymaxsch2 = ymaxsallall2[i]
     
-    fig,ax=plt.subplots(2,2,dpi=200)
+    # fig2,ax2=plt.subplots(dpi=200,num=0, clear=True)
+
+    # ax2.pcolormesh(destretch[0].data[i,:,:],cmap='sdoaia304',alpha=0.9)
+    # ax2.plot(xmaxsch,ymaxsch,color='green',marker='.',linewidth=.5,markersize=1)
+    # ax2.plot(xmaxsch2,ymaxsch2,color='violet',marker='.',linewidth=.5,markersize=1)
+    # ax2.invert_yaxis()
+    # ax2.grid(alpha=0.2)
     
-    ax.flatten()[0].pcolormesh(destretch[0].data[i,:,:],cmap='sdoaia304',alpha=0.9)
-    ax.flatten()[0].plot(xmaxsch,ymaxsch,color='green')
-    ax.flatten()[0].plot(xmaxsch2,ymaxsch2,color='violet')
-    ax.flatten()[0].invert_yaxis()
+    # ax2.set_xlim([1700,2400])
+    # ax2.set_ylim([2550,1000])
+    # ax2.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
+    # ax2.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
+
     
-    ax.flatten()[0].set_aspect('equal')
+    # ax2.xaxis.set_minor_locator(MultipleLocator(50)) 
+    # ax2.yaxis.set_minor_locator(MultipleLocator(50)) 
     
-    ax.flatten()[0].set_xlim([1700,2400])
-    ax.flatten()[0].set_ylim([2550,1700])
+    # ax2.set_xlabel('VBI-X [arcsec]',fontsize=5)
+    # ax2.set_ylabel('VBI-Y [arcsec]',fontsize=5)
     
-    ax.flatten()[1].pcolormesh(np.arange(300),\
+    # ax2.set_title(onlytimevbi[47+i]+ ' UT',fontsize=6)
+    # ax2.tick_params(axis='x',labelsize=4.5)
+    # ax2.tick_params(axis='y',labelsize=4.5)
+    # ax2.set_aspect('equal')
+    
+    fig,ax=plt.subplots(3,2,dpi=200,num=1, clear=True)
+    
+    fig.suptitle(onlytimevbi[47+i]+ ' UT',fontsize=6, y=0.92)
+
+
+    # ax.flatten()[0].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
+    #                      np.power(all_psdarr2[i,1:n2//2],.25),c='black')
+    ax.flatten()[0].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
+                         savgol_filter(np.power(all_psdarr2[i,1:n2//2],.25),kern1,poly1),c='black')
+        
+
+    ax.flatten()[0].set_xscale('log')
+    ax.flatten()[0].set_xlim([0,3000])
+    ax.flatten()[0].set_xlim([0,1500])
+    ax.flatten()[0].grid(alpha=0.2)
+    ax.flatten()[0].set_xlabel('Spatial scale [km]',fontsize=5)
+    ax.flatten()[0].set_ylabel(r'$\sqrt[4]{Power}$',fontsize=5)
+    ax.flatten()[0].axvline(100,linestyle='-.',linewidth=.5,color='grey')
+    ax.flatten()[0].axvline(450,linestyle='-.',linewidth=.5,color='grey')
+    
+    ax.flatten()[0].axvspan(100,450,color='grey',alpha=0.2)
+        
+    ax.flatten()[5].pcolormesh(np.arange(300),\
                                arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
                                    np.transpose(np.power(all_psdarr[:,1:n//2],.1)),\
                                        cmap='seismic')
         
-    ax.flatten()[1].set_yscale('log')
+    #ax.flatten()[5].invert_yaxis()
+
+    ax.flatten()[5].set_yscale('log')
     
-    ax.flatten()[1].axvline(i,linestyle='dashed',color='yellow')
+    ax.flatten()[5].axvline(i,linestyle='dashed',color='black',linewidth=.5)
     
-    ax.flatten()[2].pcolormesh(np.arange(300),\
+    ax.flatten()[4].pcolormesh(np.arange(300),\
+                               arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n2//2],\
+                                   np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),\
+                                       cmap='seismic')
+        
+    #ax.flatten()[4].invert_yaxis()
+        
+    ax.flatten()[4].set_yscale('log')
+    
+    ax.flatten()[4].axvline(i,linestyle='dashed',color='black',linewidth=.5)
+    
+    ax.flatten()[3].pcolormesh(np.arange(300),\
                                np.arange(l)*pix_to_arcsec*arcsec_to_km,\
                                    np.transpose(intavginterps),cmap='afmhot');
+    ax.flatten()[3].invert_yaxis()
+    
+    ax.flatten()[3].axvline(i,linestyle='dashed',color='darkorange',linewidth=.5)
+    
+    ax.flatten()[2].pcolormesh(np.arange(300),\
+                               np.arange(l2)*pix_to_arcsec*arcsec_to_km,\
+                                   np.transpose(intavginterps2),cmap='afmhot');
     ax.flatten()[2].invert_yaxis()
     
-    ax.flatten()[2].axvline(i,linestyle='dashed',color='yellow')
+    ax.flatten()[2].axvline(i,linestyle='dashed',color='darkorange',linewidth=.5)
     
-    ax.flatten()[3].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],all_psdarr[i,1:n//2])
+    ax.flatten()[1].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
+                         np.power(all_psdarr[i,1:n//2],.25),c='black')    
+    ax.flatten()[1].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
+                         savgol_filter(np.power(all_psdarr[i,1:n//2],.25),kern2,poly2),c='black')
     
-    ax.flatten()[3].set_xscale('log')
+    ax.flatten()[1].set_xscale('log')
     
-    ax.flatten()[1].set_xlim([0,260])
+    ax.flatten()[5].set_xlim([0,260])
+    ax.flatten()[3].set_xlim([0,260])
+    
+    ax.flatten()[4].set_xlim([0,260])
     ax.flatten()[2].set_xlim([0,260])
 
+    ax.flatten()[1].set_xlim([0,3000])
+    
+
+    ax.flatten()[1].grid(alpha=0.2)
+
+    
+    ax.flatten()[1].set_xlabel('Spatial scale [km]',fontsize=5)
+    ax.flatten()[1].set_ylabel(r'$\sqrt[4]{Power}$',fontsize=5)
+    
+    ax.flatten()[3].set_xlabel('Time [UT]',fontsize=5)
+    ax.flatten()[3].set_ylabel('Distance along ribbon [km]',fontsize=5)
+    
+    ax.flatten()[5].set_xlabel('Time [UT]',fontsize=5)
+    ax.flatten()[5].set_ylabel(r'Spatial scale [km]',fontsize=5)
+    
+    ax.flatten()[2].set_xlabel('Time [UT]',fontsize=5)
+    ax.flatten()[2].set_ylabel('Distance along ribbon [km]',fontsize=5)
+    
+    ax.flatten()[4].set_xlabel('Time [UT]',fontsize=5)
+    ax.flatten()[4].set_ylabel(r'Spatial scale [km]',fontsize=5)
+    
+    ax.flatten()[0].tick_params(axis='x',labelsize=4.5)
+    ax.flatten()[0].tick_params(axis='y',labelsize=4.5)
+    
+    ax.flatten()[1].tick_params(axis='x',labelsize=4.5)
+    ax.flatten()[1].tick_params(axis='y',labelsize=4.5)
+
+    ax.flatten()[3].tick_params(axis='x',labelsize=4.5)
+    ax.flatten()[3].tick_params(axis='y',labelsize=4.5)
+
+    ax.flatten()[5].tick_params(axis='x',labelsize=4.5)
+    ax.flatten()[5].tick_params(axis='y',labelsize=4.5)
+    
+    ax.flatten()[0].set_ylim([-0,1.2])
+    ax.flatten()[1].set_ylim([-0,1.2])
     
     
+    ax.flatten()[2].tick_params(axis='x',labelsize=4.5)
+    ax.flatten()[2].tick_params(axis='y',labelsize=4.5)
+
+    ax.flatten()[4].tick_params(axis='x',labelsize=4.5)
+    ax.flatten()[4].tick_params(axis='y',labelsize=4.5)
+
+    ax.flatten()[3].set_xticks([0,80,160,240],[onlytimevbi[47],onlytimevbi[47+80],onlytimevbi[47+160],onlytimevbi[47+240]])
+    ax.flatten()[5].set_xticks([0,80,160,240],[onlytimevbi[47],onlytimevbi[47+80],onlytimevbi[47+160],onlytimevbi[47+240]])
+
+    ax.flatten()[2].set_xticks([0,80,160,240],[onlytimevbi[47],onlytimevbi[47+80],onlytimevbi[47+160],onlytimevbi[47+240]])
+    ax.flatten()[4].set_xticks([0,80,160,240],[onlytimevbi[47],onlytimevbi[47+80],onlytimevbi[47+160],onlytimevbi[47+240]])
+    
+    ax.flatten()[1].axvline(100,linestyle='-.',linewidth=.5,color='grey')
+    ax.flatten()[1].axvline(450,linestyle='-.',linewidth=.5,color='grey')
+    
+    ax.flatten()[1].axvspan(100,450,color='grey',alpha=0.2)
+    
+    fig.subplots_adjust(wspace=0.3)
+    fig.subplots_adjust(hspace=0.5)
+
+    #fig2.savefig(outfolder2+str(i)+'.png')
     fig.savefig(outfolder+str(i)+'.png')
-    
+
+    plt.close('all')
     #ax.flatten()[4].plot(np.arange(l)*pix_to_arcsec*arcsec_to_km,intavginterps[i][:])
 
 

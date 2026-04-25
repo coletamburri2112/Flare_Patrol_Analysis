@@ -347,7 +347,7 @@ ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_k
 ax.flatten()[0].invert_yaxis();
 ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],np.transpose(np.power(all_psdarr[:,1:n//2],.1)),cmap='seismic')
 
-ax.flatten()[1].set_ylim([25,2000])
+ax.flatten()[1].set_ylim([25,2500])
 ax.flatten()[1].set_yscale('log')
 ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
 
@@ -355,7 +355,7 @@ ax2 = ax.flatten()[0].twinx()
 ax3 = ax.flatten()[1].twinx()
 
 ax2.plot(friedvbi[47:347],c='white',linewidth=1)
-ax3.plot(friedvbi[47:347],c='white',linewidth=1)
+#ax3.plot(friedvbi[47:347],c='green',linewidth=2)
 
 ax4 = ax.flatten()[0].twinx()
 ax4.plot(np.arange(300),lcvbi[:300],color='yellow',linewidth=2);
@@ -393,13 +393,13 @@ ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_
 ax.flatten()[2].invert_yaxis();
 ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),cmap='seismic')
 
-ax.flatten()[3].set_ylim([25,2000])
+ax.flatten()[3].set_ylim([25,2500])
 ax.flatten()[3].set_yscale('log')
 ax.flatten()[3].set_xlabel('Time [UT]',fontsize=8)
 
 ax7 = ax.flatten()[3].twinx()
 
-ax7.plot(friedvbi[47:347],c='white',linewidth=1)
+#ax7.plot(friedvbi[47:347],c='green',linewidth=2)
 
 
 ax7.set_ylim([1,19])
@@ -409,15 +409,15 @@ ax7.set_ylabel(r'$r_0$ [cm]',fontsize=8)
 
 # vertical lines at peak of HXR... 22:33:13 UT
 ax.flatten()[0].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
-ax.flatten()[1].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+ax.flatten()[1].axvline(40+130,color='black',linestyle='dashed',linewidth=2)
 #ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
-ax.flatten()[3].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+ax.flatten()[3].axvline(40+130,color='black',linestyle='dashed',linewidth=2)
 
 # ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
 ax.flatten()[0].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
-ax.flatten()[1].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+ax.flatten()[1].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
 #ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
-ax.flatten()[3].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+ax.flatten()[3].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
 
 
 ax.flatten()[1].set_xticks([])
