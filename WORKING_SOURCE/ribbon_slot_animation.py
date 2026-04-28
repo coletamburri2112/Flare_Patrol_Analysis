@@ -412,7 +412,7 @@ for i in range(0,260,1):
     ax.flatten()[5].axvline(i,linestyle='dashed',color='black',linewidth=.5)
     
     ax.flatten()[4].pcolormesh(np.arange(300),\
-                               arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n2//2],\
+                               arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
                                    np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),\
                                        cmap='seismic')
         
