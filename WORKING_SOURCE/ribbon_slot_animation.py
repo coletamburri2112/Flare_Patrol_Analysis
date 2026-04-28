@@ -328,7 +328,7 @@ t3 = np.arange(datetime(2024,8,11,22,31,26),
               datetime(2024,8,11,22,38,57), 
               timedelta(seconds=2.666)).astype(datetime)
 
-outfolder = '/Users/coletamburri/Desktop/powerspec_movie_smooth/'
+outfolder = '/Users/coletamburri/Desktop/powerspec_movie/'
 outfolder2 = '/Users/coletamburri/Desktop/ribbontrace_movie/'
 
 os.mkdir(outfolder)
@@ -383,15 +383,15 @@ for i in range(0,260,1):
     fig.suptitle(onlytimevbi[47+i]+ ' UT',fontsize=6, y=0.92)
 
 
-    # ax.flatten()[0].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
-    #                      np.power(all_psdarr2[i,1:n2//2],.25),c='black')
     ax.flatten()[0].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
-                         savgol_filter(np.power(all_psdarr2[i,1:n2//2],.25),kern1,poly1),c='black')
+                         np.power(all_psdarr2[i,1:n2//2],.25),c='black')
+    # ax.flatten()[0].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
+    #                      savgol_filter(np.power(all_psdarr2[i,1:n2//2],.25),kern1,poly1),c='black')
         
 
     ax.flatten()[0].set_xscale('log')
     ax.flatten()[0].set_xlim([0,3000])
-    ax.flatten()[0].set_xlim([0,1500])
+    #ax.flatten()[0].set_xlim([0,1500])
     ax.flatten()[0].grid(alpha=0.2)
     ax.flatten()[0].set_xlabel('Spatial scale [km]',fontsize=5)
     ax.flatten()[0].set_ylabel(r'$\sqrt[4]{Power}$',fontsize=5)
@@ -438,8 +438,8 @@ for i in range(0,260,1):
     
     ax.flatten()[1].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
                          np.power(all_psdarr[i,1:n//2],.25),c='black')    
-    ax.flatten()[1].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
-                         savgol_filter(np.power(all_psdarr[i,1:n//2],.25),kern2,poly2),c='black')
+    # ax.flatten()[1].plot(arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
+    #                      savgol_filter(np.power(all_psdarr[i,1:n//2],.25),kern2,poly2),c='black')
     
     ax.flatten()[1].set_xscale('log')
     
@@ -482,8 +482,8 @@ for i in range(0,260,1):
     ax.flatten()[5].tick_params(axis='x',labelsize=4.5)
     ax.flatten()[5].tick_params(axis='y',labelsize=4.5)
     
-    ax.flatten()[0].set_ylim([-0,1.2])
-    ax.flatten()[1].set_ylim([-0,1.2])
+    ax.flatten()[0].set_ylim([-0,1.5])
+    ax.flatten()[1].set_ylim([-0,1.5])
     
     
     ax.flatten()[2].tick_params(axis='x',labelsize=4.5)
@@ -502,6 +502,9 @@ for i in range(0,260,1):
     ax.flatten()[1].axvline(450,linestyle='-.',linewidth=.5,color='grey')
     
     ax.flatten()[1].axvspan(100,450,color='grey',alpha=0.2)
+    ax.flatten()[4].set_ylim([0,3000])
+    ax.flatten()[5].set_ylim([0,3000])
+
     
     fig.subplots_adjust(wspace=0.3)
     fig.subplots_adjust(hspace=0.5)
