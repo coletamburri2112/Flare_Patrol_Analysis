@@ -23,6 +23,7 @@ import dkistpkg_ct as DKISTanalysis
 from scipy.ndimage import map_coordinates
 from datetime import datetime, timedelta
 from scipy.interpolate import interp1d
+from scipy.ndimage import gaussian_filter1d
 
 
 
@@ -179,7 +180,7 @@ def calculate_distance_along_curve(x, y):
     
     return cumulative_distance
 
-npoints=40# 10 for full ribbon
+npoints=30# 10 for full ribbon
 image = destretch[0].data[210,:,:]
 fig,ax=plt.subplots(dpi=200)
 
@@ -191,7 +192,7 @@ fig.show()
 
 ccslot = plt.ginput(npoints,timeout = 120)
 
-npoints2=6# 30 for full ribbon
+npoints2=10# 30 for full ribbon
 image = destretch[0].data[210,:,:]
 fig,ax=plt.subplots(dpi=200)
 
@@ -340,14 +341,13 @@ lcvbi=loadvbilc['lc']
 t3 = np.arange(datetime(2024,8,11,22,31,26),
               datetime(2024,8,11,22,38,57), 
               timedelta(seconds=2.666)).astype(datetime)
-    
-
+choicemap = 'coolwarm'
 fig,ax=plt.subplots(4,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
 ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps),cmap='afmhot');
 ax.flatten()[0].invert_yaxis();
-ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],np.transpose(np.power(all_psdarr[:,1:n//2],.1)),cmap='seismic')
+ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr[:,1:n//2],.1)),axis=1,sigma=1),axis=0,sigma=.8),cmap=choicemap,vmin=0.5,vmax=1)
 
-ax.flatten()[1].set_ylim([25,2500])
+ax.flatten()[1].set_ylim([90,2000])
 ax.flatten()[1].set_yscale('log')
 ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
 
@@ -355,7 +355,7 @@ ax2 = ax.flatten()[0].twinx()
 ax3 = ax.flatten()[1].twinx()
 
 ax2.plot(friedvbi[47:347],c='white',linewidth=1)
-#ax3.plot(friedvbi[47:347],c='green',linewidth=2)
+ax3.plot(friedvbi[47:347],c='black',linewidth=2)
 
 ax4 = ax.flatten()[0].twinx()
 ax4.plot(np.arange(300),lcvbi[:300],color='yellow',linewidth=2);
@@ -391,15 +391,15 @@ ax5.tick_params(axis='both', labelsize=8)
 
 ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2),cmap='afmhot');
 ax.flatten()[2].invert_yaxis();
-ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),cmap='seismic')
+ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),axis=1,sigma=1),axis=0,sigma=.75),cmap=choicemap,vmin=0.5,vmax=1)
 
-ax.flatten()[3].set_ylim([25,2500])
+ax.flatten()[3].set_ylim([90,2000])
 ax.flatten()[3].set_yscale('log')
 ax.flatten()[3].set_xlabel('Time [UT]',fontsize=8)
 
 ax7 = ax.flatten()[3].twinx()
 
-#ax7.plot(friedvbi[47:347],c='green',linewidth=2)
+ax7.plot(friedvbi[47:347],c='black',linewidth=2)
 
 
 ax7.set_ylim([1,19])
@@ -454,9 +454,15 @@ ax.flatten()[2].set_xlabel('Time [UT]',fontsize=8)
 
 ax.flatten()[0].set_ylabel('Distance along trace [km]',fontsize=8)
 ax.flatten()[0].set_xlabel('Time [UT]',fontsize=8)
+ax.flatten()[0].set_yticks([0,5000,10000])
+ax.flatten()[2].set_yticks([500,1500,2500])
 
-
+for i in range(len(friedvbi[47:347])):
+    if friedvbi[47+i]<3:
+        ax.flatten()[1].axvline(i, color='lavender', alpha=1,linewidth=3)
+        ax.flatten()[3].axvline(i, color='lavender', alpha=1,linewidth=3)
 fig.show()
+
 
 xs_full = []
 ys_full = []
@@ -464,7 +470,7 @@ ys_full = []
 for i in range(npoints):
     xs_full.append(ccslot[i][0])
     ys_full.append(ccslot[i][1])
-    
+
 
 
 xs_part = []
@@ -473,8 +479,8 @@ ys_part = []
 for i in range(npoints2):
     xs_part.append(ccslot2[i][0])
     ys_part.append(ccslot2[i][1])
-    
-    
+
+
 
 xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
 yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017

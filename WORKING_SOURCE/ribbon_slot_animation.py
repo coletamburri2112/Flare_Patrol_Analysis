@@ -26,6 +26,8 @@ from datetime import datetime, timedelta
 from scipy.interpolate import interp1d
 import os
 from scipy.signal import savgol_filter
+from scipy.ndimage import gaussian_filter1d
+
 
 
 def intensity_along_slot(image, points):
@@ -334,8 +336,6 @@ outfolder2 = '/Users/coletamburri/Desktop/ribbontrace_movie/'
 os.mkdir(outfolder)
 #os.mkdir(outfolder2)
 
-#os.mkdir(outfolder)
-
 xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
 yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017
 
@@ -352,31 +352,32 @@ for i in range(0,260,1):
     
     xmaxsch2 = xmaxsallall2[i]
     ymaxsch2 = ymaxsallall2[i]
-    
-    # fig2,ax2=plt.subplots(dpi=200,num=0, clear=True)
+    choicemap = 'coolwarm'
 
-    # ax2.pcolormesh(destretch[0].data[i,:,:],cmap='sdoaia304',alpha=0.9)
-    # ax2.plot(xmaxsch,ymaxsch,color='green',marker='.',linewidth=.5,markersize=1)
-    # ax2.plot(xmaxsch2,ymaxsch2,color='violet',marker='.',linewidth=.5,markersize=1)
-    # ax2.invert_yaxis()
-    # ax2.grid(alpha=0.2)
+    fig2,ax2=plt.subplots(dpi=200,num=0, clear=True)
+
+    ax2.pcolormesh(destretch[0].data[i,:,:],cmap='sdoaia304',alpha=0.9)
+    ax2.plot(xmaxsch,ymaxsch,color='green',marker='.',linewidth=.5,markersize=1)
+    ax2.plot(xmaxsch2,ymaxsch2,color='violet',marker='.',linewidth=.5,markersize=1)
+    ax2.invert_yaxis()
+    ax2.grid(alpha=0.2)
     
-    # ax2.set_xlim([1700,2400])
-    # ax2.set_ylim([2550,1000])
-    # ax2.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
-    # ax2.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
+    ax2.set_xlim([1700,2400])
+    ax2.set_ylim([2550,1000])
+    ax2.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
+    ax2.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
 
     
-    # ax2.xaxis.set_minor_locator(MultipleLocator(50)) 
-    # ax2.yaxis.set_minor_locator(MultipleLocator(50)) 
+    ax2.xaxis.set_minor_locator(MultipleLocator(50)) 
+    ax2.yaxis.set_minor_locator(MultipleLocator(50)) 
     
-    # ax2.set_xlabel('VBI-X [arcsec]',fontsize=5)
-    # ax2.set_ylabel('VBI-Y [arcsec]',fontsize=5)
+    ax2.set_xlabel('VBI-X [arcsec]',fontsize=5)
+    ax2.set_ylabel('VBI-Y [arcsec]',fontsize=5)
     
-    # ax2.set_title(onlytimevbi[47+i]+ ' UT',fontsize=6)
-    # ax2.tick_params(axis='x',labelsize=4.5)
-    # ax2.tick_params(axis='y',labelsize=4.5)
-    # ax2.set_aspect('equal')
+    ax2.set_title(onlytimevbi[47+i]+ ' UT',fontsize=6)
+    ax2.tick_params(axis='x',labelsize=4.5)
+    ax2.tick_params(axis='y',labelsize=4.5)
+    ax2.set_aspect('equal')
     
     fig,ax=plt.subplots(3,2,dpi=200,num=1, clear=True)
     
@@ -402,8 +403,8 @@ for i in range(0,260,1):
         
     ax.flatten()[5].pcolormesh(np.arange(300),\
                                arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
-                                   np.transpose(np.power(all_psdarr[:,1:n//2],.1)),\
-                                       cmap='seismic')
+                                   gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr[:,1:n//2],.1)),axis=1,sigma=1),axis=0,sigma=.8),\
+                                       cmap=choicemap,vmin=0.5,vmax=1)
         
     #ax.flatten()[5].invert_yaxis()
 
@@ -413,8 +414,8 @@ for i in range(0,260,1):
     
     ax.flatten()[4].pcolormesh(np.arange(300),\
                                arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],\
-                                   np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),\
-                                       cmap='seismic')
+                                   gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),axis=1,sigma=1),axis=0,sigma=.8),\
+                                       cmap=choicemap,vmin=0.5,vmax=1)
         
     #ax.flatten()[4].invert_yaxis()
         
@@ -502,14 +503,14 @@ for i in range(0,260,1):
     ax.flatten()[1].axvline(450,linestyle='-.',linewidth=.5,color='grey')
     
     ax.flatten()[1].axvspan(100,450,color='grey',alpha=0.2)
-    ax.flatten()[4].set_ylim([0,3000])
-    ax.flatten()[5].set_ylim([0,3000])
+    ax.flatten()[4].set_ylim([90,2000])
+    ax.flatten()[5].set_ylim([90,2000])
 
     
     fig.subplots_adjust(wspace=0.3)
     fig.subplots_adjust(hspace=0.5)
 
-    #fig2.savefig(outfolder2+str(i)+'.png')
+    fig2.savefig(outfolder2+str(i)+'.png')
     fig.savefig(outfolder+str(i)+'.png')
 
     plt.close('all')
