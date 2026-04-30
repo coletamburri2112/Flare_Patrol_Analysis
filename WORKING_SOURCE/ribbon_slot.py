@@ -180,7 +180,7 @@ def calculate_distance_along_curve(x, y):
     
     return cumulative_distance
 
-npoints=30# 10 for full ribbon
+npoints=40# 10 for full ribbon
 image = destretch[0].data[210,:,:]
 fig,ax=plt.subplots(dpi=200)
 

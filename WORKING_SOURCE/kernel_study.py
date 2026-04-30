@@ -70,14 +70,16 @@ stretched = 0
 
 
 #VBI directory
-path_vbi = '/Volumes/VBI_External/pid_2_11/'
-folder1_vbi = 'AKDKX'
+path_vbi = '/Volumes/ViSP_External/pid_2_11_VBI/'
+folder1_vbi = 'MBVIDS'
 #folder2_vbi = 'BYMOL'
 dir_list2_vbi = DKISTanalysis.pathdef(path_vbi,folder1_vbi)
 
 #destretched dataset
-filename = ['/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/'+
-                'postdestretch_dataCubeFlareImpulsivePhase.fits'][0]
+# filename = ['/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/AKDKX/'+
+#                 'postdestretch_dataCubeFlareImpulsivePhase.fits'][0]
+filename = ['/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/'+
+                'postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_177_347.fits'][0]
 
 visp_file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
 
@@ -89,11 +91,11 @@ vispX = vispload['arr_0']
 vispY = vispload['arr_1']
 vispavg = vispload['arr_2']
 
-file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_CaII.npz'
+file = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/11Aug2024_Cclass_calibrated_CaIIH.npz'
 
 #load visp spec
 vispspec = np.load(file) #arrays allspc,flare,wl,range
-timesvisp = vispspec['time']
+timesvisp = vispspec['times']
 specvisp0 = vispspec['flare']
 wlvisp = vispspec['wl']
 
@@ -124,7 +126,7 @@ for i in range(len(dir_list2_vbi)):
                       int(dir_list2_vbi[i][18:20]),
                       int(dir_list2_vbi[i][21:23])))
     
-timesvbi = timesvbi[200:450]
+timesvbi = timesvbi[177:347]
 
 #another time array
 string = timesvbi[0].strftime("%H:%M:%S")
@@ -194,7 +196,7 @@ for i in range(np.shape(final_mask)[0]):
 # make light curve
 lc=[]
 
-for i in range(250):
+for i in range(len(timesvbi)):
     lc.append(np.sum(arr[i,int(ylow/bin_y):int(yhigh/bin_y),int(xlow/bin_x):int(xhigh/bin_x)]))
 
 # cumulative mask movie
@@ -415,24 +417,25 @@ fig.show()
 #timestep
 t = 11
 
-for t in range(6,22,1):
-    print(timesvbi[t])
-    print(t)
+for t in range(6+23,22+23,1):
+    
+    if t == 29 or t == 30 or t == 31 or t == 33 or t == 34 or t == 36 or t == 37 or t == 39 or t == 41 or t == 42 or t == 44:
+        print(timesvbi[t])
+        print(t)
 
-    if t<11:
+    if t<11+23:
         mask = inst_mask_all[t,ylow+850:ylow+1200,xlow:xhigh] #ribbon r1a
         mask2 = inst_mask_all[t,1400:1800,600:1000] #ribbon r2
         mask3 = inst_mask_all[t,1380:1700,xlow:xhigh] #ribbon r1b
-        fig,ax=plt.subplots();
-    elif t==11:
+    elif t==11+23:
         mask = inst_mask_all[t,ylow+850:ylow+1300,xlow:xhigh]
         mask2 = inst_mask_all[t,1400:1800,600:1000]
         mask3 =[]
-    elif t>11 and t<19:
+    elif t>11+23 and t<19+23:
         mask = inst_mask_all[t,ylow+1150:ylow+1600,xlow:xhigh]
         mask2 = inst_mask_all[t,1800:2600,500:1200]
         mask3 =[]
-    elif t>18:
+    elif t>18+23:
         mask = inst_mask_all[t,ylow+1350:ylow+1600,xlow:xhigh]
         mask2 = inst_mask_all[t,1800:2600,500:1200]
         mask3 =[]
@@ -445,8 +448,9 @@ for t in range(6,22,1):
     # fig.show()
     
     area = (np.nansum(mask)+np.nansum(mask2)+np.nansum(mask3))*(0.017*727)**2*1e10 # in cm2
-    print(area/1e15)
-    print(' ')
+    if t == 29 or t == 30 or t == 31 or t == 33 or t == 34 or t == 36 or t == 37 or t == 39 or t == 41 or t == 42 or t == 44:
+        print(area/1e15)
+        print(' ')
 
 
 shiftarr = np.zeros((np.shape(specvisp0)[0],np.shape(specvisp0)[2]))
