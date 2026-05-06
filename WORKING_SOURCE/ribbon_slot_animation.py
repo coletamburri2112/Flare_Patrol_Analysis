@@ -257,19 +257,43 @@ all_freq = []
 psds = []
 
 for i in range(len(intavginterps)):
-    chintensities = intavginterps[i]
-    # Compute the 1D FFT
-    fft_result = np.fft.fft(chintensities/np.max(chintensities))
+    chintensities2 = np.asarray(intavginterps[i])
+    
+    energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
+    
+    #power_norm = chintensities2/np.linalg.norm(chintensities2)
+   
+    #mean_norm = chintensities2/np.nanmean(chintensities2)
+    
+    wind = np.hanning(n)
+    xw1 = energy_norm * wind
+    #xw2 = mean_norm * wind
+
+    fft_result1 = np.fft.fft(xw1)
+    #fft_result2 = np.fft.fft(xw2)
     #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
     # Get the frequencies for the result
     freqs = np.fft.fftfreq(n,d=dx)
     
-    all_freq.append(freqs)
     
-    psds.append((np.abs(fft_result)**2)/(1/dx)/n) #power spectral density (n is number of samples, dx is sampling frequency)
+    mask = freqs >= 0
+    
+    U = np.nanmean(wind**2)
+    all_freq.append(freqs[mask])
+    
+    psd1 = (np.abs(fft_result1)**2)/n
+    #psd2 = (np.abs(fft_result2)**2)/n2
+    psd1 = psd1[mask]
+    #psd2 = psd2[mask]
+    #
+    
+    psds.append(psd1)
+    #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
+    #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
     
 all_psdarr = np.array(psds)
-all_freqarr = np.array(all_freq)
+
+
 
 # again, for other half of ribbon
 pixdistanceinterps2 = []
@@ -299,20 +323,45 @@ space_x2 = np.linspace(0, l2, n2, endpoint=False)
 
 all_freq2 = []
 psds2 = []
+psds1 =[]
 
 for i in range(len(intavginterps2)):
-    chintensities = intavginterps2[i]
-    # Compute the 1D FFT
-    fft_result = np.fft.fft(chintensities/np.max(chintensities))
+    chintensities2 = np.asarray(intavginterps2[i])
+    
+    energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
+    
+    #power_norm = chintensities2/np.linalg.norm(chintensities2)
+   
+    #mean_norm = chintensities2/np.nanmean(chintensities2)
+    
+    wind = np.hanning(n2)
+    xw1 = energy_norm * wind
+    #xw2 = mean_norm * wind
+
+    fft_result1 = np.fft.fft(xw1)
+    #fft_result2 = np.fft.fft(xw2)
     #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
     # Get the frequencies for the result
-    freqs = np.fft.fftfreq(n2,d=dx)
+    freqs = np.fft.fftfreq(n2,d=dx2)
     
-    all_freq2.append(freqs)
     
-    psds2.append((np.abs(fft_result)**2)/(1/dx2)/n2) #power spectral density (n is number of samples, dx is sampling frequency)
+    mask = freqs >= 0
     
-all_psdarr2 = np.array(psds2)
+    U = np.nanmean(wind**2)
+    all_freq2.append(freqs[mask])
+    
+    psd1 = (np.abs(fft_result1)**2)/n2
+    #psd2 = (np.abs(fft_result2)**2)/n2
+    psd1 = psd1[mask]
+    #psd2 = psd2[mask]
+    #
+    
+    psds1.append(psd1)
+    #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
+    #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
+    
+all_psdarr2 = np.array(psds1)
+#all_psdarr1 = np.array(psds1)
 all_freqarr2 = np.array(all_freq2)
 
 
@@ -333,7 +382,7 @@ t3 = np.arange(datetime(2024,8,11,22,31,26),
 outfolder = '/Users/coletamburri/Desktop/powerspec_movie/'
 outfolder2 = '/Users/coletamburri/Desktop/ribbontrace_movie/'
 
-os.mkdir(outfolder)
+#os.mkdir(outfolder)
 #os.mkdir(outfolder2)
 
 xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
@@ -345,7 +394,8 @@ kern2 = 8
 
 poly1 = 3
 poly2 = 3
-for i in range(0,260,1):
+#for i in range(0,260,1):
+for i in range(100,101,1):
     
     xmaxsch = xmaxsallall[i]
     ymaxsch = ymaxsallall[i]
@@ -402,8 +452,8 @@ for i in range(0,260,1):
     ax.flatten()[0].axvspan(100,450,color='grey',alpha=0.2)
         
     ax.flatten()[5].pcolormesh(np.arange(300),\
-                               arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],\
-                                   gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr[:,1:n//2],.1)),axis=1,sigma=1),axis=0,sigma=.8),\
+                               arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1+n2//2:],\
+                                   gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr[:,1+n//2:],.1)),axis=1,sigma=1),axis=0,sigma=.8),\
                                        cmap=choicemap,vmin=0.5,vmax=1)
         
     #ax.flatten()[5].invert_yaxis()
@@ -510,8 +560,8 @@ for i in range(0,260,1):
     fig.subplots_adjust(wspace=0.3)
     fig.subplots_adjust(hspace=0.5)
 
-    fig2.savefig(outfolder2+str(i)+'.png')
-    fig.savefig(outfolder+str(i)+'.png')
+    #fig2.savefig(outfolder2+str(i)+'.png')
+    #fig.savefig(outfolder+str(i)+'.png')
 
     plt.close('all')
     #ax.flatten()[4].plot(np.arange(l)*pix_to_arcsec*arcsec_to_km,intavginterps[i][:])

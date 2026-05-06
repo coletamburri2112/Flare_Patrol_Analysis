@@ -180,29 +180,33 @@ def calculate_distance_along_curve(x, y):
     
     return cumulative_distance
 
-npoints=40# 10 for full ribbon
-image = destretch[0].data[210,:,:]
-fig,ax=plt.subplots(dpi=200)
+npoints=30# 10 for full ribbon
+# image = destretch[0].data[210,:,:]
+# fig,ax=plt.subplots(dpi=200)
 
-ax.imshow(image,cmap='sdoaia304')
-ax.set_xlim([1700,2400])
-ax.set_ylim([2550,1000])
+# ax.imshow(image,cmap='sdoaia304')
+# ax.set_xlim([1700,2400])
+# ax.set_ylim([2550,1000])
 
-fig.show()
+# fig.show()
 
-ccslot = plt.ginput(npoints,timeout = 120)
+# ccslot = plt.ginput(npoints,timeout = 120)
 
 npoints2=10# 30 for full ribbon
-image = destretch[0].data[210,:,:]
-fig,ax=plt.subplots(dpi=200)
+# image = destretch[0].data[210,:,:]
+# fig,ax=plt.subplots(dpi=200)
 
-ax.imshow(image,cmap='sdoaia304')
-ax.set_xlim([1700,2400])
-ax.set_ylim([2550,1000])
+# ax.imshow(image,cmap='sdoaia304')
+# ax.set_xlim([1700,2400])
+# ax.set_ylim([2550,1000])
 
-fig.show()
+# fig.show()
 
-ccslot2 = plt.ginput(npoints2,timeout = 120)
+# ccslot2 = plt.ginput(npoints2,timeout = 120)
+
+ccslot = np.load('/Users/coletamburri/Desktop/ccslot.npz')['ccslot']
+
+ccslot2 = np.load('/Users/coletamburri/Desktop/ccslot2.npz')['ccslot2']
 
 int_avg_all = []
 xmaxsallall = []
@@ -269,16 +273,30 @@ all_freq = []
 psds = []
 
 for i in range(len(intavginterps)):
-    chintensities = intavginterps[i]
+    chintensities2 = np.asarray(intavginterps[i])
+    energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
+    wind = np.hanning(n)
+    xw1 = energy_norm * wind
     # Compute the 1D FFT
-    fft_result = np.fft.fft(chintensities/np.max(chintensities))
+    fft_result1 = np.fft.fft(xw1)
     #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
     # Get the frequencies for the result
     freqs = np.fft.fftfreq(n,d=dx)
     
-    all_freq.append(freqs)
+    mask = freqs >= 0
     
-    psds.append((np.abs(fft_result)**2)/(1/dx)/n) #power spectral density (n is number of samples, dx is sampling frequency)
+    U = np.nanmean(wind**2)
+    all_freq.append(freqs[mask])
+    
+    psd1 = (np.abs(fft_result1)**2)/n
+    #psd2 = (np.abs(fft_result2)**2)/n2
+    psd1 = psd1[mask]
+    #psd2 = psd2[mask]
+    #
+    
+    psds.append(psd1)
+    #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
+    #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
     
 all_psdarr = np.array(psds)
 all_freqarr = np.array(all_freq)
@@ -313,16 +331,30 @@ all_freq2 = []
 psds2 = []
 
 for i in range(len(intavginterps2)):
-    chintensities = intavginterps2[i]
+    chintensities2 = np.asarray(intavginterps2[i])
+    energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
+    wind = np.hanning(n2)
+    xw1 = energy_norm * wind
     # Compute the 1D FFT
-    fft_result = np.fft.fft(chintensities/np.max(chintensities))
+    fft_result1 = np.fft.fft(xw1)
     #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
     # Get the frequencies for the result
-    freqs = np.fft.fftfreq(n2,d=dx)
+    freqs = np.fft.fftfreq(n2,d=dx2)
     
-    all_freq2.append(freqs)
+    mask = freqs >= 0
     
-    psds2.append((np.abs(fft_result)**2)/(1/dx2)/n2) #power spectral density (n is number of samples, dx is sampling frequency)
+    U = np.nanmean(wind**2)
+    all_freq2.append(freqs[mask])
+    
+    psd1 = (np.abs(fft_result1)**2)/n2
+    #psd2 = (np.abs(fft_result2)**2)/n2
+    psd1 = psd1[mask]
+    #psd2 = psd2[mask]
+    #
+    
+    psds2.append(psd1)
+    #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
+    #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
     
 all_psdarr2 = np.array(psds2)
 all_freqarr2 = np.array(all_freq2)
@@ -345,7 +377,7 @@ choicemap = 'coolwarm'
 fig,ax=plt.subplots(4,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
 ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps),cmap='afmhot');
 ax.flatten()[0].invert_yaxis();
-ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:n//2],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr[:,1:n//2],.1)),axis=1,sigma=1),axis=0,sigma=.8),cmap=choicemap,vmin=0.5,vmax=1)
+ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr[0,1:],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr[:,1:],.1)),axis=1,sigma=1),axis=0,sigma=.8),cmap=choicemap)#,vmin=0.3,vmax=.9)
 
 ax.flatten()[1].set_ylim([90,2000])
 ax.flatten()[1].set_yscale('log')
@@ -391,7 +423,7 @@ ax5.tick_params(axis='both', labelsize=8)
 
 ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2),cmap='afmhot');
 ax.flatten()[2].invert_yaxis();
-ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:n2//2],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:n2//2],.1)),axis=1,sigma=1),axis=0,sigma=.75),cmap=choicemap,vmin=0.5,vmax=1)
+ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:],.1)),axis=1,sigma=1),axis=0,sigma=.75),cmap=choicemap)#,vmin=0.3,vmax=.9)
 
 ax.flatten()[3].set_ylim([90,2000])
 ax.flatten()[3].set_yscale('log')

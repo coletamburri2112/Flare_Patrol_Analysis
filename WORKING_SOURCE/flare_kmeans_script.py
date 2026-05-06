@@ -43,7 +43,7 @@ nframes = 10
 
 if manyscan ==1:
     if line ==0:
-        filename = '/Volumes/ViSP_External/CaII_11Aug_2024_Cclass_newcalib.npz'
+        filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
     if line ==1:
         filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
     start=57
