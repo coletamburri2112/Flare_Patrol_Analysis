@@ -41,6 +41,7 @@ from scipy.interpolate import interp1d
 import matplotlib.pylab as pl 
 from datetime import datetime
 from astropy.convolution import convolve, Gaussian1DKernel
+from scipy.signal import savgol_filter
 
 
 # from sunpy.net import Fido, attrs as a
@@ -2701,7 +2702,50 @@ def prep_arms(base,folder_arm1,folder_arm2,file_arm1,file_arm2,startind=2548,\
     
     return xarr_arm1, yarr_arm1, xarr_arm2, yarr_arm2, dir_list_arm1, \
         dir_list_arm2
+
+def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, savgol_polyorder=2):
+    all_freq = []
+    psds = []
+    n = np.shape(intensityarr)[1]
+    dx=1
     
+    for i in range(np.shape(intensityarr)[0]):
+        
+        chintensities0 = np.asarray(intensityarr[i])
+
+        smooth = savgol_filter(chintensities0,savgol_window,savgol_polyorder)
+
+        chintensities=chintensities0-smooth
+
+        # detrend intensities
+        
+        if choice == 'variance':
+            selection = (chintensities - np.nanmean(chintensities))/np.nanstd(chintensities)
+        elif choice == 'nothing':
+            selection = chintensities
+        elif choice == 'L2':
+            selection = chintensities/np.linalg.norm(chintensities)
+        elif choice == 'max':
+            selection = chintensities/np.nanmax(chintensities)
+            
+        wind = np.hanning(n)
+        xw1 = selection*wind
+        fft_result1 = np.fft.fft(xw1)
+        freqs = np.fft.fftfreq(n,d=dx)
+        mask = freqs >= 0 
+        all_freq.append(freqs[mask])
+        
+        psd1 = (np.abs(fft_result1)**2)/n
+        psd1 = psd1[mask]
+        if normpsd == 1:
+            psd1 = psd1/np.sum(psd1)
+        psds.append(psd1)
+
+
+    all_psdarr = np.array(psds)
+    all_freqarr = np.array(all_freq)
+
+    return all_psdarr, all_freqarr
             
         
     

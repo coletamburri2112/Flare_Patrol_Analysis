@@ -269,37 +269,42 @@ n=len(newrange)
 dx = l / n      # Spatial sampling interval
 space_x = np.linspace(0, l, n, endpoint=False)
 
-all_freq = []
-psds = []
 
-for i in range(len(intavginterps)):
-    chintensities2 = np.asarray(intavginterps[i])
-    energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
-    wind = np.hanning(n)
-    xw1 = energy_norm * wind
-    # Compute the 1D FFT
-    fft_result1 = np.fft.fft(xw1)
-    #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
-    # Get the frequencies for the result
-    freqs = np.fft.fftfreq(n,d=dx)
+## OLD CODE FOR FFT
+
+
+# all_freq = []
+# psds = []
+# for i in range(len(intavginterps)):
+#     chintensities2 = np.asarray(intavginterps[i])
+#     energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
+#     wind = np.hanning(n)
+#     xw1 = energy_norm * wind
+#     # Compute the 1D FFT
+#     fft_result1 = np.fft.fft(xw1)
+#     #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
+#     # Get the frequencies for the result
+#     freqs = np.fft.fftfreq(n,d=dx)
     
-    mask = freqs >= 0
+#     mask = freqs >= 0
     
-    U = np.nanmean(wind**2)
-    all_freq.append(freqs[mask])
+#     U = np.nanmean(wind**2)
+#     all_freq.append(freqs[mask])
     
-    psd1 = (np.abs(fft_result1)**2)/n
-    #psd2 = (np.abs(fft_result2)**2)/n2
-    psd1 = psd1[mask]
-    #psd2 = psd2[mask]
-    #
+#     psd1 = (np.abs(fft_result1)**2)/n
+#     #psd2 = (np.abs(fft_result2)**2)/n2
+#     psd1 = psd1[mask]
+#     #psd2 = psd2[mask]
+#     #
     
-    psds.append(psd1)
-    #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
-    #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
+#     psds.append(psd1)
+#     #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
+#     #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
     
-all_psdarr = np.array(psds)
-all_freqarr = np.array(all_freq)
+# all_psdarr = np.array(psds)
+# all_freqarr = np.array(all_freq)
+
+all_psdarr, all_freqarr = DKISTanalysis.psd_func(intavginterps,choice='variance',normpsd=1)
 
 # again, for other half of ribbon
 pixdistanceinterps2 = []
@@ -327,37 +332,41 @@ n2=len(newrange2)
 dx2 = l2 / n2      # Spatial sampling interval
 space_x2 = np.linspace(0, l2, n2, endpoint=False)
 
-all_freq2 = []
-psds2 = []
 
-for i in range(len(intavginterps2)):
-    chintensities2 = np.asarray(intavginterps2[i])
-    energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
-    wind = np.hanning(n2)
-    xw1 = energy_norm * wind
-    # Compute the 1D FFT
-    fft_result1 = np.fft.fft(xw1)
-    #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
-    # Get the frequencies for the result
-    freqs = np.fft.fftfreq(n2,d=dx2)
+## OLD CODE FOR FFT
+
+# all_freq2 = []
+# psds2 = []
+# for i in range(len(intavginterps2)):
+#     chintensities2 = np.asarray(intavginterps2[i])
+#     energy_norm= (chintensities2-np.nanmean(chintensities2))/np.nanstd(chintensities2)
+#     wind = np.hanning(n2)
+#     xw1 = energy_norm * wind
+#     # Compute the 1D FFT
+#     fft_result1 = np.fft.fft(xw1)
+#     #fft_result = np.fft.fft(chintensities-np.nanmean(chintensities))
+#     # Get the frequencies for the result
+#     freqs = np.fft.fftfreq(n2,d=dx2)
     
-    mask = freqs >= 0
+#     mask = freqs >= 0
     
-    U = np.nanmean(wind**2)
-    all_freq2.append(freqs[mask])
+#     U = np.nanmean(wind**2)
+#     all_freq2.append(freqs[mask])
     
-    psd1 = (np.abs(fft_result1)**2)/n2
-    #psd2 = (np.abs(fft_result2)**2)/n2
-    psd1 = psd1[mask]
-    #psd2 = psd2[mask]
-    #
+#     psd1 = (np.abs(fft_result1)**2)/n2
+#     #psd2 = (np.abs(fft_result2)**2)/n2
+#     psd1 = psd1[mask]
+#     #psd2 = psd2[mask]
+#     #
     
-    psds2.append(psd1)
-    #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
-    #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
+#     psds2.append(psd1)
+#     #psds2.append(psd2) #power spectral density (n is number of samples, dx is sampling frequency)
+#     #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
     
-all_psdarr2 = np.array(psds2)
-all_freqarr2 = np.array(all_freq2)
+# all_psdarr2 = np.array(psds2)
+# all_freqarr2 = np.array(all_freq2)
+
+all_psdarr2, all_freqarr2 = DKISTanalysis.psd_func(intavginterps2,choice='variance',normpsd=1)
 
 
 
