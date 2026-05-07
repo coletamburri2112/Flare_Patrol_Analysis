@@ -292,6 +292,7 @@ for i in range(len(intavginterps)):
     #psds2.append((np.abs(fft_result)**2)/(n2)) #power spectral density (n is number of samples, dx is sampling frequency)
     
 all_psdarr = np.array(psds)
+all_freqarr = np.array(all_freq)
 
 
 
