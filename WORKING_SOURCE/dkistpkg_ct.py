@@ -2703,10 +2703,11 @@ def prep_arms(base,folder_arm1,folder_arm2,file_arm1,file_arm2,startind=2548,\
     return xarr_arm1, yarr_arm1, xarr_arm2, yarr_arm2, dir_list_arm1, \
         dir_list_arm2
 
-def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, savgol_polyorder=2):
+def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, savgol_polyorder=2,pad=50):
     all_freq = []
     psds = []
     n = np.shape(intensityarr)[1]
+    n+=2*pad
     dx=1
     
     for i in range(np.shape(intensityarr)[0]):
@@ -2715,8 +2716,9 @@ def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, sav
 
         smooth = savgol_filter(chintensities0,savgol_window,savgol_polyorder)
 
-        chintensities=chintensities0-smooth
+        chintensities1=chintensities0-smooth
 
+        chintensities = np.pad(chintensities1, (pad, pad), mode='constant')
         # detrend intensities
         
         if choice == 'variance':
@@ -2732,10 +2734,13 @@ def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, sav
         xw1 = selection*wind
         fft_result1 = np.fft.fft(xw1)
         freqs = np.fft.fftfreq(n,d=dx)
+        freqresult = np.arange(len(chintensities) // 2 , dtype=float) / (n - 0)
+        freqresult[0] = freqresult[1]/2
         mask = freqs >= 0 
         all_freq.append(freqs[mask])
-        
-        psd1 = (np.abs(fft_result1)**2)/n
+        #psd1 = (np.abs(fft_result1)**2)/n # my og norm
+        const = 2.67038 / (1/len(chintensities)) # from ryan norm
+        psd1 = 2*(np.abs(fft_result1)**2) * const # from ryan norm
         psd1 = psd1[mask]
         if normpsd == 1:
             psd1 = psd1/np.sum(psd1)
@@ -2745,7 +2750,7 @@ def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, sav
     all_psdarr = np.array(psds)
     all_freqarr = np.array(all_freq)
 
-    return all_psdarr, all_freqarr
+    return all_psdarr, all_freqarr,freqresult
             
         
     
