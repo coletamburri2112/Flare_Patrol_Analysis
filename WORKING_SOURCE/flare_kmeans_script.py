@@ -11,6 +11,8 @@ import numpy as np
 import dkistpkg_ct as DKISTanalysis
 import matplotlib
 import matplotlib.pyplot as plt
+import sklearn as sl
+from matplotlib.collections import LineCollection
 
 import pandas as pd
 
@@ -18,6 +20,7 @@ import pandas as pd
 from nltk.cluster import KMeansClusterer
 import nltk
 
+clusterer = 'scikit'
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
 line = 1#  0 for caii/hepsilon, 1 for hbeta
@@ -43,7 +46,7 @@ nframes = 10
 
 if manyscan ==1:
     if line ==0:
-        filename = '/Volumes/ViSP_External/CaII_11Aug_2024_Cclass_newcalib.npz'
+        filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
     if line ==1:
         filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
     start=57
@@ -71,7 +74,7 @@ caII_high = 690
 hepsilon_low = 685
 hepsilon_high = 810
 
-dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords_newcalib.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 xarr_caII = dkist_coords['xarr_caII']
@@ -84,16 +87,16 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=5 # was 7 before
+        cutoff0=3 # was 7 before
 if line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
-        cutoff0=2.5 
+        cutoff0=1.5 
 #cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
 #cutoff0=2.6 # for hepsilon
 
 if line == 1:
-    n_clusters0 = 35 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+    n_clusters0 = 20 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 if line == 0:
     n_clusters0 = 35
 
@@ -180,9 +183,67 @@ def kmeans_nltk(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
     
     return frame_line, mask, km, normprofiles_line, clusters, x_mask, y_mask
 
-frame_line, mask0, km0, normprofiles_line, groups0, x_mask0, y_mask0 = \
-    kmeans_nltk(start,0,nsteps,startspace,
-                endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,cutoff0,normflag=1)
+def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
+                normalize,num_clusters,cutoff,line_low=linelow,
+                line_high=linehigh,metric='euclidean',normflag=0):
+
+    frame_line = obs_avg
+    cut = cutoff*np.nanmedian(frame_line)
+    masklim = cut
+
+    mask = np.copy(frame_line)
+    mask[mask < masklim] = 0
+    mask[mask > masklim] = 1
+
+    maskinds = np.where(mask > .5)
+    x_mask = maskinds[0]
+    y_mask = maskinds[1]
+
+    line_profiles = []
+    
+    for i in range(len(x_mask)):
+        line_profiles.append(flarearr[x_mask[i],line_low:line_high,y_mask[i]])
+        
+    normprofiles_line = []
+
+    if normflag == 1:
+        for i in range(len(x_mask)):
+            line_norm = normalize(line_profiles[i])
+        
+            normprofiles_line.append(line_norm)
+    
+        arr_normprofs = np.asarray(normprofiles_line)
+        
+        km = sl.cluster.KMeans(n_clusters=num_clusters,n_init='auto').fit(normprofiles_line)
+        
+        labels=km.labels_
+        cc = km.cluster_centers_
+        
+    elif normflag == 0:
+        for i in range(len(x_mask)):
+            line_norm = line_profiles[i]
+        
+            normprofiles_line.append(line_norm)
+    
+        arr_normprofs = np.asarray(normprofiles_line)
+        
+        km = sl.cluster.KMeans(n_clusters=num_clusters,n_init='auto').fit(normprofiles_line)
+        
+        labels = km.labels_
+        cc = km.cluster_centers_
+    
+    
+    return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask
+
+if clusterer == 'nltk':
+    frame_line, mask0, km0, normprofiles_line, groups0, x_mask0, y_mask0 = \
+        kmeans_nltk(start,0,nsteps,startspace,
+                    endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,cutoff0,normflag=1)
+    
+elif clusterer == 'scikit':
+    frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0 = \
+        kmeans_scikit(start,0,nsteps,startspace,
+                    endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,cutoff0,normflag=1)
     
 arr_normprofs0 = normprofiles_line
 colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
@@ -252,23 +313,43 @@ def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=5
     return ratio
 
 dists=[]
-for i in range(len(km0.means())):
-    dists.append(find_30p_height(km0.means()[i],find_nearest))
 
-relint=[]
-for i in range(len(km0.means())):
-    relint.append(find_relint(km0.means()[i],find_nearest))
+if clusterer == 'nltk':
+    for i in range(len(km0.means())):
+        dists.append(find_30p_height(km0.means()[i],find_nearest))
     
-wm=[]
-for i in range(len(km0.means())):
-    wm.append(find_weightmean(km0.means()[i],find_nearest))
+    relint=[]
+    for i in range(len(km0.means())):
+        relint.append(find_relint(km0.means()[i],find_nearest))
+        
+    wm=[]
+    for i in range(len(km0.means())):
+        wm.append(find_weightmean(km0.means()[i],find_nearest))
+        
+    bc_int=[]
+    for i in range(len(km0.means())):
+        bc_int.append(blue_to_core(km0.means()[i]))
     
-bc_int=[]
-for i in range(len(km0.means())):
-    bc_int.append(blue_to_core(km0.means()[i]))
-
-inds = np.arange(len(km0.means()))
-
+    inds = np.arange(len(km0.means()))
+    
+if clusterer == 'scikit':
+    for i in range(len(cc)):
+        dists.append(find_30p_height(cc[i],find_nearest))
+    
+    relint=[]
+    for i in range(len(cc)):
+        relint.append(find_relint(cc[i],find_nearest))
+        
+    wm=[]
+    for i in range(len(cc)):
+        wm.append(find_weightmean(cc[i],find_nearest))
+        
+    if line == 1:
+        bc_int=[]
+        for i in range(len(cc)):
+            bc_int.append(blue_to_core(cc[i]))
+    
+    inds = np.arange(len(cc))
 #df = pd.DataFrame({'x':inds,'y':dists}) # by distance
 #df = pd.DataFrame({'x':inds,'y':relint}) # by relint
 
@@ -286,9 +367,14 @@ sortedwls = np.asarray(sortedwls)
 
 distlocs = []
 
-for i in range(len(groups0)):
-    distlocs.append(np.where(sortedinds==groups0[i])[0][0])
-    
+if clusterer == 'nltk':
+    for i in range(len(groups0)):
+        distlocs.append(np.where(sortedinds==groups0[i])[0][0])
+
+if clusterer == 'scikit':
+    for i in range(len(labels0)):
+        distlocs.append(np.where(sortedinds==labels0[i])[0][0])        
+        
 colors = plt.cm.turbo(np.linspace(0,1,n_clusters0))
 
 
@@ -301,16 +387,29 @@ if line==0:
     
 
 
-groupsarr = np.asarray(groups0)
+if clusterer == 'nltk':
+    groupsarr = np.asarray(groups0)
+if clusterer == 'scikit':
+    groupsarr = np.asarray(labels0)
+
 
 #working here on removing the H-beta profiles that are clearly not flare-time
 # started 17 MARCH 2026
-if line==1:
-    for i in range(len(km0.means())):
-        if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
-            print(i)
-            x_mask0[groupsarr==i]=0
-            y_mask0[groupsarr==i]=0
+# if line==1:
+    
+#     if clusterer == 'nltk':
+#         for i in range(len(km0.means())):
+#             if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
+#                 print(i)
+#                 x_mask0[groupsarr==i]=0
+#                 y_mask0[groupsarr==i]=0
+
+#     elif clusterer == 'scikit':
+#         for i in range(len(cc)):
+#             if cc[i][0] > cc[i][int(len(cc[i])/2)]:
+#                 print(i)
+#                 x_mask0[groupsarr==i]=0
+#                 y_mask0[groupsarr==i]=0
             
 maskind = {'x': x_mask0, 'y': y_mask0,'dist':distlocs}
 df_mask = pd.DataFrame(maskind)
@@ -377,26 +476,82 @@ fig.show()
 
 #fig,ax=plt.subplots(3,4,figsize=(5,4),dpi=200)
 #fig,ax=plt.subplots(2,3,figsize=(5,4),dpi=200) #if hep
-fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
-arr_normprofs0 = normprofiles_line
 
+rempix = 0
+
+if line == 0:
+    fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
+if line == 1:
+    fig,ax=plt.subplots(int(n_clusters0/5),5,figsize=(10,6),dpi=200) #if hep and caii
+
+if clusterer == 'nltk':
+    arr_normprofs0 = normprofiles_line
     
-for i in range(len(arr_normprofs0)):
-    curve = arr_normprofs0[i]
-    group = groups0[i]
-    ind = np.where(sortedinds==group)[0][0]
-    if km0.means()[group][0] < km0.means()[group][int(len(km0.means()[group])/2)]:
-        ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
-        ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
-    else:
-        ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.005,color='black')
-        ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')   
-
+        
+    for i in range(len(arr_normprofs0)):
+        curve = arr_normprofs0[i]
+        group = groups0[i]
+        ind = np.where(sortedinds==group)[0][0]
+        
+        if rempix == 1:
+            if km0.means()[group][0] < km0.means()[group][int(len(km0.means()[group])/2)]:
+                ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
+                ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
+            else:
+                ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.005,color='black')
+                ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')   
+        else:
+            ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
+            ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
     
-
-for i in range(n_clusters0):
-    if line == 1:
-        if km0.means()[sortedinds[i]][0] < km0.means()[sortedinds[i]][int(len(km0.means()[sortedinds[i]])/2)]:
+        
+    
+    for i in range(n_clusters0):
+        if line == 1:
+            if km0.means()[sortedinds[i]][0] < km0.means()[sortedinds[i]][int(len(km0.means()[sortedinds[i]])/2)]:
+                ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+                ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
+                ax.flatten()[i].tick_params(
+                axis='x',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                bottom=False,      # ticks along the bottom edge are off
+                top=False,         # ticks along the top edge are off
+                labelbottom=False)
+                ax.flatten()[i].tick_params(
+                axis='y',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                left=False,      # ticks along the bottom edge are off
+                right=False,         # ticks along the top edge are off
+                labelleft=False)# labels along the bottom edge are off
+                ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
+                     ha='right', va='top', fontsize=6, fontstyle='italic')
+                ax.flatten()[i].set_ylim([-0.2,1.2])
+                ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+                
+                obs_wl = selwls[int(sortedwls[i])]
+                
+                velocity = find_velocity(cent,obs_wl)
+                ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+            else:
+                ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color='grey',markersize=.1,alpha=0.5)
+                ax.flatten()[group].axvline(cent,linewidth=0.6,c='black',alpha=0.2)
+                ax.flatten()[i].tick_params(
+                axis='x',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                bottom=False,      # ticks along the bottom edge are off
+                top=False,         # ticks along the top edge are off
+                labelbottom=False)
+                ax.flatten()[i].tick_params(
+                axis='y',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                left=False,      # ticks along the bottom edge are off
+                right=False,         # ticks along the top edge are off
+                labelleft=False)# labels along the bottom edge are off
+                ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
+                     ha='right', va='top', fontsize=6, fontstyle='italic',alpha=0.5)
+                ax.flatten()[i].set_ylim([-0.2,1.2])
+                ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
+        else:
             ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
             ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
             ax.flatten()[i].tick_params(
@@ -420,52 +575,172 @@ for i in range(n_clusters0):
             
             velocity = find_velocity(cent,obs_wl)
             ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+            
+    
+    fig.subplots_adjust(hspace=0.25,wspace=0.05)
+    
+    fig.show()
+
+elif clusterer == 'scikit':
+    arr_normprofs0 = normprofiles_line
+    axes = ax.ravel()
+    group_to_ind = {g: i for i, g in enumerate(sortedinds)}
+    x = wave[linelow:linehigh]
+
+    lines_per_ax = [[] for _ in axes]
+    
+    for curve, group in zip(normprofiles_line, labels0):
+        ind = group_to_ind[group]
+        
+        pts = np.column_stack([x,curve])
+        
+        lines_per_ax[ind].append(pts)
+        
+    for a, lines in zip(axes, lines_per_ax):
+        
+        lc = LineCollection(
+            lines,
+            colors='black',
+            linewidths = 0.5,
+            alpha=0.01)
+        
+        a.add_collection(lc)
+        
+        a.axvline(cent, linewidth=0.5, c='black')
+        a.autoscale
+        
+    # for curve, group in zip(arr_normprofs0, labels0):
+    #     ind = group_to_ind[group]
+
+    #     if cc[group][0] < cc[group][int(len(cc[group])/2)]:
+    #         axes[ind].plot(x,curve,alpha=0.01,color='black')
+    #         axes[ind].axvline(cent,linewidth=0.6,c='black')
+    #     else:
+    #         axes[ind].plot(x,curve,alpha=0.005,color='black')
+    #         axes[ind].axvline(cent,linewidth=0.6,c='black')   
+    
+        
+    for i in range(n_clusters0):
+        if line == 1:
+            
+            if rempix == 1:
+                if cc[sortedinds[i]][0] < cc[sortedinds[i]][int(len(cc[sortedinds[i]])/2)]:
+                    axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+                    axes[group].axvline(cent,linewidth=0.6,c='black')
+                    axes[i].tick_params(
+                    axis='x',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    bottom=False,      # ticks along the bottom edge are off
+                    top=False,         # ticks along the top edge are off
+                    labelbottom=False)
+                    axes[i].tick_params(
+                    axis='y',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    left=False,      # ticks along the bottom edge are off
+                    right=False,         # ticks along the top edge are off
+                    labelleft=False)# labels along the bottom edge are off
+                    axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
+                         ha='right', va='top', fontsize=6, fontstyle='italic')
+                    axes[i].set_ylim([-0.2,1.2])
+
+                    axes[i].set_xlim([wave[linelow],wave[linehigh]])
+                    
+                    obs_wl = selwls[int(sortedwls[i])]
+                    
+                    velocity = find_velocity(cent,obs_wl)
+                    #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+                else:
+                    axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color='grey',markersize=.1,alpha=0.5)
+                    axes[group].axvline(cent,linewidth=0.6,c='black',alpha=0.2)
+                    axes[i].tick_params(
+                    axis='x',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    bottom=False,      # ticks along the bottom edge are off
+                    top=False,         # ticks along the top edge are off
+                    labelbottom=False)
+                    axes[i].tick_params(
+                    axis='y',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    left=False,      # ticks along the bottom edge are off
+                    right=False,         # ticks along the top edge are off
+                    labelleft=False)# labels along the bottom edge are off
+                    axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
+                         ha='right', va='top', fontsize=6, fontstyle='italic',alpha=0.5)
+                    axes[i].set_ylim([-0.2,1.2])
+                    axes[i].set_xlim([wave[linelow],wave[linehigh]])
+            else:
+                axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+                axes[group].axvline(cent,linewidth=0.6,c='black')
+                
+                if i > 14:
+                    axes[i].tick_params(
+                    axis='x',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    bottom=True,      # ticks along the bottom edge are off
+                    top=False,         # ticks along the top edge are off
+                    labelbottom=True,
+                    labelsize=8)
+                else:
+                    axes[i].tick_params(
+                    axis='x',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    bottom=False,      # ticks along the bottom edge are off
+                    top=False,         # ticks along the top edge are off
+                    labelbottom=False,
+                    labelsize=8)
+                axes[i].tick_params(
+                axis='y',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                left=False,      # ticks along the bottom edge are off
+                right=False,         # ticks along the top edge are off
+                labelleft=False)# labels along the bottom edge are off
+                axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
+                     ha='right', va='top', fontsize=6, fontstyle='italic')
+                axes[i].set_ylim([-0.2,1.2])
+                axes[i].set_xlim([wave[linelow],wave[linehigh]])
+                obs_wl = selwls[int(sortedwls[i])]
+                
+                velocity = find_velocity(cent,obs_wl)
+                
+                #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+            axes[i].set_xticks([486.1,486.3])
+
         else:
-            ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color='grey',markersize=.1,alpha=0.5)
-            ax.flatten()[group].axvline(cent,linewidth=0.6,c='black',alpha=0.2)
-            ax.flatten()[i].tick_params(
-            axis='x',          # changes apply to the x-axis
-            which='both',      # both major and minor ticks are affected
-            bottom=False,      # ticks along the bottom edge are off
-            top=False,         # ticks along the top edge are off
-            labelbottom=False)
-            ax.flatten()[i].tick_params(
+            axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+            axes[group].axvline(cent,linewidth=0.6,c='black')
+            if i > 27:
+                axes[i].tick_params(
+                axis='x',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                bottom=True,      # ticks along the bottom edge are off
+                top=False,         # ticks along the top edge are off
+                labelbottom=True,
+                labelsize=8)
+            else: 
+                axes[i].tick_params(
+                axis='x',          # changes apply to the x-axis
+                which='both',      # both major and minor ticks are affected
+                bottom=False,      # ticks along the bottom edge are off
+                top=False,         # ticks along the top edge are off
+                labelbottom=False)                
+            axes[i].tick_params(
             axis='y',          # changes apply to the x-axis
             which='both',      # both major and minor ticks are affected
             left=False,      # ticks along the bottom edge are off
             right=False,         # ticks along the top edge are off
             labelleft=False)# labels along the bottom edge are off
-            ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
-                 ha='right', va='top', fontsize=6, fontstyle='italic',alpha=0.5)
-            ax.flatten()[i].set_ylim([-0.2,1.2])
-            ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
-    else:
-        ax.flatten()[i].plot(wave[linelow:linehigh],km0.means()[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
-        ax.flatten()[group].axvline(cent,linewidth=0.6,c='black')
-        ax.flatten()[i].tick_params(
-        axis='x',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        bottom=False,      # ticks along the bottom edge are off
-        top=False,         # ticks along the top edge are off
-        labelbottom=False)
-        ax.flatten()[i].tick_params(
-        axis='y',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        left=False,      # ticks along the bottom edge are off
-        right=False,         # ticks along the top edge are off
-        labelleft=False)# labels along the bottom edge are off
-        ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
-             ha='right', va='top', fontsize=6, fontstyle='italic')
-        ax.flatten()[i].set_ylim([-0.2,1.2])
-        ax.flatten()[i].set_xlim([wave[linelow],wave[linehigh]])
-        
-        obs_wl = selwls[int(sortedwls[i])]
-        
-        velocity = find_velocity(cent,obs_wl)
-        ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
-        
-
-fig.subplots_adjust(hspace=0.25,wspace=0.05)
-
-fig.show()
+            axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
+                 ha='right', va='top', fontsize=6, fontstyle='italic')
+            axes[i].set_ylim([-0.2,1.2])
+            axes[i].set_xlim([wave[linelow],wave[linehigh]])
+            
+            obs_wl = selwls[int(sortedwls[i])]
+            
+            velocity = find_velocity(cent,obs_wl)
+            #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
+            
+    
+    fig.subplots_adjust(hspace=0,wspace=0)
+    
+    fig.show()
 
