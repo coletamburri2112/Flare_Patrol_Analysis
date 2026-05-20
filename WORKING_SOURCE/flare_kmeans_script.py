@@ -87,7 +87,7 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=3 # was 7 before
+        cutoff0=4.5 # was 7 before
 if line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
@@ -96,7 +96,7 @@ if line == 0: # for ca II
 #cutoff0=2.6 # for hepsilon
 
 if line == 1:
-    n_clusters0 = 20 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+    n_clusters0 = 25 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 if line == 0:
     n_clusters0 = 35
 
@@ -482,7 +482,7 @@ rempix = 0
 if line == 0:
     fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
 if line == 1:
-    fig,ax=plt.subplots(int(n_clusters0/5),5,figsize=(10,6),dpi=200) #if hep and caii
+    fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
 
 if clusterer == 'nltk':
     arr_normprofs0 = normprofiles_line
@@ -672,7 +672,7 @@ elif clusterer == 'scikit':
                 axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
                 axes[group].axvline(cent,linewidth=0.6,c='black')
                 
-                if i > 14:
+                if i > 23:
                     axes[i].tick_params(
                     axis='x',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
