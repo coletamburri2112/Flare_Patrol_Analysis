@@ -20,14 +20,16 @@ import pandas as pd
 from nltk.cluster import KMeansClusterer
 import nltk
 
+adjust='no'
+
 clusterer = 'scikit'
 # loads file containing times and 3D spectra (time, dispersion, spatial)
 nsteps = 91
-line = 1#  0 for caii/hepsilon, 1 for hbeta
+line = 0#  0 for caii/hepsilon, 1 for hbeta
 
 manyscan = 1
 
-
+c= 299792458 # m/s
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
 #filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_caII_hep.npz'
 #filename = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
@@ -87,7 +89,7 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=4.5 # was 7 before
+        cutoff0=3 # was 7 before
 if line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
@@ -96,7 +98,7 @@ if line == 0: # for ca II
 #cutoff0=2.6 # for hepsilon
 
 if line == 1:
-    n_clusters0 = 25 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+    n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 if line == 0:
     n_clusters0 = 35
 
@@ -301,6 +303,16 @@ def find_velocity(rest_wl,obs_wl):
     
     return c*(obs_wl-rest_wl)/(obs_wl)
 
+def veltrans(x,mu=1):
+    return ((((x)/cent)-1)*c/1000)/mu
+
+def veltrans2(x,mu2=1):
+    return ((((x)/cent)-1)*c/1000)/mu2
+
+def wltrans(x):
+    return ((((x/(c/1000))+1)*cent)-cent)
+
+
 def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=566,red=580):
     values = np.linspace(0,len(curve),len(curve))
     
@@ -360,9 +372,23 @@ if line == 1:
 
 df.sort_values(by=['y'])
 
-sortedinds = df.sort_values(['y'])['x']
+sortedinds0 = df.sort_values(['y'])['x']
+
 sortedwls = df.sort_values(['y'])['y']
-sortedinds=np.asarray(sortedinds)
+sortedinds=np.asarray(sortedinds0).copy()
+
+if line == 1:
+    if adjust == 'byhand':
+        #first = sortedinds[0]
+        last = sortedinds[-1]
+        #bluest = sortedinds[2]
+        redest = sortedinds[-2]
+        
+        #sortedinds[0]=bluest
+        #sortedinds[2]=first
+        sortedinds[-2]=last
+        sortedinds[-1]=redest
+
 sortedwls = np.asarray(sortedwls)
 
 distlocs = []
@@ -482,7 +508,7 @@ rempix = 0
 if line == 0:
     fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
 if line == 1:
-    fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
+    fig,ax=plt.subplots(int(n_clusters0/4),4,figsize=(10,6),dpi=200) #if hep and caii
 
 if clusterer == 'nltk':
     arr_normprofs0 = normprofiles_line
@@ -598,12 +624,18 @@ elif clusterer == 'scikit':
         
     for a, lines in zip(axes, lines_per_ax):
         
-        lc = LineCollection(
-            lines,
-            colors='black',
-            linewidths = 0.5,
-            alpha=0.01)
-        
+        if line ==0:
+            lc = LineCollection(
+                lines,
+                colors='black',
+                linewidths = 0.5,
+                alpha=0.01)
+        elif line==1:
+            lc = LineCollection(
+                lines,
+                colors='black',
+                linewidths = 0.5,
+                alpha=0.003)        
         a.add_collection(lc)
         
         a.axvline(cent, linewidth=0.5, c='black')
@@ -627,12 +659,16 @@ elif clusterer == 'scikit':
                 if cc[sortedinds[i]][0] < cc[sortedinds[i]][int(len(cc[sortedinds[i]])/2)]:
                     axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
                     axes[group].axvline(cent,linewidth=0.6,c='black')
+                    
+ 
                     axes[i].tick_params(
                     axis='x',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
                     bottom=False,      # ticks along the bottom edge are off
                     top=False,         # ticks along the top edge are off
                     labelbottom=False)
+                        
+
                     axes[i].tick_params(
                     axis='y',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
@@ -672,15 +708,7 @@ elif clusterer == 'scikit':
                 axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
                 axes[group].axvline(cent,linewidth=0.6,c='black')
                 
-                if i > 23:
-                    axes[i].tick_params(
-                    axis='x',          # changes apply to the x-axis
-                    which='both',      # both major and minor ticks are affected
-                    bottom=True,      # ticks along the bottom edge are off
-                    top=False,         # ticks along the top edge are off
-                    labelbottom=True,
-                    labelsize=8)
-                else:
+                if i < 8:
                     axes[i].tick_params(
                     axis='x',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
@@ -688,6 +716,16 @@ elif clusterer == 'scikit':
                     top=False,         # ticks along the top edge are off
                     labelbottom=False,
                     labelsize=8)
+                else:
+                    axes[i].tick_params(
+                    axis='x',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    bottom=True,      # ticks along the bottom edge are off
+                    top=False,         # ticks along the top edge are off
+                    labelbottom=True,
+                    labelsize=8)
+                    axes[i].set_xticks([486.1,486.3])
+                    axes[i].set_xlabel('Wavelength [nm]',fontsize=8)
                 axes[i].tick_params(
                 axis='y',          # changes apply to the x-axis
                 which='both',      # both major and minor ticks are affected
@@ -703,7 +741,6 @@ elif clusterer == 'scikit':
                 velocity = find_velocity(cent,obs_wl)
                 
                 #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
-            axes[i].set_xticks([486.1,486.3])
 
         else:
             axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
@@ -715,7 +752,9 @@ elif clusterer == 'scikit':
                 bottom=True,      # ticks along the bottom edge are off
                 top=False,         # ticks along the top edge are off
                 labelbottom=True,
-                labelsize=8)
+                labelsize=6)
+                axes[i].set_xlabel('Wavelength [nm]',fontsize=6)
+
             else: 
                 axes[i].tick_params(
                 axis='x',          # changes apply to the x-axis
@@ -739,7 +778,17 @@ elif clusterer == 'scikit':
             velocity = find_velocity(cent,obs_wl)
             #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
             
-    
+        if line == 1:
+            if i <4:
+                secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
+                secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=8)
+                secaxx.tick_params(axis='both', which='major', labelsize=8)
+        else:
+            if i <7:
+                secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
+                secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
+                secaxx.tick_params(axis='both', which='major', labelsize=6)
+
     fig.subplots_adjust(hspace=0,wspace=0)
     
     fig.show()
