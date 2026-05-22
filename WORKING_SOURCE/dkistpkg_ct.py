@@ -2715,11 +2715,12 @@ def bisect_30(rep_profile,wl,cent,percentage=.3):
     redhalf = choice[index_of_max:]
 
     idx = np.abs(bluehalf - (percentage*rangeval)+minval).argmin()
-    idxhigh = index_of_max + np.abs(redhalf - (percentage*rangeval)+index_of_max).argmin()
+    idxhigh = index_of_max + np.abs(redhalf - (percentage*rangeval)+minval).argmin()
 
-    bisect_vel=2.99e5*(wl[int((idxhigh+idx)/2)]-cent)/cent
+    bisect_wl = wl[int((idxhigh+idx)/2)]
+    bisect_vel=2.99e5*(bisect_wl-cent)/cent
 
-    return bisect_vel
+    return bisect_vel, bisect_wl
 
 
     
