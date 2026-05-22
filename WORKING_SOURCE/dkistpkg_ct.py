@@ -2703,6 +2703,23 @@ def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, sav
 
     return all_psdarr, all_freqarr,freqresult
 
+def bisect_30(rep_profile,wl,cent,percentage=.3):
+    choice = rep_profile
+    maxval = np.nanmax(choice)
+    minval = np.nanmin(choice)
+
+    index_of_max = np.abs(choice - np.nanmax(choice)).argmin()
+
+    rangeval = maxval-minval
+    bluehalf = choice[0:index_of_max]
+    redhalf = choice[index_of_max:]
+
+    idx = np.abs(bluehalf - (percentage*rangeval)+minval).argmin()
+    idxhigh = index_of_max + np.abs(redhalf - (percentage*rangeval)+index_of_max).argmin()
+
+    bisect_vel=2.99e5*(wl[int((idxhigh+idx)/2)]-cent)/cent
+
+    return bisect_vel
 
 
     

@@ -71,7 +71,8 @@ elif manyscan == 0:
         filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH_singlescan.npz'
     elif line == 1:
         filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta_singlescan.npz'
-        
+
+
 def normalize(data):
     normarr=(data-np.nanmin(data))/(np.nanmax(data)-np.nanmin(data)) 
     return normarr

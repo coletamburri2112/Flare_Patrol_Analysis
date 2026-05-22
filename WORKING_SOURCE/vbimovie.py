@@ -173,12 +173,6 @@ outfolder = '/Users/coletamburri/Desktop/r2/'
 os.mkdir(outfolder)
 storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow5,highx=xhigh5,lowy=ylow5,highy=yhigh5)
 
-
-
-
-
-                  
-
 def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
     fig =plt.figure(dpi=300)
     max1=np.max(data[0])
