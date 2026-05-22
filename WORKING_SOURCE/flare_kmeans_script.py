@@ -8,65 +8,26 @@ Created on Fri Oct  4 06:18:46 2024
 
 
 import numpy as np
-import dkistpkg_ct as DKISTanalysis
-import matplotlib
 import matplotlib.pyplot as plt
 import sklearn as sl
 from matplotlib.collections import LineCollection
-
 import pandas as pd
-
-
 from nltk.cluster import KMeansClusterer
 import nltk
 
-adjust='no'
+## KEYWORDS FOR RUN
+read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
+            # 'byhand' means that some cluster order is switched for clarity
+clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or 'nltk'
+nsteps = 91 # number of slit steps per ViSP scan
+start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
+nframes = 10 # number of scans (if manyscan)
+c = 299792458 # speed of light in m/s
 
-clusterer = 'scikit'
-# loads file containing times and 3D spectra (time, dispersion, spatial)
-nsteps = 91
-line = 0#  0 for caii/hepsilon, 1 for hbeta
-
-manyscan = 1
-
-c= 299792458 # m/s
-#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
-#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_caII_hep.npz'
-#filename = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
-#filename = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
-#filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
-#coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
-if line ==1:
-    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta_singlescan.npz'
-if line ==0:
-    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH_singlescan.npz'
-    
-nsteps = 91
-start = 0 #143 for saved Hbeta spectra
-
-nframes = 10
-
-if manyscan ==1:
-    if line ==0:
-        filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
-    if line ==1:
-        filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
-    start=57
-res = np.load(filename)
-
-# coordres = np.load(coord_filename)
-
-# #only for ca II 
-# vispx = coordres['arr_0']
-# vispy = coordres['arr_1']
-
-flare_arr = res['flare']
-wave = res['wl']
-times=res['time']
-#times = res['arr_1']
-
-
-
+## SPECTRAL AXIS PIXELS FOR EACH LINE
 hbeta_low =353
 hbeta_high = 640
 
@@ -76,53 +37,78 @@ caII_high = 690
 hepsilon_low = 685
 hepsilon_high = 810
 
+## NOW WHICH LINE DO WE WANT?
+if line == 0:
+    linelow = caII_low
+    linehigh = caII_high
+elif line == 1:
+    linelow = hbeta_low
+    linehigh = hbeta_high
+
+
+## LINE CENTER IN NANOMETERS
+if line == 0:
+    cent = 396.85
+elif line == 1:
+    cent = 486.1375
+
+## DEFINE SAVED FILE
+if manyscan == 1:
+    if line == 0:
+        filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
+    if line == 1:
+        filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
+    start=57
+elif manyscan == 0:
+    if line == 0:
+        filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH_singlescan.npz'
+    elif line == 1:
+        filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta_singlescan.npz'
+        
+## LOAD FILE
+res = np.load(filename)
+
+## READ VARIABLES FROM SAVED FILE
+flare_arr = res['flare']
+wave = res['wl']
+times=res['time']
+
+## READ-IN SAVED CO-ALIGNED DKIST COORDINATION
 dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
+## STORE SPATIAL COORDINATES
 xarr_caII = dkist_coords['xarr_caII']
 yarr_caII = dkist_coords['yarr_caII']
 
 xarr_hbeta = dkist_coords['xarr_hbeta']
 yarr_hbeta = dkist_coords['yarr_hbeta']
 
-#cutoff0 = 1.5 # for more than one frame
+## DEFINE LIMITS OF MASKING; MULTIPLE OF MEDIAN TO BE INCLUDED IN MASK
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
         cutoff0=3 # was 7 before
-if line == 0: # for ca II
+elif line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
         cutoff0=1.5 
-#cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
-#cutoff0=2.6 # for hepsilon
 
-if line == 1:
-    n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+## DEFINE NUMBER OF CLUSTERS; EMPIRICALLY DETERMINED
 if line == 0:
     n_clusters0 = 35
+elif line == 1:
+    n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 
-
-if line == 1:
-    startspace = 300 # 500 for ca ii
-    endspace = 1800 # 1500 for ca ii
+## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING; EMPIRICALLY DETERMINED
 if line == 0:
-    startspace = 300 # 500 for ca ii
-    endspace = 1700 # 1500 for ca ii
-
+    startspace = 300
+    endspace = 1700
 if line == 1:
-    cent=486.1375
-if line == 0:
-    cent = 396.85
+    startspace = 300 
+    endspace = 1800
 
-# change based on line
 
-if line == 1:
-    linelow = hbeta_low
-    linehigh = hbeta_high
-if line == 0:
-    linelow = caII_low
-    linehigh = caII_high
     
 selwls = wave[linelow:linehigh]
 
