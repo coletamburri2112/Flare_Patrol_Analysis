@@ -15,26 +15,25 @@ from nltk.cluster import KMeansClusterer
 import nltk
 
 ## KEYWORDS FOR RUN
-read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
             # 'byhand' means that some cluster order is switched for clarity
 clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or 'nltk'
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
-
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
 
 if read_in == 1:
-    if line == 1:
+    if line == 0:
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
-        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.npz'
+        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
     elif line == 1:
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
-        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_df.npz'
+        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_df.csv'
 
 ## SPECTRAL AXIS PIXELS FOR EACH LINE
 hbeta_low =353
@@ -391,6 +390,26 @@ if read_in == 0:
         groupsarr = np.asarray(groups0)
     elif clusterer == 'scikit':
         groupsarr = np.asarray(labels0)
+        
+    # remove pixels from kmeans? There should be logic here in the read_in case too...
+    if rempix == 1:
+        if line==1:
+            if clusterer == 'nltk':
+                for i in range(len(km0.means())):
+                    if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
+                        print(i)
+                        x_mask0[groupsarr==i]=0
+                        y_mask0[groupsarr==i]=0
+        
+            elif clusterer == 'scikit':
+                for i in range(len(cc)):
+                    if cc[i][0] > cc[i][int(len(cc[i])/2)]:
+                        print(i)
+                        x_mask0[groupsarr==i]=0
+                        y_mask0[groupsarr==i]=0
+                
+    maskind = {'x': x_mask0, 'y': y_mask0,'dist': distlocs}
+    df_mask = pd.DataFrame(maskind)
     
 elif read_in == 1:
     km_file = np.load(km_filename,allow_pickle='True')
@@ -410,7 +429,6 @@ elif read_in == 1:
     elif clusterer == 'scikit':
         labels0=km_file['labels0'] # numpy array containing the cluster number for each pixel
 
-    arr_normprofs0=km_file['arr_normprofs0'] # 2D array (pixel number x wavelength) containing the normalized line profile for each pixel
     wave=km_file['wave'] # wavelength array for chosen arm
     sortedinds=km_file['sortedinds'] # cluster indices sorted by weighted mean (blueshifted to redshifted
     selwls=km_file['selwls'] # wavelength array for chosen line only
@@ -422,26 +440,11 @@ elif read_in == 1:
     
     #the result of kmeans is a weird class from the nltk package; extract the necessary info with this line
     km0 = km01.item()
-
-# remove pixels from kmeans?
-if rempix == 1:
-    if line==1:
-        if clusterer == 'nltk':
-            for i in range(len(km0.means())):
-                if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
-                    print(i)
-                    x_mask0[groupsarr==i]=0
-                    y_mask0[groupsarr==i]=0
     
-        elif clusterer == 'scikit':
-            for i in range(len(cc)):
-                if cc[i][0] > cc[i][int(len(cc[i])/2)]:
-                    print(i)
-                    x_mask0[groupsarr==i]=0
-                    y_mask0[groupsarr==i]=0
-            
-maskind = {'x': x_mask0, 'y': y_mask0,'dist': distlocs}
-df_mask = pd.DataFrame(maskind)
+    cc = km0.cluster_centers_
+    
+    ## REDEFINE STORED ViSP ARRAY
+    arr_normprofs0 = normprofiles_line
 
 if manyscan ==1:
     fig,ax=plt.subplots(1,10,figsize=(30,4),dpi=200)
