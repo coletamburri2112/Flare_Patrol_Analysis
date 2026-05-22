@@ -6,67 +6,36 @@ Created on Fri Oct  4 06:18:46 2024
 @author: coletamburri
 """
 
-
 import numpy as np
-import dkistpkg_ct as DKISTanalysis
-import matplotlib
 import matplotlib.pyplot as plt
 import sklearn as sl
 from matplotlib.collections import LineCollection
-
 import pandas as pd
-
-
 from nltk.cluster import KMeansClusterer
 import nltk
 
-adjust='no'
+## KEYWORDS FOR RUN
+read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
+            # 'byhand' means that some cluster order is switched for clarity
+clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or 'nltk'
+rempix = 0 # remove pixels with a different criterion (if worried about mask)
+nsteps = 91 # number of slit steps per ViSP scan
+start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
+line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
+nframes = 10 # number of scans (if manyscan)
+c = 299792458 # speed of light in m/s
 
-clusterer = 'scikit'
-# loads file containing times and 3D spectra (time, dispersion, spatial)
-nsteps = 91
-line = 0#  0 for caii/hepsilon, 1 for hbeta
+if read_in == 1:
+    if line == 0:
+        km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
+        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
+    elif line == 1:
+        km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
+        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_df.csv'
 
-manyscan = 1
-
-c= 299792458 # m/s
-#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_Hbeta.npz'
-#filename = '/Users/coletamburri/Desktop/August_2024_DKIST_Flares/8AugXclass_caII_hep.npz'
-#filename = '/Users/coletamburri/Desktop/ViSPselection11August24Mclass.npz'
-#filename = '/Users/coletamburri/Desktop/Misc_DKIST/11August2024_Cclass_imp_CaII.npz'
-#filename = '/Users/coletamburri/Desktop/Misc_DKIST/CaII_Hep_Cclass_11Aug2024.npz'
-#coord_filename='/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
-if line ==1:
-    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta_singlescan.npz'
-if line ==0:
-    filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH_singlescan.npz'
-    
-nsteps = 91
-start = 0 #143 for saved Hbeta spectra
-
-nframes = 10
-
-if manyscan ==1:
-    if line ==0:
-        filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
-    if line ==1:
-        filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
-    start=57
-res = np.load(filename)
-
-# coordres = np.load(coord_filename)
-
-# #only for ca II 
-# vispx = coordres['arr_0']
-# vispy = coordres['arr_1']
-
-flare_arr = res['flare']
-wave = res['wl']
-times=res['time']
-#times = res['arr_1']
-
-
-
+## SPECTRAL AXIS PIXELS FOR EACH LINE
 hbeta_low =353
 hbeta_high = 640
 
@@ -76,65 +45,37 @@ caII_high = 690
 hepsilon_low = 685
 hepsilon_high = 810
 
-dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
-dkist_coords = np.load(dkist_coord_file)
-
-xarr_caII = dkist_coords['xarr_caII']
-yarr_caII = dkist_coords['yarr_caII']
-
-xarr_hbeta = dkist_coords['xarr_hbeta']
-yarr_hbeta = dkist_coords['yarr_hbeta']
-
-#cutoff0 = 1.5 # for more than one frame
-if line == 1:
-    cutoff0=9 # for h-beta
-    if manyscan:
-        cutoff0=3 # was 7 before
-if line == 0: # for ca II
-    cutoff0=2.5
-    if manyscan:
-        cutoff0=1.5 
-#cutoff0 = 2.2 # factor of minimum- 1 means all pixels, >1 is search for flare #1.2 works for hbeta #
-#cutoff0=2.6 # for hepsilon
-
-if line == 1:
-    n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
-if line == 0:
-    n_clusters0 = 35
-
-
-if line == 1:
-    startspace = 300 # 500 for ca ii
-    endspace = 1800 # 1500 for ca ii
-if line == 0:
-    startspace = 300 # 500 for ca ii
-    endspace = 1700 # 1500 for ca ii
-
-if line == 1:
-    cent=486.1375
-if line == 0:
-    cent = 396.85
-
-# change based on line
-
-if line == 1:
-    linelow = hbeta_low
-    linehigh = hbeta_high
+## NOW WHICH LINE DO WE WANT?
 if line == 0:
     linelow = caII_low
     linehigh = caII_high
-    
-selwls = wave[linelow:linehigh]
+elif line == 1:
+    linelow = hbeta_low
+    linehigh = hbeta_high
 
+## LINE CENTER IN NANOMETERS
+if line == 0:
+    cent = 396.85
+elif line == 1:
+    cent = 486.1375
 
-obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,startspace:endspace],1)
-flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
-
+## DEFINE SAVED FILE
+if manyscan == 1:
+    if line == 0:
+        filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
+    if line == 1:
+        filename =  '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
+    start=57
+elif manyscan == 0:
+    if line == 0:
+        filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_CaIIH_singlescan.npz'
+    elif line == 1:
+        filename = '/Users/coletamburri/Desktop/11Aug2024_Cclass_calibrated_Hbeta_singlescan.npz'
+        
 def normalize(data):
     normarr=(data-np.nanmin(data))/(np.nanmax(data)-np.nanmin(data)) 
     return normarr
 
-# simple to compare clusters for each image frame for chosen line
 def kmeans_nltk(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
                 normalize,num_clusters,cutoff,line_low=linelow,
                 line_high=linehigh,metric='euclidean',normflag=0):
@@ -187,7 +128,7 @@ def kmeans_nltk(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
 
 def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
                 normalize,num_clusters,cutoff,line_low=linelow,
-                line_high=linehigh,metric='euclidean',normflag=0):
+                line_high=linehigh,normflag=0):
 
     frame_line = obs_avg
     cut = cutoff*np.nanmedian(frame_line)
@@ -234,37 +175,7 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
         labels = km.labels_
         cc = km.cluster_centers_
     
-    
     return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask
-
-if clusterer == 'nltk':
-    frame_line, mask0, km0, normprofiles_line, groups0, x_mask0, y_mask0 = \
-        kmeans_nltk(start,0,nsteps,startspace,
-                    endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,cutoff0,normflag=1)
-    
-elif clusterer == 'scikit':
-    frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0 = \
-        kmeans_scikit(start,0,nsteps,startspace,
-                    endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,cutoff0,normflag=1)
-    
-arr_normprofs0 = normprofiles_line
-colors = plt.cm.jet(np.linspace(0,1,n_clusters0))
-
-aa_arr = [[1836.46057348, 2326.73014872],
-       [  11.84946237, 1299.16774314],
-       [2045.05316607, 2326.73014872],
-       [  44.67204301, 1299.16774314],
-       [1836.46057348, 1492.19051546],
-       [  11.84946237,  850.67365452]]
-
-
-## for transformation to vbi only
-#x_mask0[i] = 91-x_mask0[i]
-
-#transformation - variation on the function in dkistpkg_ct, without plotting
-#x_mask_t,y_mask_t = DKISTanalysis.vbi_visp_transformation(aa_arr,x_mask0,y_mask0,matplotlib,d1=1)
-
-# order by width of curves
 
 def find_nearest(array, value):
     array = np.asarray(array)
@@ -312,8 +223,9 @@ def veltrans2(x,mu2=1):
 def wltrans(x):
     return ((((x/(c/1000))+1)*cent)-cent)
 
-
-def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=566,red=580):
+def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,\
+                 core=566,red=580):
+   
     values = np.linspace(0,len(curve),len(curve))
     
     # Corresponding weights for each data point
@@ -324,127 +236,218 @@ def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,core=5
     ratio = (core_intensity/blue_intensity)-(red_intensity)/(core_intensity)
     return ratio
 
-dists=[]
+## LOAD FILE
+res = np.load(filename)
 
-if clusterer == 'nltk':
-    for i in range(len(km0.means())):
-        dists.append(find_30p_height(km0.means()[i],find_nearest))
-    
-    relint=[]
-    for i in range(len(km0.means())):
-        relint.append(find_relint(km0.means()[i],find_nearest))
-        
-    wm=[]
-    for i in range(len(km0.means())):
-        wm.append(find_weightmean(km0.means()[i],find_nearest))
-        
-    bc_int=[]
-    for i in range(len(km0.means())):
-        bc_int.append(blue_to_core(km0.means()[i]))
-    
-    inds = np.arange(len(km0.means()))
-    
-if clusterer == 'scikit':
-    for i in range(len(cc)):
-        dists.append(find_30p_height(cc[i],find_nearest))
-    
-    relint=[]
-    for i in range(len(cc)):
-        relint.append(find_relint(cc[i],find_nearest))
-        
-    wm=[]
-    for i in range(len(cc)):
-        wm.append(find_weightmean(cc[i],find_nearest))
-        
-    if line == 1:
-        bc_int=[]
-        for i in range(len(cc)):
-            bc_int.append(blue_to_core(cc[i]))
-    
-    inds = np.arange(len(cc))
-#df = pd.DataFrame({'x':inds,'y':dists}) # by distance
-#df = pd.DataFrame({'x':inds,'y':relint}) # by relint
+## READ VARIABLES FROM SAVED FILE
+flare_arr = res['flare']
+wave = res['wl']
+times=res['time']
 
+## READ-IN SAVED CO-ALIGNED DKIST COORDINATION
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
+dkist_coords = np.load(dkist_coord_file)
+
+## STORE SPATIAL COORDINATES
+xarr_caII = dkist_coords['xarr_caII']
+yarr_caII = dkist_coords['yarr_caII']
+
+xarr_hbeta = dkist_coords['xarr_hbeta']
+yarr_hbeta = dkist_coords['yarr_hbeta']
+
+## DEFINE LIMITS OF MASKING; MULTIPLE OF MEDIAN TO BE INCLUDED IN MASK
+if line == 1:
+    cutoff0=9 # for h-beta
+    if manyscan:
+        cutoff0=3 # was 7 before
+elif line == 0: # for ca II
+    cutoff0=2.5
+    if manyscan:
+        cutoff0=1.5 
+
+## DEFINE NUMBER OF CLUSTERS; EMPIRICALLY DETERMINED
 if line == 0:
-    df = pd.DataFrame({'x':inds,'y':wm}) # by wm
+    n_clusters0 = 35
+elif line == 1:
+    n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+
+## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING; EMPIRICALLY DETERMINED
+if line == 0:
+    startspace = 300
+    endspace = 1700
 if line == 1:
+    startspace = 300 
+    endspace = 1800
+
+## SELECT WHICH WAVELENGTHS FOR SPECTRAL AXIS
+selwls = wave[linelow:linehigh]
+
+## DEFINE WHAT PART OF ViSP ARRAY TO CONSIDER
+obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,\
+                                 startspace:endspace],1)
+flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
+
+if read_in == 0:
+    ## CLUSTERING; DEPENDS ON WHICH METHOD
+    if clusterer == 'nltk':
+        frame_line, mask0, km0, normprofiles_line, groups0, x_mask0, y_mask0 = \
+            kmeans_nltk(start,0,nsteps,startspace,
+                        endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
+                            cutoff0,normflag=1)
+    elif clusterer == 'scikit':
+        frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0 = \
+            kmeans_scikit(start,0,nsteps,startspace,
+                        endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
+                            cutoff0,normflag=1)    
+    ## REDEFINE STORED ViSP ARRAY
+    arr_normprofs0 = normprofiles_line
+    
+    ## WHAT IS THIS???? 
+    aa_arr = [[1836.46057348, 2326.73014872],
+           [  11.84946237, 1299.16774314],
+           [2045.05316607, 2326.73014872],
+           [  44.67204301, 1299.16774314],
+           [1836.46057348, 1492.19051546],
+           [  11.84946237,  850.67365452]]
+    
+    dists=[]
+    
+    ## SORTING METHODS; DEPENDS ON WHICH CLUSTERING METHOD B/C OUTPUT IS DIFFERENT FORMAT
+    if clusterer == 'nltk':
+        for i in range(len(km0.means())):
+            dists.append(find_30p_height(km0.means()[i],find_nearest))
+        relint=[]
+        for i in range(len(km0.means())):
+            relint.append(find_relint(km0.means()[i],find_nearest))  
+        wm=[]
+        for i in range(len(km0.means())):
+            wm.append(find_weightmean(km0.means()[i],find_nearest)) 
+        bc_int=[]
+        for i in range(len(km0.means())):
+            bc_int.append(blue_to_core(km0.means()[i]))
+        inds = np.arange(len(km0.means()))
+        
+    elif clusterer == 'scikit':
+        for i in range(len(cc)):
+            dists.append(find_30p_height(cc[i],find_nearest))
+        relint=[]
+        for i in range(len(cc)):
+            relint.append(find_relint(cc[i],find_nearest))
+        wm=[]
+        for i in range(len(cc)):
+            wm.append(find_weightmean(cc[i],find_nearest))
+        if line == 1:
+            bc_int=[]
+            for i in range(len(cc)):
+                bc_int.append(blue_to_core(cc[i]))
+        inds = np.arange(len(cc))
+    
+    ## MAKE ORDERING INTO DATAFRAME
     df = pd.DataFrame({'x':inds,'y':wm}) # by blue wing to core - 480 to 600
-
-df.sort_values(by=['y'])
-
-sortedinds0 = df.sort_values(['y'])['x']
-
-sortedwls = df.sort_values(['y'])['y']
-sortedinds=np.asarray(sortedinds0).copy()
-
-if line == 1:
-    if adjust == 'byhand':
-        #first = sortedinds[0]
-        last = sortedinds[-1]
-        #bluest = sortedinds[2]
-        redest = sortedinds[-2]
-        
-        #sortedinds[0]=bluest
-        #sortedinds[2]=first
-        sortedinds[-2]=last
-        sortedinds[-1]=redest
-
-sortedwls = np.asarray(sortedwls)
-
-distlocs = []
-
-if clusterer == 'nltk':
-    for i in range(len(groups0)):
-        distlocs.append(np.where(sortedinds==groups0[i])[0][0])
-
-if clusterer == 'scikit':
-    for i in range(len(labels0)):
-        distlocs.append(np.where(sortedinds==labels0[i])[0][0])        
-        
-colors = plt.cm.turbo(np.linspace(0,1,n_clusters0))
-
-
-if line == 1:
-    xarr_ch = xarr_hbeta[:-1]
-    yarr_ch = yarr_hbeta[startspace:endspace]
-if line==0:
-    xarr_ch = xarr_caII
-    yarr_ch = yarr_caII[startspace:endspace+1]
     
-
-
-if clusterer == 'nltk':
-    groupsarr = np.asarray(groups0)
-if clusterer == 'scikit':
-    groupsarr = np.asarray(labels0)
-
-
-#working here on removing the H-beta profiles that are clearly not flare-time
-# started 17 MARCH 2026
-# if line==1:
+    ## SORT VALUES BY THE SORTING METHOD USED ABOVE
+    df.sort_values(by=['y'])
     
-#     if clusterer == 'nltk':
-#         for i in range(len(km0.means())):
-#             if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
-#                 print(i)
-#                 x_mask0[groupsarr==i]=0
-#                 y_mask0[groupsarr==i]=0
-
-#     elif clusterer == 'scikit':
-#         for i in range(len(cc)):
-#             if cc[i][0] > cc[i][int(len(cc[i])/2)]:
-#                 print(i)
-#                 x_mask0[groupsarr==i]=0
-#                 y_mask0[groupsarr==i]=0
+    ## SILLY PYTHON TYPE STUFF
+    sortedinds0 = df.sort_values(['y'])['x']
+    sortedwls = df.sort_values(['y'])['y']
+    sortedinds=np.asarray(sortedinds0).copy()
+    
+    ## ADJUST THE SORTING?
+    if line == 1:
+        if adjust == 'byhand':
+            #first = sortedinds[0]
+            last = sortedinds[-1]
+            #bluest = sortedinds[2]
+            redest = sortedinds[-2]
             
-maskind = {'x': x_mask0, 'y': y_mask0,'dist':distlocs}
-df_mask = pd.DataFrame(maskind)
+            #sortedinds[0]=bluest
+            #sortedinds[2]=first
+            sortedinds[-2]=last
+            sortedinds[-1]=redest
+    
+    ## MORE PYTHON TYPE STUFF
+    sortedwls = np.asarray(sortedwls)
+    
+    distlocs = []
+    if clusterer == 'nltk':
+        for i in range(len(groups0)):
+            distlocs.append(np.where(sortedinds==groups0[i])[0][0])
+    elif clusterer == 'scikit':
+        for i in range(len(labels0)):
+            distlocs.append(np.where(sortedinds==labels0[i])[0][0])        
+            
+    colors = plt.cm.turbo(np.linspace(0,1,n_clusters0))
+    
+    if line == 1:
+        xarr_ch = xarr_hbeta[:-1]
+        yarr_ch = yarr_hbeta[startspace:endspace]
+    elif line==0:
+        xarr_ch = xarr_caII
+        yarr_ch = yarr_caII[startspace:endspace+1]
+        
+    if clusterer == 'nltk':
+        groupsarr = np.asarray(groups0)
+    elif clusterer == 'scikit':
+        groupsarr = np.asarray(labels0)
+        
+    # remove pixels from kmeans? There should be logic here in the read_in case too...
+    if rempix == 1:
+        if line==1:
+            if clusterer == 'nltk':
+                for i in range(len(km0.means())):
+                    if km0.means()[i][0] > km0.means()[i][int(len(km0.means()[i])/2)]:
+                        print(i)
+                        x_mask0[groupsarr==i]=0
+                        y_mask0[groupsarr==i]=0
+        
+            elif clusterer == 'scikit':
+                for i in range(len(cc)):
+                    if cc[i][0] > cc[i][int(len(cc[i])/2)]:
+                        print(i)
+                        x_mask0[groupsarr==i]=0
+                        y_mask0[groupsarr==i]=0
+                
+    maskind = {'x': x_mask0, 'y': y_mask0,'dist': distlocs}
+    df_mask = pd.DataFrame(maskind)
+    
+elif read_in == 1:
+    km_file = np.load(km_filename,allow_pickle='True')
+    
+    colors = plt.cm.turbo(np.linspace(0,1,n_clusters0))
+    
+    #extract variables from clustering file
+    xarr_ch=km_file['xarr_ch'] # x coordinates for pcolormesh
+    yarr_ch=km_file['yarr_ch'] # y coordinates for pcolormesh
+    frame_line=km_file['frame_line'] # scans of interest, with along-slit direction limited just to what we want to see
+    normprofiles_line=km_file['normprofiles_line'] # normalized spectral line profiles
+    times=km_file['times'] # times for each ViSP slit position
+    km01=km_file['km0'] # numpy array containing the KMeansClusterer object (nltk)
+    
+    if clusterer == 'nltk':
+        groups0=km_file['groups0'] # numpy array containing the cluster number for each pixel
+    elif clusterer == 'scikit':
+        labels0=km_file['labels0'] # numpy array containing the cluster number for each pixel
 
-
+    wave=km_file['wave'] # wavelength array for chosen arm
+    sortedinds=km_file['sortedinds'] # cluster indices sorted by weighted mean (blueshifted to redshifted
+    selwls=km_file['selwls'] # wavelength array for chosen line only
+    sortedwls=km_file['sortedwls'] # location of calculated line center (0 is the first index in "selwls")
+    
+    #read pandas dataframe containing clusters from csv
+    # contains the mask info, including the x values, y values, and cluster number corresponding to each pixel
+    df_mask = pd.read_csv(df_filename) 
+    
+    #the result of kmeans is a weird class from the nltk package; extract the necessary info with this line
+    km0 = km01.item()
+    
+    cc = km0.cluster_centers_
+    
+    ## REDEFINE STORED ViSP ARRAY
+    arr_normprofs0 = normprofiles_line
 
 if manyscan ==1:
     fig,ax=plt.subplots(1,10,figsize=(30,4),dpi=200)
-
     for i in range(10):
         ax.flatten()[i].pcolormesh(xarr_ch,yarr_ch,np.transpose(frame_line[(91*i):(91*(i+1)),:]),cmap='grey',alpha=1)
         lower_threshold=(91*i)
@@ -485,25 +488,9 @@ else:
     ax.tick_params(axis='x',labelsize=6)
     ax.tick_params(axis='y',labelsize=6)
 
-##for transformation only
-# else:
-#     ax.pcolormesh(vispx,vispy,np.transpose(frame_line[:-2,:]),cmap='grey',alpha=1)
-#     ax.scatter(x_mask_t,y_mask_t,5,color=colors[distlocs],alpha=.6,marker='s')
-#     ax.invert_yaxis()
-
-# # for tranformation
-# ax.set_ylim([2800,800])
-# ax.set_xlim([1750,2100])
-
 fig.subplots_adjust(wspace=0.1)
-
-
 fig.show()
 
-#fig,ax=plt.subplots(3,4,figsize=(5,4),dpi=200)
-#fig,ax=plt.subplots(2,3,figsize=(5,4),dpi=200) #if hep
-
-rempix = 0
 
 if line == 0:
     fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
@@ -512,8 +499,6 @@ if line == 1:
 
 if clusterer == 'nltk':
     arr_normprofs0 = normprofiles_line
-    
-        
     for i in range(len(arr_normprofs0)):
         curve = arr_normprofs0[i]
         group = groups0[i]
@@ -529,9 +514,6 @@ if clusterer == 'nltk':
         else:
             ax.flatten()[ind].plot(wave[linelow:linehigh],curve,alpha=0.01,color='black')
             ax.flatten()[ind].axvline(cent,linewidth=0.6,c='black')
-    
-        
-    
     for i in range(n_clusters0):
         if line == 1:
             if km0.means()[sortedinds[i]][0] < km0.means()[sortedinds[i]][int(len(km0.means()[sortedinds[i]])/2)]:
@@ -601,29 +583,19 @@ if clusterer == 'nltk':
             
             velocity = find_velocity(cent,obs_wl)
             ax.flatten()[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
-            
-    
     fig.subplots_adjust(hspace=0.25,wspace=0.05)
-    
     fig.show()
-
 elif clusterer == 'scikit':
     arr_normprofs0 = normprofiles_line
     axes = ax.ravel()
     group_to_ind = {g: i for i, g in enumerate(sortedinds)}
     x = wave[linelow:linehigh]
-
     lines_per_ax = [[] for _ in axes]
-    
     for curve, group in zip(normprofiles_line, labels0):
         ind = group_to_ind[group]
-        
         pts = np.column_stack([x,curve])
-        
         lines_per_ax[ind].append(pts)
-        
     for a, lines in zip(axes, lines_per_ax):
-        
         if line ==0:
             lc = LineCollection(
                 lines,
@@ -637,21 +609,9 @@ elif clusterer == 'scikit':
                 linewidths = 0.5,
                 alpha=0.003)        
         a.add_collection(lc)
-        
         a.axvline(cent, linewidth=0.5, c='black')
         a.autoscale
-        
-    # for curve, group in zip(arr_normprofs0, labels0):
-    #     ind = group_to_ind[group]
-
-    #     if cc[group][0] < cc[group][int(len(cc[group])/2)]:
-    #         axes[ind].plot(x,curve,alpha=0.01,color='black')
-    #         axes[ind].axvline(cent,linewidth=0.6,c='black')
-    #     else:
-    #         axes[ind].plot(x,curve,alpha=0.005,color='black')
-    #         axes[ind].axvline(cent,linewidth=0.6,c='black')   
-    
-        
+     
     for i in range(n_clusters0):
         if line == 1:
             
@@ -660,7 +620,6 @@ elif clusterer == 'scikit':
                     axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
                     axes[group].axvline(cent,linewidth=0.6,c='black')
                     
- 
                     axes[i].tick_params(
                     axis='x',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
@@ -668,7 +627,6 @@ elif clusterer == 'scikit':
                     top=False,         # ticks along the top edge are off
                     labelbottom=False)
                         
-
                     axes[i].tick_params(
                     axis='y',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
@@ -678,13 +636,9 @@ elif clusterer == 'scikit':
                     axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
                          ha='right', va='top', fontsize=6, fontstyle='italic')
                     axes[i].set_ylim([-0.2,1.2])
-
                     axes[i].set_xlim([wave[linelow],wave[linehigh]])
-                    
                     obs_wl = selwls[int(sortedwls[i])]
-                    
                     velocity = find_velocity(cent,obs_wl)
-                    #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
                 else:
                     axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color='grey',markersize=.1,alpha=0.5)
                     axes[group].axvline(cent,linewidth=0.6,c='black',alpha=0.2)
@@ -739,8 +693,6 @@ elif clusterer == 'scikit':
                 obs_wl = selwls[int(sortedwls[i])]
                 
                 velocity = find_velocity(cent,obs_wl)
-                
-                #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
 
         else:
             axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)

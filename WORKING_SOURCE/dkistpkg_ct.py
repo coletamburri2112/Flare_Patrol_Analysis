@@ -254,8 +254,6 @@ def limbdarkening(wave, mu=1.0, nm=False,
 
     return factor[0]
 
-
-
 def fourstepprocess(path,folder1,dir_list2,fullstokes=1):
     
     # Simplest initial processing of data, when only a four-step raster; will 
@@ -2302,6 +2300,7 @@ def gaussian_psf(x, fwhm):
     tr = np.exp(-(x)**2 / (2 * (sigma**2)))
     tr /= tr.sum()
     return tr
+
 #write adjustment for point spread function from atlas
 def psf_adjust(wlsel,ilamsel,fwhm,new_dispersion_range,calibrated_qs,limbdarkqs,ntw,gaussian_psf):
    
@@ -2406,29 +2405,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
     
     sample_flaretime = spec_obs
     dispersion_range_fin = new_dispersion_range2
-    
-    # contwind0_1 = np.mean(sample_flaretime[low0:high0])
-    # contwind0_1_wave = np.mean(dispersion_range_fin[low0:high0])
-    # contwind1 = np.mean(sample_flaretime[low1:high1])
-    # contwind1_wave = np.mean(dispersion_range_fin[low1:high1])
-    # contwind2 = np.mean(sample_flaretime[low2:high2])
-    # contwind2_wave = np.mean(dispersion_range_fin[low2:high2])
-    # contwind3 = np.mean(sample_flaretime[low3:high3])
-    # contwind3_wave = np.mean(dispersion_range_fin[low3:high3])
-    # contwind4 = np.mean(sample_flaretime[low4:high4])
-    # contwind4_wave = np.mean(dispersion_range_fin[low4:high4])
-    # contwind5 = np.mean(sample_flaretime[low5:high5])
-    # contwind5_wave = np.mean(dispersion_range_fin[low5:high5])
-    # contwind6 = np.mean(sample_flaretime[low6:high6])
-    # contwind6_wave = np.mean(dispersion_range_fin[low6:high6])
 
-
-    # cont_int_array = [contwind0_1,contwind1,contwind2,contwind3,
-    #                   contwind4,contwind5,contwind6]
-    # cont_int_wave_array = [contwind0_1_wave,contwind1_wave,
-    #                        contwind2_wave,contwind3_wave,
-    #                        contwind4_wave,contwind5_wave,
-    #                        contwind6_wave]
     if order == 0: # if we just want to scale based on one continuum point
         obs_cont_loc = []
         fts_cont_loc = []
@@ -2466,14 +2443,7 @@ def get_calibration_poly(wave_obs, spec_obs, wave_atlas, spec_atlas,find_nearest
         fit_cont_mult = np.poly1d(mult_fit)
         fit_vals = fit_cont_mult(new_dispersion_range)
         
-
-    
-    # if noqs_flag==1:
-    #     return cont_mult_facts, fit_vals, new_dispersion_range,calibrated_qs
-    # else:
-        
     return cont_mult_facts, fit_vals, new_dispersion_range, dispersion_range_fin, rat
-
 
 def plot_calibration(new_dispersion_range, visp_qs_obs, wlsel, ilamsel,
                      pid='pid_1_84',wl=854.207):
@@ -2523,25 +2493,6 @@ def maxintind(new_dispersion_range,image_data_arr_arr,linelow,linehigh,spacelow,
         indices.append(spacelow+lineavg.index(max(lineavg)))
     
     return indices
-        
-def comp_fit_results_gauss2(fits_2g,times):
-    """
-    
-
-    Parameters
-    ----------
-    fits_2g : TYPE
-        DESCRIPTION.
-    times : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
-    """
-    
-    fig,ax = plt.subplots()
     
 def conv_to_vel(mu1,mu2,mu,lamb0 = 396.847,c=2.99e5):
     vel1 = []
@@ -2751,26 +2702,6 @@ def psd_func(intensityarr,choice = 'variance',normpsd=0,savgol_window = 200, sav
     all_freqarr = np.array(all_freq)
 
     return all_psdarr, all_freqarr,freqresult
-            
-        
-    
-
-        
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-
-    
-
 
 
 
