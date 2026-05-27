@@ -204,9 +204,9 @@ npoints2=10# 30 for full ribbon
 
 # ccslot2 = plt.ginput(npoints2,timeout = 120)
 
-ccslot = np.load('/Users/coletamburri/Desktop/ccslot.npz')['ccslot']
+ccslot = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot.npz')['ccslot']
 
-ccslot2 = np.load('/Users/coletamburri/Desktop/ccslot2.npz')['ccslot2']
+ccslot2 = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot2.npz')['ccslot2']
 
 int_avg_all = []
 xmaxsallall = []
@@ -366,7 +366,7 @@ space_x2 = np.linspace(0, l2, n2, endpoint=False)
 # all_psdarr2 = np.array(psds2)
 # all_freqarr2 = np.array(all_freq2)
 
-all_psdarr2, all_freqarr2 = DKISTanalysis.psd_func(intavginterps2,choice='variance',normpsd=1)
+all_psdarr2, all_freqarr2,freqresult2 = DKISTanalysis.psd_func(intavginterps2,choice='variance',normpsd=1)
 
 
 
@@ -375,7 +375,7 @@ arcsec_to_km=727
 km_to_Mm = 0.001
     
 #loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
-loadvbilc = np.load('/Users/coletamburri/Desktop/vbi_lc_extended.npz',allow_pickle='True')
+loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
 
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
@@ -384,22 +384,23 @@ t3 = np.arange(datetime(2024,8,11,22,31,26),
               timedelta(seconds=2.666)).astype(datetime)
 choicemap = 'seismic'
 fig,ax=plt.subplots(3,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
-ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps),cmap='afmhot');
+im = ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps)/1e4,cmap='afmhot');
+fig.colorbar(im,pad=0.075,shrink = 0.9)
 ax.flatten()[0].invert_yaxis();
-ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/freqresult,\
+im2 = ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/freqresult,\
                            gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr,.1)),\
                                                                axis=1,sigma=1),axis=0,sigma=1),\
                                cmap=choicemap,vmin=.5,vmax=.8)
-
+fig.colorbar(im2,pad=0.075,shrink = 0.9)
 ax.flatten()[1].set_yscale('log')
 
 ## if want to look at really small scales
 # ax.flatten()[1].set_ylim([0,100]) 
 
 ## if want to look at larger scales
-ax.flatten()[1].set_ylim([250,1200]) 
-ax.flatten()[1].set_yticks([300,500, 1000, 1500])
-ax.flatten()[1].set_yticklabels(['300','500', '1000','1500'])
+ax.flatten()[1].set_ylim([250,1400]) 
+ax.flatten()[1].set_yticks([300,500, 800, 1100])
+ax.flatten()[1].set_yticklabels(['300','500', '800','1100'])
 
 ax.flatten()[1].minorticks_off()
 ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
@@ -442,7 +443,8 @@ ax2.tick_params(axis='both', labelsize=8)
 ax4.tick_params(axis='both', labelsize=8)
 ax5.tick_params(axis='both', labelsize=8)
 
-ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2),cmap='afmhot');
+im3 = ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2)/1e4,cmap='afmhot');
+fig.colorbar(im3,pad=0.075,shrink = 0.9)
 ax.flatten()[2].invert_yaxis();
 #ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:],.1)),axis=1,sigma=1),axis=0,sigma=1),cmap=choicemap,vmin=0.6,vmax=.8)
 
@@ -540,7 +542,10 @@ yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017
 
 fig,ax=plt.subplots(dpi=200,figsize=(3,10))
 
-ax.pcolormesh(destretch[0].data[100+130,:,:],cmap='sdoaia304',alpha=0.9)
+im=ax.pcolormesh(destretch[0].data[100+130,:,:]/1e4,cmap='sdoaia304',alpha=0.9)
+cbar = fig.colorbar(im)
+cbar.ax.tick_params(labelsize=7)
+
 ax.plot(xs_full[0::2],ys_full[0::2],c='green',linestyle='-',marker='o',markersize=1,linewidth=.75)
 ax.plot(xs_part[0::2],ys_part[0::2],c='violet',linestyle='-',marker='o',markersize=1,linewidth=.75)
 ax.plot(xs_full[1::2],ys_full[1::2],c='green',linestyle='-',marker='o',markersize=1,linewidth=.75)
