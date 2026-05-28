@@ -22,7 +22,7 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
@@ -596,22 +596,31 @@ elif clusterer == 'scikit':
         ind = group_to_ind[group]
         pts = np.column_stack([x,curve])
         lines_per_ax[ind].append(pts)
+    b = 0
     for a, lines in zip(axes, lines_per_ax):
-        if line ==0:
+        if line == 0:
             lc = LineCollection(
                 lines,
                 colors='black',
                 linewidths = 0.5,
                 alpha=0.01)
         elif line==1:
-            lc = LineCollection(
-                lines,
-                colors='black',
-                linewidths = 0.5,
-                alpha=0.003)        
+            if b == 0:
+                lc = LineCollection(
+                    lines,
+                    colors='grey',
+                    linewidths = 0.2,
+                    alpha=0.002)   
+            else:
+                lc = LineCollection(
+                    lines,
+                    colors='grey',
+                    linewidths = 0.2,
+                    alpha=0.002)        
         a.add_collection(lc)
         a.axvline(cent, linewidth=0.5, c='black')
         a.autoscale
+        b+=1
      
     for i in range(n_clusters0):
         if line == 1:
