@@ -78,12 +78,12 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
 # time step start for chosen QS observations
 startstepqs = 0
 endstepqs=20
-startstep=2400#where does interesting bit begin?
-endstep=2700#where does interesting bit end?
+# startstep=2400#where does interesting bit begin?
+# endstep=2700#where does interesting bit end?
 
 # #for light curves
-# startstep=2100#where does interesting bit begin?
-# endstep=3500#where does interesting bit end?
+startstep=2100#where does interesting bit begin?
+endstep=3500#where does interesting bit end?
 
 # #for best ViSP scans
 # startstep=2400#where does interesting bit begin?

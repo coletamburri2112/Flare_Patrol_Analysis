@@ -216,7 +216,7 @@ def spatialinit(path,folder1,dir_list2,lon,lat,wl, flag=0):
         doppshnonrel, doppshrel
         
 def limbdarkening(wave, mu=1.0, nm=False, 
-                  directory = '/Users/coletamburri/Desktop/DKIST_Data_Tools_misc/Rahul_ViSP_Cal/'):
+                  directory = '/Users/coletamburri/Desktop//Misc_DKIST/DKIST_Data_Tools_misc/Rahul_ViSP_Cal/'):
     """
     Return limb-darkening factor given wavelength and viewing angle
     mu=cos(theta)
@@ -2056,7 +2056,7 @@ def load_fts(dispersion_range):
     # Load disk-center, quiet sun profile from Neckel and Hamburg
     # atlast
     
-    path = '/Users/coletamburri/Desktop/DKIST_Data_Tools_misc/speclab-python/cal_data/'
+    path = '/Users/coletamburri/Desktop/Misc_DKIST/DKIST_Data_Tools_misc/speclab-python/cal_data/'
     filename = 'neckel.hamburg.atlas.disk_center_intensity.cgs.ecsv'
     
     ecsv_content = path+filename

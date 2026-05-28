@@ -93,12 +93,12 @@ startspace_noflare = 1900
 # endstep=2700#where does interesting bit end? #originally 3400, shortening
 
 # # for light curve only
-# startstep=2100
-# endstep=3500
+startstep=2100
+endstep=3500
 
 # # for ten scan only
-startstep=2400
-endstep=3400
+# startstep=2400
+# endstep=3400
 
     
 # process multi-step raster - for hbeta
