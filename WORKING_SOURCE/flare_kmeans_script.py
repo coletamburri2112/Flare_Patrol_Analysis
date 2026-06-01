@@ -15,14 +15,16 @@ from nltk.cluster import KMeansClusterer
 import nltk
 
 ## KEYWORDS FOR RUN
-read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
             # 'byhand' means that some cluster order is switched for clarity
 clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or 'nltk'
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+n_init = 10 # number of times to initialize the k-means clustering; 
+            # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
@@ -129,7 +131,7 @@ def kmeans_nltk(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
 
 def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
                 normalize,num_clusters,cutoff,line_low=linelow,
-                line_high=linehigh,normflag=0):
+                line_high=linehigh,normflag=0,n_init=n_init):
 
     frame_line = obs_avg
     cut = cutoff*np.nanmedian(frame_line)
@@ -158,7 +160,7 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
     
         arr_normprofs = np.asarray(normprofiles_line)
         
-        km = sl.cluster.KMeans(n_clusters=num_clusters,n_init='auto').fit(normprofiles_line)
+        km = sl.cluster.KMeans(n_clusters=num_clusters,n_init=n_init).fit(normprofiles_line)
         
         labels=km.labels_
         cc = km.cluster_centers_
@@ -171,7 +173,7 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
     
         arr_normprofs = np.asarray(normprofiles_line)
         
-        km = sl.cluster.KMeans(n_clusters=num_clusters,n_init='auto').fit(normprofiles_line)
+        km = sl.cluster.KMeans(n_clusters=num_clusters,n_init=n_init).fit(normprofiles_line)
         
         labels = km.labels_
         cc = km.cluster_centers_
@@ -303,13 +305,13 @@ if read_in == 0:
     ## REDEFINE STORED ViSP ARRAY
     arr_normprofs0 = normprofiles_line
     
-    ## WHAT IS THIS???? 
-    aa_arr = [[1836.46057348, 2326.73014872],
-           [  11.84946237, 1299.16774314],
-           [2045.05316607, 2326.73014872],
-           [  44.67204301, 1299.16774314],
-           [1836.46057348, 1492.19051546],
-           [  11.84946237,  850.67365452]]
+    # ## WHAT IS THIS???? 
+    # aa_arr = [[1836.46057348, 2326.73014872],
+    #        [  11.84946237, 1299.16774314],
+    #        [2045.05316607, 2326.73014872],
+    #        [  44.67204301, 1299.16774314],
+    #        [1836.46057348, 1492.19051546],
+    #        [  11.84946237,  850.67365452]]
     
     dists=[]
     
