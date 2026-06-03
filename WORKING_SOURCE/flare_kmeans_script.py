@@ -16,13 +16,15 @@ import nltk
 
 ## KEYWORDS FOR RUN
 read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+full_scan_qs = 1 # if =1, subtract the pre-flare sun pixel-by-pixel
+                 # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
             # 'byhand' means that some cluster order is switched for clarity
 clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or 'nltk'
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 n_init = 10 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
@@ -37,6 +39,12 @@ if read_in == 1:
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
         df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_df.csv'
 
+if full_scan_qs == 1:
+    if line == 0:
+        qs_filename = '/Users/coletamburri/Desktop/CaIIH_11Aug2024_preflare.npz'
+    if line == 1:
+        qs_filename = '/Users/coletamburri/Desktop/Hbeta_11Aug2024_preflare.npz'
+        
 ## SPECTRAL AXIS PIXELS FOR EACH LINE
 hbeta_low =353
 hbeta_high = 640
@@ -243,9 +251,22 @@ def blue_to_core(curve,hbeta_low=hbeta_low,hbeta_high=hbeta_high,blue=510,\
 res = np.load(filename)
 
 ## READ VARIABLES FROM SAVED FILE
-flare_arr = res['flare']
+if full_scan_qs == 0:
+    flare_arr = res['flare']
+elif full_scan_qs == 1:
+    flare_arr = res['scaled']
+
+
 wave = res['wl']
 times=res['time']
+
+## READ FULL SCAN QS?
+if full_scan_qs == 1:
+    res_qs = np.load(qs_filename)
+    qs_scan = res_qs['scaled']
+    qs_times = res_qs['times']
+    
+    
 
 ## READ-IN SAVED CO-ALIGNED DKIST COORDINATION
 dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
@@ -288,7 +309,14 @@ selwls = wave[linelow:linehigh]
 ## DEFINE WHAT PART OF ViSP ARRAY TO CONSIDER
 obs_avg_line = np.mean(flare_arr[start:start+(nsteps*nframes),linelow:linehigh,\
                                  startspace:endspace],1)
-flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace]
+    
+flare_arr2 = flare_arr[start:start+(nsteps*nframes),:,startspace:endspace].copy()
+
+if full_scan_qs == 1:
+    for i in range(10):
+        selscan = flare_arr2[i*91:(i+1)*91,:,:]
+        qs_sub = selscan - qs_scan[:,:,startspace:endspace]
+        flare_arr2[i*91:(i+1)*91,:,:] = qs_sub
 
 if read_in == 0:
     ## CLUSTERING; DEPENDS ON WHICH METHOD

@@ -82,8 +82,12 @@ endstepqs=20
 # endstep=2700#where does interesting bit end?
 
 # #for light curves
-startstep=2100#where does interesting bit begin?
-endstep=3500#where does interesting bit end?
+# startstep=2100#where does interesting bit begin?
+# endstep=3500#where does interesting bit end?
+
+# #for full quiet-Sun (if subtracting pixel by pixel!)
+startstep=91
+endstep=183
 
 # #for best ViSP scans
 # startstep=2400#where does interesting bit begin?
