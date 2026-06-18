@@ -84,6 +84,7 @@ def intensity_along_slot(image, points):
     all_coords = []
     all_coords1 = []
     int_avg = []
+    int_sum = []
     xmaxsall = []
     ymaxsall = []
     xmidsall = []
@@ -137,7 +138,7 @@ def intensity_along_slot(image, points):
                 intensitiesj.append(image[int(coordsp[j,1]),int(coordsp[j,0])])
                 
             int_avg.append(np.nanmax(intensitiesj)) #max shows patterns better
-            
+            int_sum.append(np.nansum(intensitiesj))
             maxind = np.where(intensitiesj==np.nanmax(intensitiesj))
             
             xmaxcoord = int(coordsp[maxind[0][0],0])
@@ -163,7 +164,7 @@ def intensity_along_slot(image, points):
         flat_ymids = [item for sublist in ymidsall for item in sublist]
         
 
-    return flat_xmaxs,flat_ymaxs, flat_xmids,flat_ymids,int_avg
+    return flat_xmaxs,flat_ymaxs, flat_xmids,flat_ymids,int_avg, int_sum
 
 def calculate_distance_along_curve(x, y):
     # Calculate the difference between consecutive points
@@ -213,6 +214,7 @@ xmaxsallall = []
 ymaxsallall = []
 xmidsallall = []
 ymidsallall = []
+sum_all = []
 pixdistancesall = []
 
 int_avg_all2 = []
@@ -220,18 +222,20 @@ xmaxsallall2 = []
 ymaxsallall2 = []
 xmidsallall2 = []
 ymidsallall2 = []
+sum_all2 = []
 pixdistancesall2 = []
 
 for i in range(0,300,1):
     image = destretch[0].data[i,:,:]
-    xmaxsall,ymaxsall,xmidsall,ymidsall,int_avg = intensity_along_slot(image,ccslot)
-    xmaxsall2,ymaxsall2,xmidsall2,ymidsall2,int_avg2 = intensity_along_slot(image,ccslot2)
+    xmaxsall,ymaxsall,xmidsall,ymidsall,int_avg,int_sum = intensity_along_slot(image,ccslot)
+    xmaxsall2,ymaxsall2,xmidsall2,ymidsall2,int_avg2,int_sum2 = intensity_along_slot(image,ccslot2)
 
     int_avg_all.append(int_avg)
     xmaxsallall.append(xmaxsall)
     ymaxsallall.append(ymaxsall)
     xmidsallall.append(xmidsall)
     ymidsallall.append(ymidsall)
+    sum_all.append(int_sum)
     pixdistancesall.append(calculate_distance_along_curve(xmidsall,ymidsall))
     
     int_avg_all2.append(int_avg2)
@@ -239,13 +243,15 @@ for i in range(0,300,1):
     ymaxsallall2.append(ymaxsall2)
     xmidsallall2.append(xmidsall2)
     ymidsallall2.append(ymidsall2)
+    sum_all2.append(int_sum2)
     pixdistancesall2.append(calculate_distance_along_curve(xmidsall2,ymidsall2))
     
 pixdistanceinterps = []
 intavginterps = []
 
 for i in range(0,300,1):
-    int_avg = int_avg_all[i]
+    int_avg = int_avg_all[i] # if you want to use maxima along slot lines
+    # int_avg = sum_all[i]#  if you want to use the sum along the slot lines
     pixdist = pixdistancesall[i]
 
     newlow = 0
@@ -309,8 +315,9 @@ all_psdarr, all_freqarr,freqresult = DKISTanalysis.psd_func(intavginterps,choice
 # again, for other half of ribbon
 pixdistanceinterps2 = []
 intavginterps2 = []
-for i in range(0,300,1):
-    int_avg = int_avg_all2[i]
+for i in range(0,300,1): 
+    int_avg = int_avg_all2[i] # if you want to use maxima along slot lines
+    # int_avg = sum_all2[i] # if you want to use the sum along the slot lines
     pixdist = pixdistancesall2[i]
 
     newlow = 0
@@ -382,7 +389,7 @@ lcvbi=loadvbilc['lc']
 t3 = np.arange(datetime(2024,8,11,22,31,26),
               datetime(2024,8,11,22,38,57), 
               timedelta(seconds=2.666)).astype(datetime)
-choicemap = 'seismic'
+choicemap = 'inferno'
 fig,ax=plt.subplots(3,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
 im = ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps)/1e4,cmap='afmhot');
 fig.colorbar(im,pad=0.075,shrink = 0.9)
@@ -476,11 +483,12 @@ ax.flatten()[1].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
 
 
 ax.flatten()[1].set_xticks([])
-ax.flatten()[2].set_xticks([])
 #ax.flatten()[3].set_xticks([])
 
 ax.flatten()[2].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
+ax.flatten()[0].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
 
+ax.flatten()[0].xaxis.tick_top()
 
 ax.flatten()[0].tick_params(axis='both', labelsize=8)
 ax.flatten()[1].tick_params(axis='both', labelsize=8)

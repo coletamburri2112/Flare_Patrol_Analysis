@@ -15,8 +15,8 @@ from nltk.cluster import KMeansClusterer
 import nltk
 
 ## KEYWORDS FOR RUN
-read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
-full_scan_qs = 1 # if =1, subtract the pre-flare sun pixel-by-pixel
+read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
             # 'byhand' means that some cluster order is switched for clarity
@@ -24,7 +24,7 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 n_init = 10 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
@@ -199,7 +199,7 @@ def find_30p_height(curve,find_nearest):
     lowind,lowval = find_nearest(curve[0:round(len(curve)/2)],p30int)
     highind,highval = find_nearest(curve[round(len(curve)/2):],p30int)
     highind=highind+round(len(curve)/2)
-    dist = highind-lowind
+    dist = (highind+lowind)/2
     return dist
 
 def find_relint(curve,find_nearest):
@@ -219,6 +219,14 @@ def find_weightmean(curve,find_nearest):
     # Calculate the weighted mean using numpy.average()
     weighted_mean = np.average(values, weights=weights)
     return weighted_mean
+
+def find_centmin(wl,curve,find_nearest):
+    centrevpos = np.where(curve[65:-100]==np.nanmin(curve[65:-100]))
+    wlcentrev = wl[centrevpos]
+    
+    fig,ax=plt.subplots()
+    ax.plot(wl,curve[65:-100])
+    return centrevpos, wlcentrev
 
 def find_velocity(rest_wl,obs_wl):
     c= 299792458 # m/s
@@ -358,6 +366,11 @@ if read_in == 0:
             bc_int.append(blue_to_core(km0.means()[i]))
         inds = np.arange(len(km0.means()))
         
+        #find location of central reveral to compare to wm
+        centrev = []
+        for i in range(len(km0.means())):
+            centrev.append()
+        
     elif clusterer == 'scikit':
         for i in range(len(cc)):
             dists.append(find_30p_height(cc[i],find_nearest))
@@ -371,10 +384,14 @@ if read_in == 0:
             bc_int=[]
             for i in range(len(cc)):
                 bc_int.append(blue_to_core(cc[i]))
+                
+        
+                
+
         inds = np.arange(len(cc))
     
     ## MAKE ORDERING INTO DATAFRAME
-    df = pd.DataFrame({'x':inds,'y':wm}) # by blue wing to core - 480 to 600
+    df = pd.DataFrame({'x':inds,'y':wm,'z':dists}) # by blue wing to core - 480 to 600
     
     ## SORT VALUES BY THE SORTING METHOD USED ABOVE
     df.sort_values(by=['y'])
@@ -784,4 +801,114 @@ elif clusterer == 'scikit':
     fig.subplots_adjust(hspace=0,wspace=0)
     
     fig.show()
+ 
+    
+ 
+## ADDITONAL ANALYSIS
+
+# to find velocity shifts
+dists = []
+if clusterer == 'nltk':
+    for i in range(len(km0.means())):
+        dists.append(find_30p_height(km0.means()[i],find_nearest))
+    relint=[]
+    for i in range(len(km0.means())):
+        relint.append(find_relint(km0.means()[i],find_nearest))  
+    wm=[]
+    for i in range(len(km0.means())):
+        wm.append(find_weightmean(km0.means()[i],find_nearest)) 
+    bc_int=[]
+    for i in range(len(km0.means())):
+        bc_int.append(blue_to_core(km0.means()[i]))
+    inds = np.arange(len(km0.means()))
+    
+    #find location of central reveral to compare to wm
+    centrev = []
+    for i in range(len(km0.means())):
+        centrev.append()
+    
+elif clusterer == 'scikit':
+    for i in range(len(cc)):
+        dists.append(find_30p_height(cc[i],find_nearest))
+    relint=[]
+    for i in range(len(cc)):
+        relint.append(find_relint(cc[i],find_nearest))
+    wm=[]
+    for i in range(len(cc)):
+        wm.append(find_weightmean(cc[i],find_nearest))
+    if line == 1:
+        bc_int=[]
+        for i in range(len(cc)):
+            bc_int.append(blue_to_core(cc[i]))
+            
+    
+    inds = np.arange(len(cc))
+    
+df = pd.DataFrame({'x':inds,'y':wm,'z':dists}) # row 1 is index, row 2 is weighted mean, row 3 is 30p bisector
+
+dfsorted = df.sort_values(by=['y'])
+
+# print velocity shift in km/s
+for i in range(len(dfsorted)):
+    print(c*(selwls[int(dfsorted['z'].values[i])]-cent)/cent/1000)
+
+# #find location of central reveral to compare to wm
+
+# from matplotlib.ticker import ScalarFormatter
+
+# centrevwl = []
+# centrevpos = []
+# for i in range(len(cc)):
+#     centrev,wlcentrev = find_centmin(wave[linelow+65:linehigh-100],cc[i,:],find_nearest)
+#     if centrev[0][0] < 1 or centrev[0][0] > 34:
+#         centrevwl.append(0)
+#         centrevpos.append(0)
+#     else:
+#         centrevwl.append(wlcentrev)
+#         centrevpos.append(65+centrev[0])
+        
+# wmwv = []
+# crwv = []
+
+
+# for i in range(len(wm)):
+#     if centrevpos[i] > 2:
+#         wmwv.append(wave[linelow+int(wm[i])])
+#         crwv.append(wave[linelow+int(centrevpos[i][0])])
+#     else:
+#         wmwv.append(0)
+#         crwv.append(0)
+
+
+# wmwv_remnan = []
+# crwv_remnan = []
+# fig,ax=plt.subplots();
+# for i in range(len(cc)):
+#     centrevposi = crwv[sortedinds[i]]
+#     wmi = wmwv[sortedinds[i]]
+#     if centrevposi > 2:
+#         wmwv_remnan.append(wmi)
+#         crwv_remnan.append(centrevposi)
+#         ax.scatter(centrevposi,wmi,color=colors[i])
+#         ax.text(float(centrevposi), float(wmi), str(i+1), fontsize=10, color='black')
+        
+#         fig2,ax2=plt.subplots()
+#         ax2.plot(wave[linelow+65:linehigh-100],cc[sortedinds[i],65:-100])
+#         fig2.savefig('/Users/coletamburri/Desktop/RPcentrev/'+str(i+1)+'.png')
+
+    
+#     ax.set_xlabel('Central reversal position')
+#     ax.set_ylabel('Weighted mean')
+#     ax.xaxis.set_major_formatter(ScalarFormatter(useOffset=False))
+#     ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=False))
+    
+# ax.set_xlim([396.8375,396.875])
+# ax.set_ylim([396.8375,396.875])
+
+# ax.axvline(396.85,color='black',linestyle='--')
+# ax.axhline(396.85,color='black',linestyle='--')
+
+# fig.show()
+
+
 

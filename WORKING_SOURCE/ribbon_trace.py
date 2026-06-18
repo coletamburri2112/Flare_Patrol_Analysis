@@ -124,55 +124,55 @@ ax.set_ylim([2550,1000])
 
 fig.show()
 
-# if original
-ccfull = plt.ginput(npoints,timeout = 120)
-
-xs_full = []
-ys_full = []
-
-for i in range(npoints):
-    xs_full.append(ccfull[i][0])
-    ys_full.append(ccfull[i][1])
-    
-npoints=10 # 10 for part ribbon
-
-fig,ax=plt.subplots(dpi=200)
-ax.imshow(image,cmap='sdoaia304')
-ax.set_xlim([1700,2400])
-ax.set_ylim([2550,1000])
-
-fig.show()
-
-# if original
-ccpart = plt.ginput(npoints,timeout = 120)
-
-xs_part = []
-ys_part = []
-
-for i in range(npoints):
-    xs_part.append(ccpart[i][0])
-    ys_part.append(ccpart[i][1])
-
-
-
-# # if derived
-# ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords_morepreflare.npz')['points']
-
-# ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords_morepreflare.npz')['points']
+# # if original
+# ccfull = plt.ginput(npoints,timeout = 120)
 
 # xs_full = []
 # ys_full = []
 
-# for i in range(len(ccfull)):
+# for i in range(npoints):
 #     xs_full.append(ccfull[i][0])
 #     ys_full.append(ccfull[i][1])
     
+# npoints=10 # 10 for part ribbon
+
+# fig,ax=plt.subplots(dpi=200)
+# ax.imshow(image,cmap='sdoaia304')
+# ax.set_xlim([1700,2400])
+# ax.set_ylim([2550,1000])
+
+# fig.show()
+
+# # if original
+# ccpart = plt.ginput(npoints,timeout = 120)
+
 # xs_part = []
 # ys_part = []
 
-# for i in range(len(ccpart)):
+# for i in range(npoints):
 #     xs_part.append(ccpart[i][0])
 #     ys_part.append(ccpart[i][1])
+
+
+
+# if derived
+ccfull = np.load('/Users/coletamburri/Desktop/fullribboncoords_morepreflare.npz')['points']
+
+ccpart = np.load('/Users/coletamburri/Desktop/lowerribboncoords_morepreflare.npz')['points']
+
+xs_full = []
+ys_full = []
+
+for i in range(len(ccfull)):
+    xs_full.append(ccfull[i][0])
+    ys_full.append(ccfull[i][1])
+    
+xs_part = []
+ys_part = []
+
+for i in range(len(ccpart)):
+    xs_part.append(ccpart[i][0])
+    ys_part.append(ccpart[i][1])
 
 
 intensities_all = []
