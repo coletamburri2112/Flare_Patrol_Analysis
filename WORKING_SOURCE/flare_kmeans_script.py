@@ -15,7 +15,7 @@ from nltk.cluster import KMeansClusterer
 import nltk
 
 ## KEYWORDS FOR RUN
-read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
@@ -909,6 +909,8 @@ for i in range(len(dfsorted)):
 # ax.axhline(396.85,color='black',linestyle='--')
 
 # fig.show()
+
+    
 
 
 
