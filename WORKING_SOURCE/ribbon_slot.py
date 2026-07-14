@@ -24,6 +24,9 @@ from scipy.ndimage import map_coordinates
 from datetime import datetime, timedelta
 from scipy.interpolate import interp1d
 from scipy.ndimage import gaussian_filter1d
+import matplotlib
+import sunpy.visualization.colormaps as cm
+from matplotlib.patches import Rectangle
 
 
 
@@ -398,6 +401,9 @@ im2 = ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/fre
                            gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr,.1)),\
                                                                axis=1,sigma=1),axis=0,sigma=1),\
                                cmap=choicemap,vmin=.5,vmax=.8)
+
+sdoaia304 = matplotlib.colormaps['sdoaia304']   
+    
 fig.colorbar(im2,pad=0.075,shrink = 0.9)
 ax.flatten()[1].set_yscale('log')
 
@@ -570,16 +576,17 @@ ax.set_xlim([1700,2400])
 ax.set_ylim([2550,1000])
 ax.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
 ax.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
-
+ax.set_aspect('equal')
 
 ax.tick_params(axis='x',labelsize=5.5)
 ax.tick_params(axis='y',labelsize=5.5)
-ax.set_aspect('equal')
 
 ax.xaxis.set_minor_locator(MultipleLocator(50)) 
 ax.yaxis.set_minor_locator(MultipleLocator(50)) 
 ax.set_xlabel('VBI-X [arcsec]',fontsize=6)
 ax.set_ylabel('VBI-Y [arcsec]',fontsize=6)
+
+
 
 for i in range(2,len(xs_full),2):
     ax.plot(xs_full[i:i+2],ys_full[i:i+2],c='green',linestyle='--',marker='o',markersize=1,linewidth=.75)
@@ -588,5 +595,30 @@ for i in range(2,len(xs_part),2):
     ax.plot(xs_part[i:i+2],ys_part[i:i+2],c='violet',linestyle='--',marker='o',markersize=1,linewidth=.75)
 
 ax.grid(alpha=0.2)
+
+#add bounding boxes for other figure (VBI_powerspec notebook)
+# because used the 47 --> 347 destretch for this script, and 177 --> 347 destretch for the other,
+# the coordinates are slightly different.  But only, it seems, in the x direction
+# have to adjust the bound boxes by ~20 pixels in the x direction to account for this
+# because
+xlow = 1820 
+xhigh = 2320
+ylow = 2000
+yhigh = 2500
+
+box = Rectangle((xlow, ylow), width=xhigh-xlow, height=yhigh-ylow, edgecolor='#BEE4A8', facecolor='none', linewidth=1,linestyle='dashed')
+
+ax.add_patch(box)
+
+#add smaller bounding box for other figure (see note above)
+xlow2 = 1920
+xhigh2 = 2120
+ylow2 = 2270
+yhigh2 = 2470
+
+box2 = Rectangle((xlow2, ylow2), width=xhigh2-xlow2, height=yhigh2-ylow2, edgecolor='darkorange', facecolor='none', linewidth=1,linestyle='solid')
+
+# 3. Add the box patch to the axes
+ax.add_patch(box2)
 
 fig.show()

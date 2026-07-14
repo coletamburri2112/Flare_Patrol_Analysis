@@ -211,6 +211,12 @@ axes[1].yaxis.set_minor_locator(AutoMinorLocator(6))
 axes[1].set_xlabel('Time [UT]')
 axes[1].set_ylabel(r'Integrated intensity [arb. units pix$^{-2}$]')
 axes[1].grid()
+
+slices=[20,23,27,32,35,38,41,45,50,60,105]
+
+for i in range(len(slices)):
+    axes[1].axvline(130+slices[i],linestyle='--',color='black')
+    
 fig.show()
 
 
