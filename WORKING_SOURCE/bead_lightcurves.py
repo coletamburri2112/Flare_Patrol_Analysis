@@ -85,7 +85,7 @@ file = '/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestr
 
 destretch = fits.open(file)
 
-dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 xarr_CaII = dkist_coords['xarr_caII']
@@ -149,15 +149,23 @@ desired_ystr = ['—234','—238','—242','—246']
 desired_x = [760,765]
 desired_xstr = ['760','765']
 
+# need small adjustments to account for different coordinates in destretched
+# data from the 47 to 347 file (here) and the frames 177 to 347 
+# (on which the OG coalignment between VBI and ViSP was done)
+
+# Values also reflected in ribbon_slot.py
+XX = 27
+YY = 12
+
 vbiy=[]
 for i in range(len(desired_y)):
     indch = DKISTanalysis.find_nearest(yarr_CaII,desired_y[i])[1]
-    vbiy.append(int(Y[indch][0])-ylow)
+    vbiy.append(int(Y[indch][0])-ylow+YY)
     
 vbix=[]
 for i in range(len(desired_x)):
     indch = DKISTanalysis.find_nearest(xarr_CaII,desired_x[i])[1]
-    vbix.append(int(X[0][indch])-xlow)
+    vbix.append(int(X[0][indch])-xlow+XX)
 
 fig,ax=plt.subplots(1,2,dpi=100,figsize=(14,4));
 
@@ -214,8 +222,8 @@ axes[1].grid()
 
 slices=[20,23,27,32,35,38,41,45,50,60,105]
 
-for i in range(len(slices)):
-    axes[1].axvline(130+slices[i],linestyle='--',color='black')
+for i in [0,3,6,10]:
+    axes[1].axvline(130+slices[i],linestyle='--',color='grey',linewidth=1)
     
 fig.show()
 

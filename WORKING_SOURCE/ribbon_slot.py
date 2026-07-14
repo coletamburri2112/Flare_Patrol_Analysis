@@ -184,6 +184,7 @@ def calculate_distance_along_curve(x, y):
     
     return cumulative_distance
 
+
 npoints=30# 10 for full ribbon
 # image = destretch[0].data[210,:,:]
 # fig,ax=plt.subplots(dpi=200)
@@ -554,7 +555,7 @@ for i in range(npoints2):
 xarcsec = np.arange(np.shape(destretch[0].data[0,:,:][0])[0])*0.017
 yarcsec = np.arange(np.shape(destretch[0].data[0,:,:][1])[0])*0.017
 
-fig,ax=plt.subplots(dpi=200,figsize=(3,10))
+fig,ax=plt.subplots(dpi=200,figsize=(2.8,10))
 
 im=ax.pcolormesh(destretch[0].data[100+130,:,:]/1e4,cmap='sdoaia304',alpha=0.9)
 cbar = fig.colorbar(im)
@@ -572,19 +573,81 @@ ax.plot(xs_full[0:2],ys_full[0:2],c='green',linestyle='-',marker='o',markersize=
 ax.plot(xs_full[-2:],ys_full[-2:],c='green',linestyle='-',marker='o',markersize=1,linewidth=.75)
 
 
-ax.set_xlim([1700,2400])
+ax.set_xlim([1770,2350])
 ax.set_ylim([2550,1000])
-ax.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
-ax.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
+#ax.set_xticks([1800,2000,2200],[int(xarcsec[1800]),int(xarcsec[2000]),int(xarcsec[2200])])
+#ax.set_yticks([2400,2000,1600,1200],[int(yarcsec[2400]),int(yarcsec[2000]),int(xarcsec[1600]),int(xarcsec[1200])])
+
+
+# coordinates from visp co-alignment
+# because used the 47 --> 347 destretch for this script, and 177 --> 347 destretch for the other,
+# the coordinates are slightly different.  But only, it seems, in the x direction
+# have to adjust the bound boxes by ~XX pixels in the x direction to account for this
+# I think this is better because co-alignment of ViSP with VBI frames from much before
+# the drop in seeing would probably not be reliable
+
+#######################################
+
+XX=27
+YY=12
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
+dkist_coords = np.load(dkist_coord_file)
+
+xarr_CaII = dkist_coords['xarr_caII']
+yarr_CaII = dkist_coords['yarr_caII']
+
+xarr_hbeta = dkist_coords['xarr_hbeta']
+yarr_hbeta = dkist_coords['yarr_hbeta']
+
+visp_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
+
+X=np.load(visp_file)['arr_0']
+Y=np.load(visp_file)['arr_1']
+V=np.load(visp_file)['arr_2']
+
+desired_y = [-222,-228,-234,-240,-246]
+desired_ystr = [r'$-$222',r'$-$228',r'$-$234',r'$-$240',r'$-$246']
+
+desired_x = [760,765]
+desired_xstr = ['760','765']
+
+vbiy=[]
+for i in range(len(desired_y)):
+    indch = DKISTanalysis.find_nearest(yarr_CaII,desired_y[i])[1]
+    
+    ## slight offset in coordinates... need to adjust by 1 or 2 pixels
+    if i == 2:
+        vbiy.append(int(Y[indch][0])+YY+3)
+
+    elif i>2:
+        vbiy.append(int(Y[indch][0])+YY+6)
+
+    else:
+        vbiy.append(int(Y[indch][0])+YY)
+        
+    
+vbix=[]
+for i in range(len(desired_x)):
+    indch = DKISTanalysis.find_nearest(xarr_CaII,desired_x[i])[1]
+    vbix.append(int(X[0][indch])+XX)
+    
+
+
+#######################################
+
+
 ax.set_aspect('equal')
 
 ax.tick_params(axis='x',labelsize=5.5)
 ax.tick_params(axis='y',labelsize=5.5)
 
-ax.xaxis.set_minor_locator(MultipleLocator(50)) 
-ax.yaxis.set_minor_locator(MultipleLocator(50)) 
-ax.set_xlabel('VBI-X [arcsec]',fontsize=6)
-ax.set_ylabel('VBI-Y [arcsec]',fontsize=6)
+ax.set_xticks(vbix,desired_xstr) 
+ax.set_yticks(vbiy,desired_ystr)
+
+ax.xaxis.set_minor_locator(AutoMinorLocator(6)) 
+ax.yaxis.set_minor_locator(AutoMinorLocator(6)) 
+ax.set_xlabel('DKIST HPC-x [arcsec]',fontsize=6)
+ax.set_ylabel('DKIST HPC-y [arcsec]',fontsize=6)
 
 
 
@@ -599,22 +662,22 @@ ax.grid(alpha=0.2)
 #add bounding boxes for other figure (VBI_powerspec notebook)
 # because used the 47 --> 347 destretch for this script, and 177 --> 347 destretch for the other,
 # the coordinates are slightly different.  But only, it seems, in the x direction
-# have to adjust the bound boxes by ~20 pixels in the x direction to account for this
+# have to adjust the bound boxes by ~XX (see above) pixels in the x direction to account for this
 # because
-xlow = 1820 
-xhigh = 2320
-ylow = 2000
-yhigh = 2500
+xlow = 1800+XX
+xhigh = 2300+XX
+ylow = 2000+YY
+yhigh = 2500+YY
 
 box = Rectangle((xlow, ylow), width=xhigh-xlow, height=yhigh-ylow, edgecolor='#BEE4A8', facecolor='none', linewidth=1,linestyle='dashed')
 
 ax.add_patch(box)
 
 #add smaller bounding box for other figure (see note above)
-xlow2 = 1920
-xhigh2 = 2120
-ylow2 = 2270
-yhigh2 = 2470
+xlow2 = 1900+XX
+xhigh2 = 2100+XX
+ylow2 = 2270+YY
+yhigh2 = 2470+YY
 
 box2 = Rectangle((xlow2, ylow2), width=xhigh2-xlow2, height=yhigh2-ylow2, edgecolor='darkorange', facecolor='none', linewidth=1,linestyle='solid')
 
