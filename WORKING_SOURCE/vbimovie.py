@@ -120,7 +120,7 @@ yhigh5 = 1300
 xlow5 = 1200
 xhigh5 = 2500
 
-loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc.npz',allow_pickle='True')
+loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
 
@@ -133,12 +133,15 @@ def storeJPG(data,outfolder,times,lc,end=137,dpi=300,lowx=0,highx=-1,lowy=0,high
         
         fig,ax=plt.subplots(dpi=dpi,figsize=(10,10))
         ax.imshow(imagenorm,cmap='sdoaia304')
-        ax.set_title(str(times[i])+' UT',fontsize=12)
+        ax.set_xlabel('VBI-x [pix]')
+        ax.set_ylabel('VBI-y [pix]')
+        ax.set_title(str(times[i])[0:19]+' UT',fontsize=12)
         
         ax_inset = ax.inset_axes([leftsubplot, 0.8, 0.4, 0.15]) 
-        ax_inset.plot(lcvbi[:end],color='black')
+        ax_inset.plot(lcvbi[130:end+130],color='black')
         ax_inset.set_xticks([])
         ax_inset.set_yticks([])
+        ax_inset.set_title(r'VBI H$\alpha$ light curve',color='white')
         ax_inset.patch.set_alpha(0.7)
         ax_inset.axvline(i,color='red',linestyle='dashed')
         
@@ -149,29 +152,29 @@ outfolder = '/Users/coletamburri/Desktop/fullframe/'
 os.mkdir(outfolder)
 storeJPG(dC,outfolder,t3,lcvbi)        
 
-outfolder = '/Users/coletamburri/Desktop/regionr1B/'
-os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow,highx=xhigh,lowy=ylow,highy=yhigh)
+# outfolder = '/Users/coletamburri/Desktop/regionr1B/'
+# os.mkdir(outfolder)
+# storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow,highx=xhigh,lowy=ylow,highy=yhigh)
 
 outfolder = '/Users/coletamburri/Desktop/regionr1A/'
 os.mkdir(outfolder)
 storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow1,highx=xhigh1,lowy=ylow1,highy=yhigh1)
 
-outfolder = '/Users/coletamburri/Desktop/threebeadsr1A/'
-os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow2,highx=xhigh2,lowy=ylow2,highy=yhigh2)
+# outfolder = '/Users/coletamburri/Desktop/threebeadsr1A/'
+# os.mkdir(outfolder)
+# storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow2,highx=xhigh2,lowy=ylow2,highy=yhigh2)
 
-outfolder = '/Users/coletamburri/Desktop/regionr1B/'
-os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow3,highx=xhigh3,lowy=ylow3,highy=yhigh3)
+# outfolder = '/Users/coletamburri/Desktop/regionr1B/'
+# os.mkdir(outfolder)
+# storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow3,highx=xhigh3,lowy=ylow3,highy=yhigh3)
 
-outfolder = '/Users/coletamburri/Desktop/outflow/'
-os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow4,highx=xhigh4,lowy=ylow4,highy=yhigh4)
+# outfolder = '/Users/coletamburri/Desktop/outflow/'
+# os.mkdir(outfolder)
+# storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow4,highx=xhigh4,lowy=ylow4,highy=yhigh4)
 
-outfolder = '/Users/coletamburri/Desktop/r2/'
-os.mkdir(outfolder)
-storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow5,highx=xhigh5,lowy=ylow5,highy=yhigh5)
+# outfolder = '/Users/coletamburri/Desktop/r2/'
+# os.mkdir(outfolder)
+# storeJPG(dC,outfolder,t3,lcvbi,lowx=xlow5,highx=xhigh5,lowy=ylow5,highy=yhigh5)
 
 def storeSequence(data, movieName, dpi=300, write=True, inds = indices):
     fig =plt.figure(dpi=300)
