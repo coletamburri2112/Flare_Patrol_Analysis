@@ -50,6 +50,12 @@ lat = -13 #degrees
 lonqs = 0
 latqs = 0
 
+#this needs adjustment - ID of quiet sun region in time and space
+startstep_noflare = 0
+endstep_noflare=91
+
+startspace_noflare=2000
+
 
 wl = 486.135 # central wavelength, H-beta
 
@@ -77,13 +83,13 @@ clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
 startstepqs = 0
 endstepqs=100
 # # for earliest part of flare
-# startstep=0#where does interesting bit begin?
-# endstep=1400#where does interesting bit end?
+startstep=0#where does interesting bit begin?
+endstep=1400#where does interesting bit end?
 
 # for later in flare
-startstep=10000
-endstep = 11400
-print('here2')
+# startstep=10000
+# endstep = 11400
+
 # process multi-step raster - for qs time
 image_data_arr_arr, rasterpos, times = \
     DKISTanalysis.multistepprocess(path,folder1,dir_list2,startstep=startstep,div=1,endstep=endstep)
@@ -156,7 +162,7 @@ nonflare_average_avg = calibrated_qs
 nonflare_multfact = fit_vals
 
 # full width of half max of PSF to convolve with atlas to match instrument
-fwhm = 0.05
+fwhm = 0.005
 
 # number of points to interpolate Atlas to in PSF convolve to match instrument
 ntw = 45
@@ -192,7 +198,7 @@ nonflare_multfact = fit_vals
 # intensity calibration, background subtraction for flare-time                            
 scaled_flare_time, bkgd_subtract_flaretime = \
     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
-                          nonflare_average_avg,end=end)
+                          startstep_noflare,endstep_noflare,startspace_noflare,end=end)
 
 
 #indices to search within to find flare kernel center
