@@ -24,8 +24,8 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
-n_init = 10 # number of times to initialize the k-means clustering; 
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+n_init = 1 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
@@ -167,6 +167,7 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
             normprofiles_line.append(line_norm)
     
         arr_normprofs = np.asarray(normprofiles_line)
+        print(n_init)
         
         km = sl.cluster.KMeans(n_clusters=num_clusters,n_init=n_init).fit(normprofiles_line)
         
@@ -291,11 +292,11 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=3 # was 7 before
+        cutoff0=4 # was 7 before
 elif line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
-        cutoff0=1.5 
+        cutoff0=1.5 # paper version is 1.5
 
 ## DEFINE NUMBER OF CLUSTERS; EMPIRICALLY DETERMINED
 if line == 0:
@@ -337,7 +338,7 @@ if read_in == 0:
         frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0 = \
             kmeans_scikit(start,0,nsteps,startspace,
                         endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
-                            cutoff0,normflag=1)    
+                            cutoff0,normflag=1,n_init=n_init)    
     ## REDEFINE STORED ViSP ARRAY
     arr_normprofs0 = normprofiles_line
     
