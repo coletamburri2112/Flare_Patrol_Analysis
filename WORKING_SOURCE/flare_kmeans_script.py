@@ -13,6 +13,8 @@ from matplotlib.collections import LineCollection
 import pandas as pd
 from nltk.cluster import KMeansClusterer
 import nltk
+from sklearn.metrics import davies_bouldin_score
+from sklearn.metrics import silhouette_score
 
 ## KEYWORDS FOR RUN
 read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
@@ -30,6 +32,7 @@ n_init = 1 # number of times to initialize the k-means clustering;
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
+metricstest = 1 
 
 if read_in == 1:
     if line == 0:
@@ -186,8 +189,13 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
         
         labels = km.labels_
         cc = km.cluster_centers_
+        
+    #calculate scores suggested by Sarah
+    db_index = davies_bouldin_score(normprofiles_line,labels)
+    silhouette = silhouette_score(normprofiles_line,labels)
+    inertia = km.inertia_
     
-    return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask
+    return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask, db_index, silhouette, inertia
 
 def find_nearest(array, value):
     array = np.asarray(array)
@@ -278,7 +286,8 @@ if full_scan_qs == 1:
     
 
 ## READ-IN SAVED CO-ALIGNED DKIST COORDINATION
-dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
+#dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 ## STORE SPATIAL COORDINATES
@@ -335,10 +344,42 @@ if read_in == 0:
                         endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
                             cutoff0,normflag=1)
     elif clusterer == 'scikit':
-        frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0 = \
-            kmeans_scikit(start,0,nsteps,startspace,
-                        endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
-                            cutoff0,normflag=1,n_init=n_init)    
+        if metricstest == 0:
+            frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0, dbind, silh, inertia = \
+                kmeans_scikit(start,0,nsteps,startspace,
+                            endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
+                                cutoff0,normflag=1,n_init=n_init) 
+                
+        elif metricstest == 1:
+            dbinds= []
+            silhs = []
+            inertias = []
+            if line == 1:
+                n_clusters_range = np.arange(3,20,1)
+            elif line == 0:
+                n_clusters_range = np.arange(3,50,4)
+ 
+            for i in n_clusters_range:
+                print(i)
+                frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0, dbind, silh, inertia = \
+                    kmeans_scikit(start,0,nsteps,startspace,
+                                endspace,obs_avg_line,flare_arr2,normalize,int(i),\
+                                    cutoff0,normflag=1,n_init=n_init) 
+                dbinds.append(dbind)
+                silhs.append(silh)
+                inertias.append(inertia)
+                
+                
+            fig,ax=plt.subplots()
+            ax.plot(n_clusters_range,dbinds,label='DB index',c='red',marker='o',linestyle='--')
+            ax1=ax.twinx()
+            ax2=ax.twinx()
+            ax1.plot(silhs, label='Silhouette score',c='blue',marker='x',linestyle='--')
+            ax2.plot(n_clusters_range,inertias, label = 'Inertia',c='blue',marker='x',linestyle='--')
+            ax.legend()
+            ax1.legend()
+            ax2.legend()
+            
     ## REDEFINE STORED ViSP ARRAY
     arr_normprofs0 = normprofiles_line
     
