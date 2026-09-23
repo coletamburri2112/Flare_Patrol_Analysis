@@ -17,7 +17,7 @@ from sklearn.metrics import davies_bouldin_score
 from sklearn.metrics import silhouette_score
 
 ## KEYWORDS FOR RUN
-read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
@@ -26,13 +26,13 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 n_init = 1 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
-metricstest = 1 
+metricstest = 0 
 
 if read_in == 1:
     if line == 0:
@@ -142,7 +142,7 @@ def kmeans_nltk(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
 
 def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
                 normalize,num_clusters,cutoff,line_low=linelow,
-                line_high=linehigh,normflag=0,n_init=n_init):
+                line_high=linehigh,normflag=0,n_init=n_init,metricstest=0):
 
     frame_line = obs_avg
     cut = cutoff*np.nanmedian(frame_line)
@@ -191,12 +191,16 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
         cc = km.cluster_centers_
         
     #calculate scores suggested by Sarah
-    db_index = davies_bouldin_score(normprofiles_line,labels)
-    silhouette = silhouette_score(normprofiles_line,labels)
-    inertia = km.inertia_
     
-    return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask, db_index, silhouette, inertia
-
+    if metricstest ==1 :
+        db_index = davies_bouldin_score(normprofiles_line,labels)
+        silhouette = silhouette_score(normprofiles_line,labels)
+        inertia = km.inertia_
+    
+        return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask, db_index, silhouette, inertia
+    else:
+        return frame_line, mask, km, normprofiles_line, labels, cc, x_mask, y_mask
+    
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -345,7 +349,7 @@ if read_in == 0:
                             cutoff0,normflag=1)
     elif clusterer == 'scikit':
         if metricstest == 0:
-            frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0, dbind, silh, inertia = \
+            frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0= \
                 kmeans_scikit(start,0,nsteps,startspace,
                             endspace,obs_avg_line,flare_arr2,normalize,n_clusters0,\
                                 cutoff0,normflag=1,n_init=n_init) 
@@ -357,28 +361,41 @@ if read_in == 0:
             if line == 1:
                 n_clusters_range = np.arange(3,20,1)
             elif line == 0:
-                n_clusters_range = np.arange(3,50,4)
+                n_clusters_range = np.arange(3,50,1)
  
             for i in n_clusters_range:
                 print(i)
                 frame_line, mask0, km0, normprofiles_line, labels0, cc, x_mask0, y_mask0, dbind, silh, inertia = \
                     kmeans_scikit(start,0,nsteps,startspace,
                                 endspace,obs_avg_line,flare_arr2,normalize,int(i),\
-                                    cutoff0,normflag=1,n_init=n_init) 
+                                    cutoff0,normflag=1,n_init=n_init,metricstest=1) 
                 dbinds.append(dbind)
                 silhs.append(silh)
                 inertias.append(inertia)
                 
                 
-            fig,ax=plt.subplots()
-            ax.plot(n_clusters_range,dbinds,label='DB index',c='red',marker='o',linestyle='--')
-            ax1=ax.twinx()
-            ax2=ax.twinx()
-            ax1.plot(silhs, label='Silhouette score',c='blue',marker='x',linestyle='--')
-            ax2.plot(n_clusters_range,inertias, label = 'Inertia',c='blue',marker='x',linestyle='--')
-            ax.legend()
-            ax1.legend()
-            ax2.legend()
+            fig,ax=plt.subplots(1,2,dpi=100,figsize=(10,5))
+            lns0 = ax.flatten()[0].plot(n_clusters_range,inertias,label='Inertia',c='red',marker='o',linestyle='--')
+            ax1=ax.flatten()[0].twinx()
+            lns1 = ax1.plot(silhs, label='Silhouette score',c='blue',marker='x',linestyle='--')
+            ax.flatten()[1].plot(n_clusters_range,dbinds, label = 'db_index',c='black',marker='x',linestyle='--')
+            
+            lns=lns0+lns1
+            labs = [l.get_label() for l in lns]
+
+            ax.flatten()[0].legend(lns,labs)
+            ax1.set_ylabel('Silhouette score')
+            ax.flatten()[0].set_ylabel('Inertia')
+            ax.flatten()[1].set_ylabel('DB Index')
+
+            ax.flatten()[1].legend()
+            
+            ax.flatten()[1].grid()
+            ax.flatten()[0].grid()
+            ax.flatten()[0].set_xlabel('Number of Clusters')
+            ax.flatten()[1].set_ylabel('Number of Clusters')
+            
+            fig.tight_layout()
             
     ## REDEFINE STORED ViSP ARRAY
     arr_normprofs0 = normprofiles_line
@@ -392,6 +409,8 @@ if read_in == 0:
     #        [  11.84946237,  850.67365452]]
     
     dists=[]
+    
+    counts_cc = np.bincount(labels0)
     
     ## SORTING METHODS; DEPENDS ON WHICH CLUSTERING METHOD B/C OUTPUT IS DIFFERENT FORMAT
     if clusterer == 'nltk':
@@ -433,7 +452,7 @@ if read_in == 0:
         inds = np.arange(len(cc))
     
     ## MAKE ORDERING INTO DATAFRAME
-    df = pd.DataFrame({'x':inds,'y':wm,'z':dists}) # by blue wing to core - 480 to 600
+    df = pd.DataFrame({'x':inds,'y':wm,'z':dists, 'count': counts_cc}) # by blue wing to core - 480 to 600
     
     ## SORT VALUES BY THE SORTING METHOD USED ABOVE
     df.sort_values(by=['y'])
@@ -442,6 +461,7 @@ if read_in == 0:
     sortedinds0 = df.sort_values(['y'])['x']
     sortedwls = df.sort_values(['y'])['y']
     sortedinds=np.asarray(sortedinds0).copy()
+    sortedcounts = df.sort_values(['y'])['count']
     
     ## ADJUST THE SORTING?
     if line == 1:
@@ -583,7 +603,7 @@ fig.show()
 
 
 if line == 0:
-    fig,ax=plt.subplots(5,7,figsize=(10,6),dpi=200) #if hep and caii
+    fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
 if line == 1:
     fig,ax=plt.subplots(int(n_clusters0/4),4,figsize=(10,6),dpi=200) #if hep and caii
 
@@ -664,6 +684,8 @@ if clusterer == 'nltk':
             left=False,      # ticks along the bottom edge are off
             right=False,         # ticks along the top edge are off
             labelleft=False)# labels along the bottom edge are off
+            ax.flatten()[i].text(0.05, 0.95, str(sortedcounts[sortedinds[i]]), transform=ax.flatten()[i].transAxes, \
+                 ha='right', va='top', fontsize=6, fontstyle='italic')
             ax.flatten()[i].text(0.95, 0.95, str(i+1), transform=ax.flatten()[i].transAxes, \
                  ha='right', va='top', fontsize=6, fontstyle='italic')
             ax.flatten()[i].set_ylim([-0.2,1.2])
@@ -785,6 +807,8 @@ elif clusterer == 'scikit':
                 left=False,      # ticks along the bottom edge are off
                 right=False,         # ticks along the top edge are off
                 labelleft=False)# labels along the bottom edge are off
+                axes[i].text(0.2, 0.95, str(round(100*float(sortedcounts[sortedinds[i]])/len(labels0),2)), transform=axes[i].transAxes, \
+                     ha='right', va='top', fontsize=6, fontstyle='italic')
                 axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
                      ha='right', va='top', fontsize=6, fontstyle='italic')
                 axes[i].set_ylim([-0.2,1.2])
@@ -819,6 +843,8 @@ elif clusterer == 'scikit':
             left=False,      # ticks along the bottom edge are off
             right=False,         # ticks along the top edge are off
             labelleft=False)# labels along the bottom edge are off
+            axes[i].text(0.3, 0.95, str(round(100*float(sortedcounts[sortedinds[i]])/len(labels0),2)), transform=axes[i].transAxes, \
+                 ha='right', va='top', fontsize=6, fontstyle='italic')
             axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
                  ha='right', va='top', fontsize=6, fontstyle='italic')
             axes[i].set_ylim([-0.2,1.2])
@@ -835,7 +861,7 @@ elif clusterer == 'scikit':
                 secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=8)
                 secaxx.tick_params(axis='both', which='major', labelsize=8)
         else:
-            if i <7:
+            if i <int(n_clusters0/5):
                 secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
                 secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
                 secaxx.tick_params(axis='both', which='major', labelsize=6)
