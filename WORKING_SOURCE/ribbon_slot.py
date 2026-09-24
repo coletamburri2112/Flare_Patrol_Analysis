@@ -9,24 +9,19 @@ Created on Thu Apr 23 15:09:55 2026
 import numpy as np
 from astropy.io import fits
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import cv2
-from skimage.measure import profile_line
-from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from pathlib import Path
 from datetime import datetime
-import matplotlib.dates as mdates ## Import required library
 import sys
-from scipy.optimize import curve_fit
-sys.path.append('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/WORKING_SOURCE/')
+#sys.path.append('/Users/coletamburri/Desktop/DKIST_Code/Flare_Patrol_Analysis/WORKING_SOURCE/')
+sys.path.append('/Users/coletamburri/Desktop/Flare_Patrol_Analysis/WORKING_SOURCE/')
 import dkistpkg_ct as DKISTanalysis
-from scipy.ndimage import map_coordinates
-from datetime import datetime, timedelta
 from scipy.interpolate import interp1d
 from scipy.ndimage import gaussian_filter1d
 import matplotlib
-import sunpy.visualization.colormaps as cm
 from matplotlib.patches import Rectangle
+from datetime import timedelta
+from matplotlib.ticker import AutoMinorLocator
+import sunpy.visualization.colormaps as cm
 
 
 
@@ -76,7 +71,8 @@ for i in range(len(timesvbi)):
     
 onlytimevbi_samp = onlytimevbi[47:347]
     
-file = '/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_47_347.fits'
+#file = '/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_47_347.fits'
+file = '/Volumes/ViSP_External/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_47_347.fits'
 
 destretch = fits.open(file)
 
@@ -209,9 +205,12 @@ npoints2=10# 30 for full ribbon
 
 # ccslot2 = plt.ginput(npoints2,timeout = 120)
 
-ccslot = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot.npz')['ccslot']
+#ccslot = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot.npz')['ccslot']
 
-ccslot2 = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot2.npz')['ccslot2']
+#ccslot2 = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot2.npz')['ccslot2']
+
+ccslot = np.load('/Users/coletamburri/Desktop/ccslot.npz')['ccslot']
+ccslot2 = np.load('/Users/coletamburri/Desktop/ccslot2.npz')['ccslot2']
 
 int_avg_all = []
 xmaxsallall = []
@@ -386,7 +385,8 @@ arcsec_to_km=727
 km_to_Mm = 0.001
     
 #loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
-loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
+#loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
+loadvbilc = np.load('/Users/coletamburri/Desktop/vbi_lc_extended.npz',allow_pickle='True')
 
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
@@ -394,144 +394,205 @@ t3 = np.arange(datetime(2024,8,11,22,31,26),
               datetime(2024,8,11,22,38,57), 
               timedelta(seconds=2.666)).astype(datetime)
 choicemap = 'inferno'
-fig,ax=plt.subplots(3,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
-im = ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps)/1e4,cmap='afmhot');
-fig.colorbar(im,pad=0.075,shrink = 0.9)
-ax.flatten()[0].invert_yaxis();
-im2 = ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/freqresult,\
-                           gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr,.1)),\
-                                                               axis=1,sigma=1),axis=0,sigma=1),\
-                               cmap=choicemap,vmin=.5,vmax=.8)
+include_fft = 0
 
-sdoaia304 = matplotlib.colormaps['sdoaia304']   
+if include_fft == 1:
+    fig,ax=plt.subplots(3,1,dpi=100,figsize=(10,15), gridspec_kw={'hspace': 0});
+    im = ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps)/1e4,cmap='afmhot');
+    fig.colorbar(im,pad=0.075,shrink = 0.9)
+    ax.flatten()[0].invert_yaxis();
+    im2 = ax.flatten()[1].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/freqresult,\
+                               gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr,.1)),\
+                                                                   axis=1,sigma=1),axis=0,sigma=1),\
+                                   cmap=choicemap,vmin=.5,vmax=.8)
+
+    sdoaia304 = matplotlib.colormaps['sdoaia304']   
+        
+    fig.colorbar(im2,pad=0.075,shrink = 0.9)
+    ax.flatten()[1].set_yscale('log')
+
+    ## if want to look at really small scales
+    # ax.flatten()[1].set_ylim([0,100]) 
+
+    ## if want to look at larger scales
+    ax.flatten()[1].set_ylim([250,1400]) 
+    ax.flatten()[1].set_yticks([300,500, 800, 1100])
+    ax.flatten()[1].set_yticklabels(['300','500', '800','1100'])
+
+    ax.flatten()[1].minorticks_off()
+    ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
+
+    ax2 = ax.flatten()[0].twinx()
+    #ax3 = ax.flatten()[1].twinx()
+
+    ax2.plot(friedvbi[47:347],c='white',linewidth=1)
+    #ax3.plot(friedvbi[47:347],c='black',linewidth=2)
+
+    ax4 = ax.flatten()[0].twinx()
+    ax4.plot(np.arange(300),lcvbi[:300],color='yellow',linewidth=2);
+    ax4.set_yticks([])
+
+    ax5 = ax.flatten()[1].twinx()
+    ax5.set_yticks([])
+
+
+    ax2.set_ylim([1,19])
+    #ax3.set_ylim([1,19])
+
+
+    ax2.set_ylabel(r'$r_0$ [cm]',fontsize=8)
+    #ax3.set_ylabel(r'$r_0$ [cm]',fontsize=8)
+
+    ax.flatten()[0].set_xlim([0,260])
+    ax.flatten()[1].set_xlim([0,260])
+    ax.flatten()[2].set_xlim([0,260])
+    #ax.flatten()[3].set_xlim([0,260])
+
+
+    ax.flatten()[0].tick_params(axis='both', labelsize=8)
+    ax.flatten()[1].tick_params(axis='both', labelsize=8)
+    ax.flatten()[2].tick_params(axis='both', labelsize=8)
+    #ax.flatten()[3].tick_params(axis='both', labelsize=8)
+    ax2.set_xticks([])
+
+    ax2.tick_params(axis='both', labelsize=8)
+    #ax3.tick_params(axis='both', labelsize=8)
+    ax4.tick_params(axis='both', labelsize=8)
+    ax5.tick_params(axis='both', labelsize=8)
+
+    im3 = ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2)/1e4,cmap='afmhot');
+    fig.colorbar(im3,pad=0.075,shrink = 0.9)
+    ax.flatten()[2].invert_yaxis();
+    #ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:],.1)),axis=1,sigma=1),axis=0,sigma=1),cmap=choicemap,vmin=0.6,vmax=.8)
+
+    #ax.flatten()[3].set_ylim([90,2000])
+    #ax.flatten()[3].set_yscale('log')
+    #ax.flatten()[3].set_xlabel('Time [UT]',fontsize=8)
+
+    #ax7 = ax.flatten()[3].twinx()
+
+    #ax7.plot(friedvbi[47:347],c='black',linewidth=2)
+
+
+    #ax7.set_ylim([1,19])
+
+
+    #ax7.set_ylabel(r'$r_0$ [cm]',fontsize=8)
+
+    # vertical lines at peak of HXR... 22:33:13 UT
+    ax.flatten()[0].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+    ax.flatten()[1].axvline(40+130,color='black',linestyle='dashed',linewidth=2)
+    #ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
+    #ax.flatten()[3].axvline(40+130,color='black',linestyle='dashed',linewidth=2)
+
+    # ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
+    ax.flatten()[0].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+    ax.flatten()[1].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
+    #ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
+    #ax.flatten()[3].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
+
+
+    ax.flatten()[1].set_xticks([])
+    #ax.flatten()[3].set_xticks([])
+
+    ax.flatten()[2].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
+    ax.flatten()[0].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
+
+    ax.flatten()[0].xaxis.tick_top()
+
+    ax.flatten()[0].tick_params(axis='both', labelsize=8)
+    ax.flatten()[1].tick_params(axis='both', labelsize=8)
+    ax.flatten()[2].tick_params(axis='both', labelsize=8)
+    #ax.flatten()[3].tick_params(axis='both', labelsize=8)
+
+    ax2.tick_params(axis='both', labelsize=8)
+    #ax3.tick_params(axis='both', labelsize=8)
+    ax4.tick_params(axis='both', labelsize=8)
+    ax5.tick_params(axis='both', labelsize=8)
+    #ax7.tick_params(axis='both', labelsize=8)
+
+    ax.flatten()[1].set_ylabel('Spatial scale [km]',fontsize=8)
+    #ax.flatten()[1].set_ylabel(r'Frequency [pix$^{-1}$]',fontsize=8)
+
+    ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
+
+    #ax.flatten()[3].set_ylabel('Spatial scale [km]',fontsize=8)
+
+    #ax.flatten()[3].set_xlabel('Time [UT]',fontsize=8)
+
+
+    ax.flatten()[2].set_ylabel('Distance along trace [km]',fontsize=8)
+    ax.flatten()[2].set_xlabel('Time [UT]',fontsize=8)
+
+
+    ax.flatten()[0].set_ylabel('Distance along trace [km]',fontsize=8)
+    ax.flatten()[0].set_xlabel('Time [UT]',fontsize=8)
+    ax.flatten()[0].set_yticks([0,5000,10000])
+    ax.flatten()[2].set_yticks([500,1500,2500])
+
+    for i in range(len(friedvbi[47:347])):
+        if friedvbi[47+i]<3:
+            ax.flatten()[1].axvline(i, color='lavender', alpha=1,linewidth=3)
+    #        ax.flatten()[3].axvline(i, color='lavender', alpha=1,linewidth=3)
+    fig.show()
+else: 
     
-fig.colorbar(im2,pad=0.075,shrink = 0.9)
-ax.flatten()[1].set_yscale('log')
+    fig,ax=plt.subplots(2,1,dpi=100,figsize=(10,6), gridspec_kw={'hspace': 0});
+    im = ax.flatten()[0].pcolormesh(np.arange(300),np.arange(l)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps)/1e4,cmap='afmhot');
+    fig.colorbar(im,pad=0.075,shrink = 0.9)
+    ax.flatten()[0].invert_yaxis();
+    ax2 = ax.flatten()[0].twinx()
+    ax2.plot(friedvbi[47:347],c='white',linewidth=1)
+    ax4 = ax.flatten()[0].twinx()
+    ax4.plot(np.arange(300),lcvbi[:300],color='yellow',linewidth=2);
+    ax4.set_yticks([])
+    ax2.set_ylim([1,19])
+    ax2.set_ylabel(r'$r_0$ [cm]',fontsize=8)
+    
+    ax.flatten()[0].set_xlim([0,260])
+    ax.flatten()[1].set_xlim([0,260])
+    
+    
+    ax.flatten()[0].tick_params(axis='both', labelsize=8)
+    ax.flatten()[1].tick_params(axis='both', labelsize=8)
+    ax2.set_xticks([])
+    
+    ax2.tick_params(axis='both', labelsize=8)
+    #ax3.tick_params(axis='both', labelsize=8)
+    ax4.tick_params(axis='both', labelsize=8)
+    
+    im3 = ax.flatten()[1].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2)/1e4,cmap='afmhot');
+    fig.colorbar(im3,pad=0.075,shrink = 0.9)
+    ax.flatten()[1].invert_yaxis();
+    # vertical lines at peak of HXR... 22:33:13 UT
+    ax.flatten()[0].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+    ax.flatten()[1].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
+    
+    # ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
+    ax.flatten()[0].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+    ax.flatten()[1].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
+    
+    ax.flatten()[1].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
+    ax.flatten()[0].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
+    
+    ax.flatten()[0].xaxis.tick_top()
+    
+    ax.flatten()[0].tick_params(axis='both', labelsize=8)
+    ax.flatten()[1].tick_params(axis='both', labelsize=8)
 
-## if want to look at really small scales
-# ax.flatten()[1].set_ylim([0,100]) 
-
-## if want to look at larger scales
-ax.flatten()[1].set_ylim([250,1400]) 
-ax.flatten()[1].set_yticks([300,500, 800, 1100])
-ax.flatten()[1].set_yticklabels(['300','500', '800','1100'])
-
-ax.flatten()[1].minorticks_off()
-ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
-
-ax2 = ax.flatten()[0].twinx()
-#ax3 = ax.flatten()[1].twinx()
-
-ax2.plot(friedvbi[47:347],c='white',linewidth=1)
-#ax3.plot(friedvbi[47:347],c='black',linewidth=2)
-
-ax4 = ax.flatten()[0].twinx()
-ax4.plot(np.arange(300),lcvbi[:300],color='yellow',linewidth=2);
-ax4.set_yticks([])
-
-ax5 = ax.flatten()[1].twinx()
-ax5.set_yticks([])
-
-
-ax2.set_ylim([1,19])
-#ax3.set_ylim([1,19])
-
-
-ax2.set_ylabel(r'$r_0$ [cm]',fontsize=8)
-#ax3.set_ylabel(r'$r_0$ [cm]',fontsize=8)
-
-ax.flatten()[0].set_xlim([0,260])
-ax.flatten()[1].set_xlim([0,260])
-ax.flatten()[2].set_xlim([0,260])
-#ax.flatten()[3].set_xlim([0,260])
-
-
-ax.flatten()[0].tick_params(axis='both', labelsize=8)
-ax.flatten()[1].tick_params(axis='both', labelsize=8)
-ax.flatten()[2].tick_params(axis='both', labelsize=8)
-#ax.flatten()[3].tick_params(axis='both', labelsize=8)
-ax2.set_xticks([])
-
-ax2.tick_params(axis='both', labelsize=8)
-#ax3.tick_params(axis='both', labelsize=8)
-ax4.tick_params(axis='both', labelsize=8)
-ax5.tick_params(axis='both', labelsize=8)
-
-im3 = ax.flatten()[2].pcolormesh(np.arange(300),np.arange(l2)*pix_to_arcsec*arcsec_to_km,np.transpose(intavginterps2)/1e4,cmap='afmhot');
-fig.colorbar(im3,pad=0.075,shrink = 0.9)
-ax.flatten()[2].invert_yaxis();
-#ax.flatten()[3].pcolormesh(np.arange(300),arcsec_to_km*pix_to_arcsec*1/all_freqarr2[0,1:],gaussian_filter1d(gaussian_filter1d(np.transpose(np.power(all_psdarr2[:,1:],.1)),axis=1,sigma=1),axis=0,sigma=1),cmap=choicemap,vmin=0.6,vmax=.8)
-
-#ax.flatten()[3].set_ylim([90,2000])
-#ax.flatten()[3].set_yscale('log')
-#ax.flatten()[3].set_xlabel('Time [UT]',fontsize=8)
-
-#ax7 = ax.flatten()[3].twinx()
-
-#ax7.plot(friedvbi[47:347],c='black',linewidth=2)
-
-
-#ax7.set_ylim([1,19])
-
-
-#ax7.set_ylabel(r'$r_0$ [cm]',fontsize=8)
-
-# vertical lines at peak of HXR... 22:33:13 UT
-ax.flatten()[0].axvline(40+130,color='white',linestyle='dashed',linewidth=1)
-ax.flatten()[1].axvline(40+130,color='black',linestyle='dashed',linewidth=2)
-#ax.flatten()[2].axvline(40,color='white',linestyle='dashed',linewidth=1)
-#ax.flatten()[3].axvline(40+130,color='black',linestyle='dashed',linewidth=2)
-
-# ... and peak of SXR - 22:35:45 UT (these found via analysis of light curve plots)
-ax.flatten()[0].axvline(97+130,color='white',linestyle='dotted',linewidth=1)
-ax.flatten()[1].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
-#ax.flatten()[2].axvline(97,color='white',linestyle='dotted',linewidth=1)
-#ax.flatten()[3].axvline(97+130,color='black',linestyle='dotted',linewidth=2)
-
-
-ax.flatten()[1].set_xticks([])
-#ax.flatten()[3].set_xticks([])
-
-ax.flatten()[2].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
-ax.flatten()[0].set_xticks([0,40,80,120,160,200,240],[onlytimevbi[47],onlytimevbi[47+40],onlytimevbi[47+80],onlytimevbi[47+120],onlytimevbi[47+160],onlytimevbi[47+200],onlytimevbi[47+240]])
-
-ax.flatten()[0].xaxis.tick_top()
-
-ax.flatten()[0].tick_params(axis='both', labelsize=8)
-ax.flatten()[1].tick_params(axis='both', labelsize=8)
-ax.flatten()[2].tick_params(axis='both', labelsize=8)
-#ax.flatten()[3].tick_params(axis='both', labelsize=8)
-
-ax2.tick_params(axis='both', labelsize=8)
-#ax3.tick_params(axis='both', labelsize=8)
-ax4.tick_params(axis='both', labelsize=8)
-ax5.tick_params(axis='both', labelsize=8)
-#ax7.tick_params(axis='both', labelsize=8)
-
-ax.flatten()[1].set_ylabel('Spatial scale [km]',fontsize=8)
-#ax.flatten()[1].set_ylabel(r'Frequency [pix$^{-1}$]',fontsize=8)
-
-ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
-
-#ax.flatten()[3].set_ylabel('Spatial scale [km]',fontsize=8)
-
-#ax.flatten()[3].set_xlabel('Time [UT]',fontsize=8)
-
-
-ax.flatten()[2].set_ylabel('Distance along trace [km]',fontsize=8)
-ax.flatten()[2].set_xlabel('Time [UT]',fontsize=8)
-
-
-ax.flatten()[0].set_ylabel('Distance along trace [km]',fontsize=8)
-ax.flatten()[0].set_xlabel('Time [UT]',fontsize=8)
-ax.flatten()[0].set_yticks([0,5000,10000])
-ax.flatten()[2].set_yticks([500,1500,2500])
-
-for i in range(len(friedvbi[47:347])):
-    if friedvbi[47+i]<3:
-        ax.flatten()[1].axvline(i, color='lavender', alpha=1,linewidth=3)
-#        ax.flatten()[3].axvline(i, color='lavender', alpha=1,linewidth=3)
-fig.show()
+    ax2.tick_params(axis='both', labelsize=8)
+    ax4.tick_params(axis='both', labelsize=8)
+    
+    ax.flatten()[1].set_ylabel('Distance along trace [km]',fontsize=8)
+    ax.flatten()[1].set_xlabel('Time [UT]',fontsize=8)
+    
+    
+    ax.flatten()[0].set_ylabel('Distance along trace [km]',fontsize=8)
+    ax.flatten()[0].set_xlabel('Time [UT]',fontsize=8)
+    ax.flatten()[0].set_yticks([0,5000,10000])
+    ax.flatten()[1].set_yticks([500,1500,2500])
+    
+    fig.show()
 
 
 xs_full = []
@@ -590,7 +651,9 @@ ax.set_ylim([2550,1000])
 
 XX=27
 YY=12
-dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
+#dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords_newcalib.npz'
+
 dkist_coords = np.load(dkist_coord_file)
 
 xarr_CaII = dkist_coords['xarr_caII']
@@ -599,7 +662,8 @@ yarr_CaII = dkist_coords['yarr_caII']
 xarr_hbeta = dkist_coords['xarr_hbeta']
 yarr_hbeta = dkist_coords['yarr_hbeta']
 
-visp_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
+#visp_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
+visp_file = '/Users/coletamburri/Desktop/ViSP_coalign_result_11Aug_Cclass'
 
 X=np.load(visp_file)['arr_0']
 Y=np.load(visp_file)['arr_1']
