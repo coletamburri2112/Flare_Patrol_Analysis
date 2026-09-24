@@ -592,6 +592,13 @@ else:
     ax.flatten()[0].set_yticks([0,5000,10000])
     ax.flatten()[1].set_yticks([500,1500,2500])
     
+    ax.flatten()[1].axvline(160+9.5,c='cornflowerblue',linewidth=1,linestyle='solid')
+    ax.flatten()[1].axvline(160+19.5,c='red',linewidth=1,linestyle='solid')
+    ax.flatten()[1].axvline(160+24.5,c='#CC6677',linewidth=1,linestyle='solid')
+    ax.flatten()[1].axvline(160+45.5,c='magenta',linewidth=1,linestyle='solid')
+    ax.flatten()[1].axvline(160+68.5,c='darkgoldenrod',linewidth=1,linestyle='solid')
+    ax.flatten()[1].axvline(160+81.5,c='powderblue',linewidth=1,linestyle='solid')
+    
     fig.show()
 
 
