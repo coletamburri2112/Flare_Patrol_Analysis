@@ -17,7 +17,7 @@ from sklearn.metrics import davies_bouldin_score
 from sklearn.metrics import silhouette_score
 
 ## KEYWORDS FOR RUN
-read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
@@ -26,21 +26,25 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
-n_init = 1 # number of times to initialize the k-means clustering; 
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
-metricstest = 0 
+metricstest = 0
 
 if read_in == 1:
     if line == 0:
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
         df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
     elif line == 1:
-        km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
-        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_df.csv'
+        km_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100.npz'
+        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_df.csv'
+        
+        ## OLD VERSION, n_init=1 in the kmeans_initializer
+        #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
+        #df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_df.csv'
 
 if full_scan_qs == 1:
     if line == 0:
@@ -291,7 +295,7 @@ if full_scan_qs == 1:
 
 ## READ-IN SAVED CO-ALIGNED DKIST COORDINATION
 #dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
-dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords_newcalib.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 ## STORE SPATIAL COORDINATES
@@ -359,7 +363,7 @@ if read_in == 0:
             silhs = []
             inertias = []
             if line == 1:
-                n_clusters_range = np.arange(3,20,1)
+                n_clusters_range = np.arange(3,50,1)
             elif line == 0:
                 n_clusters_range = np.arange(3,50,1)
  
@@ -393,7 +397,7 @@ if read_in == 0:
             ax.flatten()[1].grid()
             ax.flatten()[0].grid()
             ax.flatten()[0].set_xlabel('Number of Clusters')
-            ax.flatten()[1].set_ylabel('Number of Clusters')
+            ax.flatten()[1].set_xlabel('Number of Clusters')
             
             fig.tight_layout()
             
@@ -466,13 +470,13 @@ if read_in == 0:
     ## ADJUST THE SORTING?
     if line == 1:
         if adjust == 'byhand':
-            #first = sortedinds[0]
+            first = sortedinds[0]
             last = sortedinds[-1]
-            #bluest = sortedinds[2]
+            bluest = sortedinds[1]
             redest = sortedinds[-2]
             
-            #sortedinds[0]=bluest
-            #sortedinds[2]=first
+            sortedinds[0]=bluest
+            sortedinds[1]=first
             sortedinds[-2]=last
             sortedinds[-1]=redest
     
@@ -533,6 +537,7 @@ elif read_in == 1:
     normprofiles_line=km_file['normprofiles_line'] # normalized spectral line profiles
     times=km_file['times'] # times for each ViSP slit position
     km01=km_file['km0'] # numpy array containing the KMeansClusterer object (nltk)
+    sortedcounts=km_file['sortedcounts']
     
     if clusterer == 'nltk':
         groups0=km_file['groups0'] # numpy array containing the cluster number for each pixel
@@ -543,6 +548,8 @@ elif read_in == 1:
     sortedinds=km_file['sortedinds'] # cluster indices sorted by weighted mean (blueshifted to redshifted
     selwls=km_file['selwls'] # wavelength array for chosen line only
     sortedwls=km_file['sortedwls'] # location of calculated line center (0 is the first index in "selwls")
+    sortedcounts=km_file['sortedcounts']
+
     
     #read pandas dataframe containing clusters from csv
     # contains the mask info, including the x values, y values, and cluster number corresponding to each pixel
