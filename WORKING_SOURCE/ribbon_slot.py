@@ -209,8 +209,8 @@ npoints2=10# 30 for full ribbon
 
 #ccslot2 = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/RibbonTracing_11Aug/ccslot2.npz')['ccslot2']
 
-ccslot = np.load('/Users/coletamburri/Desktop/ccslot.npz')['ccslot']
-ccslot2 = np.load('/Users/coletamburri/Desktop/ccslot2.npz')['ccslot2']
+ccslot = np.load('/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/ccslot.npz')['ccslot']
+ccslot2 = np.load('/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/ccslot2.npz')['ccslot2']
 
 int_avg_all = []
 xmaxsallall = []
@@ -386,7 +386,7 @@ km_to_Mm = 0.001
     
 #loadvbilc = np.load('/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
 #loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
-loadvbilc = np.load('/Users/coletamburri/Desktop/vbi_lc_extended.npz',allow_pickle='True')
+loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/vbi_lc_extended.npz',allow_pickle='True')
 
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
