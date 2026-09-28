@@ -27,7 +27,7 @@ rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
 line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
-n_init = 100 # number of times to initialize the k-means clustering; 
+n_init = 1 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
@@ -36,6 +36,8 @@ metricstest = 0
 
 if read_in == 1:
     if line == 0:
+        #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
+        #df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
         df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
     elif line == 1:
@@ -318,6 +320,7 @@ elif line == 0: # for ca II
 ## DEFINE NUMBER OF CLUSTERS; EMPIRICALLY DETERMINED
 if line == 0:
     n_clusters0 = 35
+    n_clusters0 = 15
 elif line == 1:
     n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
 
