@@ -659,7 +659,7 @@ ax.set_ylim([2550,1000])
 XX=27
 YY=12
 #dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
-dkist_coord_file = '/Users/coletamburri/Desktop/ViSPcoords_newcalib.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/ViSPcoords_newcalib.npz'
 
 dkist_coords = np.load(dkist_coord_file)
 
@@ -670,7 +670,7 @@ xarr_hbeta = dkist_coords['xarr_hbeta']
 yarr_hbeta = dkist_coords['yarr_hbeta']
 
 #visp_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_coalign_result_11Aug_Cclass'
-visp_file = '/Users/coletamburri/Desktop/ViSP_coalign_result_11Aug_Cclass'
+visp_file = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/ViSP_coalign_result_11Aug_Cclass'
 
 X=np.load(visp_file)['arr_0']
 Y=np.load(visp_file)['arr_1']
@@ -740,9 +740,9 @@ xhigh = 2300+XX
 ylow = 2000+YY
 yhigh = 2500+YY
 
-box = Rectangle((xlow, ylow), width=xhigh-xlow, height=yhigh-ylow, edgecolor='#BEE4A8', facecolor='none', linewidth=1,linestyle='dashed')
+#box = Rectangle((xlow, ylow), width=xhigh-xlow, height=yhigh-ylow, edgecolor='#BEE4A8', facecolor='none', linewidth=1,linestyle='dashed')
 
-ax.add_patch(box)
+#ax.add_patch(box)
 
 #add smaller bounding box for other figure (see note above)
 xlow2 = 1900+XX

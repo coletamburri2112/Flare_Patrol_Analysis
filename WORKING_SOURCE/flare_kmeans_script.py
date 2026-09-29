@@ -34,6 +34,8 @@ nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
 metricstest = 0
 
+## Change the read-in files with final clustering results for Tamburri+2026b!!
+
 if read_in == 1:
     if line == 0:
         #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
@@ -311,7 +313,6 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=4 # was 7 before
         cutoff0=3 # testing this
 elif line == 0: # for ca II
     cutoff0=2.5
