@@ -26,7 +26,7 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
@@ -312,6 +312,7 @@ if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
         cutoff0=4 # was 7 before
+        cutoff0=3 # testing this
 elif line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
@@ -383,7 +384,7 @@ if read_in == 0:
             fig,ax=plt.subplots(1,2,dpi=100,figsize=(10,5))
             lns0 = ax.flatten()[0].plot(n_clusters_range,inertias,label='Inertia',c='red',marker='o',linestyle='--')
             ax1=ax.flatten()[0].twinx()
-            lns1 = ax1.plot(silhs, label='Silhouette score',c='blue',marker='x',linestyle='--')
+            lns1 = ax1.plot(n_clusters_range,silhs, label='Silhouette score',c='blue',marker='x',linestyle='--')
             ax.flatten()[1].plot(n_clusters_range,dbinds, label = 'db_index',c='black',marker='x',linestyle='--')
             
             lns=lns0+lns1
@@ -472,13 +473,13 @@ if read_in == 0:
     ## ADJUST THE SORTING?
     if line == 1:
         if adjust == 'byhand':
-            first = sortedinds[0]
+            #first = sortedinds[0]
             last = sortedinds[-1]
-            bluest = sortedinds[1]
+            #bluest = sortedinds[1]
             redest = sortedinds[-2]
             
-            sortedinds[0]=bluest
-            sortedinds[1]=first
+            #sortedinds[0]=bluest
+            #sortedinds[1]=first
             sortedinds[-2]=last
             sortedinds[-1]=redest
     
@@ -576,7 +577,7 @@ if manyscan ==1:
         ymask_sel = sel['y'].values
         distlocs_sel = sel['dist'].values
 
-        ax.flatten()[i].scatter(xarr_ch[xmask_sel],yarr_ch[ymask_sel],2,color=colors[distlocs_sel],alpha=.6,marker='s')
+        ax.flatten()[i].scatter(xarr_ch[xmask_sel],yarr_ch[ymask_sel],.2,color=colors[distlocs_sel],alpha=.6,marker='s')
         ax.flatten()[i].invert_xaxis()
         ax.flatten()[i].invert_yaxis()
         ax.flatten()[i].set_ylim([-251,-218])
@@ -615,6 +616,7 @@ if line == 0:
     fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
 if line == 1:
     fig,ax=plt.subplots(int(n_clusters0/4),4,figsize=(10,6),dpi=200) #if hep and caii
+
 
 if clusterer == 'nltk':
     arr_normprofs0 = normprofiles_line
