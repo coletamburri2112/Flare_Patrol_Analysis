@@ -17,7 +17,7 @@ from sklearn.metrics import davies_bouldin_score
 from sklearn.metrics import silhouette_score
 
 ## KEYWORDS FOR RUN
-read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
@@ -43,8 +43,8 @@ if read_in == 1:
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
         df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
     elif line == 1:
-        km_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100.npz'
-        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_df.csv'
+        km_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k12_cut3.npz'
+        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k12_cut3_df.csv'
         
         ## OLD VERSION, n_init=1 in the kmeans_initializer
         #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
