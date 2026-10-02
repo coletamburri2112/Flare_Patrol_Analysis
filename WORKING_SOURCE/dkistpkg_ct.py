@@ -2052,11 +2052,10 @@ def plt_final_coalign(vbi_X_new, vbi_Y_new, dat0_vbi2,
     
     return None
 
-def load_fts(dispersion_range):
+def load_fts(dispersion_range,path='/Users/coletamburri/Desktop/Misc_DKIST/DKIST_Data_Tools_misc/speclab-python/cal_data/'):
     # Load disk-center, quiet sun profile from Neckel and Hamburg
     # atlast
     
-    path = '/Users/coletamburri/Desktop/Misc_DKIST/DKIST_Data_Tools_misc/speclab-python/cal_data/'
     filename = 'neckel.hamburg.atlas.disk_center_intensity.cgs.ecsv'
     
     ecsv_content = path+filename

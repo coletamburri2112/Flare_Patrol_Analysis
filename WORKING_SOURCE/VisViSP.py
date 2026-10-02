@@ -18,13 +18,13 @@ hbeta=0
 filehbeta = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta.npz'
 hbetascaled = '/Users/coletamburri/Desktop/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSP_spectra_processed_11Aug24_Hbeta_scaled.npz'
 filehbeta = '/Users/coletamburri/Desktop/11Aug2024_calibrated_with_NEWQS_Hbeta_cut.npz'
-file = '/Volumes/ViSP_External/CaII_11Aug204_Cclass_newcalib.npz'
+file = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
 #file = '/Users/coletamburri/Desktop/8_August_2024_Xclass_Flare/ViSPselection8AugXclass.npz'
 #file = '/Users/coletamburri/Desktop/Misc_DKIST/ViSPselection11August24Mclass.npz'
 
 
-caII_low = 570
-caII_high = 730
+caII_low = 0
+caII_high = -1
 hep_low = 730
 hep_high = 900
 
@@ -149,7 +149,7 @@ else:
         if hbeta == 0:
             ax.axvline(396.847,linewidth=2,linestyle='dashed',color='grey')
             ax.axvline(397.01,linewidth=2,linestyle='dashed',color='#CC6677')
-            ax.set_xlim([396.7,397.1])
+            #ax.set_xlim([396.7,397.1])
             ax.set_ylim([-.1e6,7e6])
         ax.grid('on')
         # if hbeta == 1:

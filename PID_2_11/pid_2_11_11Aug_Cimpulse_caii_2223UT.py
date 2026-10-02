@@ -20,6 +20,7 @@ end=0
 
 # package initialize
 import dkistpkg_ct as DKISTanalysis
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -66,12 +67,12 @@ hpc1_arcsecqs, hpc2_arcsecqs, x_centerqs, y_centerqs, zqs, rhoqs, muqs, doppshre
     DKISTanalysis.spatialinit(path2,folder2,dir_list3,lon,lat,wl)
 
 # get limb darkening coefficient 
-clv_corr = DKISTanalysis.limbdarkening(wl, mu=mu, nm=True)
+clv_corr = DKISTanalysis.limbdarkening(wl, mu=mu, nm=True,directory='/Users/coletamburri/Desktop/')
     # for Ca II H (require mu value for determination, be sure to specify
     # correct wl units)
     
 # limb darkening coefficient, qs
-clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True)
+clv_corrqs = DKISTanalysis.limbdarkening(wl, mu=muqs, nm=True,directory='/Users/coletamburri/Desktop/')
     # for Ca II H (require mu value for determination, be sure to specify
     # correct wl units)
     
@@ -119,7 +120,7 @@ spatial_range, dispersion_range = DKISTanalysis.spatialaxis(path,folder1,
                                                             pid='2_11',shift=shift)
 
 # Load Kurucz FTS Atlas
-wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range)
+wlsel, ilamsel = DKISTanalysis.load_fts(dispersion_range,path='/Users/coletamburri/Desktop/')
 wlsel=wlsel/10
 
 # Average the QS data for space and time, for selected ranges
@@ -201,11 +202,24 @@ cont_mult_facts,fit_vals,\
 calibrated_qs=fit_vals*space_and_time_averaged_qs/clv_corrqs
 nonflare_multfact = fit_vals
 
+# show final QS comparison:
+fig,ax=plt.subplots()
+ax.plot(dispersion_range_fin,calibrated_qs,label='visp')
+ax.plot(dispersion_range_fin,yconv*clv_corrqs,label='convolved')
+ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
+ax.legend();plt.show()
+
 # intensity calibration, background subtraction for flare-time                            
 scaled_flare_time, bkgd_subtract_flaretime = \
     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
                           startstep_noflare,endstep_noflare,startspace_noflare,\
                               end=end)
+
+# #for testing with just one scan
+# scaled_flare_time, bkgd_subtract_flaretime = \
+#     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
+#                           0,90,startspace_noflare,\
+#                               end=end)
 
 # definition of index bounds for Ca II H lines
 caII_low_foravg = 570
