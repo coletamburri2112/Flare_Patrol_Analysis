@@ -524,7 +524,7 @@ def scaling(for_scale,nonflare_multfact,limbdarkening,startstep_noflare,endstep_
                 bkgd_subtract_flaretime[i,:end,j] = scaled_flare_time[i,:end,j]-nonflare_average[-end:]
 
         
-    return scaled_flare_time, bkgd_subtract_flaretime
+    return scaled_flare_time, bkgd_subtract_flaretime, nonflare_average
     
                             
 def pltsubtract(dispersion_range,nonflare_average,scaled_flare_time,muted,indexs,end=5,pid='pid_1_84'):
