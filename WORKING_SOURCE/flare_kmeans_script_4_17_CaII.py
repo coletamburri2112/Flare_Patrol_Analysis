@@ -22,17 +22,18 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 148 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-n_init = 10 # number of times to initialize the k-means clustering; 
+n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
+## DEFINE NUMBER OF CLUSTERS (determined by inspection for now, but this should be updated)
+n_clusters0 = 20
 
         
 ## SPECTRAL AXIS PIXELS FOR EACH LINE
-linelow = 400
+linelow = 380
 linehigh = 500
-
 
 ## LINE CENTER IN NANOMETERS
 cent = 854.21
@@ -40,10 +41,17 @@ cent = 854.21
 ## DEFINE SAVED FILE
 filename = '/Users/coletamburri/Desktop/window_1746_arm1_Ca_II_(854.21_nm)_aligned_roi.fits'
 caii_file = fits.open(filename)
+
+# datacube shape - [map repeat, Stokes param, wavelength, ROI x (slit direction), ROI y (scan direction)]
 flare_arr0 = caii_file[0].data[:,0,:,:,:]
 
-# For testing 18 September
-flare_arr = flare_arr0[3,:,:,:]
+# Combine into same array
+allscans = []
+
+for i in range(nframes):
+    allscans.append(flare_arr0[i,:,:,:])
+
+flare_arr = np.concatenate(allscans,1)
 
 #placeholder, will need to actually extract wavelengths
 wave = np.arange(913)
@@ -81,7 +89,7 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
         
             normprofiles_line.append(line_norm)
     
-        arr_normprofs = np.asarray(normprofiles_line)
+        # arr_normprofs = np.asarray(normprofiles_line)
         
         km = sl.cluster.KMeans(n_clusters=num_clusters,n_init=n_init).fit(normprofiles_line)
         
@@ -94,7 +102,7 @@ def kmeans_scikit(start,masknum,nsteps,startspace,endspace,obs_avg,flarearr,
         
             normprofiles_line.append(line_norm)
     
-        arr_normprofs = np.asarray(normprofiles_line)
+        # arr_normprofs = np.asarray(normprofiles_line)
         
         km = sl.cluster.KMeans(n_clusters=num_clusters,n_init=n_init).fit(normprofiles_line)
         
@@ -159,18 +167,13 @@ def wltrans(x):
 
 
 ## DEFINE LIMITS OF MASKING; MULTIPLE OF MEDIAN TO BE INCLUDED IN MASK
-
 cutoff0=1
 
 
-## DEFINE NUMBER OF CLUSTERS; EMPIRICALLY DETERMINED
-n_clusters0 = 35
-
-## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING; EMPIRICALLY DETERMINED
+## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING
 
 startspace = 0
 endspace = -1
-
 
 ## SELECT WHICH WAVELENGTHS FOR SPECTRAL AXIS
 selwls = wave[linelow:linehigh]
@@ -179,7 +182,6 @@ selwls = wave[linelow:linehigh]
 obs_avg_line = np.mean(flare_arr[linelow:linehigh,:,:],0)
     
 flare_arr2 = flare_arr.copy()
-
 
 
 ## CLUSTERING; DEPENDS ON WHICH METHOD
@@ -211,7 +213,7 @@ if clusterer == 'scikit':
 df = pd.DataFrame({'x':inds,'y':wm,'z':dists}) # by blue wing to core - 480 to 600
 
 ## SORT VALUES BY THE SORTING METHOD USED ABOVE
-df.sort_values(by=['x'])
+df.sort_values(by=['y'])
 
 ## SILLY PYTHON TYPE STUFF
 sortedinds0 = df.sort_values(['y'])['x']
@@ -258,14 +260,14 @@ df_mask = pd.DataFrame(maskind)
 
 fig,ax=plt.subplots(figsize=(8,3),dpi=200)
 
-ax.pcolormesh(frame_line,cmap='grey',alpha=1)
-ax.scatter(y_mask0,x_mask0,1.2,color=colors[distlocs],alpha=.6,marker='s')
+ax.pcolormesh(np.transpose(frame_line),cmap='grey',alpha=1)
+ax.scatter(x_mask0,y_mask0,.03,color=colors[distlocs],alpha=.6,marker='s')
 
 
 
 
-fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
-
+#fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
+fig,ax=plt.subplots(4,5,figsize=(10,6),dpi=200) #if hep and caii
 if clusterer == 'scikit':
     arr_normprofs0 = normprofiles_line
     axes = ax.ravel()

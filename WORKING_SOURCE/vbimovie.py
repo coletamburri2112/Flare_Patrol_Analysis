@@ -8,14 +8,11 @@ Created on Tue Jun  3 13:01:06 2025
 
 import astropy.units as u
 from sunpy.net import Fido, attrs as a
-import dkist.net
-import dkist
+
 import utilvbi
-import destretch_fw as destr
 
 from astropy.io import fits
 import numpy as np
-from IPython.display import Video
 from astropy.io import fits
 import matplotlib.pyplot as plt
 import os
@@ -64,7 +61,7 @@ aolock = []
 #    aolock.append(i_file_raster1[1].header['AO_LOCK'])
     
 #dC = fits.open('/Volumes/VBI_External/postdestretch_dataCubeX_class_decay_full.fits')[0].data # Xclass
-dC = fits.open('/Users/coletamburri/Desktop/DKIST_Code/VBI_Destretching/MBVIDS/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_177_347.fits')
+dC = fits.open('/Volumes/ViSP_External/postdestretch_dataCube_Halpha_C_class_impulsive_phase_Halpha_177_347.fits')
 #dC = fits.open('/Users/coletamburri/Desktop/DXHIEL/postdestretch_dataCube_blue_cont_C_class_impulsive_phase.fits')[0].data # Xclass
 
 
@@ -78,9 +75,9 @@ dCslice = dC #Mclass or C class (100 and 250 frames, respectively
 indices = np.arange(len(dCslice))
 
 # define times
-t3 = np.arange(datetime(2024,8,11,22,31,26),
+t3 = np.arange(datetime(2024,8,11,22,31,26,333333),
               datetime(2024,8,11,22,38,57), 
-              timedelta(seconds=2.666)).astype(datetime)
+              timedelta(seconds=2.666667)).astype(datetime)
 
 
 
@@ -120,7 +117,7 @@ yhigh5 = 1300
 xlow5 = 1200
 xhigh5 = 2500
 
-loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/vbi_lc_extended.npz',allow_pickle='True')
+loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/vbi_lc_extended.npz',allow_pickle='True')
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
 

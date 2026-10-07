@@ -210,13 +210,13 @@ ax.plot(wlsel,clv_corrqs*ilamsel,label='raw')
 ax.legend();plt.show()
 
 # intensity calibration, background subtraction for flare-time                            
-scaled_flare_time, bkgd_subtract_flaretime = \
+scaled_flare_time, bkgd_subtract_flaretime,nonflare_average = \
     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
                           startstep_noflare,endstep_noflare,startspace_noflare,\
                               end=end)
 
 # #for testing with just one scan
-# scaled_flare_time, bkgd_subtract_flaretime = \
+# scaled_flare_time, bkgd_subtract_flaretime,nonflare_average = \
 #     DKISTanalysis.scaling(image_data_arr_arr, nonflare_multfact,clv_corr,
 #                           0,90,startspace_noflare,\
 #                               end=end)
