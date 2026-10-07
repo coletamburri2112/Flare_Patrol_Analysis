@@ -390,9 +390,9 @@ loadvbilc = np.load('/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefRespo
 
 #timesvbi=loadvbilc['times']
 lcvbi=loadvbilc['lc']
-t3 = np.arange(datetime(2024,8,11,22,31,26),
+t3 = np.arange(datetime(2024,8,11,22,31,26,333333),
               datetime(2024,8,11,22,38,57), 
-              timedelta(seconds=2.666)).astype(datetime)
+              timedelta(seconds=2.666667)).astype(datetime)
 choicemap = 'inferno'
 include_fft = 0
 
