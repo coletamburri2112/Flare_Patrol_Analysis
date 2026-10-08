@@ -41,10 +41,13 @@ class SpectralClusterer:
         # Initialize the results array
         self.results = {}
         
-    def prep_data(self, cutoff, cent, line_low = 20, line_high = -20, 
-                  normflag = 1):
+    def prep_data(self, cutoff, cent, coreind, line_low = 20, line_high = -20, 
+                  normflag = 1, frame_line_metric = 'core'):
         
-        self.frame_line = np.nanmean(self.X_pre[line_low:line_high,
+        if frame_line_metric == 'core':
+            self.frame_line = self.X_pre[coreind,:,:]
+        elif frame_line_metric == 'median':
+            self.frame_line = np.nanmean(self.X_pre[line_low:line_high,
                                                 :,:],0)
         self.line_low = line_low
         self.line_high = line_high
