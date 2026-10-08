@@ -8,18 +8,28 @@ Created on Fri Oct  4 06:18:46 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sklearn as sl
-from matplotlib.collections import LineCollection
 import pandas as pd
 from astropy.io import fits
+
+import KMeansFunctions as KM
+from Clusterer import SpectralClusterer
+
+from matplotlib.collections import LineCollection
+
+## DEFINE NUMBER OF CLUSTERS (determined by inspection for now, but this should be updated)
+k_values = np.arange(2,30)
+
+## Want to output metrics?
+metricstest = 0
+
+## Define mask cutoff (median intensity)
+cutoff0=1
 
 ## KEYWORDS FOR RUN
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
             # 'byhand' means that some cluster order is switched for clarity
-clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or 'nltk'
-rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 148 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
 n_init = 100 # number of times to initialize the k-means clustering; 
@@ -27,10 +37,7 @@ n_init = 100 # number of times to initialize the k-means clustering;
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
-## DEFINE NUMBER OF CLUSTERS (determined by inspection for now, but this should be updated)
-n_clusters0 = 20
 
-        
 ## SPECTRAL AXIS PIXELS FOR EACH LINE
 linelow = 380
 linehigh = 500
@@ -45,34 +52,22 @@ caii_file = fits.open(filename)
 # datacube shape - [map repeat, Stokes param, wavelength, ROI x (slit direction), ROI y (scan direction)]
 flare_arr0 = caii_file[0].data[:,0,:,:,:]
 
-# Combine into same array
-allscans = []
-
-for i in range(nframes):
-    allscans.append(flare_arr0[i,:,:,:])
-
-flare_arr = np.concatenate(allscans,1)
-
 #placeholder, will need to actually extract wavelengths
 wave = np.arange(913)
 
-
-## DEFINE LIMITS OF MASKING; MULTIPLE OF MEDIAN TO BE INCLUDED IN MASK
-cutoff0=1
-
-
 ## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING
-
 startspace = 0
 endspace = -1
 
 ## SELECT WHICH WAVELENGTHS FOR SPECTRAL AXIS
 selwls = wave[linelow:linehigh]
 
-## DEFINE WHAT PART OF ViSP ARRAY TO CONSIDER
-obs_avg_line = np.mean(flare_arr[linelow:linehigh,:,:],0)
-    
-flare_arr2 = flare_arr.copy()
+# Clustering object
+clusterer = SpectralClusterer(flare_arr0)
+clusterer.prep_data(cutoff=cutoff0)
+clusterer.clustering(k_values=k_values, metricstest=metricstest, n_init=n_init)
+
+
 
 
 ## CLUSTERING; DEPENDS ON WHICH METHOD
