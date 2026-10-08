@@ -44,28 +44,6 @@ from astropy.convolution import convolve, Gaussian1DKernel
 from scipy.signal import savgol_filter
 
 
-# from sunpy.net import Fido, attrs as a
-# import pandas as pd
-# from astropy.utils.data import get_pkg_data_filename
-# import shutil
-# import fitsio
-# import matplotlib.animation as animat
-# import ffmpeg
-# import latex
-# import radx_ct
-# import math as math
-# import scipy.special as sp
-# from scipy.stats import skewnorm
-# from lmfit.models import SkewedGaussianModel
-# import matplotlib
-# from matplotlib import animation
-# from lmfit import Model
-# from pylab import *
-# from astropy.coordinates import SkyCoord
-# from astropy.time import Time
-# from astropy.visualization import ImageNormalize, SqrtStretch
-
-
 
 # define functions to be used for line fitting
 def gaussian(x, c1, mu1, sigma1):
