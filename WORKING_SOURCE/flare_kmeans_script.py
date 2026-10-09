@@ -27,7 +27,7 @@ rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
 line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
-n_init = 1 # number of times to initialize the k-means clustering; 
+n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
@@ -313,8 +313,7 @@ yarr_hbeta = dkist_coords['yarr_hbeta']
 if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
-        cutoff0=3 # testing this
-        cutoff0=5
+        cutoff0=3 # 
 elif line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
@@ -324,7 +323,7 @@ elif line == 0: # for ca II
 if line == 0:
     n_clusters0 = 35
 elif line == 1:
-    n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
+    ## n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
     n_clusters0  = 35 # testing this for resubmission
 ## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING; EMPIRICALLY DETERMINED
 if line == 0:
