@@ -299,7 +299,7 @@ if full_scan_qs == 1:
 
 ## READ-IN SAVED CO-ALIGNED DKIST COORDINATION
 #dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_Flares/11_Aug_2024_Cclass_Flare/Processed_ViSP_VBI_11Aug2024/ViSPcoords_newcalib.npz'
-dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse_FirstDraft/ViSPcoords_newcalib.npz'
+dkist_coord_file = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse/ViSPcoords_newcalib.npz'
 dkist_coords = np.load(dkist_coord_file)
 
 ## STORE SPATIAL COORDINATES
@@ -325,6 +325,7 @@ if line == 0:
 elif line == 1:
     ## n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
     n_clusters0  = 35 # testing this for resubmission
+    n_clusters0 = 30 # testing this for resubmission
 ## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING; EMPIRICALLY DETERMINED
 if line == 0:
     startspace = 300
