@@ -2030,7 +2030,7 @@ def plt_final_coalign(vbi_X_new, vbi_Y_new, dat0_vbi2,
     
     return None
 
-def load_fts(dispersion_range,path='/Users/coletamburri/Desktop/Misc_DKIST/DKIST_Data_Tools_misc/speclab-python/cal_data/'):
+def load_fts(dispersion_range,path='/Users/coletamburri/Desktop/'):
     # Load disk-center, quiet sun profile from Neckel and Hamburg
     # atlast
     

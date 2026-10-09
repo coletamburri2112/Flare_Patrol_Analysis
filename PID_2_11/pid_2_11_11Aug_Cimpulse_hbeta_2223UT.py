@@ -71,11 +71,11 @@ hpc1_arcsecqs, hpc2_arcsecqs, x_centerqs, y_centerqs, zqs, rhoqs, muqs, doppshre
 
     
 # limb darkening coefficient, qs
-clv_corrqs = DKISTanalysis.limbdarkening(wlhbeta, mu=muqs, nm=True)
+clv_corrqs = DKISTanalysis.limbdarkening(wlhbeta, mu=muqs, nm=True,directory='/Users/coletamburri/Desktop/')
     # for H-beta (require mu value for determination, be sure to specify
     # correct wl units)
     
-clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True)
+clv_corrhbeta = DKISTanalysis.limbdarkening(wlhbeta, mu=muhbeta, nm=True,directory='/Users/coletamburri/Desktop/')
     # for H-beta (require mu value for determination, be sure to specify
     # correct wl units)
 # time step start for chosen QS observations
@@ -93,12 +93,12 @@ startspace_noflare = 1900
 # endstep=2700#where does interesting bit end? #originally 3400, shortening
 
 # # for light curve only
-startstep=2100
-endstep=3500
+# startstep=2100
+# endstep=3500
 
 # # for ten scan only
-# startstep=2400
-# endstep=3400
+startstep=2400
+endstep=3400
 
     
 # process multi-step raster - for hbeta
@@ -222,7 +222,7 @@ ax.legend();plt.show()
 
 
 # intensity calibration, background subtraction for flare-time                            
-scaled_flare_time, bkgd_subtract_flaretime = \
+scaled_flare_time, bkgd_subtract_flaretime, nonflare_average = \
     DKISTanalysis.scaling(image_data_arr_arrhbeta, nonflare_multfact,clv_corrhbeta,
                           startstep_noflare,endstep_noflare,startspace_noflare,end=end)
 

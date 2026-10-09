@@ -17,7 +17,7 @@ from sklearn.metrics import davies_bouldin_score
 from sklearn.metrics import silhouette_score
 
 ## KEYWORDS FOR RUN
-read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
@@ -27,7 +27,7 @@ rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
 line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
-n_init = 100 # number of times to initialize the k-means clustering; 
+n_init = 1 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
@@ -43,8 +43,8 @@ if read_in == 1:
         km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
         df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
     elif line == 1:
-        km_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k12_cut3.npz'
-        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k12_cut3_df.csv'
+        km_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k35_cut3.npz'
+        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k35_cut3_df.csv'
         
         ## OLD VERSION, n_init=1 in the kmeans_initializer
         #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'
@@ -314,6 +314,7 @@ if line == 1:
     cutoff0=9 # for h-beta
     if manyscan:
         cutoff0=3 # testing this
+        cutoff0=5
 elif line == 0: # for ca II
     cutoff0=2.5
     if manyscan:
@@ -324,7 +325,7 @@ if line == 0:
     n_clusters0 = 35
 elif line == 1:
     n_clusters0 = 12 # 10 works for hbeta, 6 for Ca II H seems to be all that's needed, 6 also for h-ep
-
+    n_clusters0  = 35 # testing this for resubmission
 ## DEFINE SPATIAL LIMITS TO INCLUDE IN MASKING; EMPIRICALLY DETERMINED
 if line == 0:
     startspace = 300
@@ -479,10 +480,23 @@ if read_in == 0:
             #bluest = sortedinds[1]
             redest = sortedinds[-2]
             
+            lastwl = sortedwls[-1]
+            redestwl = sortedwls[-2]
+            
+            lastcount = sortedcounts[-1]
+            redestcount = sortedcounts[-2]
+            
             #sortedinds[0]=bluest
             #sortedinds[1]=first
             sortedinds[-2]=last
             sortedinds[-1]=redest
+            sortedwls[-2]=lastwl
+            sortedwls[-1]=redestwl
+
+            sortedcounts[-2] = lastcount
+            sortedcounts[-1] = redestcount            
+            
+            
     
     ## MORE PYTHON TYPE STUFF
     sortedwls = np.asarray(sortedwls)
@@ -616,7 +630,7 @@ fig.show()
 if line == 0:
     fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
 if line == 1:
-    fig,ax=plt.subplots(int(n_clusters0/4),4,figsize=(10,6),dpi=200) #if hep and caii
+    fig,ax=plt.subplots(5,int(n_clusters0/5),figsize=(10,6),dpi=200) #if hep and caii
 
 
 if clusterer == 'nltk':
@@ -795,38 +809,70 @@ elif clusterer == 'scikit':
                 axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
                 axes[group].axvline(cent,linewidth=0.6,c='black')
                 
-                if i < 8:
-                    axes[i].tick_params(
-                    axis='x',          # changes apply to the x-axis
-                    which='both',      # both major and minor ticks are affected
-                    bottom=False,      # ticks along the bottom edge are off
-                    top=False,         # ticks along the top edge are off
-                    labelbottom=False,
-                    labelsize=8)
-                else:
+                # if i < 8:
+                #     axes[i].tick_params(
+                #     axis='x',          # changes apply to the x-axis
+                #     which='both',      # both major and minor ticks are affected
+                #     bottom=False,      # ticks along the bottom edge are off
+                #     top=False,         # ticks along the top edge are off
+                #     labelbottom=False,
+                #     labelsize=8)
+                # else:
+                #     axes[i].tick_params(
+                #     axis='x',          # changes apply to the x-axis
+                #     which='both',      # both major and minor ticks are affected
+                #     bottom=True,      # ticks along the bottom edge are off
+                #     top=False,         # ticks along the top edge are off
+                #     labelbottom=True,
+                #     labelsize=8)
+                #     axes[i].set_xticks([486.1,486.3])
+                #     axes[i].set_xlabel('Wavelength [nm]',fontsize=8)
+                # axes[i].tick_params(
+                # axis='y',          # changes apply to the x-axis
+                # which='both',      # both major and minor ticks are affected
+                # left=False,      # ticks along the bottom edge are off
+                # right=False,         # ticks along the top edge are off
+                # labelleft=False)# labels along the bottom edge are off
+                # axes[i].text(0.2, 0.95, str(round(100*float(sortedcounts[sortedinds[i]])/len(labels0),2)), transform=axes[i].transAxes, \
+                #      ha='right', va='top', fontsize=6, fontstyle='italic')
+                # axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
+                #      ha='right', va='top', fontsize=6, fontstyle='italic')
+                # axes[i].set_ylim([-0.2,1.2])
+                # axes[i].set_xlim([wave[linelow],wave[linehigh]])
+                # obs_wl = selwls[int(sortedwls[i])]
+                axes[i].plot(wave[linelow:linehigh],cc[sortedinds[i]],marker='*',color=colors[i],markersize=.1)
+                axes[group].axvline(cent,linewidth=0.6,c='black')
+                if i > 27:
                     axes[i].tick_params(
                     axis='x',          # changes apply to the x-axis
                     which='both',      # both major and minor ticks are affected
                     bottom=True,      # ticks along the bottom edge are off
                     top=False,         # ticks along the top edge are off
                     labelbottom=True,
-                    labelsize=8)
-                    axes[i].set_xticks([486.1,486.3])
-                    axes[i].set_xlabel('Wavelength [nm]',fontsize=8)
+                    labelsize=6)
+                    axes[i].set_xlabel('Wavelength [nm]',fontsize=6)
+
+                else: 
+                    axes[i].tick_params(
+                    axis='x',          # changes apply to the x-axis
+                    which='both',      # both major and minor ticks are affected
+                    bottom=False,      # ticks along the bottom edge are off
+                    top=False,         # ticks along the top edge are off
+                    labelbottom=False)                
                 axes[i].tick_params(
                 axis='y',          # changes apply to the x-axis
                 which='both',      # both major and minor ticks are affected
                 left=False,      # ticks along the bottom edge are off
                 right=False,         # ticks along the top edge are off
                 labelleft=False)# labels along the bottom edge are off
-                axes[i].text(0.2, 0.95, str(round(100*float(sortedcounts[sortedinds[i]])/len(labels0),2)), transform=axes[i].transAxes, \
+                axes[i].text(0.3, 0.95, str(round(100*float(sortedcounts[sortedinds[i]])/len(labels0),2)), transform=axes[i].transAxes, \
                      ha='right', va='top', fontsize=6, fontstyle='italic')
                 axes[i].text(0.95, 0.95, str(i+1), transform=axes[i].transAxes, \
                      ha='right', va='top', fontsize=6, fontstyle='italic')
                 axes[i].set_ylim([-0.2,1.2])
                 axes[i].set_xlim([wave[linelow],wave[linehigh]])
-                obs_wl = selwls[int(sortedwls[i])]
                 
+                obs_wl = selwls[int(sortedwls[i])]
                 velocity = find_velocity(cent,obs_wl)
 
         else:
@@ -868,10 +914,14 @@ elif clusterer == 'scikit':
             #axes[i].set_title(str(round(velocity/1e3,1))+r' km s$^{-1}$',fontsize=6,y=.895)
             
         if line == 1:
-            if i <4:
+            # if i <4:
+            #     secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
+            #     secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=8)
+            #     secaxx.tick_params(axis='both', which='major', labelsize=8)
+            if i <int(n_clusters0/5):
                 secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
-                secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=8)
-                secaxx.tick_params(axis='both', which='major', labelsize=8)
+                secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
+                secaxx.tick_params(axis='both', which='major', labelsize=6)
         else:
             if i <int(n_clusters0/5):
                 secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
