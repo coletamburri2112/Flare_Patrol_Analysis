@@ -26,13 +26,13 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
-metricstest = 0
+metricstest = 1
 
 ## Change the read-in files with final clustering results for Tamburri+2026b!!
 
