@@ -169,7 +169,8 @@ class SpectralClusterer:
         for k, result in self.results.items():
             metrics[k] = {
                 'inertia':result['inertia'],
-                'silhouette':result['silhouette']}
+                'silhouette':result['silhouette'],
+                'DB index':result['DB_index']}
         
         return metrics
     
@@ -207,11 +208,11 @@ class SpectralClusterer:
         self.df_mask = pd.DataFrame(maskind)
 
     def plot_maps(self, k_choice, startspace, endspace, xarr, yarr, nframes,
-                  nsteps):
+                  nsteps,div=6):
         self.colors = plt.cm.turbo(np.linspace(0,1,k_choice))
         
-        xarr_ch = xarr
-        yarr_ch = yarr[startspace:endspace+1]
+        self.xarr_ch = xarr
+        self.yarr_ch = yarr[startspace:endspace+1]
         
         
         ##PLOT 1 - COLORMAP
@@ -227,9 +228,9 @@ class SpectralClusterer:
             ymask_sel = sel['y'].values
             distlocs_sel = sel['dist'].values
             
-            ax[i].pcolormesh(xarr_ch,yarr_ch,np.transpose(self.frame_line[(nsteps*i):(nsteps*(i+1)),:]),\
+            ax[i].pcolormesh(self.xarr_ch,self.yarr_ch,np.transpose(self.frame_line[(nsteps*i):(nsteps*(i+1)),:]),\
                           cmap='grey',alpha=1)
-            ax[i].scatter(xarr_ch[xmask_sel],yarr_ch[ymask_sel],.2,color=self.colors[distlocs_sel],\
+            ax[i].scatter(self.xarr_ch[xmask_sel],self.yarr_ch[ymask_sel],.2,color=self.colors[distlocs_sel],\
                        alpha=0.6,marker='s')
             ax[i].set_ylim([-251,-218])
             ax[i].set_xlim([759,766])
@@ -246,17 +247,17 @@ class SpectralClusterer:
             
         ##PLOT 2 - CLUSTERS
              
-        fig,ax=plt.subplots(int(k_choice/5),5,figsize=(10,6),dpi=200) 
+        fig,ax=plt.subplots(int(k_choice/div),div,figsize=(10,4),dpi=200) 
         axes = ax.ravel()
         group_to_ind = {g: i for i, g in enumerate(self.sortedinds)}
         
-        x = self.wave[self.line_low:self.line_high]
+        self.x = self.wave[self.line_low:self.line_high]
         
         lines_per_ax = [[] for _ in axes]
         
         for curve, group in zip(self.Xr, self.labelsint):
             ind = group_to_ind[group]
-            pts = np.column_stack([x,curve])
+            pts = np.column_stack([self.x,curve])
             lines_per_ax[ind].append(pts)
         
         b=0 
@@ -264,9 +265,9 @@ class SpectralClusterer:
         for a, lines in zip(axes, lines_per_ax):
             lc = LineCollection(
                 lines,
-                colors='black',
-                linewidths = 0.5,
-                alpha=0.01)    
+                colors='grey',
+                linewidths = 0.4,
+                alpha=0.05)    
             a.add_collection(lc)
             a.axvline(self.cent, linewidth=0.5, c='black')
             a.autoscale
@@ -276,7 +277,7 @@ class SpectralClusterer:
             axes[i].plot(self.wave[self.line_low:self.line_high],self.centroidsint[self.sortedinds[i]],\
                          marker='*',color=self.colors[i],markersize=0.1)
             axes[group].axvline(self.cent,linewidth=0.5,c='black')
-            if i > k_choice-6:
+            if i > k_choice-div-1:
                 axes[i].tick_params(
                 axis='x',          # changes apply to the x-axis
                 which='both',      # both major and minor ticks are affected
@@ -319,7 +320,7 @@ class SpectralClusterer:
             def wltrans(x):
                 return ((((x/(c/1000))+1)*cent))
             
-            if i < 5:
+            if i < div:
                 secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
                 secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
                 secaxx.tick_params(axis='both', which='major', labelsize=6)

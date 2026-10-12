@@ -7,8 +7,11 @@ Created on Fri Oct  4 06:18:46 2024
 """
 
 import numpy as np
-from astropy.io import fits
 from Clusterer import SpectralClusterer
+try:
+    import cPickle as pickle
+except ModuleNotFoundError:
+    import pickle
 
 
 ## DEFINE NUMBER OF CLUSTERS (determined by inspection for now, but this should be updated)
@@ -28,7 +31,7 @@ adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherw
             # 'byhand' means that some cluster order is switched for clarity
 nsteps = 91 # number of slit steps per ViSP scan
 start = 57 # where does the interesting bit of the ViSP data start in loaded datacube?
-n_init = 1 # number of times to initialize the k-means clustering; 
+n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
@@ -41,7 +44,7 @@ linecent = 595
 linehigh = 690
 
 ## LINE CENTER IN NANOMETERS
-cent = 396.85
+cent = 396.847
 
 ## DEFINE SAVED FILE
 filename = '/Volumes/ViSP_External/CaII_11Aug2024_Cclass_newcalib.npz'
@@ -91,3 +94,14 @@ clusterer.sort(k_choice=k_int,method='WM')
 # Plot results
 clusterer.plot_maps(k_choice=k_int,startspace=startspace,endspace=endspace,
                     xarr=xarr_caII,yarr=yarr_caII,nframes=nframes,nsteps=nsteps)
+
+def save_object(obj, filename):
+    with open(filename, 'wb') as outp:  # Overwrites any existing file.
+        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+
+# sample usage
+save_object(clusterer, '/Users/coletamburri/Desktop/CaIIH_clusterer.pkl')
+
+np.savez('/Users/coletamburri/Desktop/CaII_clustering_cut15_k12.npz',xarr_ch=clusterer.xarr_ch,yarr_ch=clusterer.yarr_ch,frame_line=clusterer.frame_line, normprofiles_line=clusterer.Xr,times=clusterer.times,km0=clusterer.results[k_int]['km_fit'],wave=clusterer.wave,sortedinds=clusterer.sortedinds,selwls=clusterer.x,sortedwls=clusterer.sortedwls,sortedcounts=clusterer.sortedcounts,labels0=clusterer.labelsint)
+
+clusterer.df_mask.to_csv('/Users/coletamburri/Desktop/kmeans_CaIIH_ninit100_k12_cut15_df.csv')
