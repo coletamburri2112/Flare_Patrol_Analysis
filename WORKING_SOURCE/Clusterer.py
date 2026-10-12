@@ -247,7 +247,7 @@ class SpectralClusterer:
             
         ##PLOT 2 - CLUSTERS
              
-        fig,ax=plt.subplots(int(k_choice/div),div,figsize=(10,4),dpi=200) 
+        fig,ax=plt.subplots(int(k_choice/div),div,figsize=(8,3),dpi=200) 
         axes = ax.ravel()
         group_to_ind = {g: i for i, g in enumerate(self.sortedinds)}
         
@@ -324,6 +324,7 @@ class SpectralClusterer:
                 secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
                 secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
                 secaxx.tick_params(axis='both', which='major', labelsize=6)
+                secaxx.set_ticks([-50,50])
                 
                 
             fig.subplots_adjust(hspace=0,wspace=0)

@@ -44,7 +44,7 @@ linehigh = 640
 linecent = int(np.mean([linelow,linehigh]))
 
 ## LINE CENTER IN NANOMETERS
-cent = 486.1
+cent = 486.135
 
 ## DEFINE SAVED FILE
 filename = '/Volumes/ViSP_External/Hbeta_11Aug2024_Cclass_newcalib.npz'
@@ -93,7 +93,7 @@ clusterer.sort(k_choice=k_int,method='WM')
 
 # Plot results
 clusterer.plot_maps(k_choice=k_int,startspace=startspace,endspace=endspace,
-                    xarr=xarr_hbeta,yarr=yarr_hbeta,nframes=nframes,nsteps=nsteps)
+                    xarr=xarr_hbeta,yarr=yarr_hbeta,nframes=nframes,nsteps=nsteps,div=7)
 
 def save_object(obj, filename):
     with open(filename, 'wb') as outp:  # Overwrites any existing file.
