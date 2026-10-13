@@ -102,6 +102,7 @@ def save_object(obj, filename):
 # sample usage
 save_object(clusterer, '/Users/coletamburri/Desktop/CaIIH_clusterer.pkl')
 
-np.savez('/Users/coletamburri/Desktop/CaII_clustering_cut15_k12.npz',xarr_ch=clusterer.xarr_ch,yarr_ch=clusterer.yarr_ch,frame_line=clusterer.frame_line, normprofiles_line=clusterer.Xr,times=clusterer.times,km0=clusterer.results[k_int]['km_fit'],wave=clusterer.wave,sortedinds=clusterer.sortedinds,selwls=clusterer.x,sortedwls=clusterer.sortedwls,sortedcounts=clusterer.sortedcounts,labels0=clusterer.labelsint)
+np.savez('/Users/coletamburri/Desktop/CaII_clustering_cut15_k12.npz',\
+         xarr_ch=clusterer.xarr_ch,yarr_ch=clusterer.yarr_ch,frame_line=clusterer.frame_line, normprofiles_line=clusterer.Xr,times=clusterer.times,km0=clusterer.results[k_int]['km_fit'],wave=clusterer.wave,sortedinds=clusterer.sortedinds,selwls=clusterer.x,sortedwls=clusterer.sortedwls,sortedcounts=clusterer.sortedcounts,labels0=clusterer.labelsint)
 
 clusterer.df_mask.to_csv('/Users/coletamburri/Desktop/kmeans_CaIIH_ninit100_k12_cut15_df.csv')

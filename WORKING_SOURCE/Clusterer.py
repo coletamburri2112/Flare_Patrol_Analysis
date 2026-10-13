@@ -34,9 +34,8 @@ class SpectralClusterer:
             self.n_wave = self.data.shape[1]
             self.n_x = self.data.shape[2]
             self.n_y = self.data.shape[3]
-        
-            # Placeholder for wavelength array
-            self.wave = np.arange(self.n_wave)
+            self.wave = wave
+            self.times = times
                 
             # Change the shape of the dataset to be 3D (squish all maps together)
             self.X_pre = np.concatenate(self.data, 1)
@@ -67,14 +66,12 @@ class SpectralClusterer:
 
         elif frame_line_metric == 'mean':
             if pid == '4.17':
-                obs_avg = np.mean(self.X_pre[line_low:line_high,
+                obs_avg = np.nanmean(self.X_pre[line_low:line_high,
                                                 start:start+(nsteps*nframes),
-                                                startspace:endspace],0).copy
+                                                startspace:endspace],0)
                 
-                flare_arr2 = self.X_pre[start:start+(nsteps*nframes),
-                                                        :,
-                                                        startspace:endspace].copy()
-            
+                flare_arr2 = self.X_pre[:,start:start+(nsteps*nframes),
+                                        startspace:endspace].copy()            
                 
                 self.frame_line = obs_avg
                 
@@ -130,6 +127,7 @@ class SpectralClusterer:
     def clustering(self, k_values, metricstest = 0, n_init = 10):
         
         for k in k_values:
+            print(k)
             km = KMeans(n_clusters = k, n_init = n_init).fit(self.Xr)
     
             labels = km.labels_
@@ -178,7 +176,7 @@ class SpectralClusterer:
         print('need to do!')
     
     def sort(self,k_choice,method=['30p_height','WM','orig_index']):
-        wm = []
+        wm = [] 
         dists = []
         # select the exact k value you want
         self.labelsint = self.results[k_choice]['labels']
@@ -208,16 +206,22 @@ class SpectralClusterer:
         self.df_mask = pd.DataFrame(maskind)
 
     def plot_maps(self, k_choice, startspace, endspace, xarr, yarr, nframes,
-                  nsteps,div=6):
+                  nsteps,div=6,pid='2.11'):
         self.colors = plt.cm.turbo(np.linspace(0,1,k_choice))
         
         self.xarr_ch = xarr
-        self.yarr_ch = yarr[startspace:endspace+1]
         
-        
+        if pid == '2.11':
+            self.yarr_ch = yarr[startspace:endspace+1]
+        elif pid == '4.17':
+            self.yarr_ch = yarr
+            
         ##PLOT 1 - COLORMAP
         
+
         fig,ax = plt.subplots(1,10,figsize=(8,3),dpi=200)
+
+
         axes=ax.ravel()
         for i in range(nframes):
             lower_threshold=(nsteps*i)
@@ -226,14 +230,19 @@ class SpectralClusterer:
                                (self.df_mask['x'] < upper_threshold)]
             xmask_sel = sel['x'].values-lower_threshold
             ymask_sel = sel['y'].values
+
             distlocs_sel = sel['dist'].values
-            
+
             ax[i].pcolormesh(self.xarr_ch,self.yarr_ch,np.transpose(self.frame_line[(nsteps*i):(nsteps*(i+1)),:]),\
-                          cmap='grey',alpha=1)
-            ax[i].scatter(self.xarr_ch[xmask_sel],self.yarr_ch[ymask_sel],.2,color=self.colors[distlocs_sel],\
-                       alpha=0.6,marker='s')
-            ax[i].set_ylim([-251,-218])
-            ax[i].set_xlim([759,766])
+                          cmap='grey',alpha=1,shading='auto')
+            ax[i].scatter(self.xarr_ch[xmask_sel],self.yarr_ch[ymask_sel],.4,color=self.colors[distlocs_sel],\
+                       edgecolors=None,alpha=0.4,marker='s')
+
+           
+            if pid == '2.11':
+                ax[i].set_ylim([-251,-218])
+                ax[i].set_xlim([759,766])
+            
             ax[i].tick_params(axis='x', labelrotation=45)
             ax[i].tick_params(axis='y', labelrotation=45)
             
@@ -242,8 +251,12 @@ class SpectralClusterer:
             
             ax[i].tick_params(axis='x',labelsize=6)
             ax[i].tick_params(axis='y',labelsize=6)
-            ax[i].set_title(self.times[57+91*i][11:19],fontsize=8)
-            ax[i].set_xticks([760,763,766])
+            if pid == '2.11':
+                ax[i].set_title(self.times[57+91*i][11:19],fontsize=8)
+                ax[i].set_xticks([760,763,766])
+            if pid == '4.17':
+                ax[i].set_xticks([])
+                ax[i].set_yticks([])
             
         ##PLOT 2 - CLUSTERS
              
