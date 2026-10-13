@@ -13,7 +13,6 @@ from Clusterer import SpectralClusterer
 
 ## DEFINE NUMBER OF CLUSTERS (determined by inspection for now, but this should be updated)
 k_values = np.arange(2,50)
-k_int = 20
 
 ## Want to output metrics?
 metricstest = 1
@@ -87,9 +86,21 @@ clusterer.clustering(k_values=k_values, metricstest=metricstest, n_init=n_init)
 # Extract the output variables - this will be indexed based on the k value
 results = clusterer.results
 
+# Plot clustering metrics
+clusterer.plot_metrics(kstart=4,kend=50,klow=k_values[0])
+
+# decide this after looking at output of above:
+k_int = 26
+
+# a number that goes into k_int which makes things nice to plot
+#... probably a way to automate this...
+div = 13
+
 # Extract info and sort for this run
 clusterer.sort(k_choice=k_int,method='WM')
 
+
 # Plot results
 clusterer.plot_maps(k_choice=k_int,startspace=startspace,endspace=endspace,\
-                    xarr=xarr,yarr=yarr,nframes=nframes,nsteps=nsteps, pid = '4.17',div=5)
+                    xarr=xarr,yarr=yarr,nframes=nframes,nsteps=nsteps, \
+                        pid = '4.17',div=div)

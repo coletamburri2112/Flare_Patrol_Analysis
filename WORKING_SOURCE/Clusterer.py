@@ -160,20 +160,54 @@ class SpectralClusterer:
     def get_centroids(self, k):
         return self.results[k]['centroids']
     
-    metrics = {}
+    
     
     def get_metrics(self):
-        
-        for k, result in self.results.items():
-            metrics[k] = {
-                'inertia':result['inertia'],
-                'silhouette':result['silhouette'],
-                'DB index':result['DB_index']}
-        
-        return metrics
+        return {
+            k: {
+                'inertia': result['inertia'],
+                'silhouette': result['silhouette'],
+                'DB index': result['DB index'],
+            }
+            for k, result in self.results.items()
+        }
     
-    def plot_metrics(self):
-        print('need to do!')
+    def plot_metrics(self,kstart=4,kend=50,klow=2):
+        #kstart and kend are the low and high limits of the plotting
+        #klow is the lowest k value for which metrics were calculated
+        self.met = self.get_metrics()
+        
+        self.inertias=[]
+
+        self.silhs = []
+
+        self.dbinds = []
+        
+        for i in range(len(self.met)):
+            self.inertias.append(self.met[i+2]['inertia'])
+            self.silhs.append(self.met[i+2]['silhouette'])
+            self.dbinds.append(self.met[i+2]['DB index'])
+            
+        fig,ax=plt.subplots(1,3,figsize=(15,5),dpi=100);
+        ax.ravel();
+        ax[0].plot(np.arange(kstart,kend),self.inertias[kstart-klow:],marker='.',\
+                   color='#CC6677');
+        ax[1].plot(np.arange(kstart,kend),self.silhs[kstart-klow:],marker='.',\
+                   color='#CC6677');
+        ax[2].plot(np.arange(kstart,kend),self.dbinds[kstart-klow:],marker='.',\
+                   color='#CC6677')
+        ax[0].set_xlabel('k')
+        ax[1].set_xlabel('k')
+        ax[2].set_xlabel('k')
+        ax[0].set_ylabel('Inertias')
+        ax[1].set_ylabel('Silhouette')
+        ax[2].set_ylabel('Davies-Bouldin Index')
+        
+        ax[0].grid()
+        ax[1].grid()
+        ax[2].grid()
+        
+        fig.tight_layout()
     
     def sort(self,k_choice,method=['30p_height','WM','orig_index']):
         wm = [] 
@@ -335,7 +369,9 @@ class SpectralClusterer:
             
             if i < div:
                 secaxx = axes[i].secondary_xaxis('top', functions=(veltrans,wltrans))
-                secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
+                
+                if pid == '2.11':
+                    secaxx.set_xlabel(r'Velocity $[km\; s^{-1}]$',fontsize=6)
                 secaxx.tick_params(axis='both', which='major', labelsize=6)
                 secaxx.set_ticks([-50,50])
                 
