@@ -60,7 +60,15 @@ class SpectralClusterer:
 
         if frame_line_metric == 'core':
             if pid == '4.17':
-                self.frame_line = self.X_pre[coreind,:,:]
+
+                obs_avg = self.X_pre[coreind,start:start+(nsteps*nframes),\
+                                                startspace:endspace]
+                
+                flare_arr2 = self.X_pre[:,start:start+(nsteps*nframes),
+                                        startspace:endspace].copy()            
+                
+                self.frame_line = obs_avg
+                
             elif pid == '2.11':
                 self.frame_line = self.X_pre[:,coreind,:]
 
@@ -199,7 +207,7 @@ class SpectralClusterer:
         ax[0].set_xlabel('k')
         ax[1].set_xlabel('k')
         ax[2].set_xlabel('k')
-        ax[0].set_ylabel('Inertias')
+        ax[0].set_ylabel('Inertia')
         ax[1].set_ylabel('Silhouette')
         ax[2].set_ylabel('Davies-Bouldin Index')
         
