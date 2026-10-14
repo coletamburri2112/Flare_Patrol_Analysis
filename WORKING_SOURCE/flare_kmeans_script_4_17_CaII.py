@@ -12,7 +12,7 @@ from Clusterer import SpectralClusterer
 
 
 ## DEFINE NUMBER OF CLUSTERS (determined by inspection for now, but this should be updated)
-k_values = [10,25]
+k_values = [10]
 
 ## Want to output metrics?
 metricstest = 0

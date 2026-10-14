@@ -385,10 +385,3 @@ class SpectralClusterer:
                 
                 
             fig.subplots_adjust(hspace=0,wspace=0)
-        
-        
-
-            
-    
-        
-            
