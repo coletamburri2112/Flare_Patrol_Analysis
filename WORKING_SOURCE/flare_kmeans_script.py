@@ -17,7 +17,7 @@ from sklearn.metrics import davies_bouldin_score
 from sklearn.metrics import silhouette_score
 
 ## KEYWORDS FOR RUN
-read_in = 0 # if =0, will recalculate kmeans; if =1, will read-in from previous save
+read_in = 1 # if =0, will recalculate kmeans; if =1, will read-in from previous save
 full_scan_qs = 0 # if =1, subtract the pre-flare sun pixel-by-pixel
                  # if 0, subtract averaged "non-flare" from all pixels
 adjust='no' # if 'no', sorts clusters by weighted mean (or other choice); otherwise
@@ -26,13 +26,13 @@ clusterer = 'scikit' # defines the package used for the clustering; 'sckikit' or
 rempix = 0 # remove pixels with a different criterion (if worried about mask)
 nsteps = 91 # number of slit steps per ViSP scan
 start = 0 # where does the interesting bit of the ViSP data start in loaded datacube?
-line = 1 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
+line = 0 # choice of spectral line; 0 for caii/hepsilon, 1 for hbeta
 n_init = 100 # number of times to initialize the k-means clustering; 
             # 10 by default (though 1 is probably ok if using k-means++ as initializer)
 manyscan = 1 # if =0, only one scan of the ViSP; if =1, many
 nframes = 10 # number of scans (if manyscan)
 c = 299792458 # speed of light in m/s
-metricstest = 0
+metricstest = 1
 
 ## Change the read-in files with final clustering results for Tamburri+2026b!!
 
@@ -40,11 +40,11 @@ if read_in == 1:
     if line == 0:
         #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
         #df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
-        km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_clustering_result.npz'
-        df_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/CaIIH_df.csv'
+        km_filename = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse/11Aug2024_kmeans_SeptemberResults/CaII_clustering_cut15_k12.npz'
+        df_filename = '/Users/coletamburri/Desktop/DKIST_August2024_Flare_RefResponse/11Aug2024_kmeans_SeptemberResults/kmeans_CaIIH_ninit100_k12_cut15_df.csv'
     elif line == 1:
-        km_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k35_cut3.npz'
-        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k35_cut3_df.csv'
+        km_filename = '/Users/coletamburri/Desktop/Hbeta_clustering_cut3_k14.npz'
+        df_filename = '/Users/coletamburri/Desktop/kmeans_Hbeta_ninit100_k14_cut3_df.csv'
         
         ## OLD VERSION, n_init=1 in the kmeans_initializer
         #km_filename = '/Users/coletamburri/Desktop/11Aug2024_kmeans_result_21May2026/Hbeta_clustering_result.npz'

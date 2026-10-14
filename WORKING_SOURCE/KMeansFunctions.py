@@ -56,12 +56,3 @@ def find_velocity(rest_wl,obs_wl):
     c= 299792458 # m/s
     
     return c*(obs_wl-rest_wl)/(obs_wl)
-
-def veltrans(x,mu=1):
-    return ((((x)/cent)-1)*c/1000)/mu
-
-def veltrans2(x,mu2=1):
-    return ((((x)/cent)-1)*c/1000)/mu2
-
-def wltrans(x):
-    return ((((x/(c/1000))+1)*cent)-cent)
